@@ -15,7 +15,7 @@
 
 #include "boost/unordered_map.hpp"
 using DigitCameraParameters = boost::unordered_map<const std::string, const int>;
-#include "Device/HikvisionDevice.h"
+#include "Device/Hikvision/HikvisionDevice.h"
 
 NS_BEGIN(device, 1)
 

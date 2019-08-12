@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -98,7 +98,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\hiksdk\x64\HCNetSDKCom;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\lib\x64;$(SolutionDir)lib\algo\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;SDL2.lib;SDL2main.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,7 +108,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -281,19 +280,14 @@
     <ClCompile Include="..\libzmq-master\src\zmq.cpp" />
     <ClCompile Include="..\libzmq-master\src\zmq_utils.cpp" />
     <ClCompile Include="..\source\Device\Device.cpp" />
-    <ClCompile Include="..\source\Device\HikvisionDevice.cpp" />
+    <ClCompile Include="..\source\Device\Hikvision\HikvisionDevice.cpp" />
     <ClCompile Include="..\source\Device\Hikvision\HikvisionNVR.cpp" />
     <ClCompile Include="..\source\Hardware\Cpu.cpp" />
-    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegDecoder.cpp" />
-    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegFileDecoder.cpp" />
-    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegFrameDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\SDK\HikvisionSDKDecoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\FFmpeg\YV12ToJPEG.cpp" />
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
-    <ClCompile Include="..\source\MediaRenderer\MediaRenderer.cpp" />
-    <ClCompile Include="..\source\MediaRenderer\SDLRenderer.cpp" />
     <ClCompile Include="..\source\MediaScaler\FFmpeg\YV12ToBGR24.cpp" />
     <ClCompile Include="..\source\MediaScaler\FrameScaler.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQContext.cpp" />
@@ -331,21 +325,16 @@
     <ClInclude Include="..\glog-master\utilities.h" />
     <ClInclude Include="..\include\Device\Configing.h" />
     <ClInclude Include="..\include\Device\Device.h" />
-    <ClInclude Include="..\include\Device\HikvisionDevice.h" />
+    <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h" />
     <ClInclude Include="..\include\Device\Hikvision\HikvisionNVR.h" />
     <ClInclude Include="..\include\Device\Logging.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\Hardware\Cpu.h" />
-    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegDecoder.h" />
-    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegFileDecoder.h" />
-    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegFrameDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\SDK\HikvisionSDKDecoder.h" />
     <ClInclude Include="..\include\MediaEncoder\FFmpeg\YV12ToJPEG.h" />
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
-    <ClInclude Include="..\include\MediaRenderer\MediaRenderer.h" />
-    <ClInclude Include="..\include\MediaRenderer\SDLRenderer.h" />
     <ClInclude Include="..\include\MediaScaler\FFmpeg\YV12ToBGR24.h" />
     <ClInclude Include="..\include\MediaScaler\FrameScaler.h" />
     <ClInclude Include="..\include\MessageQueue\MQContext.h" />

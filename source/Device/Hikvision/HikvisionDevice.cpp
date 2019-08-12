@@ -1,5 +1,5 @@
 #include "HCNetSDK.h"
-#include "Device/HikvisionDevice.h"
+#include "Device/Hikvision/HikvisionDevice.h"
 
 NS_BEGIN(device, 1)
 

@@ -13,7 +13,7 @@
 #ifndef HIKVISION_DEVICE_H
 #define HIKVISION_DEVICE_H
 
-#include "Device.h"
+#include "Device/Device.h"
 
 NS_BEGIN(device, 1)
 
