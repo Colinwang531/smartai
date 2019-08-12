@@ -1,0 +1,504 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{94D7ED34-A168-48C7-A588-9442942A2946}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>devicehost</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Bin\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;_WINSOCK_DEPRECATED_NO_WARNINGS;__STDC_CONSTANT_MACROS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)glog-master;$(SolutionDir)libzmq-master\include;$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\include;$(SolutionDir)include;$(SolutionDir)lib\algo\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\hiksdk\x64\HCNetSDKCom;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\lib\x64;$(SolutionDir)lib\algo\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;SDL2.lib;SDL2main.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\codecvt_error_category.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\operations.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path_traits.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\portability.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\unique_path.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\utf8_codecvt_facet.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp" />
+    <ClCompile Include="..\glog-master\demangle.cc" />
+    <ClCompile Include="..\glog-master\logging.cc" />
+    <ClCompile Include="..\glog-master\port.cc" />
+    <ClCompile Include="..\glog-master\raw_logging.cc" />
+    <ClCompile Include="..\glog-master\signalhandler.cc" />
+    <ClCompile Include="..\glog-master\symbolize.cc" />
+    <ClCompile Include="..\glog-master\utilities.cc" />
+    <ClCompile Include="..\glog-master\vlog_is_on.cc" />
+    <ClCompile Include="..\libzmq-master\src\address.cpp" />
+    <ClCompile Include="..\libzmq-master\src\client.cpp" />
+    <ClCompile Include="..\libzmq-master\src\clock.cpp" />
+    <ClCompile Include="..\libzmq-master\src\ctx.cpp" />
+    <ClCompile Include="..\libzmq-master\src\curve_client.cpp" />
+    <ClCompile Include="..\libzmq-master\src\curve_mechanism_base.cpp" />
+    <ClCompile Include="..\libzmq-master\src\curve_server.cpp" />
+    <ClCompile Include="..\libzmq-master\src\dealer.cpp" />
+    <ClCompile Include="..\libzmq-master\src\decoder_allocators.cpp" />
+    <ClCompile Include="..\libzmq-master\src\devpoll.cpp" />
+    <ClCompile Include="..\libzmq-master\src\dgram.cpp" />
+    <ClCompile Include="..\libzmq-master\src\dish.cpp" />
+    <ClCompile Include="..\libzmq-master\src\dist.cpp" />
+    <ClCompile Include="..\libzmq-master\src\epoll.cpp" />
+    <ClCompile Include="..\libzmq-master\src\err.cpp" />
+    <ClCompile Include="..\libzmq-master\src\fq.cpp" />
+    <ClCompile Include="..\libzmq-master\src\gather.cpp" />
+    <ClCompile Include="..\libzmq-master\src\gssapi_client.cpp" />
+    <ClCompile Include="..\libzmq-master\src\gssapi_mechanism_base.cpp" />
+    <ClCompile Include="..\libzmq-master\src\gssapi_server.cpp" />
+    <ClCompile Include="..\libzmq-master\src\io_object.cpp" />
+    <ClCompile Include="..\libzmq-master\src\io_thread.cpp" />
+    <ClCompile Include="..\libzmq-master\src\ip.cpp" />
+    <ClCompile Include="..\libzmq-master\src\ipc_address.cpp" />
+    <ClCompile Include="..\libzmq-master\src\ipc_connecter.cpp" />
+    <ClCompile Include="..\libzmq-master\src\ipc_listener.cpp" />
+    <ClCompile Include="..\libzmq-master\src\ip_resolver.cpp" />
+    <ClCompile Include="..\libzmq-master\src\kqueue.cpp" />
+    <ClCompile Include="..\libzmq-master\src\lb.cpp" />
+    <ClCompile Include="..\libzmq-master\src\mailbox.cpp" />
+    <ClCompile Include="..\libzmq-master\src\mailbox_safe.cpp" />
+    <ClCompile Include="..\libzmq-master\src\mechanism.cpp" />
+    <ClCompile Include="..\libzmq-master\src\mechanism_base.cpp" />
+    <ClCompile Include="..\libzmq-master\src\metadata.cpp" />
+    <ClCompile Include="..\libzmq-master\src\msg.cpp" />
+    <ClCompile Include="..\libzmq-master\src\mtrie.cpp" />
+    <ClCompile Include="..\libzmq-master\src\norm_engine.cpp" />
+    <ClCompile Include="..\libzmq-master\src\null_mechanism.cpp" />
+    <ClCompile Include="..\libzmq-master\src\object.cpp" />
+    <ClCompile Include="..\libzmq-master\src\options.cpp" />
+    <ClCompile Include="..\libzmq-master\src\own.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pair.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pgm_receiver.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pgm_sender.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pgm_socket.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pipe.cpp" />
+    <ClCompile Include="..\libzmq-master\src\plain_client.cpp" />
+    <ClCompile Include="..\libzmq-master\src\plain_server.cpp" />
+    <ClCompile Include="..\libzmq-master\src\poll.cpp" />
+    <ClCompile Include="..\libzmq-master\src\poller_base.cpp" />
+    <ClCompile Include="..\libzmq-master\src\polling_util.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pollset.cpp" />
+    <ClCompile Include="..\libzmq-master\src\precompiled.cpp" />
+    <ClCompile Include="..\libzmq-master\src\proxy.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pub.cpp" />
+    <ClCompile Include="..\libzmq-master\src\pull.cpp" />
+    <ClCompile Include="..\libzmq-master\src\push.cpp" />
+    <ClCompile Include="..\libzmq-master\src\radio.cpp" />
+    <ClCompile Include="..\libzmq-master\src\radix_tree.cpp" />
+    <ClCompile Include="..\libzmq-master\src\random.cpp" />
+    <ClCompile Include="..\libzmq-master\src\raw_decoder.cpp" />
+    <ClCompile Include="..\libzmq-master\src\raw_encoder.cpp" />
+    <ClCompile Include="..\libzmq-master\src\reaper.cpp" />
+    <ClCompile Include="..\libzmq-master\src\rep.cpp" />
+    <ClCompile Include="..\libzmq-master\src\req.cpp" />
+    <ClCompile Include="..\libzmq-master\src\router.cpp" />
+    <ClCompile Include="..\libzmq-master\src\scatter.cpp" />
+    <ClCompile Include="..\libzmq-master\src\select.cpp" />
+    <ClCompile Include="..\libzmq-master\src\server.cpp" />
+    <ClCompile Include="..\libzmq-master\src\session_base.cpp" />
+    <ClCompile Include="..\libzmq-master\src\signaler.cpp" />
+    <ClCompile Include="..\libzmq-master\src\socket_base.cpp" />
+    <ClCompile Include="..\libzmq-master\src\socket_poller.cpp" />
+    <ClCompile Include="..\libzmq-master\src\socks.cpp" />
+    <ClCompile Include="..\libzmq-master\src\socks_connecter.cpp" />
+    <ClCompile Include="..\libzmq-master\src\stream.cpp" />
+    <ClCompile Include="..\libzmq-master\src\stream_engine.cpp" />
+    <ClCompile Include="..\libzmq-master\src\sub.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tcp.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tcp_address.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tcp_connecter.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tcp_listener.cpp" />
+    <ClCompile Include="..\libzmq-master\src\thread.cpp" />
+    <ClCompile Include="..\libzmq-master\src\timers.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tipc_address.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tipc_connecter.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tipc_listener.cpp" />
+    <ClCompile Include="..\libzmq-master\src\trie.cpp" />
+    <ClCompile Include="..\libzmq-master\src\tweetnacl.c" />
+    <ClCompile Include="..\libzmq-master\src\udp_address.cpp" />
+    <ClCompile Include="..\libzmq-master\src\udp_engine.cpp" />
+    <ClCompile Include="..\libzmq-master\src\v1_decoder.cpp" />
+    <ClCompile Include="..\libzmq-master\src\v1_encoder.cpp" />
+    <ClCompile Include="..\libzmq-master\src\v2_decoder.cpp" />
+    <ClCompile Include="..\libzmq-master\src\v2_encoder.cpp" />
+    <ClCompile Include="..\libzmq-master\src\vmci.cpp" />
+    <ClCompile Include="..\libzmq-master\src\vmci_address.cpp" />
+    <ClCompile Include="..\libzmq-master\src\vmci_connecter.cpp" />
+    <ClCompile Include="..\libzmq-master\src\vmci_listener.cpp" />
+    <ClCompile Include="..\libzmq-master\src\xpub.cpp" />
+    <ClCompile Include="..\libzmq-master\src\xsub.cpp" />
+    <ClCompile Include="..\libzmq-master\src\zap_client.cpp" />
+    <ClCompile Include="..\libzmq-master\src\zmq.cpp" />
+    <ClCompile Include="..\libzmq-master\src\zmq_utils.cpp" />
+    <ClCompile Include="..\source\Device\Device.cpp" />
+    <ClCompile Include="..\source\Device\HikvisionDevice.cpp" />
+    <ClCompile Include="..\source\Device\Hikvision\HikvisionNVR.cpp" />
+    <ClCompile Include="..\source\Hardware\Cpu.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegFileDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegFrameDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\SDK\HikvisionSDKDecoder.cpp" />
+    <ClCompile Include="..\source\MediaEncoder\FFmpeg\YV12ToJPEG.cpp" />
+    <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
+    <ClCompile Include="..\source\MediaRenderer\MediaRenderer.cpp" />
+    <ClCompile Include="..\source\MediaRenderer\SDLRenderer.cpp" />
+    <ClCompile Include="..\source\MediaScaler\FFmpeg\YV12ToBGR24.cpp" />
+    <ClCompile Include="..\source\MediaScaler\FrameScaler.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQContext.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQListener.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQSender.cpp" />
+    <ClCompile Include="..\source\MQModel\PublisherServerModel.cpp" />
+    <ClCompile Include="..\source\Stream\AVStream.cpp" />
+    <ClCompile Include="..\source\Stream\Hikvision\HikvisionLivestream.cpp" />
+    <ClCompile Include="..\source\Stream\Livestream.cpp" />
+    <ClCompile Include="AlarmMessage.cpp" />
+    <ClCompile Include="BGR24FrameCache.cpp" />
+    <ClCompile Include="devicehost.cpp" />
+    <ClCompile Include="DigitCameraLivestream.cpp" />
+    <ClCompile Include="Hikvision7xxxNVR.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp" />
+    <ClInclude Include="..\glog-master\config.h" />
+    <ClInclude Include="..\glog-master\demangle.h" />
+    <ClInclude Include="..\glog-master\glog\logging.h" />
+    <ClInclude Include="..\glog-master\glog\log_severity.h" />
+    <ClInclude Include="..\glog-master\glog\raw_logging.h" />
+    <ClInclude Include="..\glog-master\glog\stl_logging.h" />
+    <ClInclude Include="..\glog-master\glog\vlog_is_on.h" />
+    <ClInclude Include="..\glog-master\mock-log.h" />
+    <ClInclude Include="..\glog-master\port.h" />
+    <ClInclude Include="..\glog-master\stacktrace.h" />
+    <ClInclude Include="..\glog-master\stacktrace_generic-inl.h" />
+    <ClInclude Include="..\glog-master\stacktrace_libunwind-inl.h" />
+    <ClInclude Include="..\glog-master\stacktrace_powerpc-inl.h" />
+    <ClInclude Include="..\glog-master\stacktrace_windows-inl.h" />
+    <ClInclude Include="..\glog-master\stacktrace_x86-inl.h" />
+    <ClInclude Include="..\glog-master\stacktrace_x86_64-inl.h" />
+    <ClInclude Include="..\glog-master\symbolize.h" />
+    <ClInclude Include="..\glog-master\utilities.h" />
+    <ClInclude Include="..\include\Device\Configing.h" />
+    <ClInclude Include="..\include\Device\Device.h" />
+    <ClInclude Include="..\include\Device\HikvisionDevice.h" />
+    <ClInclude Include="..\include\Device\Hikvision\HikvisionNVR.h" />
+    <ClInclude Include="..\include\Device\Logging.h" />
+    <ClInclude Include="..\include\error.h" />
+    <ClInclude Include="..\include\Hardware\Cpu.h" />
+    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegFileDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegFrameDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\SDK\HikvisionSDKDecoder.h" />
+    <ClInclude Include="..\include\MediaEncoder\FFmpeg\YV12ToJPEG.h" />
+    <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
+    <ClInclude Include="..\include\MediaRenderer\MediaRenderer.h" />
+    <ClInclude Include="..\include\MediaRenderer\SDLRenderer.h" />
+    <ClInclude Include="..\include\MediaScaler\FFmpeg\YV12ToBGR24.h" />
+    <ClInclude Include="..\include\MediaScaler\FrameScaler.h" />
+    <ClInclude Include="..\include\MessageQueue\MQContext.h" />
+    <ClInclude Include="..\include\MessageQueue\MQListener.h" />
+    <ClInclude Include="..\include\MessageQueue\MQSender.h" />
+    <ClInclude Include="..\include\MQModel\PublisherServerModel.h" />
+    <ClInclude Include="..\include\predef.h" />
+    <ClInclude Include="..\include\Stream\AVStream.h" />
+    <ClInclude Include="..\include\Stream\Hikvision\HikvisionLivestream.h" />
+    <ClInclude Include="..\include\Stream\Livestream.h" />
+    <ClInclude Include="..\libzmq-master\include\zmq.h" />
+    <ClInclude Include="..\libzmq-master\include\zmq_utils.h" />
+    <ClInclude Include="..\libzmq-master\src\address.hpp" />
+    <ClInclude Include="..\libzmq-master\src\array.hpp" />
+    <ClInclude Include="..\libzmq-master\src\atomic_counter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\atomic_ptr.hpp" />
+    <ClInclude Include="..\libzmq-master\src\blob.hpp" />
+    <ClInclude Include="..\libzmq-master\src\client.hpp" />
+    <ClInclude Include="..\libzmq-master\src\clock.hpp" />
+    <ClInclude Include="..\libzmq-master\src\command.hpp" />
+    <ClInclude Include="..\libzmq-master\src\condition_variable.hpp" />
+    <ClInclude Include="..\libzmq-master\src\config.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ctx.hpp" />
+    <ClInclude Include="..\libzmq-master\src\curve_client.hpp" />
+    <ClInclude Include="..\libzmq-master\src\curve_client_tools.hpp" />
+    <ClInclude Include="..\libzmq-master\src\curve_mechanism_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\curve_server.hpp" />
+    <ClInclude Include="..\libzmq-master\src\dbuffer.hpp" />
+    <ClInclude Include="..\libzmq-master\src\dealer.hpp" />
+    <ClInclude Include="..\libzmq-master\src\decoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\decoder_allocators.hpp" />
+    <ClInclude Include="..\libzmq-master\src\devpoll.hpp" />
+    <ClInclude Include="..\libzmq-master\src\dgram.hpp" />
+    <ClInclude Include="..\libzmq-master\src\dish.hpp" />
+    <ClInclude Include="..\libzmq-master\src\dist.hpp" />
+    <ClInclude Include="..\libzmq-master\src\encoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\epoll.hpp" />
+    <ClInclude Include="..\libzmq-master\src\err.hpp" />
+    <ClInclude Include="..\libzmq-master\src\fd.hpp" />
+    <ClInclude Include="..\libzmq-master\src\fq.hpp" />
+    <ClInclude Include="..\libzmq-master\src\gather.hpp" />
+    <ClInclude Include="..\libzmq-master\src\generic_mtrie.hpp" />
+    <ClInclude Include="..\libzmq-master\src\generic_mtrie_impl.hpp" />
+    <ClInclude Include="..\libzmq-master\src\gssapi_client.hpp" />
+    <ClInclude Include="..\libzmq-master\src\gssapi_mechanism_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\gssapi_server.hpp" />
+    <ClInclude Include="..\libzmq-master\src\io_object.hpp" />
+    <ClInclude Include="..\libzmq-master\src\io_thread.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ip.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ipc_address.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ipc_connecter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ipc_listener.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ip_resolver.hpp" />
+    <ClInclude Include="..\libzmq-master\src\i_decoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\i_encoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\i_engine.hpp" />
+    <ClInclude Include="..\libzmq-master\src\i_mailbox.hpp" />
+    <ClInclude Include="..\libzmq-master\src\i_poll_events.hpp" />
+    <ClInclude Include="..\libzmq-master\src\kqueue.hpp" />
+    <ClInclude Include="..\libzmq-master\src\lb.hpp" />
+    <ClInclude Include="..\libzmq-master\src\likely.hpp" />
+    <ClInclude Include="..\libzmq-master\src\macros.hpp" />
+    <ClInclude Include="..\libzmq-master\src\mailbox.hpp" />
+    <ClInclude Include="..\libzmq-master\src\mailbox_safe.hpp" />
+    <ClInclude Include="..\libzmq-master\src\mechanism.hpp" />
+    <ClInclude Include="..\libzmq-master\src\mechanism_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\metadata.hpp" />
+    <ClInclude Include="..\libzmq-master\src\msg.hpp" />
+    <ClInclude Include="..\libzmq-master\src\mtrie.hpp" />
+    <ClInclude Include="..\libzmq-master\src\mutex.hpp" />
+    <ClInclude Include="..\libzmq-master\src\norm_engine.hpp" />
+    <ClInclude Include="..\libzmq-master\src\null_mechanism.hpp" />
+    <ClInclude Include="..\libzmq-master\src\object.hpp" />
+    <ClInclude Include="..\libzmq-master\src\options.hpp" />
+    <ClInclude Include="..\libzmq-master\src\own.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pair.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pgm_receiver.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pgm_sender.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pgm_socket.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pipe.hpp" />
+    <ClInclude Include="..\libzmq-master\src\plain_client.hpp" />
+    <ClInclude Include="..\libzmq-master\src\plain_common.hpp" />
+    <ClInclude Include="..\libzmq-master\src\plain_server.hpp" />
+    <ClInclude Include="..\libzmq-master\src\poll.hpp" />
+    <ClInclude Include="..\libzmq-master\src\poller.hpp" />
+    <ClInclude Include="..\libzmq-master\src\poller_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\polling_util.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pollset.hpp" />
+    <ClInclude Include="..\libzmq-master\src\precompiled.hpp" />
+    <ClInclude Include="..\libzmq-master\src\proxy.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pub.hpp" />
+    <ClInclude Include="..\libzmq-master\src\pull.hpp" />
+    <ClInclude Include="..\libzmq-master\src\push.hpp" />
+    <ClInclude Include="..\libzmq-master\src\radio.hpp" />
+    <ClInclude Include="..\libzmq-master\src\radix_tree.hpp" />
+    <ClInclude Include="..\libzmq-master\src\random.hpp" />
+    <ClInclude Include="..\libzmq-master\src\raw_decoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\raw_encoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\reaper.hpp" />
+    <ClInclude Include="..\libzmq-master\src\rep.hpp" />
+    <ClInclude Include="..\libzmq-master\src\req.hpp" />
+    <ClInclude Include="..\libzmq-master\src\router.hpp" />
+    <ClInclude Include="..\libzmq-master\src\scatter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\select.hpp" />
+    <ClInclude Include="..\libzmq-master\src\server.hpp" />
+    <ClInclude Include="..\libzmq-master\src\session_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\signaler.hpp" />
+    <ClInclude Include="..\libzmq-master\src\socket_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\socket_poller.hpp" />
+    <ClInclude Include="..\libzmq-master\src\socks.hpp" />
+    <ClInclude Include="..\libzmq-master\src\socks_connecter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\stdint.hpp" />
+    <ClInclude Include="..\libzmq-master\src\stream.hpp" />
+    <ClInclude Include="..\libzmq-master\src\stream_engine.hpp" />
+    <ClInclude Include="..\libzmq-master\src\sub.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tcp.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tcp_address.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tcp_connecter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tcp_listener.hpp" />
+    <ClInclude Include="..\libzmq-master\src\thread.hpp" />
+    <ClInclude Include="..\libzmq-master\src\timers.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tipc_address.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tipc_connecter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tipc_listener.hpp" />
+    <ClInclude Include="..\libzmq-master\src\trie.hpp" />
+    <ClInclude Include="..\libzmq-master\src\tweetnacl.h" />
+    <ClInclude Include="..\libzmq-master\src\udp_address.hpp" />
+    <ClInclude Include="..\libzmq-master\src\udp_engine.hpp" />
+    <ClInclude Include="..\libzmq-master\src\v1_decoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\v1_encoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\v2_decoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\v2_encoder.hpp" />
+    <ClInclude Include="..\libzmq-master\src\v2_protocol.hpp" />
+    <ClInclude Include="..\libzmq-master\src\vmci.hpp" />
+    <ClInclude Include="..\libzmq-master\src\vmci_address.hpp" />
+    <ClInclude Include="..\libzmq-master\src\vmci_connecter.hpp" />
+    <ClInclude Include="..\libzmq-master\src\vmci_listener.hpp" />
+    <ClInclude Include="..\libzmq-master\src\windows.hpp" />
+    <ClInclude Include="..\libzmq-master\src\wire.hpp" />
+    <ClInclude Include="..\libzmq-master\src\xpub.hpp" />
+    <ClInclude Include="..\libzmq-master\src\xsub.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ypipe.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ypipe_base.hpp" />
+    <ClInclude Include="..\libzmq-master\src\ypipe_conflate.hpp" />
+    <ClInclude Include="..\libzmq-master\src\yqueue.hpp" />
+    <ClInclude Include="..\libzmq-master\src\zap_client.hpp" />
+    <ClInclude Include="..\libzmq-master\src\zmq_draft.h" />
+    <ClInclude Include="AlarmMessage.h" />
+    <ClInclude Include="BGR24FrameCache.h" />
+    <ClInclude Include="DigitCameraLivestream.h" />
+    <ClInclude Include="Hikvision7xxxNVR.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
