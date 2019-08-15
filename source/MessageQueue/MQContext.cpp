@@ -4,7 +4,9 @@
 
 NS_BEGIN(mq, 1)
 
-MQContext::MQContext() : zmqContext{ NULL }
+void* MQContext::ctx = NULL;
+
+MQContext::MQContext()
 {}
 
 MQContext::~MQContext()
@@ -12,28 +14,28 @@ MQContext::~MQContext()
 
 int MQContext::initialize(const unsigned char threadNumber /*= 1*/)
 {
-	int status{ ERR_BAD_OPERATE };
+	int status{ ERR_OK };
 
-	if (!zmqContext)
+	if (!ctx)
 	{
-		zmqContext = zmq_ctx_new();
-		status = zmq_ctx_set(zmqContext, ZMQ_IO_THREADS, 0 < threadNumber ? threadNumber : 1) ? ERR_BAD_OPERATE : ERR_OK;
+		ctx = zmq_ctx_new();
+		status = zmq_ctx_set(ctx, ZMQ_IO_THREADS, 0 < threadNumber ? threadNumber : 1) ? ERR_BAD_OPERATE : ERR_OK;
 	}
 
 	return status;
 }
 
-void MQContext::uninitialize(void)
+void MQContext::deinitialize(void)
 {
-	if (zmqContext)
+	if (ctx)
 	{
-		zmq_ctx_destroy(zmqContext);
+		zmq_ctx_destroy(ctx);
 	}
 }
 
 void* MQContext::socket(const MQSocketType socketType /* = SOCKET_NONE */)
 {
-	return zmq_socket(zmqContext, socketType);
+	return zmq_socket(ctx, socketType);
 }
 
 void MQContext::closesocket(void* so /* = NULL */)

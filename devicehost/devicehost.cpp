@@ -21,13 +21,10 @@ using PTREE = boost::property_tree::ptree;
 #include "error.h"
 #include "Hardware/Cpu.h"
 using CPU = NS(hardware, 1)::Cpu;
-#include "Hikvision7xxxNVR.h"
-using HikvisionDevice = NS(device, 1)::HikvisionDevice;
-#include "DigitCameraLivestream.h"
-using Livestream = NS(stream, 1)::Livestream;
-#include "MQModel/PublisherServerModel.h"
-using PublisherServerModel = NS(model, 1)::PublisherServerModel;
-#include "BGR24FrameCache.h"
+#include "MQModel/Publisher/PublisherModel.h"
+using PublisherModel = NS(model, 1)::PublisherModel;
+#include "DeviceHostServer.h"
+using MQModel = NS(model, 1)::MQModel;
 #include "AlarmMessage.h"
 #include "BaseHelmetDll.h"
 #include "BasePhoneDll.h"
@@ -49,13 +46,14 @@ typedef struct tagAIAlgoContext_t
 }AIAlgoContext;
 
 AIAlgoContext algoContext[ALGO_NONE];
-PublisherServerModel publisherServerModel;
+boost::shared_ptr<MQModel> publisherModelPtr;
+boost::shared_ptr<MQModel> routerModelPtr;
 //All live view channels are here.
 std::vector<boost::shared_ptr<Livestream>> livestreamGroup;
 CHelmetAlgorithmClass helmetDetectAlgo;
 CPhoneAlgorithmClass phoneDectectAlgo;
 CSleepAlgorithmClass sleepDectectAlgo;
-BGR24FrameCache bgr24FrameCache[ALGO_NONE];
+BGR24FrameCache bgr24FrameCaches[ALGO_NONE];
 int helmetMessageNumber = 0, phoneMessageNumber = 0, sleepMessageNumber = 0;
 
 static void sleepDectctAlgo(const int w = 1920, const int h = 1080, const int channel = 3)
@@ -63,7 +61,7 @@ static void sleepDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 	while (1)
 	{
 		BGR24Frame bgr24Frame;
-		bool status{ bgr24FrameCache[SLEEP].front(bgr24Frame) };
+		bool status{ bgr24FrameCaches[SLEEP].front(bgr24Frame) };
 
 		if (status)
 		{
@@ -88,11 +86,11 @@ static void sleepDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 				AlarmMessage message;
 				message.setMessageData(
 					0, 1920, 1080, "Alarm", alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherServerModel.send(message.getMessageData(), message.getMessageBytes());
+				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send SLEEP alarm " << ++sleepMessageNumber;
 			}
 
-			bgr24FrameCache[SLEEP].pop_front();
+			bgr24FrameCaches[SLEEP].pop_front();
 		}
 	}
 }
@@ -102,7 +100,7 @@ static void phoneDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 	while (1)
 	{
 		BGR24Frame bgr24Frame;
-		bool status{ bgr24FrameCache[PHONE].front(bgr24Frame) };
+		bool status{ bgr24FrameCaches[PHONE].front(bgr24Frame) };
 
 		if (status)
 		{
@@ -127,11 +125,11 @@ static void phoneDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 				AlarmMessage message;
 				message.setMessageData(
 					0, 1920, 1080, "Alarm", alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherServerModel.send(message.getMessageData(), message.getMessageBytes());
+				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send PHONE alarm " << ++phoneMessageNumber;
 			}
 
-			bgr24FrameCache[PHONE].pop_front();
+			bgr24FrameCaches[PHONE].pop_front();
 		}
 	}
 }
@@ -141,7 +139,7 @@ static void helmetDectctAlgo(const int w = 1920, const int h = 1080, const int c
 	while (1)
 	{
 		BGR24Frame bgr24Frame;
-		bool status{ bgr24FrameCache[HELMET].front(bgr24Frame) };
+		bool status{ bgr24FrameCaches[HELMET].front(bgr24Frame) };
 
 		if (status)
 		{
@@ -166,11 +164,11 @@ static void helmetDectctAlgo(const int w = 1920, const int h = 1080, const int c
 				AlarmMessage message;
 				message.setMessageData(
 					0, 1920, 1080, "Alarm", alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherServerModel.send(message.getMessageData(), message.getMessageBytes());
+				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send HELMET alarm " << ++helmetMessageNumber;
 			}
 
-			bgr24FrameCache[HELMET].pop_front();
+			bgr24FrameCaches[HELMET].pop_front();
 		}
 	}
 }
@@ -267,16 +265,12 @@ static unsigned int __stdcall algoWorkerThreadFunc(void* ctx = NULL)
 	return 0;
 }
 
-static void digitCameraParametersNotifyHandler(const int userID = -1, const char* ip = NULL, const int streamNo = -1)
+static void initAlgo(void)
 {
-	boost::shared_ptr<Livestream> livestreamPtr{ 
-		boost::make_shared<DigitCameraLivestream>(bgr24FrameCache) };
-	if (livestreamPtr)
-	{
-		const int status{ livestreamPtr->open(userID, streamNo) };
-		livestreamGroup.push_back(livestreamPtr);
-		LOG(INFO) << "Open live stream [ User " << userID << " ] " << ip << " --- " << streamNo << " : " << status;
-	}
+	const std::string exePath{ boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	initHelmetAlgo(exePath);
+	initPhoneAlgo(exePath);
+	initSleepAlgo(exePath);
 }
 
 int main(int argc, char* argv[])
@@ -292,25 +286,29 @@ int main(int argc, char* argv[])
 #endif
 	);
 
-	const std::string exePath{ boost::filesystem::initial_path<boost::filesystem::path>().string() };
-	initHelmetAlgo(exePath);
-	initPhoneAlgo(exePath);
-	initSleepAlgo(exePath);
+	initAlgo();
 
-// 	if (ERR_OK == SDKFactory::get_mutable_instance().initialize())
-// 	{
-// 		std::vector<boost::shared_ptr<Device>> devices;
-// 
-		try
+	try
+	{
+		PTREE rootNode;
+		boost::property_tree::ini_parser::read_ini("config.ini", rootNode);
+
+		int publisherPortNumber{ rootNode.get_child("Publisher").get<int>("Port") }, 
+			routerPortNumber{ rootNode.get_child("Router").get<int>("Port") }, 
+			cpuCoreNumber{ CPU().getCPUCoreNumber() };
+		boost::shared_ptr<MQModel> publisherPtr{ boost::make_shared<PublisherModel>(publisherPortNumber) };
+		boost::shared_ptr<MQModel> routerPtr{ boost::make_shared<DeviceHostServer>(routerPortNumber, bgr24FrameCaches) };
+
+		if (publisherPtr && routerPtr)
 		{
-			PTREE rootNode;
-			boost::property_tree::ini_parser::read_ini("config.ini", rootNode);
+			publisherModelPtr.swap(publisherPtr);
+			routerModelPtr.swap(routerPtr);
 
-			int publisherServerPortNumber{ rootNode.get_child("Publisher").get<int>("Port") }, cpuCoreNumber{ CPU().getCPUCoreNumber() };
-			int status{ publisherServerModel.start(cpuCoreNumber, publisherServerPortNumber) };
-			if (ERR_OK == status)
+			if (ERR_OK == publisherModelPtr->start(cpuCoreNumber) && ERR_OK == routerModelPtr->start(cpuCoreNumber))
 			{
-				LOG(INFO) << "Start publisher server at port number " << publisherServerPortNumber << " and CPU core number " << cpuCoreNumber << ".";
+				LOG(INFO) << "Start publisher port number " << publisherPortNumber << 
+					" and router port number " << routerPortNumber << 
+					" and CPU core number " << cpuCoreNumber << ".";
 
 				for (int i = HELMET; i != ALGO_NONE; ++i)
 				{
@@ -320,50 +318,31 @@ int main(int argc, char* argv[])
 					const int maskValue{ 1 << i };
 					SetThreadAffinityMask(handle, maskValue);
 				}
-			} 
-			else
-			{
-				LOG(INFO) << "Start publisher server failed " << status << ".";
 			}
-
-			boost::shared_ptr<HikvisionDevice> hikvisionNVR{ 
-				boost::make_shared<Hikvision7xxxNVR>(
-					boost::bind(&digitCameraParametersNotifyHandler, _1, _2, _3)) };
-			if (hikvisionNVR)
-			{
-				const int userID{ hikvisionNVR->login("admin", "eaton12345", "192.168.30.253", 8000) };
-				LOG(INFO) << "Hikvision NVR user ID " << userID;
-			}
-
-			getchar();
-
-			if (hikvisionNVR)
-			{
-				hikvisionNVR->logout();
-			}
-			hikvisionNVR.reset();
 		}
-		catch (std::exception& e)
+		else
 		{
-			LOG(ERROR) << e.what();
+			LOG(ERROR) << "Failed to create publisher and router service.";
 		}
 
-// 		for (int i = 0; i != realplayChannels.size(); ++i)
-// 		{
-// 			realplayChannels[i]->close();
-// 		}
-// 		for (int i = 0; i != devices.size(); ++i)
-// 		{
-// 			devices[i]->stop();
-// 		}
-		publisherServerModel.stop();
-		LOG(INFO) << "Stop publisher server.";
-//		LOG(INFO) << "Release resource of Device SDK result : " << SDKFactory::get_mutable_instance().release();
-//	}
-// 	else
-// 	{
-// 		LOG(ERROR) << "Can not initialize SDK of device.";
-// 	}
+		getchar();
+
+		if (publisherModelPtr)
+		{
+			publisherModelPtr->stop();
+			publisherModelPtr.reset();
+		}
+
+		if (routerModelPtr)
+		{
+			routerModelPtr->stop();
+			routerModelPtr.reset();
+		}
+	}
+	catch (std::exception& e)
+	{
+		LOG(ERROR) << e.what();
+	}
 
 	google::ShutdownGoogleLogging();
 	return 0;

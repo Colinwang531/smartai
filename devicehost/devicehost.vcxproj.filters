@@ -121,6 +121,18 @@
     <Filter Include="Source Files\boost\thread">
       <UniqueIdentifier>{3db7c13c-5171-41d7-a642-f02768207ac1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\MQModel\Publisher">
+      <UniqueIdentifier>{5014d645-1062-4136-9f5c-e668ecf3b81f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MQModel\Router">
+      <UniqueIdentifier>{5bdf73d6-b924-46b6-b4fb-f81b841954d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MQModule\Publisher">
+      <UniqueIdentifier>{418356a7-ad23-4238-ae8d-accccdf4447e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MQModule\Router">
+      <UniqueIdentifier>{8a3b81d2-7a99-440f-8bbe-b7e6e25d079f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -471,9 +483,6 @@
     <ClCompile Include="..\source\MessageQueue\MQSender.cpp">
       <Filter>Source Files\MQ</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MQModel\PublisherServerModel.cpp">
-      <Filter>Source Files\MQModule</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MessageQueue\MQListener.cpp">
       <Filter>Source Files\MQ</Filter>
     </ClCompile>
@@ -566,6 +575,24 @@
     </ClCompile>
     <ClCompile Include="..\source\Device\Hikvision\HikvisionDevice.cpp">
       <Filter>Source Files\Device\Hikvision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MessageQueue\MQThread.cpp">
+      <Filter>Source Files\MQ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MQModel\MQModel.cpp">
+      <Filter>Source Files\MQModule</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MessageQueue\MQReceiver.cpp">
+      <Filter>Source Files\MQ</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceHostServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MQModel\Router\RouterModel.cpp">
+      <Filter>Source Files\MQModule\Router</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MQModel\Publisher\PublisherModel.cpp">
+      <Filter>Source Files\MQModule\Publisher</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1052,9 +1079,6 @@
     <ClInclude Include="..\include\MessageQueue\MQSender.h">
       <Filter>Header Files\MQ</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MQModel\PublisherServerModel.h">
-      <Filter>Header Files\MQModel</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MessageQueue\MQListener.h">
       <Filter>Header Files\MQ</Filter>
     </ClInclude>
@@ -1114,6 +1138,24 @@
     </ClInclude>
     <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h">
       <Filter>Header Files\Device\Hikvision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MessageQueue\MQThread.h">
+      <Filter>Header Files\MQ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MQModel\MQModel.h">
+      <Filter>Header Files\MQModel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MessageQueue\MQReceiver.h">
+      <Filter>Header Files\MQ</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceHostServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MQModel\Router\RouterModel.h">
+      <Filter>Header Files\MQModel\Router</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MQModel\Publisher\PublisherModel.h">
+      <Filter>Header Files\MQModel\Publisher</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

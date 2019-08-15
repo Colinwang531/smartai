@@ -24,7 +24,7 @@ using MediaEncoder = NS(encoder, 1)::MediaEncoder;
 class DigitCameraLivestream final : public HikvisionLivestream
 {
 public:
-	DigitCameraLivestream(BGR24FrameCache* cache = NULL);
+	DigitCameraLivestream(BGR24FrameCache* cache = NULL, const int algo = 0);
 	~DigitCameraLivestream(void);
 
 public:
@@ -50,6 +50,7 @@ private:
 	boost::shared_ptr<MediaEncoder> jpegFrameEncoderPtr;
 // 	LivestreamFrameCallback livestreamFrameCallback;
 	BGR24FrameCache* bgr24FrameCache;
+	const int algoMask;
 };//class DigitCameraChannel
 
 #endif//DIGITAL_CAMERA_LIVE_STREAM_H

@@ -19,10 +19,10 @@ NS_BEGIN(mq, 1)
 
 typedef enum tagMQSocketType_t
 {
-	SOCKET_NONE = 0,
-	SOCKET_PUBLISHER,
-	SOCKET_DEALER = 5,
-	SOCKET_ROUTER
+	MQ_SOCKET_NONE = 0,
+	MQ_SOCKET_PUBLISHER,
+	MQ_SOCKET_DEALER = 5,
+	MQ_SOCKET_ROUTER
 }MQSocketType;
 
 class MQContext
@@ -33,12 +33,13 @@ public:
 
 public:
 	int initialize(const unsigned char threadNumber = 1);
-	void uninitialize(void);
-	void* socket(const MQSocketType socketType = SOCKET_NONE);
+	void deinitialize(void);
+	void* socket(const MQSocketType type = MQ_SOCKET_NONE);
 	void closesocket(void* so = NULL);
 
 protected:
-	void* zmqContext;
+	//It must be created only once.
+	static void* ctx;
 };//class MQContext
 
 NS_END

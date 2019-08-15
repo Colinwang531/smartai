@@ -23,6 +23,11 @@ public:
 	HikvisionDevice(void);
 	virtual ~HikvisionDevice(void);
 
+	inline int getUserID(void) const 
+	{
+		return userID;
+	}
+
 public:
 	virtual int login(
 		const char* name = NULL, const char* password = NULL,

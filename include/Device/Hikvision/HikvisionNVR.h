@@ -13,13 +13,13 @@
 #ifndef HIKVISION_NVR_H
 #define HIKVISION_NVR_H
 
-#include "boost/unordered_map.hpp"
-using DigitCameraParameters = boost::unordered_map<const std::string, const int>;
+#include "Device/Configing.h"
 #include "Device/Hikvision/HikvisionDevice.h"
 
 NS_BEGIN(device, 1)
 
-class HikvisionNVR : public HikvisionDevice
+class HikvisionNVR 
+	: public HikvisionDevice, protected Configing
 {
 public:
 	HikvisionNVR(void);
@@ -31,7 +31,8 @@ protected:
 		const char* ip = NULL, const unsigned short port = 0,
 		const bool sync = true) override;
 	int logout(void) override;
-	virtual int gotDigitCameraParameters(DigitCameraParameters& parameters);
+	int getDigitCameraParameters(
+		const std::string NVRIp, std::vector<DigitCameraParameters>& parameters) override;
 };//class HikvisionNVR
 
 NS_END

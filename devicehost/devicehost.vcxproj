@@ -292,14 +292,19 @@
     <ClCompile Include="..\source\MediaScaler\FrameScaler.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQContext.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQListener.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQReceiver.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQSender.cpp" />
-    <ClCompile Include="..\source\MQModel\PublisherServerModel.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQThread.cpp" />
+    <ClCompile Include="..\source\MQModel\MQModel.cpp" />
+    <ClCompile Include="..\source\MQModel\Publisher\PublisherModel.cpp" />
+    <ClCompile Include="..\source\MQModel\Router\RouterModel.cpp" />
     <ClCompile Include="..\source\Stream\AVStream.cpp" />
     <ClCompile Include="..\source\Stream\Hikvision\HikvisionLivestream.cpp" />
     <ClCompile Include="..\source\Stream\Livestream.cpp" />
     <ClCompile Include="AlarmMessage.cpp" />
     <ClCompile Include="BGR24FrameCache.cpp" />
     <ClCompile Include="devicehost.cpp" />
+    <ClCompile Include="DeviceHostServer.cpp" />
     <ClCompile Include="DigitCameraLivestream.cpp" />
     <ClCompile Include="Hikvision7xxxNVR.cpp" />
   </ItemGroup>
@@ -339,8 +344,12 @@
     <ClInclude Include="..\include\MediaScaler\FrameScaler.h" />
     <ClInclude Include="..\include\MessageQueue\MQContext.h" />
     <ClInclude Include="..\include\MessageQueue\MQListener.h" />
+    <ClInclude Include="..\include\MessageQueue\MQReceiver.h" />
     <ClInclude Include="..\include\MessageQueue\MQSender.h" />
-    <ClInclude Include="..\include\MQModel\PublisherServerModel.h" />
+    <ClInclude Include="..\include\MessageQueue\MQThread.h" />
+    <ClInclude Include="..\include\MQModel\MQModel.h" />
+    <ClInclude Include="..\include\MQModel\Publisher\PublisherModel.h" />
+    <ClInclude Include="..\include\MQModel\Router\RouterModel.h" />
     <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="..\include\Stream\AVStream.h" />
     <ClInclude Include="..\include\Stream\Hikvision\HikvisionLivestream.h" />
@@ -484,6 +493,7 @@
     <ClInclude Include="..\libzmq-master\src\zmq_draft.h" />
     <ClInclude Include="AlarmMessage.h" />
     <ClInclude Include="BGR24FrameCache.h" />
+    <ClInclude Include="DeviceHostServer.h" />
     <ClInclude Include="DigitCameraLivestream.h" />
     <ClInclude Include="Hikvision7xxxNVR.h" />
   </ItemGroup>

@@ -4,8 +4,10 @@
 #include "boost/function.hpp"
 #include "Device/Hikvision/HikvisionNVR.h"
 using HikvisionNVR = NS(device, 1)::HikvisionNVR;
+using DigitCameraParameters = NS(device, 1)::DigitCameraParameters;
 
-typedef boost::function<void(const int, const char*, const int)> DigitCameraParametersNotifyHandler;
+typedef boost::function<void(
+	const std::vector<DigitCameraParameters>&, const char*)> DigitCameraParametersNotifyHandler;
 
 class Hikvision7xxxNVR final : public HikvisionNVR
 {
@@ -14,7 +16,8 @@ public:
 		DigitCameraParametersNotifyHandler handler = NULL);
     ~Hikvision7xxxNVR(void);
 
-	int gotDigitCameraParameters(DigitCameraParameters& parameters) override;
+	int getDigitCameraParameters(
+		const std::string NVRIp, std::vector<DigitCameraParameters>& parameters) override;
 
 private:
 	DigitCameraParametersNotifyHandler digitCameraParametersNotifyHandler;

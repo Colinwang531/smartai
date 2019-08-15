@@ -4,7 +4,7 @@
 
 NS_BEGIN(device, 1)
 
-HikvisionNVR::HikvisionNVR() : HikvisionDevice()
+HikvisionNVR::HikvisionNVR() : HikvisionDevice(), Configing()
 {}
 
 HikvisionNVR::~HikvisionNVR()
@@ -38,8 +38,9 @@ int HikvisionNVR::login(
 
 	if (-1 < userID)
 	{
-		DigitCameraParameters parameters;
-		gotDigitCameraParameters(parameters);
+		//Do not care about return value.
+		std::vector<DigitCameraParameters> parameters;
+		getDigitCameraParameters(ip, parameters);
 	}
 
 	return userID;
@@ -50,7 +51,8 @@ int HikvisionNVR::logout()
 	return NET_DVR_Logout(userID);
 }
 
-int HikvisionNVR::gotDigitCameraParameters(DigitCameraParameters& parameters)
+int HikvisionNVR::getDigitCameraParameters(
+	const std::string NVRIp, std::vector<DigitCameraParameters>& parameters)
 {
 	int status{ ERR_BAD_OPERATE };
 	LONG groupNo = 0;
@@ -74,8 +76,11 @@ int HikvisionNVR::gotDigitCameraParameters(DigitCameraParameters& parameters)
 						BYTE byIPIDHigh{ IPAccessCfgV40.struStreamMode[i].uGetStream.struChanInfo.byIPIDHigh };
 						int iDevInfoIndex{ byIPIDHigh * 256 + byIPID - 1 - groupNo * 64 };
 
-						parameters.insert(std::make_pair(
-							IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4, (int)(IPAccessCfgV40.dwStartDChan + i)));
+						DigitCameraParameters param;
+						param.NVRIp = NVRIp;
+						param.cameraIp = IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4;
+						param.cameraIndex = (int)(IPAccessCfgV40.dwStartDChan + i);
+						parameters.push_back(param);
 					}
 
 					break;
@@ -98,7 +103,6 @@ int HikvisionNVR::gotDigitCameraParameters(DigitCameraParameters& parameters)
 		}
 	}
 
-	DWORD dwError = NET_DVR_GetLastError();
 	return status;
 }
 

@@ -1,16 +1,13 @@
-// #include <fstream>
-// #include <io.h>
 #include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
-// #include "AlarmMessage.h"
 #include "error.h"
 #include "DigitCameraLivestream.h"
 using HikvisionSDKDecoder = NS(decoder, 1)::HikvisionSDKDecoder;
 using YV12ToBGR24 = NS(scaler, 1)::YV12ToBGR24;
 using YV12ToJPEG = NS(encoder, 1)::YV12ToJPEG;
 
-DigitCameraLivestream::DigitCameraLivestream(BGR24FrameCache* cache /* = NULL */)
-	: HikvisionLivestream(), bgr24FrameCache{ cache }
+DigitCameraLivestream::DigitCameraLivestream(BGR24FrameCache* cache /* = NULL */, const int algo /* = 0 */)
+	: HikvisionLivestream(), bgr24FrameCache{ cache }, algoMask{ algo }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -24,54 +21,21 @@ int DigitCameraLivestream::open(const int userID /* = -1 */, const int streamNo 
 			boost::bind(&DigitCameraLivestream::videoStreamDecodeHandler, this, _1, _2, _3, _4, _5)) };
 	boost::shared_ptr<FrameScaler> scalerPtr{ boost::make_shared<YV12ToBGR24>() };
 	boost::shared_ptr<MediaEncoder> encoderPtr{ boost::make_shared<YV12ToJPEG>() };
-// 	jpegPictureDataBuffer = new(std::nothrow) char[2 * 1024 * 1024];
 
 	if (decoderPtr && scalerPtr && encoderPtr)
 	{
 		videoStreamDecoderPtr.swap(decoderPtr);
-// 		status = realplayDataDecoder->initialize();
  		videoFrameScalerPtr.swap(scalerPtr);
 		jpegFrameEncoderPtr.swap(encoderPtr);
-// 		status = frameDataScaler->initialize();
 
 		status = HikvisionLivestream::open(userID, streamNo) ? ERR_OK : ERR_BAD_OPERATE;
 	}
-
-// 	boost::shared_ptr<MediaRenderer> renderer{ boost::make_shared<SDLRenderer>() };
-// 	if (ERR_OK == status && renderer)
-// 	{
-// 		sdlVideoRendererPtr.swap(renderer);
-// 		sdlVideoRendererPtr->createRenderer();
-// 	}
-
-//	return ERR_OK == status ? HIKRealplayChannel::openChannel(channelNumber) : status;
 
 	return status;
 }
 
 int DigitCameraLivestream::close()
 {
-// 	int status{ HIKRealplayChannel::closeChannel() };
-// 
-// 	if (ERR_OK == status && realplayDataDecoder && frameDataScaler)
-// 	{
-// 		realplayDataDecoder->uninitialize();
-// 		frameDataScaler->uninitialize();
-// 	}
-// 
-// 	if (sdlVideoRendererPtr)
-// 	{
-// 		sdlVideoRendererPtr->destroyRenderer();
-// 	}
-// 
-// 	if (jpegPictureDataBuffer)
-// 	{
-// 		delete[] jpegPictureDataBuffer;
-// 		jpegPictureDataBuffer = NULL;
-// 	}
-// 
-// 	return status;
-
 	return HikvisionLivestream::close();
 }
 
@@ -85,13 +49,7 @@ void DigitCameraLivestream::captureVideoDataNotifiy(
 }
 
 void DigitCameraLivestream::JPEGPFrameEncodeHandler(const char* data /* = NULL */, const int dataBytes /* = 0 */)
-{
-// 	if (data && 0 < dataBytes && jpegPictureDataBuffer)
-// 	{
-// 		memcpy_s(jpegPictureDataBuffer, dataBytes, data, dataBytes);
-// 		jpegPictureDataBytes = dataBytes;
-// 	}
-}
+{}
 
 // void DigitCameraChannel::audioDataCaptureNotifier(const char* data /* = NULL */, const int dataBytes /* = 0 */)
 // {}
@@ -111,17 +69,25 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 
 		if (bgr24FrameData)
 		{
-//			NS(scaler, 1)::EncodeYUVToJPEG2(data, dataBytes, pixelWidth, pixelHeight);
-//			sdlVideoRendererPtr->pushData(scaleFrameData);
-
-// 			if (livestreamFrameCallback)
-// 			{
-// 				livestreamFrameCallback(realplayID, scaleFrameData, frameDataBytes, jpegPictureDataBuffer, jpegPictureDataBytes);
-// 			}
-
-			for (int i = 0; i != 3; ++i)
+			if (algoMask & 0x01)
 			{
-				bgr24FrameCache[i].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				bgr24FrameCache[0].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+			}
+			if ((algoMask >> 1) & 0x01)
+			{
+				bgr24FrameCache[1].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+			}
+			if ((algoMask >> 2) & 0x01)
+			{
+				bgr24FrameCache[2].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+			}
+			if ((algoMask >> 3) & 0x01)
+			{
+				bgr24FrameCache[3].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+			}
+			if ((algoMask >> 4) & 0x01)
+			{
+				bgr24FrameCache[4].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
 			}
 		}
 

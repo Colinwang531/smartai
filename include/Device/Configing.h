@@ -13,10 +13,18 @@
 #ifndef CONFIGING_H
 #define CONFIGING_H
 
-#include <boost/unordered_map.hpp>
+#include <string>
+#include <vector>
 #include "predef.h"
 
 NS_BEGIN(device, 1)
+
+typedef struct tagDigitCameraParameters_t
+{
+	std::string NVRIp;
+	std::string cameraIp;
+	int cameraIndex;
+}DigitCameraParameters;
 
 class Configing
 {
@@ -25,9 +33,8 @@ protected:
 	virtual ~Configing(void){}
 
 protected:
-	virtual int getDigitCameras(
-		const int userLoginID,
-		boost::unordered_map<const std::string, const int>& cameras) = 0;
+	virtual int getDigitCameraParameters(
+		const std::string NVRIp, std::vector<DigitCameraParameters>& parameters) = 0;
 };//class Configing
 
 NS_END
