@@ -21,8 +21,10 @@ typedef enum tagMQSocketType_t
 {
 	MQ_SOCKET_NONE = 0,
 	MQ_SOCKET_PUBLISHER,
-	MQ_SOCKET_DEALER = 5,
-	MQ_SOCKET_ROUTER
+	MQ_SOCKET_REQ = 3,
+	MQ_SOCKET_REP,
+	MQ_SOCKET_DEALER,
+	MQ_SOCKET_ROUTER,
 }MQSocketType;
 
 class MQContext
@@ -38,8 +40,8 @@ public:
 	void closesocket(void* so = NULL);
 
 protected:
-	//It must be created only once.
-	static void* ctx;
+	//Context instance must be created only once.
+	void* ctx;
 };//class MQContext
 
 NS_END

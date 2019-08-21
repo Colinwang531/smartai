@@ -23,8 +23,15 @@ public:
 	MQThread(void);
 	virtual ~MQThread(void);
 
-	int startThread(void* handler = NULL, void* ctx = NULL);
-	void stopThread(void);
+public:
+	int start(void);
+	void stop(void);
+
+protected:
+	virtual void process(void) = 0;
+
+private:
+	static void threadFunc(void* ctx = NULL);
 
 protected:
 	void* threadID;

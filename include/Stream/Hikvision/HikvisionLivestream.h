@@ -31,6 +31,9 @@ private:
 	static void __stdcall livestreamDataCaptureCallback(
 		long livesteamID = 0, unsigned long dataType = 0, 
 		unsigned char* streamData = NULL, unsigned long dataBytes = 0, void* ctx = NULL);
+
+protected:
+	int channelIndex;
 };//class HikvisionLivestream
 
 NS_END

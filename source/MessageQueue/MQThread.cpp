@@ -10,25 +10,35 @@ MQThread::MQThread() : threadID{ NULL }
 MQThread::~MQThread()
 {}
 
-int MQThread::startThread(void* handler /* = NULL */, void* ctx /* = NULL */)
+int MQThread::start()
 {
-	int status{ ERR_INVALID_PARAM };
+	int status{ ERR_EXISTED };
 
-	if (handler)
+	if (!threadID)
 	{
-		threadID = zmq_threadstart(reinterpret_cast<zmq_thread_fn*>(handler), ctx);
+		threadID = zmq_threadstart(&MQThread::threadFunc, this);
 		status = threadID ? ERR_OK : ERR_BAD_OPERATE;
 	}
 	
 	return status;
 }
 
-void MQThread::stopThread()
+void MQThread::stop()
 {
 	//必须判断thread句柄是否有效,ZMQ内部没有检查就直接类型转换并调用了stop方法
 	if (threadID)
 	{
 		zmq_threadclose(threadID);
+	}
+}
+
+void MQThread::threadFunc(void* ctx /* = NULL */)
+{
+	MQThread* thread{ reinterpret_cast<MQThread*>(ctx) };
+
+	if (thread)
+	{
+		thread->process();
 	}
 }
 

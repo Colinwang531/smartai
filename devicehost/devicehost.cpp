@@ -1,6 +1,8 @@
 // devicehost.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include <signal.h>
+#include <csignal>
 #include <windows.h>
 #include <process.h>
 #include "boost/bind.hpp"
@@ -29,6 +31,8 @@ using MQModel = NS(model, 1)::MQModel;
 #include "BaseHelmetDll.h"
 #include "BasePhoneDll.h"
 #include "BaseSleepDll.h"
+#include "BaseFightDll.h"
+#include "BaseFaceDll.h"
 
 typedef enum tagAIAlgo_t
 {
@@ -37,6 +41,7 @@ typedef enum tagAIAlgo_t
 	SLEEP,
 	FIGHT,
 	OFF_DUTY,
+	FACE,
 	ALGO_NONE
 }AIAlgo;
 
@@ -48,13 +53,13 @@ typedef struct tagAIAlgoContext_t
 AIAlgoContext algoContext[ALGO_NONE];
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
-//All live view channels are here.
-std::vector<boost::shared_ptr<Livestream>> livestreamGroup;
 CHelmetAlgorithmClass helmetDetectAlgo;
 CPhoneAlgorithmClass phoneDectectAlgo;
 CSleepAlgorithmClass sleepDectectAlgo;
+CFightAlgorithmClass fightDectectAlgo;
+CFaceAlgorithmClass faceDectectAlgo;
 BGR24FrameCache bgr24FrameCaches[ALGO_NONE];
-int helmetMessageNumber = 0, phoneMessageNumber = 0, sleepMessageNumber = 0;
+int helmetMessageNumber = 0, phoneMessageNumber = 0, sleepMessageNumber = 0, fightMessageNumber = 0;
 
 static void sleepDectctAlgo(const int w = 1920, const int h = 1080, const int channel = 3)
 {
@@ -85,7 +90,7 @@ static void sleepDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 			{
 				AlarmMessage message;
 				message.setMessageData(
-					0, 1920, 1080, "Alarm", alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
+					SLEEP, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
 				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send SLEEP alarm " << ++sleepMessageNumber;
 			}
@@ -124,7 +129,7 @@ static void phoneDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 			{
 				AlarmMessage message;
 				message.setMessageData(
-					0, 1920, 1080, "Alarm", alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
+					PHONE, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
 				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send PHONE alarm " << ++phoneMessageNumber;
 			}
@@ -163,12 +168,51 @@ static void helmetDectctAlgo(const int w = 1920, const int h = 1080, const int c
 			{
 				AlarmMessage message;
 				message.setMessageData(
-					0, 1920, 1080, "Alarm", alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
+					HELMET, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
 				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send HELMET alarm " << ++helmetMessageNumber;
 			}
 
 			bgr24FrameCaches[HELMET].pop_front();
+		}
+	}
+}
+
+static void fightDectctAlgo(const int w = 1920, const int h = 1080, const int channel = 3)
+{
+	while (1)
+	{
+		BGR24Frame bgr24Frame;
+		bool status{ bgr24FrameCaches[FIGHT].front(bgr24Frame) };
+
+		if (status)
+		{
+			FeedBackFight fightFeedback{};
+			fightDectectAlgo.MainProcFunc((unsigned char*)bgr24Frame.frameData, fightFeedback);
+			std::vector<AlarmInfo> alarmInfos;
+			AlarmInfo alarmInfo{};
+
+			for (int i = 0; i != fightFeedback.vecShowInfo.size(); ++i)
+			{
+				alarmInfo.type = HELMET;
+				alarmInfo.x = fightFeedback.vecShowInfo[i].rRect.x;
+				alarmInfo.y = fightFeedback.vecShowInfo[i].rRect.y;
+				alarmInfo.w = fightFeedback.vecShowInfo[i].rRect.width;
+				alarmInfo.h = fightFeedback.vecShowInfo[i].rRect.height;
+				alarmInfo.label = fightFeedback.vecShowInfo[i].nLabel;
+				alarmInfos.push_back(alarmInfo);
+			}
+
+			if (0 < alarmInfos.size())
+			{
+				AlarmMessage message;
+				message.setMessageData(
+					FIGHT, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
+				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
+				LOG(INFO) << "Send FIGHT alarm " << ++fightMessageNumber;
+			}
+
+			bgr24FrameCaches[FIGHT].pop_front();
 		}
 	}
 }
@@ -239,6 +283,27 @@ static void initHelmetAlgo(const std::string path, const int w = 1920, const int
 	}
 }
 
+static void initFightAlgo(const std::string path, const int w = 1920, const int h = 1080, const int channel = 3)
+{
+	const std::string cfgFile{ (boost::format("%s\\model\\fight.cfg") % path).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\fight.weights") % path).str() };
+	StruInitParams ap{};
+	ap.detectThreshold = 0.995f;
+	ap.trackThreshold = 0.2f;
+	ap.cfgfile = (char*)cfgFile.c_str();
+	ap.weightFile = (char*)weightFile.c_str();
+
+	const bool status{ fightDectectAlgo.InitAlgoriParam(w, h, channel, ap) };
+	if (!status)
+	{
+		LOG(ERROR) << "Initialize algo [ Fight ] failed : " << ap.cfgfile << " : " << ap.weightFile << ".";
+	}
+	else
+	{
+		LOG(INFO) << "Initialize algo [ Fight ] success : " << ap.cfgfile << " : " << ap.weightFile << ".";
+	}
+}
+
 static unsigned int __stdcall algoWorkerThreadFunc(void* ctx = NULL)
 {
 	AIAlgoContext* algoctx{ reinterpret_cast<AIAlgoContext*>(ctx) };
@@ -257,6 +322,7 @@ static unsigned int __stdcall algoWorkerThreadFunc(void* ctx = NULL)
 	}
 	else if (FIGHT == algoctx->algo)
 	{
+		fightDectctAlgo();
 	}
 	else if (OFF_DUTY == algoctx->algo)
 	{
@@ -271,6 +337,12 @@ static void initAlgo(void)
 	initHelmetAlgo(exePath);
 	initPhoneAlgo(exePath);
 	initSleepAlgo(exePath);
+	initFightAlgo(exePath);
+}
+
+static void signalHandler(int signal)
+{
+	LOG(WARNING) << "Catching signal number " << signal;
 }
 
 int main(int argc, char* argv[])
@@ -285,6 +357,21 @@ int main(int argc, char* argv[])
 		"./"
 #endif
 	);
+
+// #define SIGINT          2   // interrupt
+// #define SIGILL          4   // illegal instruction - invalid function image
+// #define SIGFPE          8   // floating point exception
+// #define SIGSEGV         11  // segment violation
+// #define SIGTERM         15  // Software termination signal from kill
+// #define SIGBREAK        21  // Ctrl-Break sequence
+// #define SIGABRT         22  // abnormal termination triggered by abort call
+//	signal(SIGINT, signalHandler);
+// 	signal(SIGILL, signalHandler);
+// 	signal(SIGFPE, signalHandler);
+// 	signal(SIGSEGV, signalHandler);
+// 	signal(SIGTERM, signalHandler);
+// 	signal(SIGBREAK, signalHandler);
+// 	signal(SIGABRT, signalHandler);
 
 	initAlgo();
 

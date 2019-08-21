@@ -6,8 +6,9 @@ using HikvisionSDKDecoder = NS(decoder, 1)::HikvisionSDKDecoder;
 using YV12ToBGR24 = NS(scaler, 1)::YV12ToBGR24;
 using YV12ToJPEG = NS(encoder, 1)::YV12ToJPEG;
 
-DigitCameraLivestream::DigitCameraLivestream(BGR24FrameCache* cache /* = NULL */, const int algo /* = 0 */)
-	: HikvisionLivestream(), bgr24FrameCache{ cache }, algoMask{ algo }
+DigitCameraLivestream::DigitCameraLivestream(
+	const std::string ip, BGR24FrameCache* cache /* = NULL */, const int algo /* = 0 */)
+	: HikvisionLivestream(), bgr24FrameCache{ cache }, algoMask{ algo }, NVRIp{ ip }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -71,23 +72,33 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 		{
 			if (algoMask & 0x01)
 			{
-				bgr24FrameCache[0].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				bgr24FrameCache[0].insert(
+					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(), 
+					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
 			}
 			if ((algoMask >> 1) & 0x01)
 			{
-				bgr24FrameCache[1].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				bgr24FrameCache[1].insert(
+					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
+					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
 			}
 			if ((algoMask >> 2) & 0x01)
 			{
-				bgr24FrameCache[2].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				bgr24FrameCache[2].insert(
+					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
+					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
 			}
 			if ((algoMask >> 3) & 0x01)
 			{
-				bgr24FrameCache[3].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				bgr24FrameCache[3].insert(
+					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
+					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
 			}
 			if ((algoMask >> 4) & 0x01)
 			{
-				bgr24FrameCache[4].insert(bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				bgr24FrameCache[4].insert(
+					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
+					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
 			}
 		}
 

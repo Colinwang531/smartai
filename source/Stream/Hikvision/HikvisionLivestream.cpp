@@ -4,7 +4,7 @@
 
 NS_BEGIN(stream, 1)
 
-HikvisionLivestream::HikvisionLivestream() : Livestream()
+HikvisionLivestream::HikvisionLivestream() : Livestream(), channelIndex{ -1 }
 {}
 
 HikvisionLivestream::~HikvisionLivestream()
@@ -16,6 +16,7 @@ int HikvisionLivestream::open(const int userID /* = -1 */, const int streamNo /*
 	{
 		NET_DVR_PREVIEWINFO previewInfo{ 0 };
 		previewInfo.lChannel = streamNo;
+		channelIndex = streamNo;
 		livestreamID = NET_DVR_RealPlay_V40(
 			userID, &previewInfo, &HikvisionLivestream::livestreamDataCaptureCallback, this);
 	}

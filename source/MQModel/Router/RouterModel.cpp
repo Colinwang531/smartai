@@ -42,10 +42,9 @@ int RouterModel::deinitializeModel()
 	if (router)
 	{
 		ctx.closesocket(router);
-		MQModel::deinitializeModel();
 	}
 
-	return ERR_OK;
+	return MQModel::deinitializeModel();
 }
 
 int RouterModel::send(const char* data /* = NULL */, const int dataBytes /* = 0 */)

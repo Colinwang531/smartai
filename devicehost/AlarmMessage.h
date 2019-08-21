@@ -28,8 +28,10 @@ public:
     ~AlarmMessage(void);
 
     int setMessageData(
-        const int type, const int w, const int h, const char* name, 
-		const std::vector<AlarmInfo> alarmInfos, const char* jpeg, const int jpegBytes);
+        const int type, const int w, const int h,
+		const char* NVRIp, const int channelIndex,
+		const std::vector<AlarmInfo> alarmInfos, 
+		const char* jpeg, const int jpegBytes);
     inline char* getMessageData(void) const
     {
         return message;

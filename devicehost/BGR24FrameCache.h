@@ -11,6 +11,8 @@ typedef struct tagBGR24Frame_t
 	int frameBytes;
 	char* jpegData;
 	int jpegBytes;
+	int channelIndex;
+	char* NVRIp;
 }BGR24Frame;
 
 class BGR24FrameCache
@@ -20,6 +22,7 @@ public:
 	~BGR24FrameCache();
 
 	int insert(
+		const int channel = -1, const char* ip = NULL, const int ipBytes = 0,
 		const char* frame = NULL, const int frameBytes = 0,
 		const char* jpeg = NULL, const int jpegBytes = 0);
 	void pop_front();

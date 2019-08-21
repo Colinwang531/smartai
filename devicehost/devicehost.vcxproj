@@ -90,7 +90,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;_WINSOCK_DEPRECATED_NO_WARNINGS;__STDC_CONSTANT_MACROS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;_WINSOCK_DEPRECATED_NO_WARNINGS;WIN32_LEAN_AND_MEAN;__STDC_CONSTANT_MACROS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)glog-master;$(SolutionDir)libzmq-master\include;$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\include;$(SolutionDir)include;$(SolutionDir)lib\algo\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -98,7 +98,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\hiksdk\x64\HCNetSDKCom;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\lib\x64;$(SolutionDir)lib\algo\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -295,9 +295,11 @@
     <ClCompile Include="..\source\MessageQueue\MQReceiver.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQSender.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQThread.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQTransfer.cpp" />
     <ClCompile Include="..\source\MQModel\MQModel.cpp" />
     <ClCompile Include="..\source\MQModel\Publisher\PublisherModel.cpp" />
     <ClCompile Include="..\source\MQModel\Router\RouterModel.cpp" />
+    <ClCompile Include="..\source\MQModel\Transfer\TransferModel.cpp" />
     <ClCompile Include="..\source\Stream\AVStream.cpp" />
     <ClCompile Include="..\source\Stream\Hikvision\HikvisionLivestream.cpp" />
     <ClCompile Include="..\source\Stream\Livestream.cpp" />
@@ -347,9 +349,11 @@
     <ClInclude Include="..\include\MessageQueue\MQReceiver.h" />
     <ClInclude Include="..\include\MessageQueue\MQSender.h" />
     <ClInclude Include="..\include\MessageQueue\MQThread.h" />
+    <ClInclude Include="..\include\MessageQueue\MQTransfer.h" />
     <ClInclude Include="..\include\MQModel\MQModel.h" />
     <ClInclude Include="..\include\MQModel\Publisher\PublisherModel.h" />
     <ClInclude Include="..\include\MQModel\Router\RouterModel.h" />
+    <ClInclude Include="..\include\MQModel\Transfer\TransferModel.h" />
     <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="..\include\Stream\AVStream.h" />
     <ClInclude Include="..\include\Stream\Hikvision\HikvisionLivestream.h" />

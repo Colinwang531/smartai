@@ -4,9 +4,7 @@
 
 NS_BEGIN(mq, 1)
 
-void* MQContext::ctx = NULL;
-
-MQContext::MQContext()
+MQContext::MQContext() : ctx{ NULL }
 {}
 
 MQContext::~MQContext()

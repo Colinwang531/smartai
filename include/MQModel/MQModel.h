@@ -13,10 +13,7 @@
 #ifndef MQ_MODEL_H
 #define MQ_MODEL_H
 
-#include "MessageQueue/MQContext.h"
-using MQContext = NS(mq, 1)::MQContext;
-#include "MessageQueue/MQThread.h"
-using MQThread = NS(mq, 1)::MQThread;
+#include "predef.h"
 
 NS_BEGIN(model, 1)
 
@@ -27,22 +24,12 @@ public:
 	virtual ~MQModel(void);
 
 public:
-	int start(const unsigned char threadNumber = 1);
+	int start(void);
 	void stop(void);
-	virtual int send(const char* data = NULL, const int dataBytes = 0);
 
 protected:
-	virtual int initializeModel(void);
-	virtual int deinitializeModel(void);
-	virtual void workerThreadProcess(void);
-
-private:
-	static void workerThreadHandler(void* ctx = NULL);
-
-protected:
-	MQContext ctx;
-	MQThread workerThread;
-	bool stopped;
+	virtual int initializeModel(void) = 0;
+	virtual int deinitializeModel(void) = 0;
 };//class TransferModel
 
 NS_END

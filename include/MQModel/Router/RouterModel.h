@@ -32,7 +32,7 @@ protected:
 	void workerThreadProcess(void) override;
 	virtual void gotMessageData(const char* data = NULL, const int dataBytes = 0);
 
-private:
+public:
 	void* router;
 	const unsigned short routerListenPort;
 	boost::mutex mtx;
