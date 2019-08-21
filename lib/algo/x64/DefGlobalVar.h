@@ -16,11 +16,11 @@ typedef struct _StruInitParams
 	_StruInitParams()
 	{
 		sleepTime = 10;
-		detectThreshold = (float)0.2;
-		trackThreshold = (float)0.3;
+		detectThreshold = 0.2f;
+		trackThreshold = 0.3f;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-//		savePath = "D:/SavePath/";
+		savePath = (char*)"";// "D:/SavePath/";
 	}
 }StruInitParams;
 
@@ -129,3 +129,34 @@ typedef struct _FeedBackSleep
 	}
 }FeedBackSleep;
 #endif
+
+
+// 用于打架检测项目参数
+#ifndef _FEEDBACKFIGHT_H
+#define _FEEDBACKFIGHT_H
+typedef struct _FeedBackFight
+{
+	vector<StruResult> vecShowInfo;        // 用于显示
+	map<int, StruMemoryInfo> mapMemory;    // 有效目标的存储
+	_FeedBackFight() {
+		vecShowInfo.clear();
+		mapMemory.clear();
+	}
+}FeedBackFight;
+#endif
+
+
+//特征长度
+#define FACE_FEATURE_LENGTH 1032
+
+//注册人脸
+typedef struct _StruFaceInfo
+{
+	int faceId;
+	StruRect faceRect;
+	unsigned char faceFeature[FACE_FEATURE_LENGTH];
+	_StruFaceInfo()
+	{
+		memset(faceFeature, 0, FACE_FEATURE_LENGTH);
+	}
+}StruFaceInfo;

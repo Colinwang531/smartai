@@ -14,7 +14,7 @@ class DLL_EXPORT CHelmetAlgorithmClass
 {
 public:
 	CHelmetAlgorithmClass();
-	~CHelmetAlgorithmClass();
+	virtual ~CHelmetAlgorithmClass();
 
 	// ≥ı ºªØÀ„∑®
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);

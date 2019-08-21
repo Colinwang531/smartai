@@ -1,5 +1,5 @@
-#ifndef __PHONEMODEL_H
-#define __PHONEMODEL_H
+#ifndef __FIGHTMODEL_H
+#define __FIGHTMODEL_H
 
 #include "DefGlobalVar.h"
 #include <vector>
@@ -10,23 +10,23 @@ using namespace std;
 #define DLL_EXPORT __declspec(dllexport)
 #endif 
 
-class DLL_EXPORT CPhoneAlgorithmClass
+class DLL_EXPORT CFightAlgorithmClass
 {
 public:
-	CPhoneAlgorithmClass();
-	virtual ~CPhoneAlgorithmClass();
+	CFightAlgorithmClass();
+	virtual ~CFightAlgorithmClass();
 
 	// 初始化算法
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
 	// 算法检测跟踪
-	virtual bool MainProcFunc(unsigned char *pClrImg, FeedBackPhone &objFeed);
+	virtual bool MainProcFunc(unsigned char *pClrImg, FeedBackFight &objFeed);
 
 	// 算法后处理
-	virtual bool PostProcessFunc(FeedBackPhone &objFeed);
+	virtual bool PostProcessFunc(FeedBackFight &objFeed);
 
 private:
-	CPhoneAlgorithmClass *m_pTreat;
+	CFightAlgorithmClass *m_pTreat;
 };
 
 

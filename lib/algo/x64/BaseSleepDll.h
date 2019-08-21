@@ -14,12 +14,12 @@ class DLL_EXPORT CSleepAlgorithmClass
 {
 public:
 	CSleepAlgorithmClass();
-	~CSleepAlgorithmClass();
+	virtual ~CSleepAlgorithmClass();
 
-	// 初始化算法,可以放在线程中执行
+	// 初始化算法
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
-	// 算法检测跟踪,放在另一线程，
+	// 算法检测跟踪
 	virtual bool MainProcFunc(unsigned char *pClrImg, FeedBackSleep &objFeed);
 
 	// 算法后处理
