@@ -34,16 +34,7 @@ int HikvisionNVR::login(
 //	userID = NET_DVR_Login_V40(&userLoginInfo, &deviceInfoV40);
 
 	NET_DVR_DEVICEINFO_V30 deviceInfoV30{ 0 };
-	userID = NET_DVR_Login_V30((char*)ip, port, (char*)name, (char*)password, &deviceInfoV30);
-
-	if (-1 < userID)
-	{
-		//Do not care about return value.
-		std::vector<DigitCameraParameters> parameters;
-		getDigitCameraParameters(ip, parameters);
-	}
-
-	return userID;
+	return NET_DVR_Login_V30((char*)ip, port, (char*)name, (char*)password, &deviceInfoV30);
 }
 
 int HikvisionNVR::logout()
@@ -51,15 +42,15 @@ int HikvisionNVR::logout()
 	return NET_DVR_Logout(userID);
 }
 
-int HikvisionNVR::getDigitCameraParameters(
-	const std::string NVRIp, std::vector<DigitCameraParameters>& parameters)
+int HikvisionNVR::getDigitCameras(
+	const int userID, const char* NVRIp, std::vector<DigitCamera>& cameras)
 {
 	int status{ ERR_BAD_OPERATE };
 	LONG groupNo = 0;
 	DWORD dwReturned = 0;
 	//Get digital channel parameters
-	NET_DVR_IPPARACFG_V40 IPAccessCfgV40;
-	memset(&IPAccessCfgV40, 0, sizeof(NET_DVR_IPPARACFG_V40));
+	NET_DVR_IPPARACFG_V40 IPAccessCfgV40{ 0 };
+//	memset(&IPAccessCfgV40, 0, sizeof(NET_DVR_IPPARACFG_V40));
 
 	if (NET_DVR_GetDVRConfig(userID, NET_DVR_GET_IPPARACFG_V40, groupNo, &IPAccessCfgV40, sizeof(NET_DVR_IPPARACFG_V40), &dwReturned))
 	{
@@ -76,11 +67,11 @@ int HikvisionNVR::getDigitCameraParameters(
 						BYTE byIPIDHigh{ IPAccessCfgV40.struStreamMode[i].uGetStream.struChanInfo.byIPIDHigh };
 						int iDevInfoIndex{ byIPIDHigh * 256 + byIPID - 1 - groupNo * 64 };
 
-						DigitCameraParameters param;
-						param.NVRIp = NVRIp;
-						param.cameraIp = IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4;
-						param.cameraIndex = (int)(IPAccessCfgV40.dwStartDChan + i);
-						parameters.push_back(param);
+						DigitCamera camera;
+						camera.NVRIp = NVRIp;
+						camera.cameraIp = IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4;
+						camera.cameraIndex = (int)(IPAccessCfgV40.dwStartDChan + i);
+						cameras.push_back(camera);
 					}
 
 					break;

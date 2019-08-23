@@ -25,14 +25,16 @@ public:
 	HikvisionNVR(void);
 	virtual ~HikvisionNVR(void);
 
+public:
+	int getDigitCameras(
+		const int userID, const char* NVRIp, std::vector<DigitCamera>& cameras) override;
+
 protected:
 	int login(
 		const char* name = NULL, const char* password = NULL,
 		const char* ip = NULL, const unsigned short port = 0,
 		const bool sync = true) override;
 	int logout(void) override;
-	int getDigitCameraParameters(
-		const std::string NVRIp, std::vector<DigitCameraParameters>& parameters) override;
 };//class HikvisionNVR
 
 NS_END

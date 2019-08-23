@@ -13,8 +13,6 @@
 #ifndef TRANSFER_MODEL_H
 #define TRANSFER_MODEL_H
 
-//#include "zmq.h"
-//#include "boost/thread/condition.hpp"
 #include "MQModel/MQModel.h"
 #include "MessageQueue/MQThread.h"
 using MQThread = NS(mq, 1)::MQThread;
@@ -30,31 +28,15 @@ public:
 	virtual ~TransferModel(void);
 
 protected:
-	int initializeModel(void) override;
-	int deinitializeModel(void) override;
+	int initializeModel(MQContext& ctx) override;
+	int deinitializeModel(MQContext& ctx) override;
 	void process(void) override;
-// 	virtual void gotMessageData(const char* request = NULL, const int requestBytes = 0) = 0;
-// 	int sendReply(const char* msg = NULL, const int msgBytes = 0);
 
-// private:
-// 	static void workerThreadHandler(void* ctx = NULL);
-
-public:
+protected:
 	void* router;
 	void* dealer;
 	const unsigned short routerListenPort;
 	const std::string dealerListenUrl;
-// 	boost::mutex mtx;
-// 	boost::condition condition;
-// 
-// 	enum
-// 	{
-// 		WORKER_THREAD_NUM = 1
-// 	};
-// 	void* workerThread[WORKER_THREAD_NUM];
-// 	void* workerSocket;
-// 	zmq_msg_t replyIdentity;
-// 	zmq_msg_t replayDelimiter;
 };//class TransferModel
 
 NS_END

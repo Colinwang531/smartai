@@ -13,6 +13,7 @@
 #ifndef MQ_THREAD_H
 #define MQ_THREAD_H
 
+#include "boost/thread/condition.hpp"
 #include "predef.h"
 
 NS_BEGIN(mq, 1)
@@ -35,6 +36,10 @@ private:
 
 protected:
 	void* threadID;
+	bool stopped;
+	//Guarantee work thread exited safely. 
+	boost::mutex mtx;
+	boost::condition condition;
 };//class MQThread
 
 NS_END

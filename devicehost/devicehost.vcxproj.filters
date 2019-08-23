@@ -31,9 +31,6 @@
     <Filter Include="Source Files\zmq">
       <UniqueIdentifier>{08d4b6ce-d880-48b9-8d18-3b09264fcf80}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MQModule">
-      <UniqueIdentifier>{f84bb6ef-760a-4d46-afbd-726207e4e373}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\MQModel">
       <UniqueIdentifier>{085d0504-4e0c-4377-9502-b2eb690d0659}</UniqueIdentifier>
     </Filter>
@@ -124,20 +121,23 @@
     <Filter Include="Header Files\MQModel\Publisher">
       <UniqueIdentifier>{5014d645-1062-4136-9f5c-e668ecf3b81f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\MQModel\Router">
-      <UniqueIdentifier>{5bdf73d6-b924-46b6-b4fb-f81b841954d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MQModule\Publisher">
-      <UniqueIdentifier>{418356a7-ad23-4238-ae8d-accccdf4447e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\MQModule\Router">
-      <UniqueIdentifier>{8a3b81d2-7a99-440f-8bbe-b7e6e25d079f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\MQModel\Transfer">
       <UniqueIdentifier>{e83a3e20-4ba8-4e78-a401-826d086dcce5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\MQModule\Transfer">
+    <Filter Include="Header Files\MQModel\Worker">
+      <UniqueIdentifier>{a18f441d-565e-4ec0-9a71-00a3249879be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MQModel">
+      <UniqueIdentifier>{f84bb6ef-760a-4d46-afbd-726207e4e373}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MQModel\Publisher">
+      <UniqueIdentifier>{418356a7-ad23-4238-ae8d-accccdf4447e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MQModel\Transfer">
       <UniqueIdentifier>{ab3575f8-e793-4409-8546-be1b6e013f04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MQModel\Worker">
+      <UniqueIdentifier>{54ca020e-e181-486f-aaa4-37dbff082899}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -586,24 +586,27 @@
       <Filter>Source Files\MQ</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MQModel\MQModel.cpp">
-      <Filter>Source Files\MQModule</Filter>
+      <Filter>Source Files\MQModel</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MessageQueue\MQReceiver.cpp">
       <Filter>Source Files\MQ</Filter>
     </ClCompile>
-    <ClCompile Include="DeviceHostServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MQModel\Router\RouterModel.cpp">
-      <Filter>Source Files\MQModule\Router</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MQModel\Publisher\PublisherModel.cpp">
-      <Filter>Source Files\MQModule\Publisher</Filter>
+      <Filter>Source Files\MQModel\Publisher</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MQModel\Transfer\TransferModel.cpp">
-      <Filter>Source Files\MQModule\Transfer</Filter>
+      <Filter>Source Files\MQModel\Transfer</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MessageQueue\MQTransfer.cpp">
+      <Filter>Source Files\MQ</Filter>
+    </ClCompile>
+    <ClCompile Include="AsynchronousServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MQModel\Worker\WorkerModel.cpp">
+      <Filter>Source Files\MQModel\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MessageQueue\MQConnector.cpp">
       <Filter>Source Files\MQ</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1160,12 +1163,6 @@
     <ClInclude Include="..\include\MessageQueue\MQReceiver.h">
       <Filter>Header Files\MQ</Filter>
     </ClInclude>
-    <ClInclude Include="DeviceHostServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MQModel\Router\RouterModel.h">
-      <Filter>Header Files\MQModel\Router</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MQModel\Publisher\PublisherModel.h">
       <Filter>Header Files\MQModel\Publisher</Filter>
     </ClInclude>
@@ -1173,6 +1170,15 @@
       <Filter>Header Files\MQModel\Transfer</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MessageQueue\MQTransfer.h">
+      <Filter>Header Files\MQ</Filter>
+    </ClInclude>
+    <ClInclude Include="AsynchronousServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MQModel\Worker\WorkerModel.h">
+      <Filter>Header Files\MQModel\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MessageQueue\MQConnector.h">
       <Filter>Header Files\MQ</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,4 @@
-#include "zmq.h"
-#include "error.h"
+#include "MessageQueue/MQContext.h"
 #include "MQModel/MQModel.h"
 
 NS_BEGIN(model, 1)
@@ -10,14 +9,14 @@ MQModel::MQModel()
 MQModel::~MQModel()
 {}
 
-int MQModel::start()
+int MQModel::start(MQContext& ctx)
 {
-	return initializeModel();
+	return initializeModel(ctx);
 }
 
-void MQModel::stop()
+void MQModel::stop(MQContext& ctx)
 {
-	deinitializeModel();
+	deinitializeModel(ctx);
 }
 
 NS_END

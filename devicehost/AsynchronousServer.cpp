@@ -9,54 +9,75 @@
 #include "glog/logging.h"
 #endif//_WINDOWS
 #include "error.h"
-#include "DeviceHostServer.h"
+#include "MQModel/Worker/WorkerModel.h"
+using WorkerModel = NS(model, 1)::WorkerModel;
+#include "AsynchronousServer.h"
 
-DeviceHostServer::DeviceHostServer(
+AsynchronousServer::AsynchronousServer(
 	const unsigned short port /* = 60532 */, BGR24FrameCache* caches /* = NULL */)
 	: TransferModel(port), bgr24FrameCaches{ caches }
 {}
 
-DeviceHostServer::~DeviceHostServer()
+AsynchronousServer::~AsynchronousServer()
 {}
 
-void DeviceHostServer::gotMessageData(const char* request /* = NULL */, const int requestBytes /* = 0 */)
+int AsynchronousServer::initializeModel(MQContext& ctx)
 {
-	if (request && 0 < requestBytes)
+	int status{ TransferModel::initializeModel(ctx) };
+
+	if (ERR_OK == status)
 	{
-		int* type{ (int*)(request) };
-		int* packlen{ (int*)(request + 4) };
-		if (1 == *type)
+		for (int i = 0; i != WORKER_THREAD_NUMBER; ++i)
 		{
-			setNVRDevice(request + 8, *packlen);
-		}
-		else if (3 == *type)
-		{
-			setCamera(request + 8, *packlen);
+			boost::shared_ptr<MQModel> workerModelPtr{
+				boost::make_shared<WorkerModel>(
+					"inproc://WorkerProcess", 
+					boost::bind(&AsynchronousServer::getRequestMessageNotifyHandler, this, _1, _2)) };
+			if (workerModelPtr && ERR_OK == workerModelPtr->start(ctx))
+			{
+				workerModels.push_back(workerModelPtr);
+			}
 		}
 	}
+
+	return status;
 }
 
-int DeviceHostServer::setNVRDevice(const char* data /* = NULL */, const int dataBytes /* = 0 */)
+int AsynchronousServer::deinitializeModel(MQContext& ctx)
 {
+	for (std::vector<MQModelPtr>::iterator it = workerModels.begin(); it != workerModels.end(); ++it)
+	{
+		(*it)->stop(ctx);
+	}
+
+	return TransferModel::deinitializeModel(ctx);
+}
+
+char* AsynchronousServer::setNVR(
+	const long long seqenceNo /* = 0 */, const char* request /* = NULL */, const int requestBytes /* = 0 */)
+{
+	char* reply = NULL;
 	//Reply error message.
 	int result{ 0 };
-	int* flag{ (int*)data };
-	int* iplen{ (int*)(data + 4) };
-	const std::string ipaddr(data + 8, *iplen);
+	int* flag{ (int*)request };
+	int* iplen{ (int*)(request + 4) };
+	const std::string ipaddr(request + 8, *iplen);
 
 	if (1 == *flag)
 	{
 		int pos{ 8 + *iplen };
-		int* port{ (int*)(data + pos) };
-		int* passwdlen{ (int*)(data + pos + 4) };
-		const std::string password(data + pos + 8, *passwdlen);
-		pos += (8 + *passwdlen);
-		int* namelen{ (int*)(data + pos) };
-		const std::string name(data + pos + 4, *namelen);
+		int* port{ (int*)(request + pos) };
+		pos += 4;
+		int* passwdlen{ (int*)(request + pos) };
+		pos += 4;
+		const std::string password(request + pos, *passwdlen);
+		pos += *passwdlen;
+		int* namelen{ (int*)(request + pos) };
+		pos += 4;
+		const std::string name(request + pos, *namelen);
+		pos += *namelen;
 
-		boost::shared_ptr<HikvisionDevice> devicePtr{
-			boost::make_shared<Hikvision7xxxNVR>(
-				boost::bind(&DeviceHostServer::digitCameraParametersNotifyHandler, this, _1, _2)) };
+		boost::shared_ptr<HikvisionDevice> devicePtr{ boost::make_shared<Hikvision7xxxNVR>() };
 		if (devicePtr)
 		{
 			const int userID{ devicePtr->login(name.c_str(), password.c_str(), ipaddr.c_str(), *port) };
@@ -66,15 +87,20 @@ int DeviceHostServer::setNVRDevice(const char* data /* = NULL */, const int data
 				result = 1;
 				hikvisionNVRDevices.insert(std::make_pair(ipaddr, devicePtr));
 				LOG(INFO) << "Login HIKVISION NVR " << ipaddr << " user ID " << userID;
+				
+				boost::shared_ptr<Hikvision7xxxNVR> nvr{
+					boost::dynamic_pointer_cast<Hikvision7xxxNVR>(devicePtr) };
+				std::vector<DigitCamera> cameras;
+				nvr->getDigitCameras(userID, ipaddr.c_str(), cameras);
+				reply = replySetNVR(cameras, ipaddr.c_str(), seqenceNo);
 			}
 			else
 			{
-				char replyMsg[12]{};
-				*((int*)replyMsg) = 2;
-				*((int*)(replyMsg + 4)) = 4;
-				*((int*)(replyMsg + 8)) = result;
-				TransferModel::sendReply(replyMsg, 12);
-
+				reply = new char[20];
+				*((long long*)reply) = seqenceNo;
+				*((int*)(reply + 8)) = 2;
+				*((int*)(reply + 12)) = 4;
+				*((int*)(reply + 16)) = result;
 				LOG(WARNING) << "Login HIKVISION NVR " << ipaddr << " user ID " << userID;
 			}
 		}
@@ -94,22 +120,23 @@ int DeviceHostServer::setNVRDevice(const char* data /* = NULL */, const int data
 			LOG(INFO) << "Logout HIKVISION NVR failed " << ipaddr;
 		}
 
-		char replyMsg[12]{};
-		*((int*)replyMsg) = 2;
-		*((int*)(replyMsg + 4)) = 4;
-		*((int*)(replyMsg + 8)) = result;
-		TransferModel::sendReply(replyMsg, 12);
+		reply = new char[20];
+		*((long long*)reply) = seqenceNo;
+		*((int*)(reply + 8)) = 2;
+		*((int*)(reply + 12)) = 4;
+		*((int*)(reply + 16)) = result;
 	}
 
-	return ERR_OK;
+	return reply;
 }
 
-int DeviceHostServer::setCamera(const char* data /* = NULL */, const int dataBytes /* = 0 */)
+char* AsynchronousServer::setCamera(
+	const long long seqenceNo /* = 0 */, const char* request /* = NULL */, const int requestBytes /* = 0 */)
 {
-	int* NVRIpLen{ (int*)data };
-	const std::string ipaddr(data + 4, *NVRIpLen);
-	int* cameraIndex{ (int*)(data + 4 + *NVRIpLen) };
-	int* algoFlag{ (int*)(data + 8 + *NVRIpLen) };
+	int* NVRIpLen{ (int*)request };
+	const std::string ipaddr(request + 4, *NVRIpLen);
+	int* cameraIndex{ (int*)(request + 4 + *NVRIpLen) };
+	int* algoFlag{ (int*)(request + 8 + *NVRIpLen) };
 	int result{ 0 };
 
 	boost::unordered_map<const std::string, HikvisionNVRDevicePtr>::iterator it{ hikvisionNVRDevices.find(ipaddr) };
@@ -137,6 +164,7 @@ int DeviceHostServer::setCamera(const char* data /* = NULL */, const int dataByt
 			{
 				it->second->close();
 				livestreams.erase(it);
+				result = 1;
 				LOG(INFO) << "Remove live stream " << NVRIpAddr;
 			}
 		}
@@ -146,43 +174,73 @@ int DeviceHostServer::setCamera(const char* data /* = NULL */, const int dataByt
 		LOG(WARNING) << "Can not find NVR device " << ipaddr;
 	}
 
-	char* replyMsg = new char[12];
-	*((int*)replyMsg) = 4;
-	*((int*)(replyMsg + 4)) = 4;
-	*((int*)(replyMsg + 8)) = result;
-	TransferModel::sendReply(replyMsg, 12);
+	char* reply = new char[20];
+	*((long long*)reply) = seqenceNo;
+	*((int*)(reply + 8)) = 3;
+	*((int*)(reply + 12)) = 4;
+	*((int*)(reply + 16)) = result;
 
-	return ERR_OK;
+	return reply;
 }
 
-void DeviceHostServer::digitCameraParametersNotifyHandler(
-	const std::vector<DigitCameraParameters>& parameters, const char* NVRIp /* = NULL */)
+char* AsynchronousServer::replySetNVR(
+	const std::vector<DigitCamera>& cameras, const char* NVRIp /* = NULL */, const long long sequenceNo /* = 0 */)
 {
 	int pos{ 0 };
-	const int messageID{ 2 }, result{ 1 }, NVRIpLen{ (int)strlen(NVRIp) }, cameraNumber{ (int)parameters.size() };
+	const int messageID{ 2 }, result{ 1 }, NVRIpLen{ (int)strlen(NVRIp) }, cameraNumber{ (int)cameras.size() };
 	char* msg = new char[1024 * 1024];
-	memcpy_s(msg, 4, &messageID, 4);
-	memcpy_s(msg + 8, 4, &result, 4);
-	memcpy_s(msg + 12, 4, &NVRIpLen, 4);
-	memcpy_s(msg + 16, NVRIpLen, NVRIp, NVRIpLen);
-	memcpy_s(msg + 16 + NVRIpLen, 4, &cameraNumber, 4);
-	pos += (16 + NVRIpLen);
+	memcpy_s(msg, 8, &sequenceNo, 8);
+	pos += 8;
+	memcpy_s(msg+ pos, 4, &messageID, 4);
+	pos += 8;
+	memcpy_s(msg + pos, 4, &result, 4);
+	pos += 4;
+	memcpy_s(msg + pos, 4, &NVRIpLen, 4);
+	pos += 4;
+	memcpy_s(msg + pos, NVRIpLen, NVRIp, NVRIpLen);
+	pos += NVRIpLen;
 	memcpy_s(msg + pos, 4, &cameraNumber, 4);
 	pos += 4;
 
 	for (int i = 0; i != cameraNumber; ++i)
 	{
-		const int cameraIpLen{ (int)parameters[i].cameraIp.length() }, cameraIndex{ parameters[i].cameraIndex };
+		const int cameraIpLen{ (int)cameras[i].cameraIp.length() }, cameraIndex{ cameras[i].cameraIndex };
 		memcpy_s(msg + pos, 4, &cameraIpLen, 4);
-		memcpy_s(msg + pos + 4, cameraIpLen, parameters[i].cameraIp.c_str(), cameraIpLen);
+		memcpy_s(msg + pos + 4, cameraIpLen, cameras[i].cameraIp.c_str(), cameraIpLen);
 		memcpy_s(msg + pos + 4 + cameraIpLen, 4, &cameraIndex, 4);
 		pos += (8 + cameraIpLen);
 	}
-	memcpy_s(msg + 4, 4, &pos, 4);
+	memcpy_s(msg + 12, 4, &pos, 4);
 
 	char* replyMsg = new char[pos];
 	memcpy_s(replyMsg, pos, msg, pos);
-	TransferModel::sendReply(replyMsg, pos);
+//	TransferModel::sendReply(replyMsg, pos);
 	delete[] msg;
 //	delete[] replyMsg;
+
+	return replyMsg;
+}
+
+char* AsynchronousServer::getRequestMessageNotifyHandler(
+	const char* request /* = NULL */, const int requestBytes /* = 0 */)
+{
+	char* replyMsg = NULL;
+
+	if (request && 0 < requestBytes)
+	{
+		long long* sequence{ (long long*)(request) };
+		int* command{ (int*)(request + 8) };
+		int* packlen{ (int*)(request + 12) };
+
+		if (1 == *command)
+		{
+			replyMsg = setNVR(*sequence, request + 16, *packlen);
+		}
+		else if (3 == *command)
+		{
+			setCamera(*sequence, request + 16, *packlen);
+		}
+	}
+
+	return replyMsg;
 }

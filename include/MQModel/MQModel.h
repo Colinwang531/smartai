@@ -13,7 +13,8 @@
 #ifndef MQ_MODEL_H
 #define MQ_MODEL_H
 
-#include "predef.h"
+#include "MessageQueue/MQContext.h"
+using MQContext = NS(mq, 1)::MQContext;
 
 NS_BEGIN(model, 1)
 
@@ -24,13 +25,13 @@ public:
 	virtual ~MQModel(void);
 
 public:
-	int start(void);
-	void stop(void);
+	int start(MQContext& ctx);
+	void stop(MQContext& ctx);
 
 protected:
-	virtual int initializeModel(void) = 0;
-	virtual int deinitializeModel(void) = 0;
-};//class TransferModel
+	virtual int initializeModel(MQContext& ctx) = 0;
+	virtual int deinitializeModel(MQContext& ctx) = 0;
+};//class MQModel
 
 NS_END
 

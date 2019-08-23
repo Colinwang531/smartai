@@ -44,6 +44,7 @@ public:
 private:
     char* message;
     int messageBytes;
+	static long long sequenceNumber;
 };//class AlarmMessage
 
 #endif//ALARM_MESSAGE_H

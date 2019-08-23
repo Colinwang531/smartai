@@ -290,6 +290,7 @@
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
     <ClCompile Include="..\source\MediaScaler\FFmpeg\YV12ToBGR24.cpp" />
     <ClCompile Include="..\source\MediaScaler\FrameScaler.cpp" />
+    <ClCompile Include="..\source\MessageQueue\MQConnector.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQContext.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQListener.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQReceiver.cpp" />
@@ -298,15 +299,15 @@
     <ClCompile Include="..\source\MessageQueue\MQTransfer.cpp" />
     <ClCompile Include="..\source\MQModel\MQModel.cpp" />
     <ClCompile Include="..\source\MQModel\Publisher\PublisherModel.cpp" />
-    <ClCompile Include="..\source\MQModel\Router\RouterModel.cpp" />
     <ClCompile Include="..\source\MQModel\Transfer\TransferModel.cpp" />
+    <ClCompile Include="..\source\MQModel\Worker\WorkerModel.cpp" />
     <ClCompile Include="..\source\Stream\AVStream.cpp" />
     <ClCompile Include="..\source\Stream\Hikvision\HikvisionLivestream.cpp" />
     <ClCompile Include="..\source\Stream\Livestream.cpp" />
     <ClCompile Include="AlarmMessage.cpp" />
+    <ClCompile Include="AsynchronousServer.cpp" />
     <ClCompile Include="BGR24FrameCache.cpp" />
     <ClCompile Include="devicehost.cpp" />
-    <ClCompile Include="DeviceHostServer.cpp" />
     <ClCompile Include="DigitCameraLivestream.cpp" />
     <ClCompile Include="Hikvision7xxxNVR.cpp" />
   </ItemGroup>
@@ -344,6 +345,7 @@
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
     <ClInclude Include="..\include\MediaScaler\FFmpeg\YV12ToBGR24.h" />
     <ClInclude Include="..\include\MediaScaler\FrameScaler.h" />
+    <ClInclude Include="..\include\MessageQueue\MQConnector.h" />
     <ClInclude Include="..\include\MessageQueue\MQContext.h" />
     <ClInclude Include="..\include\MessageQueue\MQListener.h" />
     <ClInclude Include="..\include\MessageQueue\MQReceiver.h" />
@@ -352,8 +354,8 @@
     <ClInclude Include="..\include\MessageQueue\MQTransfer.h" />
     <ClInclude Include="..\include\MQModel\MQModel.h" />
     <ClInclude Include="..\include\MQModel\Publisher\PublisherModel.h" />
-    <ClInclude Include="..\include\MQModel\Router\RouterModel.h" />
     <ClInclude Include="..\include\MQModel\Transfer\TransferModel.h" />
+    <ClInclude Include="..\include\MQModel\Worker\WorkerModel.h" />
     <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="..\include\Stream\AVStream.h" />
     <ClInclude Include="..\include\Stream\Hikvision\HikvisionLivestream.h" />
@@ -496,8 +498,8 @@
     <ClInclude Include="..\libzmq-master\src\zap_client.hpp" />
     <ClInclude Include="..\libzmq-master\src\zmq_draft.h" />
     <ClInclude Include="AlarmMessage.h" />
+    <ClInclude Include="AsynchronousServer.h" />
     <ClInclude Include="BGR24FrameCache.h" />
-    <ClInclude Include="DeviceHostServer.h" />
     <ClInclude Include="DigitCameraLivestream.h" />
     <ClInclude Include="Hikvision7xxxNVR.h" />
   </ItemGroup>

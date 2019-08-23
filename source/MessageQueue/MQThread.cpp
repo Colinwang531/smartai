@@ -4,7 +4,7 @@
 
 NS_BEGIN(mq, 1)
 
-MQThread::MQThread() : threadID{ NULL }
+MQThread::MQThread() : threadID{ NULL }, stopped{ true }
 {}
 
 MQThread::~MQThread()
@@ -17,6 +17,7 @@ int MQThread::start()
 	if (!threadID)
 	{
 		threadID = zmq_threadstart(&MQThread::threadFunc, this);
+		stopped = false;
 		status = threadID ? ERR_OK : ERR_BAD_OPERATE;
 	}
 	
@@ -25,7 +26,10 @@ int MQThread::start()
 
 void MQThread::stop()
 {
-	//必须判断thread句柄是否有效,ZMQ内部没有检查就直接类型转换并调用了stop方法
+	stopped = true;
+	boost::unique_lock<boost::mutex> lock{ mtx };
+	condition.wait(lock);
+
 	if (threadID)
 	{
 		zmq_threadclose(threadID);
@@ -39,6 +43,7 @@ void MQThread::threadFunc(void* ctx /* = NULL */)
 	if (thread)
 	{
 		thread->process();
+		thread->condition.notify_one();
 	}
 }
 

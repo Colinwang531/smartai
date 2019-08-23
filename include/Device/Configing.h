@@ -19,12 +19,12 @@
 
 NS_BEGIN(device, 1)
 
-typedef struct tagDigitCameraParameters_t
+typedef struct tagDigitCamera_t
 {
 	std::string NVRIp;
 	std::string cameraIp;
 	int cameraIndex;
-}DigitCameraParameters;
+}DigitCamera;
 
 class Configing
 {
@@ -33,8 +33,8 @@ protected:
 	virtual ~Configing(void){}
 
 protected:
-	virtual int getDigitCameraParameters(
-		const std::string NVRIp, std::vector<DigitCameraParameters>& parameters) = 0;
+	virtual int getDigitCameras(
+		const int userID, const char* NVRIp, std::vector<DigitCamera>& cameras) = 0;
 };//class Configing
 
 NS_END

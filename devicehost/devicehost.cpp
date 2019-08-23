@@ -23,9 +23,11 @@ using PTREE = boost::property_tree::ptree;
 #include "error.h"
 #include "Hardware/Cpu.h"
 using CPU = NS(hardware, 1)::Cpu;
+#include "MessageQueue/MQContext.h"
+using MQContext = NS(mq, 1)::MQContext;
 #include "MQModel/Publisher/PublisherModel.h"
 using PublisherModel = NS(model, 1)::PublisherModel;
-#include "DeviceHostServer.h"
+#include "AsynchronousServer.h"
 using MQModel = NS(model, 1)::MQModel;
 #include "AlarmMessage.h"
 #include "BaseHelmetDll.h"
@@ -91,7 +93,9 @@ static void sleepDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 				AlarmMessage message;
 				message.setMessageData(
 					SLEEP, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
+				boost::shared_ptr<PublisherModel> publisherModel{ 
+					boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+				publisherModel->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send SLEEP alarm " << ++sleepMessageNumber;
 			}
 
@@ -130,7 +134,9 @@ static void phoneDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 				AlarmMessage message;
 				message.setMessageData(
 					PHONE, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
+				boost::shared_ptr<PublisherModel> publisherModel{
+					boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+				publisherModel->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send PHONE alarm " << ++phoneMessageNumber;
 			}
 
@@ -169,7 +175,9 @@ static void helmetDectctAlgo(const int w = 1920, const int h = 1080, const int c
 				AlarmMessage message;
 				message.setMessageData(
 					HELMET, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
+				boost::shared_ptr<PublisherModel> publisherModel{
+					boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+				publisherModel->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send HELMET alarm " << ++helmetMessageNumber;
 			}
 
@@ -208,7 +216,9 @@ static void fightDectctAlgo(const int w = 1920, const int h = 1080, const int ch
 				AlarmMessage message;
 				message.setMessageData(
 					FIGHT, w, h, bgr24Frame.NVRIp, bgr24Frame.channelIndex, alarmInfos, bgr24Frame.jpegData, bgr24Frame.jpegBytes);
-				publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
+				boost::shared_ptr<PublisherModel> publisherModel{
+					boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+				publisherModel->send(message.getMessageData(), message.getMessageBytes());
 				LOG(INFO) << "Send FIGHT alarm " << ++fightMessageNumber;
 			}
 
@@ -373,7 +383,8 @@ int main(int argc, char* argv[])
 // 	signal(SIGBREAK, signalHandler);
 // 	signal(SIGABRT, signalHandler);
 
-	initAlgo();
+//	initAlgo();
+	MQContext ctx;
 
 	try
 	{
@@ -383,15 +394,16 @@ int main(int argc, char* argv[])
 		int publisherPortNumber{ rootNode.get_child("Publisher").get<int>("Port") }, 
 			routerPortNumber{ rootNode.get_child("Router").get<int>("Port") }, 
 			cpuCoreNumber{ CPU().getCPUCoreNumber() };
+		ctx.initialize(cpuCoreNumber);
 		boost::shared_ptr<MQModel> publisherPtr{ boost::make_shared<PublisherModel>(publisherPortNumber) };
-		boost::shared_ptr<MQModel> routerPtr{ boost::make_shared<DeviceHostServer>(routerPortNumber, bgr24FrameCaches) };
+		boost::shared_ptr<MQModel> routerPtr{ boost::make_shared<AsynchronousServer>(routerPortNumber, bgr24FrameCaches) };
 
 		if (publisherPtr && routerPtr)
 		{
 			publisherModelPtr.swap(publisherPtr);
 			routerModelPtr.swap(routerPtr);
 
-			if (ERR_OK == publisherModelPtr->start(cpuCoreNumber) && ERR_OK == routerModelPtr->start(cpuCoreNumber))
+			if (ERR_OK == publisherModelPtr->start(ctx) && ERR_OK == routerModelPtr->start(ctx))
 			{
 				LOG(INFO) << "Start publisher port number " << publisherPortNumber << 
 					" and router port number " << routerPortNumber << 
@@ -399,11 +411,11 @@ int main(int argc, char* argv[])
 
 				for (int i = HELMET; i != ALGO_NONE; ++i)
 				{
-					algoContext[i].algo = (AIAlgo)i;
-					HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, &algoWorkerThreadFunc, &algoContext[i], 0, NULL);
-					SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
-					const int maskValue{ 1 << i };
-					SetThreadAffinityMask(handle, maskValue);
+// 					algoContext[i].algo = (AIAlgo)i;
+// 					HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, &algoWorkerThreadFunc, &algoContext[i], 0, NULL);
+// 					SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
+// 					const int maskValue{ 1 << i };
+// 					SetThreadAffinityMask(handle, maskValue);
 				}
 			}
 		}
@@ -416,15 +428,17 @@ int main(int argc, char* argv[])
 
 		if (publisherModelPtr)
 		{
-			publisherModelPtr->stop();
+			publisherModelPtr->stop(ctx);
 			publisherModelPtr.reset();
 		}
 
 		if (routerModelPtr)
 		{
-			routerModelPtr->stop();
+			routerModelPtr->stop(ctx);
 			routerModelPtr.reset();
 		}
+
+		ctx.deinitialize();
 	}
 	catch (std::exception& e)
 	{

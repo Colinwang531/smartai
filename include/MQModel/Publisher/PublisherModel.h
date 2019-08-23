@@ -24,11 +24,15 @@ public:
 	PublisherModel(const unsigned short port = 60531);
 	virtual ~PublisherModel(void);
 
-	int send(const char* data = NULL, const int dataBytes = 0) override;
+	inline void* socket() const
+	{
+		return publisher;
+	}
+	int send(const char* data = NULL, const int dataBytes = 0);
 
 protected:
-	int initializeModel(void) override;
-	int deinitializeModel(void) override;
+	int initializeModel(MQContext& ctx) override;
+	int deinitializeModel(MQContext& ctx) override;
 
 protected:
 	void* publisher;

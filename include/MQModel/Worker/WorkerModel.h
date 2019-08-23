@@ -13,42 +13,31 @@
 #ifndef WORKER_MODEL_H
 #define WORKER_MODEL_H
 
+#include "boost/function.hpp"
 #include "MQModel/MQModel.h"
+#include "MessageQueue/MQThread.h"
+using MQThread = NS(mq, 1)::MQThread;
 
 NS_BEGIN(model, 1)
 
-class WorkerModel
+typedef boost::function<char*(const char*, const int)> GetRequestMessageNotifyHandler;
+
+class WorkerModel : public MQModel, protected MQThread
 {
 public:
-	TerminatorModel(void);
-	virtual ~TerminatorModel(void);
-
-	//	功能 : 启动/停止终端模型
-	//
-	//	参数 : 
-	//			  @ctx [IN] MQ上下文
-	//			  @rAddr [IN] 服务端地址
-	//			  @tid [IN] 终端ID标识
-	//
-	//	返回值 :
-	//
-	//	备注 :
-	//
-	Int32 startModel(MQContext& ctx, const std::string& rAddr, const std::string& tid);
-	void stopModel(MQContext& ctx);
-	Int32 sendMessage(const std::string& msg);
+	WorkerModel(
+		const char* url = "inproc://WorkerProcess", GetRequestMessageNotifyHandler handler = NULL);
+	virtual ~WorkerModel(void);
 
 protected:
-	virtual Int32 connectingDealer(MQContext& ctx, const std::string& rAddr, const std::string& tid);
-// 	int backendListen(std::string&&) override;
-	virtual Int32 sendingMessage(const std::string& msg);
+	int initializeModel(MQContext& ctx) override;
+	int deinitializeModel(MQContext& ctx) override;
+	void process(void) override;
 
 private:
-	static void receiverThreadHandler(HANDLE ctx = nullptr);
-
-private:
-	MQThread receiveDataThread;
-	SOCKET dealerSocket;
+	void* dealer;
+	const std::string dealerListenUrl;
+	GetRequestMessageNotifyHandler getRequestMessageNotifyHandler;
 };//class TerminatorModel
 
 NS_END

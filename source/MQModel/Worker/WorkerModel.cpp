@@ -1,95 +1,84 @@
 #include "zmq.h"
-#include "MessageQueue/MQListener.h"
-#include "MessageQueue/MQTransfer.h"
-#include "MessageQueue/MQContext.h"
-#include "MQModel/Transfer/TransferModel.h"
+#include "error.h"
+#include "MessageQueue/MQConnector.h"
+using MQConnector = NS(mq, 1)::MQConnector;
+#include "MQModel/Worker/WorkerModel.h"
 
-NS_BEGIN(mq, 1)
+NS_BEGIN(model, 1)
 
-TransferModel::TransferModel()
+WorkerModel::WorkerModel(
+	const char* url/* = "inproc://WorkerProcess"*/, GetRequestMessageNotifyHandler handler/* = NULL*/)
+	: MQModel(), MQThread(), dealer{ NULL }, getRequestMessageNotifyHandler{ handler }
 {}
 
-TransferModel::~TransferModel()
+WorkerModel::~WorkerModel()
 {}
 
-Int32 TransferModel::startModel(MQContext& ctx, const std::string& rAddr, const std::string& sAddr)
+int WorkerModel::initializeModel(MQContext& ctx)
 {
-	Int32 status{ !ctx.emptyContext() && !rAddr.empty() && !sAddr.empty() ? ERR_OK : ERR_INVALID_PARAM };
+	int status{ dealer ? ERR_EXISTED : ERR_OK };
 
 	if (ERR_OK == status)
 	{
-		if (ERR_OK == listeningRouter(ctx, rAddr) && ERR_OK == listeningDealer(ctx, sAddr))
+		dealer = ctx.socket(NS(mq, 1)::MQSocketType::MQ_SOCKET_DEALER);
+		if (dealer)
 		{
-			status = transferDataThread.startThread(&TransferModel::workerThreadHandler, this);
-		}
-		else
-		{
-			status = ERR_BAD_OPERATE;
-		}
-	}
-
-	return status;
-}
-
-void TransferModel::stopModel(MQContext& ctx)
-{
-	if (!ctx.emptyContext())
-	{
-		transferDataThread.stopThread();
-		ctx.destroySocket(routerSocket);
-		ctx.destroySocket(dealerSocket);
-	}
-}
-
-Int32 TransferModel::listeningRouter(MQContext& ctx, const std::string& rAddr)
-{
-	Int32 status{ ERR_BAD_OPERATE };
-
-	if (!routerSocket)
-	{
-		routerSocket = ctx.createSocket(MQ_SOCKET_TYPE_ROUTER);
-		if (routerSocket)
-		{
-			status = MQListener().startListen(rAddr, routerSocket);
+			status = MQConnector().connect(dealer, "inproc://WorkerProcess");
+			if (ERR_OK == status)
+			{
+				status = MQThread::start();
+			}
 		}
 	}
 
 	return status;
 }
 
-Int32 TransferModel::listeningDealer(MQContext& ctx, const std::string& sAddr)
+int WorkerModel::deinitializeModel(MQContext& ctx)
 {
-	Int32 status{ ERR_BAD_OPERATE };
+	MQThread::stop();
 
-	if (!dealerSocket)
+	if (dealer)
 	{
-		dealerSocket = ctx.createSocket(MQ_SOCKET_TYPE_DEALER);
-		if (dealerSocket)
-		{
-			status = MQListener().startListen(sAddr, dealerSocket);
-		}
+		ctx.closesocket(dealer);
 	}
 
-	return status;
+	return ERR_OK;
 }
 
-void TransferModel::workerThreadHandler(HANDLE ctx /* = nullptr */)
+void WorkerModel::process()
 {
-	TransferModel* tempTransferModel{ reinterpret_cast<TransferModel*>(ctx) };
-	zmq_pollitem_t tempPollItems[] = {
-		{ tempTransferModel->routerSocket, NULL, ZMQ_POLLIN, NULL }, { tempTransferModel->dealerSocket, NULL, ZMQ_POLLIN, NULL } };
-	int tempPollItemNumber{ tempTransferModel->routerSocket && tempTransferModel->dealerSocket ? 2 : 1 };
+	zmq_pollitem_t pollitems[] = { { dealer, NULL, ZMQ_POLLIN, NULL } };
 
-	while (!tempTransferModel->transferDataThread.Stopped())
+	while (!stopped)
 	{
-		zmq_poll(tempPollItems, tempPollItemNumber, 1);
-		if (tempPollItems[0].revents & ZMQ_POLLIN)
+		zmq_poll(pollitems, 1, 1);
+		if (pollitems[0].revents & ZMQ_POLLIN)
 		{
-			MQTransfer().transferData(tempTransferModel->routerSocket, tempTransferModel->dealerSocket);
-		}
-		else if (tempPollItems[1].revents & ZMQ_POLLIN)
-		{
-			MQTransfer().transferData(tempTransferModel->dealerSocket, tempTransferModel->routerSocket);
+			zmq_msg_t identity, delimiter, request, reply;
+			zmq_msg_init(&identity);
+			zmq_msg_init(&delimiter);
+			zmq_msg_init(&request);
+
+			const int identityBytes{ zmq_msg_recv(&identity, dealer, ZMQ_DONTWAIT | ZMQ_MORE) };
+			const int delimiterBytes{ zmq_msg_recv(&delimiter, dealer, ZMQ_DONTWAIT | ZMQ_MORE) };
+			const int requestBytes{ zmq_msg_recv(&request, dealer, 0) };
+			const char* requestData{ (const char*)zmq_msg_data(&request) };
+
+			if (getRequestMessageNotifyHandler)
+			{
+				char* replyResult{ getRequestMessageNotifyHandler(requestData, requestBytes) };
+
+				zmq_msg_init_data(&reply, (void*)replyResult, (int)strlen(replyResult), NULL, NULL);
+				zmq_msg_send(&identity, dealer, ZMQ_DONTWAIT | ZMQ_SNDMORE);
+				zmq_msg_send(&delimiter, dealer, ZMQ_DONTWAIT | ZMQ_SNDMORE);
+				zmq_msg_send(&reply, dealer, ZMQ_DONTWAIT);
+				zmq_msg_close(&reply);
+			}
+
+			zmq_msg_close(&identity);
+			zmq_msg_close(&delimiter);
+			zmq_msg_close(&request);
 		}
 	}
 }

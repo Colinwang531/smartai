@@ -15,9 +15,9 @@ PublisherModel::PublisherModel(const unsigned short port /* = 60531 */)
 PublisherModel::~PublisherModel()
 {}
 
-int PublisherModel::initializeModel()
+int PublisherModel::initializeModel(MQContext& ctx)
 {
-	int status{ MQModel::initializeModel() };
+	int status{ publisher ? ERR_EXISTED : ERR_OK };
 
 	if (ERR_OK == status)
 	{
@@ -32,12 +32,11 @@ int PublisherModel::initializeModel()
 	return status;
 }
 
-int PublisherModel::deinitializeModel()
+int PublisherModel::deinitializeModel(MQContext& ctx)
 {
 	if (publisher)
 	{
 		ctx.closesocket(publisher);
-		MQModel::deinitializeModel();
 	}
 
 	return ERR_OK;
@@ -45,9 +44,9 @@ int PublisherModel::deinitializeModel()
 
 int PublisherModel::send(const char* data /* = NULL */, const int dataBytes /* = 0 */)
 {
-	int status{ MQModel::send(data, dataBytes) };
+	int status{ ERR_INVALID_PARAM };
 
-	if (ERR_OK == status)
+	if (data && 0 < dataBytes)
 	{
 		status = publisher ? MQSender().send(data, dataBytes, publisher) : ERR_BAD_OPERATE;
 	}
