@@ -34,7 +34,8 @@ int HikvisionNVR::login(
 //	userID = NET_DVR_Login_V40(&userLoginInfo, &deviceInfoV40);
 
 	NET_DVR_DEVICEINFO_V30 deviceInfoV30{ 0 };
-	return NET_DVR_Login_V30((char*)ip, port, (char*)name, (char*)password, &deviceInfoV30);
+	userID = NET_DVR_Login_V30((char*)ip, port, (char*)name, (char*)password, &deviceInfoV30);
+	return userID;
 }
 
 int HikvisionNVR::logout()

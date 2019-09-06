@@ -49,13 +49,24 @@ int WorkerModel::deinitializeModel(MQContext& ctx)
 void WorkerModel::process()
 {
 	zmq_pollitem_t pollitems[] = { { dealer, NULL, ZMQ_POLLIN, NULL } };
+	char* responseData{ NULL };
+	const int responseDataBytes = 3 * 1024 * 1024;
+
+	try
+	{
+		responseData = new char[responseDataBytes];
+	}
+	catch (const std::exception&)
+	{
+		return;
+	}
 
 	while (!stopped)
 	{
 		zmq_poll(pollitems, 1, 1);
 		if (pollitems[0].revents & ZMQ_POLLIN)
 		{
-			zmq_msg_t identity, delimiter, request, reply;
+			zmq_msg_t identity, delimiter, request;
 			zmq_msg_init(&identity);
 			zmq_msg_init(&delimiter);
 			zmq_msg_init(&request);
@@ -67,13 +78,15 @@ void WorkerModel::process()
 
 			if (getRequestMessageNotifyHandler)
 			{
-				char* replyResult{ getRequestMessageNotifyHandler(requestData, requestBytes) };
+				const int responseDataUsedBytes{
+					getRequestMessageNotifyHandler(requestData, requestBytes, responseData, responseDataBytes) };
 
-				zmq_msg_init_data(&reply, (void*)replyResult, (int)strlen(replyResult), NULL, NULL);
+				zmq_msg_t response;
+				zmq_msg_init_data(&response, (void*)responseData, responseDataUsedBytes, NULL, NULL);
 				zmq_msg_send(&identity, dealer, ZMQ_DONTWAIT | ZMQ_SNDMORE);
 				zmq_msg_send(&delimiter, dealer, ZMQ_DONTWAIT | ZMQ_SNDMORE);
-				zmq_msg_send(&reply, dealer, ZMQ_DONTWAIT);
-				zmq_msg_close(&reply);
+				zmq_msg_send(&response, dealer, ZMQ_DONTWAIT);
+				zmq_msg_close(&response);
 			}
 
 			zmq_msg_close(&identity);
@@ -81,6 +94,8 @@ void WorkerModel::process()
 			zmq_msg_close(&request);
 		}
 	}
+
+	boost::checked_array_delete(responseData);
 }
 
 NS_END

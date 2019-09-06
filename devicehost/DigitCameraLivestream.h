@@ -2,6 +2,8 @@
 #define DIGITAL_CAMERA_LIVE_STREAM_H
 
 #include "boost/shared_ptr.hpp"
+#include "DataStruct/FIFOList.h"
+using FIFOList = NS(datastruct, 1)::FIFOList;
 #include "Stream/Hikvision/HikvisionLivestream.h"
 using HikvisionLivestream = NS(stream, 1)::HikvisionLivestream;
 #include "MediaDecoder/SDK/HikvisionSDKDecoder.h"
@@ -10,13 +12,12 @@ using MediaDecoder = NS(decoder, 1)::MediaDecoder;
 using FrameScaler = NS(scaler, 1)::FrameScaler;
 #include "MediaEncoder/FFmpeg/YV12ToJPEG.h"
 using MediaEncoder = NS(encoder, 1)::MediaEncoder;
-#include "BGR24FrameCache.h"
 
 class DigitCameraLivestream final : public HikvisionLivestream
 {
 public:
 	DigitCameraLivestream(
-		const std::string ip, BGR24FrameCache* cache = NULL, const int algo = 0);
+		const std::string ip, FIFOList** fqueue = NULL, const int algo = 0);
 	~DigitCameraLivestream(void);
 
 public:
@@ -39,7 +40,7 @@ private:
 	boost::shared_ptr<MediaDecoder> videoStreamDecoderPtr;
 	boost::shared_ptr<FrameScaler> videoFrameScalerPtr;
 	boost::shared_ptr<MediaEncoder> jpegFrameEncoderPtr;
-	BGR24FrameCache* bgr24FrameCache;
+	FIFOList** bgr24FrameQueue;
 	const int algoMask;
 	const std::string NVRIp;
 };//class DigitCameraChannel

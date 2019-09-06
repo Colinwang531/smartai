@@ -7,8 +7,8 @@ using YV12ToBGR24 = NS(scaler, 1)::YV12ToBGR24;
 using YV12ToJPEG = NS(encoder, 1)::YV12ToJPEG;
 
 DigitCameraLivestream::DigitCameraLivestream(
-	const std::string ip, BGR24FrameCache* cache /* = NULL */, const int algo /* = 0 */)
-	: HikvisionLivestream(), bgr24FrameCache{ cache }, algoMask{ algo }, NVRIp{ ip }
+	const std::string ip, FIFOList** fqueue /* = NULL */, const int algo /* = 0 */)
+	: HikvisionLivestream(), bgr24FrameQueue{ fqueue }, algoMask{ algo }, NVRIp{ ip }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -60,7 +60,7 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 	const NS(decoder, 1)::DecodeFrame& decodeFrame /* = NS(decoder, 1)::DecodeFrame::DECODE_FRAME_NONE */, 
 	const int width /* = 0 */, const int height /* = 0 */)
 {
-	if (bgr24FrameCache && videoFrameScalerPtr && jpegFrameEncoderPtr)
+	if (bgr24FrameQueue && videoFrameScalerPtr && jpegFrameEncoderPtr)
 	{
 		char* jpegFrameData{ NULL };
 		int jpegFrameDataBytes{ 0 };
@@ -68,39 +68,151 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 		const int bgr24FrameDataBytes{ width * height * 3 };
 		const char* bgr24FrameData{ videoFrameScalerPtr->scale(data, dataBytes, width, height) };
 
-		if (bgr24FrameData)
+		try
 		{
-			if (algoMask & 0x01)
+			if (bgr24FrameData)
 			{
-				bgr24FrameCache[0].insert(
-					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(), 
-					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
-			}
-			if ((algoMask >> 1) & 0x01)
-			{
-				bgr24FrameCache[1].insert(
-					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
-					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
-			}
-			if ((algoMask >> 2) & 0x01)
-			{
-				bgr24FrameCache[2].insert(
-					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
-					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
-			}
-			if ((algoMask >> 3) & 0x01)
-			{
-				bgr24FrameCache[3].insert(
-					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
-					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
-			}
-			if ((algoMask >> 4) & 0x01)
-			{
-				bgr24FrameCache[4].insert(
-					channelIndex, NVRIp.c_str(), (const int)NVRIp.length(),
-					bgr24FrameData, bgr24FrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+				int status[5] = { ERR_OK };
+
+				if (algoMask & 0x01)
+				{
+					//Helmet
+					if (!bgr24FrameQueue[0]->isFull())
+					{
+						BGR24Frame* bgr24Frame = new BGR24Frame;
+						bgr24Frame->frameData = new char[bgr24FrameDataBytes];
+						bgr24Frame->frameBytes = bgr24FrameDataBytes;
+						memcpy_s(bgr24Frame->frameData, bgr24FrameDataBytes, bgr24FrameData, bgr24FrameDataBytes);
+						bgr24Frame->jpegData = new char[jpegFrameDataBytes];
+						bgr24Frame->jpegBytes = jpegFrameDataBytes;
+						memcpy_s(bgr24Frame->jpegData, jpegFrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+						bgr24Frame->channelIndex = channelIndex;
+						const int iplen{ (const int)NVRIp.length() };
+						bgr24Frame->NVRIp = new char[iplen + 1];
+						bgr24Frame->NVRIp[iplen] = 0;
+						memcpy_s(bgr24Frame->NVRIp, iplen, NVRIp.c_str(), iplen);
+						
+						if (ERR_OUT_RANGE == bgr24FrameQueue[0]->pushBack(bgr24Frame))
+						{
+							delete[] bgr24Frame->NVRIp;
+							delete[] bgr24Frame->jpegData;
+							delete[] bgr24Frame->frameData;
+							delete bgr24Frame;
+						}
+					}
+				}
+				if ((algoMask >> 1) & 0x01)
+				{
+					//Phone
+					if (!bgr24FrameQueue[1]->isFull())
+					{
+						BGR24Frame* bgr24Frame = new BGR24Frame;
+						bgr24Frame->frameData = new char[bgr24FrameDataBytes];
+						bgr24Frame->frameBytes = bgr24FrameDataBytes;
+						memcpy_s(bgr24Frame->frameData, bgr24FrameDataBytes, bgr24FrameData, bgr24FrameDataBytes);
+						bgr24Frame->jpegData = new char[jpegFrameDataBytes];
+						bgr24Frame->jpegBytes = jpegFrameDataBytes;
+						memcpy_s(bgr24Frame->jpegData, jpegFrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+						bgr24Frame->channelIndex = channelIndex;
+						const int iplen{ (const int)NVRIp.length() };
+						bgr24Frame->NVRIp = new char[iplen + 1];
+						bgr24Frame->NVRIp[iplen] = 0;
+						memcpy_s(bgr24Frame->NVRIp, iplen, NVRIp.c_str(), iplen);
+
+						if (ERR_OUT_RANGE == bgr24FrameQueue[1]->pushBack(bgr24Frame))
+						{
+							delete[] bgr24Frame->NVRIp;
+							delete[] bgr24Frame->jpegData;
+							delete[] bgr24Frame->frameData;
+							delete bgr24Frame;
+						}
+					}
+				}
+				if ((algoMask >> 2) & 0x01)
+				{
+					//Sleep
+					if (!bgr24FrameQueue[2]->isFull())
+					{
+						BGR24Frame* bgr24Frame = new BGR24Frame;
+						bgr24Frame->frameData = new char[bgr24FrameDataBytes];
+						bgr24Frame->frameBytes = bgr24FrameDataBytes;
+						memcpy_s(bgr24Frame->frameData, bgr24FrameDataBytes, bgr24FrameData, bgr24FrameDataBytes);
+						bgr24Frame->jpegData = new char[jpegFrameDataBytes];
+						bgr24Frame->jpegBytes = jpegFrameDataBytes;
+						memcpy_s(bgr24Frame->jpegData, jpegFrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+						bgr24Frame->channelIndex = channelIndex;
+						const int iplen{ (const int)NVRIp.length() };
+						bgr24Frame->NVRIp = new char[iplen + 1];
+						bgr24Frame->NVRIp[iplen] = 0;
+						memcpy_s(bgr24Frame->NVRIp, iplen, NVRIp.c_str(), iplen);
+
+						if (ERR_OUT_RANGE == bgr24FrameQueue[2]->pushBack(bgr24Frame))
+						{
+							delete[] bgr24Frame->NVRIp;
+							delete[] bgr24Frame->jpegData;
+							delete[] bgr24Frame->frameData;
+							delete bgr24Frame;
+						}
+					}
+				}
+				if ((algoMask >> 3) & 0x01)
+				{
+					//Fight
+					if (!bgr24FrameQueue[3]->isFull())
+					{
+						BGR24Frame* bgr24Frame = new BGR24Frame;
+						bgr24Frame->frameData = new char[bgr24FrameDataBytes];
+						bgr24Frame->frameBytes = bgr24FrameDataBytes;
+						memcpy_s(bgr24Frame->frameData, bgr24FrameDataBytes, bgr24FrameData, bgr24FrameDataBytes);
+						bgr24Frame->jpegData = new char[jpegFrameDataBytes];
+						bgr24Frame->jpegBytes = jpegFrameDataBytes;
+						memcpy_s(bgr24Frame->jpegData, jpegFrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+						bgr24Frame->channelIndex = channelIndex;
+						const int iplen{ (const int)NVRIp.length() };
+						bgr24Frame->NVRIp = new char[iplen + 1];
+						bgr24Frame->NVRIp[iplen] = 0;
+						memcpy_s(bgr24Frame->NVRIp, iplen, NVRIp.c_str(), iplen);
+
+						if (ERR_OUT_RANGE == bgr24FrameQueue[3]->pushBack(bgr24Frame))
+						{
+							delete[] bgr24Frame->NVRIp;
+							delete[] bgr24Frame->jpegData;
+							delete[] bgr24Frame->frameData;
+							delete bgr24Frame;
+						}
+					}
+				}
+				if ((algoMask >> 4) & 0x01)
+				{
+					//Face
+					if (!bgr24FrameQueue[4]->isFull())
+					{
+						BGR24Frame* bgr24Frame = new BGR24Frame;
+						bgr24Frame->frameData = new char[bgr24FrameDataBytes];
+						bgr24Frame->frameBytes = bgr24FrameDataBytes;
+						memcpy_s(bgr24Frame->frameData, bgr24FrameDataBytes, bgr24FrameData, bgr24FrameDataBytes);
+						bgr24Frame->jpegData = new char[jpegFrameDataBytes];
+						bgr24Frame->jpegBytes = jpegFrameDataBytes;
+						memcpy_s(bgr24Frame->jpegData, jpegFrameDataBytes, jpegFrameData, jpegFrameDataBytes);
+						bgr24Frame->channelIndex = channelIndex;
+						const int iplen{ (const int)NVRIp.length() };
+						bgr24Frame->NVRIp = new char[iplen + 1];
+						bgr24Frame->NVRIp[iplen] = 0;
+						memcpy_s(bgr24Frame->NVRIp, iplen, NVRIp.c_str(), iplen);
+
+						if (ERR_OUT_RANGE == bgr24FrameQueue[4]->pushBack(bgr24Frame))
+						{
+							delete[] bgr24Frame->NVRIp;
+							delete[] bgr24Frame->jpegData;
+							delete[] bgr24Frame->frameData;
+							delete bgr24Frame;
+						}
+					}
+				}
 			}
 		}
+		catch (std::exception*)
+		{}
 
 		if (jpegFrameData)
 		{

@@ -139,6 +139,33 @@
     <Filter Include="Source Files\MQModel\Worker">
       <UniqueIdentifier>{54ca020e-e181-486f-aaa4-37dbff082899}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Algorithm">
+      <UniqueIdentifier>{cdbce29e-1779-4dcc-b790-ea4641d341b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataStruct">
+      <UniqueIdentifier>{14f6af40-c767-455e-99da-f4512ed9d7a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Algorithm">
+      <UniqueIdentifier>{6aa7f2cd-d6bf-4271-bc41-7c21bf9928d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataStruct">
+      <UniqueIdentifier>{06f018f4-6765-411f-b53f-c98e28c45f77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tinyxml2">
+      <UniqueIdentifier>{7a56041a-b661-44e9-b5ec-23a6fe798e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\File">
+      <UniqueIdentifier>{735d0970-f26b-478e-935d-ee694febb050}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\File\Com">
+      <UniqueIdentifier>{4db10c37-d616-49f4-9697-2cb4761835f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\File">
+      <UniqueIdentifier>{302fa2a1-6ef5-4567-82b1-c8fd3efb1cfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\File\Com">
+      <UniqueIdentifier>{5e267ef2-338e-4dd8-a404-28e4bd56316a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -564,9 +591,6 @@
     <ClCompile Include="..\source\MediaScaler\FFmpeg\YV12ToBGR24.cpp">
       <Filter>Source Files\Scaler\FFmpeg</Filter>
     </ClCompile>
-    <ClCompile Include="BGR24FrameCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
       <Filter>Source Files\boost\thread</Filter>
     </ClCompile>
@@ -608,6 +632,33 @@
     </ClCompile>
     <ClCompile Include="..\source\MessageQueue\MQConnector.cpp">
       <Filter>Source Files\MQ</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\DataStruct\FIFOList.cpp">
+      <Filter>Source Files\DataStruct</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgo.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoHelmet.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoFace.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoPhone.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoSleep.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoFight.cpp">
+      <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\tinyxml2-master\tinyxml2.cpp">
+      <Filter>Source Files\tinyxml2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\File\Com\ComPort.cpp">
+      <Filter>Source Files\File\Com</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1148,9 +1199,6 @@
     <ClInclude Include="..\include\MediaScaler\FFmpeg\YV12ToBGR24.h">
       <Filter>Header Files\Scaler\FFmpeg</Filter>
     </ClInclude>
-    <ClInclude Include="BGR24FrameCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h">
       <Filter>Header Files\Device\Hikvision</Filter>
     </ClInclude>
@@ -1180,6 +1228,30 @@
     </ClInclude>
     <ClInclude Include="..\include\MessageQueue\MQConnector.h">
       <Filter>Header Files\MQ</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgo.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\FIFOList.h">
+      <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoFace.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoPhone.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoFight.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\File\Com\ComPort.h">
+      <Filter>Header Files\File\Com</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

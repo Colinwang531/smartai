@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;_WINSOCK_DEPRECATED_NO_WARNINGS;WIN32_LEAN_AND_MEAN;__STDC_CONSTANT_MACROS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)glog-master;$(SolutionDir)libzmq-master\include;$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\include;$(SolutionDir)include;$(SolutionDir)lib\algo\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)glog-master;$(SolutionDir)tinyxml2-master;$(SolutionDir)libzmq-master\include;$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\include;$(SolutionDir)include;$(SolutionDir)lib\algo\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -279,9 +279,17 @@
     <ClCompile Include="..\libzmq-master\src\zap_client.cpp" />
     <ClCompile Include="..\libzmq-master\src\zmq.cpp" />
     <ClCompile Include="..\libzmq-master\src\zmq_utils.cpp" />
+    <ClCompile Include="..\source\Arithmetic\CVAlgo.cpp" />
+    <ClCompile Include="..\source\Arithmetic\CVAlgoFace.cpp" />
+    <ClCompile Include="..\source\Arithmetic\CVAlgoFight.cpp" />
+    <ClCompile Include="..\source\Arithmetic\CVAlgoHelmet.cpp" />
+    <ClCompile Include="..\source\Arithmetic\CVAlgoPhone.cpp" />
+    <ClCompile Include="..\source\Arithmetic\CVAlgoSleep.cpp" />
+    <ClCompile Include="..\source\DataStruct\FIFOList.cpp" />
     <ClCompile Include="..\source\Device\Device.cpp" />
     <ClCompile Include="..\source\Device\Hikvision\HikvisionDevice.cpp" />
     <ClCompile Include="..\source\Device\Hikvision\HikvisionNVR.cpp" />
+    <ClCompile Include="..\source\File\Com\ComPort.cpp" />
     <ClCompile Include="..\source\Hardware\Cpu.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp" />
@@ -304,9 +312,9 @@
     <ClCompile Include="..\source\Stream\AVStream.cpp" />
     <ClCompile Include="..\source\Stream\Hikvision\HikvisionLivestream.cpp" />
     <ClCompile Include="..\source\Stream\Livestream.cpp" />
+    <ClCompile Include="..\tinyxml2-master\tinyxml2.cpp" />
     <ClCompile Include="AlarmMessage.cpp" />
     <ClCompile Include="AsynchronousServer.cpp" />
-    <ClCompile Include="BGR24FrameCache.cpp" />
     <ClCompile Include="devicehost.cpp" />
     <ClCompile Include="DigitCameraLivestream.cpp" />
     <ClCompile Include="Hikvision7xxxNVR.cpp" />
@@ -331,12 +339,20 @@
     <ClInclude Include="..\glog-master\stacktrace_x86_64-inl.h" />
     <ClInclude Include="..\glog-master\symbolize.h" />
     <ClInclude Include="..\glog-master\utilities.h" />
+    <ClInclude Include="..\include\Arithmetic\CVAlgo.h" />
+    <ClInclude Include="..\include\Arithmetic\CVAlgoFace.h" />
+    <ClInclude Include="..\include\Arithmetic\CVAlgoFight.h" />
+    <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h" />
+    <ClInclude Include="..\include\Arithmetic\CVAlgoPhone.h" />
+    <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h" />
+    <ClInclude Include="..\include\DataStruct\FIFOList.h" />
     <ClInclude Include="..\include\Device\Configing.h" />
     <ClInclude Include="..\include\Device\Device.h" />
     <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h" />
     <ClInclude Include="..\include\Device\Hikvision\HikvisionNVR.h" />
     <ClInclude Include="..\include\Device\Logging.h" />
     <ClInclude Include="..\include\error.h" />
+    <ClInclude Include="..\include\File\Com\ComPort.h" />
     <ClInclude Include="..\include\Hardware\Cpu.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h" />
@@ -499,7 +515,6 @@
     <ClInclude Include="..\libzmq-master\src\zmq_draft.h" />
     <ClInclude Include="AlarmMessage.h" />
     <ClInclude Include="AsynchronousServer.h" />
-    <ClInclude Include="BGR24FrameCache.h" />
     <ClInclude Include="DigitCameraLivestream.h" />
     <ClInclude Include="Hikvision7xxxNVR.h" />
   </ItemGroup>

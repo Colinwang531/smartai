@@ -20,7 +20,7 @@ using MQThread = NS(mq, 1)::MQThread;
 
 NS_BEGIN(model, 1)
 
-typedef boost::function<char*(const char*, const int)> GetRequestMessageNotifyHandler;
+typedef boost::function<int(const char*, const int, const char*, const int)> GetRequestMessageNotifyHandler;
 
 class WorkerModel : public MQModel, protected MQThread
 {

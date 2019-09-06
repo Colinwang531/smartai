@@ -86,25 +86,4 @@ void TransferModel::process()
 	}
 }
 
-// int TransferModel::sendReply(
-// 	const char* msg /* = NULL */, const int msgBytes /* = 0 */)
-// {
-// 	if (workerSocket)
-// 	{
-// //		const char* delimiter = "";
-// 		zmq_msg_t /*identityMsg, delimiterMsg,*/ requestMsg;
-// // 		zmq_msg_init_data(&identityMsg, (void*)identity, (int)strlen(identity), NULL, NULL);
-// // 		zmq_msg_init_data(&delimiterMsg, (void*)delimiter, 0, NULL, NULL);
-// 		zmq_msg_init_data(&requestMsg, (void*)msg, msgBytes, NULL, NULL);
-// 		zmq_msg_send(&replyIdentity, workerSocket, ZMQ_DONTWAIT | ZMQ_SNDMORE);
-// 		zmq_msg_send(&replayDelimiter, workerSocket, ZMQ_DONTWAIT | ZMQ_SNDMORE);
-// 		zmq_msg_send(&requestMsg, workerSocket, ZMQ_DONTWAIT);
-// // 		zmq_msg_close(&identityMsg);
-// // 		zmq_msg_close(&delimiterMsg);
-// 		zmq_msg_close(&requestMsg);
-// 	}
-// 
-// 	return ERR_OK;
-// }
-
 NS_END
