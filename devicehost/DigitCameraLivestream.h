@@ -2,6 +2,7 @@
 #define DIGITAL_CAMERA_LIVE_STREAM_H
 
 #include "boost/shared_ptr.hpp"
+#include "boost/thread/condition.hpp"
 #include "DataStruct/FIFOList.h"
 using FIFOList = NS(datastruct, 1)::FIFOList;
 #include "Stream/Hikvision/HikvisionLivestream.h"
@@ -23,6 +24,7 @@ public:
 public:
 	int open(const int userID = -1, const int streamNo = -1) override;
 	int close(void) override;
+	void modifyAlgoMask(const int mask = 0);
 
 protected:
 	void captureVideoDataNotifiy(
@@ -41,8 +43,13 @@ private:
 	boost::shared_ptr<FrameScaler> videoFrameScalerPtr;
 	boost::shared_ptr<MediaEncoder> jpegFrameEncoderPtr;
 	FIFOList** bgr24FrameQueue;
-	const int algoMask;
+	int algoMask;
 	const std::string NVRIp;
+
+	bool stopped;
+	//Guarantee work thread exited safely. 
+	boost::mutex mtx[2];
+	boost::condition condition[2];
 };//class DigitCameraChannel
 
 #endif//DIGITAL_CAMERA_LIVE_STREAM_H

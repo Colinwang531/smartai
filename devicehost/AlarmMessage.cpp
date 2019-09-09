@@ -1,7 +1,8 @@
-#include <time.h>
 #include <exception>
 #include <string>
 #include"error.h"
+#include "Time/Time.h"
+using Time = NS(time, 1)::Time;
 #include "AlarmMessage.h"
 
 extern long long clockUTCTime;
@@ -43,17 +44,15 @@ int AlarmMessage::setMessageData(
 		long long* sequenceNo{ (long long*)messageData };
 		*sequenceNo = sequenceNumber;
 		pos += 8;
-		long long* messageID{ (long long*)(messageData + pos) };
+		int* messageID{ (int*)(messageData + pos) };
 		*messageID = 0;
-		pos += 8;
-		*((int*)(messageData + pos)) = 0;
 		pos += 8;
 		*((int*)(messageData + pos)) = w;
 		pos += 4;
 		*((int*)(messageData + pos)) = h;
 		pos += 4;
 		//Local time
-		*((long long*)(messageData + pos)) = time(NULL);
+		*((long long*)(messageData + pos)) = Time().expiredMilliseconds();
 		pos += 8;
 		int iplen{ (int)strlen(NVRIp) };
 		*((int*)(messageData + pos)) = iplen;
@@ -108,7 +107,7 @@ int AlarmMessage::setFaceMessageData(
 		long long* sequenceNo{ (long long*)messageData };
 		*sequenceNo = sequenceNumber;
 		pos += 8;
-		long long* messageID{ (long long*)(messageData + pos) };
+		int* messageID{ (int*)(messageData + pos) };
 		*messageID = 18;
 		pos += 8;
 		int iplen{ (int)strlen(NVRIp) };
@@ -119,7 +118,7 @@ int AlarmMessage::setFaceMessageData(
 		*((int*)(messageData + pos)) = channelIndex;
 		pos += 4;
 		//Local time
-		*((long long*)(messageData + pos)) = time(NULL);
+		*((long long*)(messageData + pos)) = Time().expiredMilliseconds();
 		pos += 8;
 		//UTC Time
 		*((long long*)(messageData + pos)) = clockUTCTime;

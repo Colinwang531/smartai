@@ -21,8 +21,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoPhone : public CVAlgo
 {
 public:
-	CVAlgoPhone(
-		int& enable, FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoPhone(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
 	~CVAlgoPhone(void);
 
 protected:

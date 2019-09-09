@@ -22,7 +22,7 @@ using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 #include "AsynchronousServer.h"
 
 extern int sailingStatus;
-extern int autoSailingStatusCheck;
+extern int autoCheckSwitch;
 
 AsynchronousServer::AsynchronousServer(
 	boost::shared_ptr<CVAlgo> faceAlgo, const unsigned short port /* = 60532 */, FIFOList** fqueue /* = NULL */)
@@ -65,7 +65,7 @@ int AsynchronousServer::deinitializeModel(MQContext& ctx)
 }
 
 int AsynchronousServer::setNVR(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
@@ -104,14 +104,17 @@ int AsynchronousServer::setNVR(
 					boost::dynamic_pointer_cast<Hikvision7xxxNVR>(devicePtr) };
 				std::vector<DigitCamera> cameras;
 				nvr->getDigitCameras(userID, ipaddr.c_str(), cameras);
-				responseDataUsedBytes = replySetNVR(cameras, ipaddr.c_str(), seqenceNo, response, responseBytes);
+				responseDataUsedBytes = replySetNVR(cameras, ipaddr.c_str(), sequenceNo, response, responseBytes);
 			}
 			else
 			{
-				*((long long*)response) = seqenceNo;
+				*((long long*)response) = sequenceNo;
 				*((int*)(response + 8)) = 2;
 				*((int*)(response + 12)) = 4;
 				*((int*)(response + 16)) = result;
+				*((int*)(response + 20)) = 0;
+				*((int*)(response + 24)) = 0;
+				responseDataUsedBytes = 28;
 				LOG(WARNING) << "Login HIKVISION NVR " << ipaddr << " user ID " << userID;
 			}
 		}
@@ -135,10 +138,10 @@ int AsynchronousServer::setNVR(
 		}
 		else
 		{
-			LOG(INFO) << "Logout HIKVISION NVR failed " << ipaddr;
+			LOG(WARNING) << "Logout HIKVISION NVR failed " << ipaddr;
 		}
 
-		*((long long*)response) = seqenceNo;
+		*((long long*)response) = sequenceNo;
 		*((int*)(response + 8)) = 2;
 		*((int*)(response + 12)) = 4;
 		*((int*)(response + 16)) = result;
@@ -185,7 +188,7 @@ int AsynchronousServer::replySetNVR(
 }
 
 int AsynchronousServer::setCamera(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
@@ -202,14 +205,29 @@ int AsynchronousServer::setCamera(
 
 		if (0 < *algoFlag)
 		{
-			boost::shared_ptr<Livestream> livestreamPtr{
-				boost::make_shared<DigitCameraLivestream>(ipaddr, bgr24FrameQueue, *algoFlag) };
-			if (livestreamPtr)
+			result = 1;
+			boost::unordered_map<const std::string, LivestreamPtr>::iterator iter = livestreams.find(NVRIpAddr);
+
+			if (livestreams.end() == iter)
 			{
-				result = 1;
-				const int status{ livestreamPtr->open(it->second->getUserID(), *cameraIndex) };
-				livestreams.insert(std::make_pair(NVRIpAddr, livestreamPtr));
-				LOG(INFO) << "Add live stream " << NVRIpAddr << " : " << status;
+				boost::shared_ptr<Livestream> livestreamPtr{
+					boost::make_shared<DigitCameraLivestream>(ipaddr, bgr24FrameQueue, *algoFlag) };
+				if (livestreamPtr)
+				{
+					const int status{ livestreamPtr->open(it->second->getUserID(), *cameraIndex) };
+					livestreams.insert(std::make_pair(NVRIpAddr, livestreamPtr));
+					LOG(INFO) << "Add live stream " << NVRIpAddr << " and " << "ALGO mask "<< *algoFlag << ".";
+				}
+			} 
+			else
+			{
+				boost::shared_ptr<DigitCameraLivestream> livestreamPtr{ 
+					boost::dynamic_pointer_cast<DigitCameraLivestream>(iter->second) };
+				if (livestreamPtr)
+				{
+					livestreamPtr->modifyAlgoMask(*algoFlag);
+					LOG(INFO) << "Modify live stream " << NVRIpAddr << " ALGO mask" << *algoFlag << ".";
+				}
 			}
 		}
 		else
@@ -230,7 +248,7 @@ int AsynchronousServer::setCamera(
 		LOG(WARNING) << "Can not find NVR device " << ipaddr;
 	}
 
-	*((long long*)response) = seqenceNo;
+	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 4;
 	*((int*)(response + 12)) = 4;
 	*((int*)(response + 16)) = result;
@@ -238,53 +256,58 @@ int AsynchronousServer::setCamera(
 }
 
 int AsynchronousServer::setAutoSailingCheck(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
 	int result{ 1 }, responseDataUsedBytes{ 20 };
 	int* autoSailing{ (int*)(request) };
-	autoSailingStatusCheck = *autoSailing;
+	autoCheckSwitch = *autoSailing;
+	LOG(INFO) << "Set auto sailing control flag(0 : manual, 1 : auto) " << autoCheckSwitch;
 
-	*((long long*)response) = seqenceNo;
+	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 6;
 	*((int*)(response + 12)) = 4;
 	*((int*)(response + 16)) = result;
+
 	return responseDataUsedBytes;
 }
 
 int AsynchronousServer::setSailingStatus(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
 	int result{ 1 }, responseDataUsedBytes{ 20 };
 	int* currentSailingStatus{ (int*)(request) };
 	sailingStatus = *currentSailingStatus;
+	LOG(INFO) << "Set sailing status flag(0 : sailing, 1 : porting) " << sailingStatus;
 
-	*((long long*)response) = seqenceNo;
+	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 8;
 	*((int*)(response + 12)) = 4;
 	*((int*)(response + 16)) = 1;
+
 	return responseDataUsedBytes;
 }
 
 int AsynchronousServer::querySailingStatus(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
 	int result{ 1 }, responseDataUsedBytes{ 20 };
 
-	*((long long*)response) = seqenceNo;
+	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 10;
 	*((int*)(response + 12)) = 4;
 	*((int*)(response + 16)) = sailingStatus;
+	LOG(INFO) << "Reply sailing status flag(0 : sailing, 1 : porting) " << sailingStatus;
 
 	return responseDataUsedBytes;
 }
 
 int AsynchronousServer::registerFace(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
@@ -329,6 +352,7 @@ int AsynchronousServer::registerFace(
 				if (status)
 				{
 					status = facePtr->addFaceFeature(name.c_str(), *uuid, featureInfo.faceFeature);
+					LOG(INFO) << "Add face feature of user " << name << " UUID " << *uuid << " status = " << status << ".";
 				}
 			}
 			catch (std::exception*)
@@ -341,10 +365,11 @@ int AsynchronousServer::registerFace(
 			if (!std::remove(jpegFileName.c_str()))
 			{
 				status = facePtr->removeFaceFeature(name.c_str(), *uuid);
+				LOG(WARNING) << "Remove face feature of user " << name << " UUID " << *uuid << " status = " << status << ".";
 			}
 		}
 
-		*((long long*)response) = seqenceNo;
+		*((long long*)response) = sequenceNo;
 		*((int*)(response + 8)) = 13;
 		*((int*)(response + 12)) = 4;
 		*((int*)(response + 16)) = status;
@@ -354,7 +379,7 @@ int AsynchronousServer::registerFace(
 }
 
 int AsynchronousServer::queryFaceInfos(
-	const long long seqenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
@@ -406,15 +431,17 @@ int AsynchronousServer::queryFaceInfos(
 			jpegFiles.clear();
 			jpegFileBytes.clear();
 		}
+
+		LOG(INFO) << "Query face info of user " << jpegFileName << ".";
 	}
 
-	return replyQueryFace(jpegFiles, jpegFileBytes, faceIDs, replyDataBytes, seqenceNo, response, responseBytes);
+	return replyQueryFace(jpegFiles, jpegFileBytes, faceIDs, replyDataBytes, sequenceNo, response, responseBytes);
 }
 
 int AsynchronousServer::replyQueryFace(
 	const std::vector<char *>& jpegFiles, const std::vector<int> jpegFileBytes, 
 	const std::vector<long long> faceIDs, const int replyBytes /* = 0 */, 
-	const long long sequenceNo /* = 0 */, 
+	const long long sequenceNo /* = 0 */,
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
 	int pos{ 24 };
@@ -449,6 +476,51 @@ int AsynchronousServer::replyQueryFace(
 		*((int*)(response + 20)) = 0;
 	}
 
+	return pos;
+}
+
+int AsynchronousServer::captureCameraPicture(
+	const long long sequenceNo /* = 0 */,
+	const char* request /* = NULL */, const int requestBytes /* = 0 */,
+	const char* response /* = NULL */, const int responseBytes /* = 0 */)
+{
+	int pos = 0;
+	int* iplen{ (int*)request };
+	char* nvrip{ new char[*iplen + 1] };
+	if (nvrip)
+	{
+		nvrip[*iplen] = 0;
+		memcpy_s(nvrip, *iplen, request + 4, *iplen);
+	}
+	int* cameraIndex{ (int*)(request + 4 + *iplen) };
+
+	const std::string cameraID{ (boost::format("%s_%d") % nvrip % *cameraIndex).str() };
+	boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.find(cameraID);
+	if (livestreams.end() != it)
+	{
+		const int jpegPictureBytes = 1024 * 1024;
+		char* jpegPicture{ new char[jpegPictureBytes] };
+
+		if (jpegPicture)
+		{
+			boost::unordered_map<const std::string, HikvisionNVRDevicePtr>::iterator iter{ hikvisionNVRDevices.find(nvrip) };
+			if (hikvisionNVRDevices.end() != iter)
+			{
+				const int capturePictureBytes{ it->second->capture(
+					iter->second->getUserID(), *cameraIndex, jpegPicture, jpegPictureBytes) };
+				*((long long*)response) = sequenceNo;
+				*((int*)(response + 8)) = 20;
+				*((int*)(response + 12)) = 12 + capturePictureBytes;
+				*((int*)(response + 16)) = 1920;
+				*((int*)(response + 20)) = 1080;
+				*((int*)(response + 24)) = capturePictureBytes;
+				memcpy_s((char*)(response + 28), capturePictureBytes, jpegPicture, capturePictureBytes);
+				pos = 28 + capturePictureBytes;
+			}
+		}
+	}
+
+	LOG(INFO) << "Capture picture of living stream " << nvrip << "_" << *cameraIndex << " in bytes " << pos << ".";
 	return pos;
 }
 
@@ -491,6 +563,10 @@ int AsynchronousServer::getRequestMessageNotifyHandler(
 		else if (14 == *command)
 		{
 			responseDataUsedBytes = queryFaceInfos(*sequence, request + 16, *packlen, response, responseBytes);
+		}
+		else if (19 == *command)
+		{
+			responseDataUsedBytes = captureCameraPicture(*sequence, request + 16, *packlen, response, responseBytes);
 		}
 	}
 

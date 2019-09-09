@@ -6,9 +6,12 @@ using HikvisionSDKDecoder = NS(decoder, 1)::HikvisionSDKDecoder;
 using YV12ToBGR24 = NS(scaler, 1)::YV12ToBGR24;
 using YV12ToJPEG = NS(encoder, 1)::YV12ToJPEG;
 
+extern int sailingStatus;//0 : sail, 1 : port
+extern int autoCheckSwitch;//0 : manual, 1 : auto
+
 DigitCameraLivestream::DigitCameraLivestream(
 	const std::string ip, FIFOList** fqueue /* = NULL */, const int algo /* = 0 */)
-	: HikvisionLivestream(), bgr24FrameQueue{ fqueue }, algoMask{ algo }, NVRIp{ ip }
+	: HikvisionLivestream(), bgr24FrameQueue{ fqueue }, algoMask{ algo }, NVRIp{ ip }, stopped{ false }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -37,12 +40,40 @@ int DigitCameraLivestream::open(const int userID /* = -1 */, const int streamNo 
 
 int DigitCameraLivestream::close()
 {
-	return HikvisionLivestream::close();
+	int status{ HikvisionLivestream::close() };
+
+	if (ERR_OK == status)
+	{
+		stopped = true;
+		boost::unique_lock<boost::mutex> lock1{ mtx[0] }, lock2{ mtx[1] };
+		condition[0].wait_for(lock1, boost::chrono::seconds(1));
+		condition[1].wait_for(lock2, boost::chrono::seconds(1));
+	}
+
+	return status;
+}
+
+
+void DigitCameraLivestream::modifyAlgoMask(const int mask /*= 0*/)
+{
+	algoMask = mask;
 }
 
 void DigitCameraLivestream::captureVideoDataNotifiy(
 	const unsigned char* streamData /* = NULL */, const long dataBytes /* = 0 */, const long dataType /* = -1 */)
 {
+	if (stopped)
+	{
+		condition[0].notify_one();
+		return;
+	}
+
+	//If not sailing, do nothing.
+	if (0 < sailingStatus)
+	{
+		return;
+	}
+
 	if (videoStreamDecoderPtr)
 	{
 		videoStreamDecoderPtr->decode((const char*)streamData, dataBytes);
@@ -60,6 +91,12 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 	const NS(decoder, 1)::DecodeFrame& decodeFrame /* = NS(decoder, 1)::DecodeFrame::DECODE_FRAME_NONE */, 
 	const int width /* = 0 */, const int height /* = 0 */)
 {
+	if (stopped)
+	{
+		condition[1].notify_one();
+		return;
+	}
+
 	if (bgr24FrameQueue && videoFrameScalerPtr && jpegFrameEncoderPtr)
 	{
 		char* jpegFrameData{ NULL };

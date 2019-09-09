@@ -166,6 +166,24 @@
     <Filter Include="Source Files\File\Com">
       <UniqueIdentifier>{5e267ef2-338e-4dd8-a404-28e4bd56316a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\boost\chrono">
+      <UniqueIdentifier>{bf577821-a47e-49e0-bda8-d43f70c9e5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\date_time">
+      <UniqueIdentifier>{771e75db-a20b-4699-88ea-c0910660af16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\date_time\posix_time">
+      <UniqueIdentifier>{bac4523e-aa27-47a4-9d48-a4efc1e1235a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\date_time\gregorian">
+      <UniqueIdentifier>{4029ec08-4f8e-458d-b215-6a69d9b30059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Time">
+      <UniqueIdentifier>{4db019d7-0854-4ebb-9b68-c3395b52216a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Time">
+      <UniqueIdentifier>{2bba6e5c-77d9-49df-baa8-ab28b41b7b9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -659,6 +677,27 @@
     </ClCompile>
     <ClCompile Include="..\source\File\Com\ComPort.cpp">
       <Filter>Source Files\File\Com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\chrono\src\chrono.cpp">
+      <Filter>Source Files\boost\chrono</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\date_generators.cpp">
+      <Filter>Source Files\boost\date_time\gregorian</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\greg_month.cpp">
+      <Filter>Source Files\boost\date_time\gregorian</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\greg_weekday.cpp">
+      <Filter>Source Files\boost\date_time\gregorian</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\gregorian_types.cpp">
+      <Filter>Source Files\boost\date_time\gregorian</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\posix_time\posix_time_types.cpp">
+      <Filter>Source Files\boost\date_time\posix_time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Time\Time.cpp">
+      <Filter>Source Files\Time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1252,6 +1291,12 @@
     </ClInclude>
     <ClInclude Include="..\include\File\Com\ComPort.h">
       <Filter>Header Files\File\Com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_67_0\libs\date_time\src\gregorian\greg_names.hpp">
+      <Filter>Source Files\boost\date_time\gregorian</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Time\Time.h">
+      <Filter>Header Files\Time</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@ int HikvisionLivestream::open(const int userID /* = -1 */, const int streamNo /*
 {
 	if (ERR_OK == Livestream::open(userID, streamNo))
 	{
+		NET_DVR_SetCapturePictureMode(JPEG_MODE);
 		NET_DVR_PREVIEWINFO previewInfo{ 0 };
 		previewInfo.lChannel = streamNo;
 		channelIndex = streamNo;
@@ -33,6 +34,25 @@ int HikvisionLivestream::close()
 		status = NET_DVR_StopRealPlay(livestreamID) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
+	return status;
+}
+
+int HikvisionLivestream::capture(
+	const int userID, const int cameraIndex, char*& jpegData, const int jpegBytes/* = 1024 * 1024*/)
+{
+	int status{ Livestream::capture(userID, cameraIndex, jpegData, jpegBytes) };
+
+	if (ERR_OK == status)
+	{
+		DWORD captureDataBytes{ 0 };
+		NET_DVR_JPEGPARA jpegParam{ 0xFF, 0 };
+		if (NET_DVR_CaptureJPEGPicture_NEW(
+			userID, cameraIndex, &jpegParam, jpegData, jpegBytes, &captureDataBytes))
+		{
+			status = (int)captureDataBytes;
+		}
+	}
+	
 	return status;
 }
 

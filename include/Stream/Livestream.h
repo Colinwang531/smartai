@@ -26,7 +26,10 @@ public:
 public:
 	virtual int open(
 		const int userID = -1, const int streamNo = -1);
-	virtual int close();
+	virtual int close(void);
+	//Return : Bytes of JPEG data.
+	virtual int capture(
+		const int userID, const int cameraIndex, char*& jpegData, const int jpegBytes = 1024 * 1024);
 
 protected:
 	virtual void captureVideoDataNotifiy(

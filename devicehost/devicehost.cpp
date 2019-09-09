@@ -55,8 +55,8 @@ ComPort* comPortController[2]{ NULL };//0-clock, 1-AIS
 std::string clockAsyncData;
 long long clockUTCTime = 0;
 std::string aisAsyncData;
-int sailingStatus = 1;
-int autoSailingStatusCheck = 1;
+int sailingStatus = 0;//0 : sail, 1 : port
+int autoCheckSwitch = 1;//0 : manual, 1 : auto
 
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
 {
@@ -88,7 +88,7 @@ static void AISStatusUpdateNotifyHandler(const char* data = NULL, const int data
 			std::vector<std::string> aisDatas;
 			boost::split(aisDatas, aisAsyncData, boost::is_any_of(","));
 
-			if (14 == aisDatas.size() && 1 == autoSailingStatusCheck)
+			if (14 == aisDatas.size() && 1 == autoCheckSwitch)
 			{
 				sailingStatus = atoi(aisDatas[2].c_str());
 			}
@@ -129,19 +129,19 @@ static void initAlgo(void)
 
 		boost::shared_ptr<CVAlgo> helmetPtr{
 			boost::make_shared<CVAlgoHelmet>(
-				sailingStatus, bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_HELMET], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
+				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_HELMET], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
 		boost::shared_ptr<CVAlgo> phonePtr{
 			boost::make_shared<CVAlgoPhone>(
-				sailingStatus, bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_PHONE], boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
+				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_PHONE], boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
 		boost::shared_ptr<CVAlgo> sleepPtr{
 			boost::make_shared<CVAlgoSleep>(
-				sailingStatus, bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_SLEEP], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
+				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_SLEEP], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
 		boost::shared_ptr<CVAlgo> fightPtr{
 			boost::make_shared<CVAlgoFight>(
-				sailingStatus, bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_FIGHT], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
+				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_FIGHT], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
 		boost::shared_ptr<CVAlgo> facePtr{
 			boost::make_shared<CVAlgoFace>(
-				sailingStatus, bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_FACE], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
+				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_FACE], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
 
 		if (helmetPtr && sleepPtr && phonePtr && fightPtr && facePtr)
 		{
@@ -151,47 +151,47 @@ static void initAlgo(void)
 			cvAlgoFightPtr.swap(fightPtr);
 			cvAlgoFacePtr.swap(facePtr);
 
-// 			bool status = cvAlgoHelmetPtr->initialize(exePath.c_str(), 0.25f, 0.15f);
-// 			if (status)
-// 			{
-// 				LOG(INFO) << "Initialize HELMET algorithm status Successfully.";
-// 			} 
-// 			else
-// 			{
-// 				LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
-// 			}
-// 
-// 			status = cvAlgoSleepPtr->initialize(exePath.c_str(), 0.2f, 0.15f);
-// 			if (status)
-// 			{
-// 				LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
-// 			}
-// 			else
-// 			{
-// 				LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
-// 			}
+			bool status = cvAlgoHelmetPtr->initialize(exePath.c_str(), 0.25f, 0.15f);
+			if (status)
+			{
+				LOG(INFO) << "Initialize HELMET algorithm status Successfully.";
+			} 
+			else
+			{
+				LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
+			}
 
-// 			status = cvAlgoPhonePtr->initialize(exePath.c_str(), 0.9f, 0.2f);
-// 			if (status)
-// 			{
-// 				LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
-// 			}
-// 			else
-// 			{
-// 				LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
-// 			}
+			status = cvAlgoSleepPtr->initialize(exePath.c_str(), 0.2f, 0.15f);
+			if (status)
+			{
+				LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
+			}
+			else
+			{
+				LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
+			}
 
-// 			status = cvAlgoFightPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
-// 			if (status)
-// 			{
-// 				LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
-// 			}
-// 			else
-// 			{
-// 				LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
-// 			}
+			status = cvAlgoPhonePtr->initialize(exePath.c_str(), 0.9f, 0.2f);
+			if (status)
+			{
+				LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
+			}
+			else
+			{
+				LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
+			}
 
-			bool status = cvAlgoFacePtr->initialize(exePath.c_str());
+			status = cvAlgoFightPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
+			if (status)
+			{
+				LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
+			}
+			else
+			{
+				LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
+			}
+
+			status = cvAlgoFacePtr->initialize(exePath.c_str());
 			if (status)
 			{
 				LOG(INFO) << "Initialize FACE algorithm status Successfully.";
@@ -220,18 +220,19 @@ static bool initSerialPort()
 		comPortController[0] = new ComPort(boost::bind(&clockTimeUpdateNotifyHandler, _1, _2));
 		comPortController[1] = new ComPort(boost::bind(&AISStatusUpdateNotifyHandler, _1, _2));
 
-		for (int i = 0; i != 16; i++)
+//		for (int i = 0; i != 16; i++)
 		{
-			if (!clockStatus && ERR_OK == comPortController[0]->initPort(i, CBR_4800))
+			if (!clockStatus && ERR_OK == comPortController[0]->initPort(6, CBR_4800))
 			{
 				clockStatus = true;
-				LOG(INFO) << "Open clock port access at COM" << i;
+				LOG(INFO) << "Open clock port access at COM" << 6;
+//				continue;
 			}
 
-			if (!aisStatus && comPortController[1]->initPort(i, CBR_38400))
+			if (!aisStatus && ERR_OK == comPortController[1]->initPort(7, CBR_38400))
 			{
 				aisStatus = true;
-				LOG(INFO) << "Open AIS port access at COM" << i;
+				LOG(INFO) << "Open AIS port access at COM" << 7;
 			}
 		}
 	}

@@ -21,8 +21,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoFight : public CVAlgo
 {
 public:
-	CVAlgoFight(
-		int& enable, FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoFight(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
 	~CVAlgoFight(void);
 
 protected:

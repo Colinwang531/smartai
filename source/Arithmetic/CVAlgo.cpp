@@ -7,9 +7,8 @@ NS_BEGIN(algo, 1)
 
 int CVAlgo::algoNumber = 0;
 
-CVAlgo::CVAlgo(
-	int& enable, FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
-	: enableAlgoFlag{ enable }, frameQueue{ fqueue }, cvAlgoDetectNotifyHandler{ handler },
+CVAlgo::CVAlgo(FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
+	: frameQueue{ fqueue }, cvAlgoDetectNotifyHandler{ handler },
 	imageWidth{ 0 }, imageHeight{ 0 }, channelNumber{ 0 }
 {}
 
@@ -56,7 +55,7 @@ unsigned int CVAlgo::mainWorkerThread(void* ctx /* = NULL */)
 {
 	CVAlgo* cvalgo{ reinterpret_cast<CVAlgo*>(ctx) };
 
-	if (cvalgo && 1 == cvalgo->enableAlgoFlag)
+	if (cvalgo)
 	{
 		cvalgo->mainWorkerProcess();
 	}
@@ -68,7 +67,7 @@ unsigned int CVAlgo::subWorkerThread(void* ctx /* = NULL */)
 {
 	CVAlgo* cvalgo{ reinterpret_cast<CVAlgo*>(ctx) };
 
-	if (cvalgo && 1 == cvalgo->enableAlgoFlag)
+	if (cvalgo)
 	{
 		cvalgo->subWorkerProcess();
 	}

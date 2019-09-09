@@ -32,7 +32,7 @@ protected:
 
 private:
 	int setNVR(
-		const long long seqenceNo = 0, 
+		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int replySetNVR(
@@ -44,28 +44,32 @@ private:
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int setAutoSailingCheck(
-		const long long seqenceNo = 0, 
+		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int setSailingStatus(
-		const long long seqenceNo = 0, 
+		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int querySailingStatus(
-		const long long seqenceNo = 0, 
+		const long long sequenceNo = 0,
 		const char* response = NULL, const int responseBytes = 0);
 	int registerFace(
-		const long long seqenceNo = 0, 
+		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int queryFaceInfos(
-		const long long seqenceNo = 0, 
+		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int replyQueryFace(
 		const std::vector<char*>& jpegFiles, const std::vector<int> jpegFileBytes, 
 		const std::vector<long long> faceIDs,
 		const int replyBytes = 0, const long long sequenceNo = 0,
+		const char* response = NULL, const int responseBytes = 0);
+	int captureCameraPicture(
+		const long long sequenceNo = 0,
+		const char* request = NULL, const int requestBytes = 0,
 		const char* response = NULL, const int responseBytes = 0);
 	//Return bytes used of response message.
 	int getRequestMessageNotifyHandler(

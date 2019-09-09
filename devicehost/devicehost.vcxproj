@@ -154,6 +154,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\boost_1_67_0\libs\chrono\src\chrono.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\date_generators.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\gregorian_types.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\greg_month.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\gregorian\greg_weekday.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\date_time\src\posix_time\posix_time_types.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\codecvt_error_category.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\operations.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path.cpp" />
@@ -312,6 +318,7 @@
     <ClCompile Include="..\source\Stream\AVStream.cpp" />
     <ClCompile Include="..\source\Stream\Hikvision\HikvisionLivestream.cpp" />
     <ClCompile Include="..\source\Stream\Livestream.cpp" />
+    <ClCompile Include="..\source\Time\Time.cpp" />
     <ClCompile Include="..\tinyxml2-master\tinyxml2.cpp" />
     <ClCompile Include="AlarmMessage.cpp" />
     <ClCompile Include="AsynchronousServer.cpp" />
@@ -320,6 +327,7 @@
     <ClCompile Include="Hikvision7xxxNVR.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\boost_1_67_0\libs\date_time\src\gregorian\greg_names.hpp" />
     <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp" />
     <ClInclude Include="..\glog-master\config.h" />
     <ClInclude Include="..\glog-master\demangle.h" />
@@ -376,6 +384,7 @@
     <ClInclude Include="..\include\Stream\AVStream.h" />
     <ClInclude Include="..\include\Stream\Hikvision\HikvisionLivestream.h" />
     <ClInclude Include="..\include\Stream\Livestream.h" />
+    <ClInclude Include="..\include\Time\Time.h" />
     <ClInclude Include="..\libzmq-master\include\zmq.h" />
     <ClInclude Include="..\libzmq-master\include\zmq_utils.h" />
     <ClInclude Include="..\libzmq-master\src\address.hpp" />

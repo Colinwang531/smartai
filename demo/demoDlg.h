@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <vector>
 #include "cuviddec.h"
-
 
 // CdemoDlg dialog
 class CdemoDlg : public CDialogEx
@@ -35,5 +35,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
-	CUvideodecoder cuvideoDecoder;
+	void insertLogItem(const CString function, const CUresult result);
+
+private:
+	std::vector<CUdevice> cuDevices;
+	std::vector<CUcontext> cuContext;
+public:
+	CListCtrl logListCtrl;
 };

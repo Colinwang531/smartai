@@ -21,8 +21,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoHelmet : public CVAlgo
 {
 public:
-	CVAlgoHelmet(
-		int& enable, FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoHelmet(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
 	~CVAlgoHelmet(void);
 
 protected:

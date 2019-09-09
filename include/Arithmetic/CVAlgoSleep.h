@@ -21,8 +21,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoSleep : public CVAlgo
 {
 public:
-	CVAlgoSleep(
-		int& enable, FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoSleep(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
 	~CVAlgoSleep(void);
 
 protected:

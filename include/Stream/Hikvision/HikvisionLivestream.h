@@ -26,6 +26,8 @@ public:
 public:
 	int open(const int userID = -1, const int streamNo = -1) override;
 	int close(void) override;
+	int capture(
+		const int userID, const int cameraIndex, char*& jpegData, const int jpegBytes = 1024 * 1024) override;
 
 private:
 	static void __stdcall livestreamDataCaptureCallback(

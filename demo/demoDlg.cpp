@@ -59,6 +59,7 @@ CdemoDlg::CdemoDlg(CWnd* pParent /*=nullptr*/)
 void CdemoDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LOG_LIST, logListCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CdemoDlg, CDialogEx)
@@ -101,38 +102,59 @@ BOOL CdemoDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-	cuInit(0);
+	DWORD currentLogListStyle{ logListCtrl.GetExtendedStyle() };
+	logListCtrl.SetExtendedStyle(currentLogListStyle | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
+	logListCtrl.InsertColumn(0, L"Function Name");
+	logListCtrl.InsertColumn(1, L"Invoke result");
+	CRect currentLogListRect;
+	logListCtrl.GetClientRect(&currentLogListRect);
+	const int displayWidthPerCol{ currentLogListRect.Width() / 2 };
+	logListCtrl.SetColumnWidth(0, displayWidthPerCol);
+	logListCtrl.SetColumnWidth(1, displayWidthPerCol);
+
+	//cuInit
+	CUresult result{ cuInit(0) };
+	insertLogItem(L"cuInit", result);
+
+	//cuDeviceGetCount
 	int deviceCount{ 0 };
-	CUresult result = cuDeviceGetCount(&deviceCount);
+	result = cuDeviceGetCount(&deviceCount);
+	insertLogItem(L"cuDeviceGetCount", result);
+
 	for (int i = 0; i != deviceCount; ++i)
 	{
 		CUdevice cuDevice{ NULL };
+
+		//cuDeviceGet
 		result = cuDeviceGet(&cuDevice, i);
-		char deviceName[100]{ 0 };
-		result = cuDeviceGetName(deviceName, sizeof(deviceName), cuDevice);
-// 
-// 		TVINSERTSTRUCT item;
-// 		item.hParent = NULL;
-// 		item.
-// 		((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->InsertItem()
+		insertLogItem(L"cuDeviceGet", result);
+
+		if (CUDA_SUCCESS == result)
+		{
+			char deviceName[100]{ 0 };
+			//cuDeviceGetName
+			result = cuDeviceGetName(deviceName, sizeof(deviceName), cuDevice);
+			insertLogItem(L"cuDeviceGetName", result);
+
+			if (CUDA_SUCCESS == result)
+			{
+				CString deviceNameUsingWideBytes{ deviceName };
+				((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->InsertItem(deviceNameUsingWideBytes);
+				cuDevices.push_back(cuDevice);
+			}
+		}
 	}
 
+	for (int i = 0; i != cuDevices.size(); ++i)
+	{
+		CUcontext ctx{ NULL };
 
-	CUVIDDECODECAPS decodeCaps = {}; // set IN params for decodeCaps 
-	decodeCaps.eCodecType = cudaVideoCodec_H264;//H264  
-	decodeCaps.eChromaFormat = cudaVideoChromaFormat_420;//YUV 4:2:0 
-	decodeCaps.nBitDepthMinus8 = 2; // 10 bit 
-	result = cuvidGetDecoderCaps(&decodeCaps);
+		//cuCtxCreate
+		result = cuCtxCreate(&ctx, CU_CTX_SCHED_AUTO, cuDevices[i]);
+		insertLogItem(L"cuCtxCreate", result);
 
-	CUVIDDECODECREATEINFO stDecodeCreateInfo{ 0 };
-	stDecodeCreateInfo.CodecType = cudaVideoCodec_H264;
-	stDecodeCreateInfo.ChromaFormat = cudaVideoChromaFormat_420;
-	stDecodeCreateInfo.bitDepthMinus8 = 2;
-	stDecodeCreateInfo.ulWidth = 1920;
-	stDecodeCreateInfo.ulHeight = 1080;
-	result = cuvidCreateDecoder(&cuvideoDecoder, &stDecodeCreateInfo);
 
-	result = cuvidDestroyDecoder(cuvideoDecoder);
+	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -184,5 +206,13 @@ void CdemoDlg::OnPaint()
 HCURSOR CdemoDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+void CdemoDlg::insertLogItem(const CString function, const CUresult result)
+{
+	int currentColumeNumber{ logListCtrl.InsertItem(logListCtrl.GetItemCount(), function) };
+	CString resultStr;
+	resultStr.Format(L"%d", result);
+	logListCtrl.SetItemText(currentColumeNumber, 1, resultStr);
 }
 

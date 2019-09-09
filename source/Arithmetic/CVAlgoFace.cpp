@@ -12,8 +12,8 @@ using namespace tinyxml2;
 NS_BEGIN(algo, 1)
 
 CVAlgoFace::CVAlgoFace(
-	int& enable, FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
-	: CVAlgo(enable, fqueue, handler), registerFaceID{ 0 }
+	FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
+	: CVAlgo(fqueue, handler), registerFaceID{ 0 }
 {}
 
 CVAlgoFace::~CVAlgoFace()
@@ -258,7 +258,7 @@ bool CVAlgoFace::loadFaceFeature()
 			const std::string attrName{attr->Name()};
 			if(!attrName.compare("id"))
 			{
-				ff.id = atoi(attr->Value());
+				ff.id = atoll(attr->Value());
 			}
 			else if(!attrName.compare("feature"))
 			{

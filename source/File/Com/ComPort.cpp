@@ -38,6 +38,9 @@ int ComPort::initPort(const char portNumber /* = 0 */, const unsigned int baudra
 				serialPortPtr->set_option(boost::asio::serial_port::stop_bits(boost::asio::serial_port::stop_bits::one), err);
 				serialPortPtr->set_option(boost::asio::serial_port::character_size(8), err);
 
+				HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, &ioWorkerThread, this, 0, NULL);
+				SetThreadPriority(handle, THREAD_PRIORITY_NORMAL);
+
 				serialPortPtr->async_read_some(
 					boost::asio::buffer(recvDataBuffer, recvDataBytes),
 					boost::bind(
@@ -49,8 +52,6 @@ int ComPort::initPort(const char portNumber /* = 0 */, const unsigned int baudra
 
 				comPortPtr.swap(serialPortPtr);
 				status = ERR_OK;
-				HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, &ioWorkerThread, this, 0, NULL);
-				SetThreadPriority(handle, THREAD_PRIORITY_NORMAL);
 			}
 		}
 	}

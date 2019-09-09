@@ -54,8 +54,7 @@ typedef boost::function<void(void*, std::vector<DetectNotify>)> CVAlgoDetectNoti
 class CVAlgo
 {
 public:
-	CVAlgo(
-		int& enable, FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgo(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
 	virtual ~CVAlgo(void);
 
 public:
@@ -73,7 +72,6 @@ private:
 	static unsigned int __stdcall subWorkerThread(void* ctx = NULL);
 
 protected:
-	int& enableAlgoFlag;
 	FIFOList* frameQueue;
 	CVAlgoDetectNotifyHandler cvAlgoDetectNotifyHandler;
 	int imageWidth;

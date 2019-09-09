@@ -35,8 +35,7 @@ typedef struct tagFaceFeature_t
 class CVAlgoFace : public CVAlgo
 {
 public:
-	CVAlgoFace(
-		int& enable, FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoFace(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
 	~CVAlgoFace(void);
 
 public:

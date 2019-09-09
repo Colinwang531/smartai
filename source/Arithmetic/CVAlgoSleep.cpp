@@ -5,8 +5,8 @@
 NS_BEGIN(algo, 1)
 
 CVAlgoSleep::CVAlgoSleep(
-	int& enable, FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
-	: CVAlgo(enable, fqueue, handler)
+	FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
+	: CVAlgo(fqueue, handler)
 {}
 
 CVAlgoSleep::~CVAlgoSleep()
