@@ -95,12 +95,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)lib\CUDA-9.0.20\include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\CUDA-9.0.20\include;$(SolutionDir)lib\ffmpeg-4.1.4\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\CUDA-9.0.20\Lib\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nvcuvid.lib;cuda.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\CUDA-9.0.20\Lib\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>nvcuvid.lib;cuda.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -193,7 +193,9 @@
   <ItemGroup>
     <ClInclude Include="demo.h" />
     <ClInclude Include="demoDlg.h" />
+    <ClInclude Include="FFmpegDemuxer.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="NvCodecUtils.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />

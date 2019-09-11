@@ -8,6 +8,8 @@
 #include "demoDlg.h"
 #include "afxdialogex.h"
 
+#include "FFmpegDemuxer.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -152,8 +154,33 @@ BOOL CdemoDlg::OnInitDialog()
 		//cuCtxCreate
 		result = cuCtxCreate(&ctx, CU_CTX_SCHED_AUTO, cuDevices[i]);
 		insertLogItem(L"cuCtxCreate", result);
+		if (CUDA_SUCCESS == result)
+		{
+			//cuvidCtxLockCreate
+			result = cuvidCtxLockCreate(&cuVideoCtxLock, ctx);
+			insertLogItem(L"cuvidCtxLockCreate", result);
 
+			if (CUDA_SUCCESS == result)
+			{
+				CUVIDPARSERPARAMS videoParserParameters{};
+				videoParserParameters.CodecType = cudaVideoCodec_H264;
+				videoParserParameters.ulMaxNumDecodeSurfaces = 1;
+				videoParserParameters.ulMaxDisplayDelay = 0;// bLowLatency ? 0 : 1;
+				videoParserParameters.pUserData = this;
+				videoParserParameters.pfnSequenceCallback = handleVideoSequenceCallback;
+				videoParserParameters.pfnDecodePicture = handlePictureDecodeCallback;
+				videoParserParameters.pfnDisplayPicture = handlePictureDisplayCallback;
 
+				//cuvidCreateVideoParser
+				result = cuvidCreateVideoParser(&cuVideoParser, &videoParserParameters);
+				insertLogItem(L"cuvidCreateVideoParser", result);
+
+				DWORD threadID{ 0 };
+				CreateThread(NULL, 0, &CdemoDlg::decodeFrameThread, this, 0, &threadID);
+			}
+		}
+
+		cuContext.push_back(ctx);
 	}
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -216,3 +243,113 @@ void CdemoDlg::insertLogItem(const CString function, const CUresult result)
 	logListCtrl.SetItemText(currentColumeNumber, 1, resultStr);
 }
 
+int CdemoDlg::handleVideoSequenceCallback(void* ctx /* = NULL */, CUVIDEOFORMAT* cuVideoFormat /* = NULL */)
+{ 
+	return ((CdemoDlg*)ctx)->videoSequenceProcess(cuVideoFormat);
+}
+
+int CdemoDlg::handlePictureDecodeCallback(void* ctx /* = NULL */, CUVIDPICPARAMS* cuvidPictureParams /* = NULL */)
+{ 
+	return ((CdemoDlg*)ctx)->pictureDecodeProcess(cuvidPictureParams);
+}
+
+int CdemoDlg::handlePictureDisplayCallback(void* ctx /* = NULL */, CUVIDPARSERDISPINFO* cuvidParserDisplayInfo /* = NULL */)
+{ 
+	return ((CdemoDlg*)ctx)->pictureDisplayProcess(cuvidParserDisplayInfo);
+}
+
+int CdemoDlg::videoSequenceProcess(CUVIDEOFORMAT* cuVideoFormat /*= NULL*/)
+{
+	//cuCtxPushCurrent
+	CUresult result{ cuCtxPushCurrent(cuContext[0]) };
+	insertLogItem(L"cuCtxPushCurrent", result);
+
+	if (CUDA_SUCCESS == result)
+	{
+		CUVIDDECODECREATEINFO cuvidDecoderCreateInfo{ 0 };
+		cuvidDecoderCreateInfo.ulWidth = cuVideoFormat->coded_width;
+		cuvidDecoderCreateInfo.ulHeight = cuVideoFormat->coded_height;
+		cuvidDecoderCreateInfo.ulNumDecodeSurfaces = 1;// 20;
+		cuvidDecoderCreateInfo.CodecType = cudaVideoCodec_H264;
+		cuvidDecoderCreateInfo.ChromaFormat = cuVideoFormat->chroma_format;
+		cuvidDecoderCreateInfo.ulCreationFlags = cudaVideoCreate_PreferCUVID;
+		cuvidDecoderCreateInfo.bitDepthMinus8 = cuVideoFormat->bit_depth_luma_minus8;
+		cuvidDecoderCreateInfo.ulIntraDecodeOnly = 0;
+		cuvidDecoderCreateInfo.ulMaxWidth = 4096;// cuVideoFormat->coded_width;
+		cuvidDecoderCreateInfo.ulMaxHeight = 2160;// cuVideoFormat->coded_height;
+		cuvidDecoderCreateInfo.OutputFormat = cudaVideoSurfaceFormat_NV12;
+		cuvidDecoderCreateInfo.DeinterlaceMode = cudaVideoDeinterlaceMode_Weave;
+		cuvidDecoderCreateInfo.ulNumOutputSurfaces = 1;// 2;
+		cuvidDecoderCreateInfo.vidLock = cuVideoCtxLock;
+
+		//cuvidCreateDecoder
+		result = cuvidCreateDecoder(&cuVideoDecoder, &cuvidDecoderCreateInfo);
+		insertLogItem(L"cuvidCreateDecoder", result);
+		//cuCtxPopCurrent
+		result = cuCtxPopCurrent(&cuContext[0]);
+		insertLogItem(L"cuCtxPopCurrent", result);
+	}
+
+	return 1;
+}
+
+int CdemoDlg::pictureDecodeProcess(CUVIDPICPARAMS* cuvidPictureParams /*= NULL*/)
+{
+	if (cuVideoDecoder)
+	{
+		//cuCtxPopCurrent
+		CUresult result{ cuvidDecodePicture(cuVideoDecoder, cuvidPictureParams) };
+		if (CUDA_SUCCESS != result)
+		{
+			insertLogItem(L"cuvidDecodePicture", result);
+		}
+	}
+
+	return 1;
+}
+
+int CdemoDlg::pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisplayInfo /*= NULL*/)
+{
+	return 0;
+}
+
+DWORD CdemoDlg::decodeFrameThread(LPVOID lpThreadParameter /* = NULL */)
+{
+	CdemoDlg* demo = reinterpret_cast<CdemoDlg*>(lpThreadParameter);
+
+	if (demo)
+	{
+// 		FFmpegDemuxer ffDemuxer{
+// 			"d:\\download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv"};
+		FFmpegDemuxer ffDemuxer{
+			"d:\\download\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4" };
+		AVCodecID codecID{ ffDemuxer.GetVideoCodec() };
+		const int imageWidth{ ffDemuxer.GetWidth() }, imageHeight{ ffDemuxer.GetHeight() };
+		long long totalFileDataBytes = 0;
+
+		while(1)
+		{
+			uint8_t* demuxVideoData{ NULL };
+			int demuxVideoBytes{ 0 };
+			ffDemuxer.Demux(&demuxVideoData, &demuxVideoBytes);
+			totalFileDataBytes += demuxVideoBytes;
+
+			CUVIDSOURCEDATAPACKET cuvidSourceDataPacket{ 0 };
+			cuvidSourceDataPacket.payload = demuxVideoData;
+			cuvidSourceDataPacket.payload_size = demuxVideoBytes;
+			cuvidSourceDataPacket.flags |= CUVID_PKT_TIMESTAMP;
+			cuvidSourceDataPacket.timestamp = GetTickCount64();
+
+			//cuvidCreateVideoParser
+			CUresult result{ cuvidParseVideoData(demo->cuVideoParser, &cuvidSourceDataPacket) };
+//			demo->insertLogItem(L"cuvidParseVideoData", result);
+
+			if (!demuxVideoData && !demuxVideoBytes)
+			{
+				break;
+			}
+		}
+	}
+
+	return 0;
+}

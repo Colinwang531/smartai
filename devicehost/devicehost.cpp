@@ -50,13 +50,21 @@ boost::shared_ptr<CVAlgo> cvAlgoSleepPtr;
 boost::shared_ptr<CVAlgo> cvAlgoPhonePtr;
 boost::shared_ptr<CVAlgo> cvAlgoFacePtr;
 boost::shared_ptr<CVAlgo> cvAlgoFightPtr;
+boost::mutex publishMtx;
 FIFOList* bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_NONE]{ NULL };
+FIFOList* alarmMessageQueue;
 ComPort* comPortController[2]{ NULL };//0-clock, 1-AIS
 std::string clockAsyncData;
 long long clockUTCTime = 0;
 std::string aisAsyncData;
 int sailingStatus = 0;//0 : sail, 1 : port
 int autoCheckSwitch = 1;//0 : manual, 1 : auto
+// bool stopped = false;
+// typedef struct tagAlarmMessageData_t
+// {
+// 	void* frame;
+// 	std::vector<NS(algo, 1)::DetectNotify> detectNotify;
+// }AlarmMessageData;
 
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
 {
@@ -110,9 +118,47 @@ static void cvAlgoDetectInfoHandler(void* frame, const std::vector<NS(algo, 1)::
 			detectInfos[0].type, 1920, 1080, bgr24Frame->NVRIp, bgr24Frame->channelIndex, detectInfos, bgr24Frame->jpegData, bgr24Frame->jpegBytes);
 		boost::shared_ptr<PublisherModel> publisherModel{
 			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+
+		publishMtx.lock();
 		publisherModel->send(message.getMessageData(), message.getMessageBytes());
+		publishMtx.unlock();
+
 		LOG(INFO) << "Send push alarm " << detectInfos[0].type;
 	}
+
+// 	if (frame && 0 < detectInfos.size())
+// 	{
+// 		AlarmMessageData* alarmMessageData = new AlarmMessageData;
+// 		if (alarmMessageData)
+// 		{
+// 			alarmMessageData->frame = frame;
+// 			alarmMessageData->detectNotify = detectInfos;
+// 			alarmMessageQueue->pushBack(alarmMessageData);
+// 		}
+// 	}
+}
+
+static unsigned int alarmMessagePusherHandler(void* ctx)
+{
+// 	while (!stopped)
+// 	{
+// 		AlarmMessageData* alarmMessageData{ reinterpret_cast<AlarmMessageData*>(alarmMessageQueue->getFront()) };
+// 
+// 		if (alarmMessageData)
+// 		{
+// 			BGR24Frame* bgr24Frame{ reinterpret_cast<BGR24Frame*>(alarmMessageData->frame) };
+// 			AlarmMessage message;
+// 
+// 			message.setMessageData(
+// 				alarmMessageData->detectNotify[0].type, 1920, 1080, bgr24Frame->NVRIp,
+// 				bgr24Frame->channelIndex, alarmMessageData->detectNotify, bgr24Frame->jpegData, bgr24Frame->jpegBytes);
+// 			boost::shared_ptr<PublisherModel> publisherModel{
+// 				boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+// 			publisherModel->send(message.getMessageData(), message.getMessageBytes());
+// 			LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << alarmMessageData->detectNotify[0].type;
+// 	}
+
+	return 0;
 }
 
 static void initAlgo(void)
@@ -124,7 +170,7 @@ static void initAlgo(void)
 	{
 		for (int i = 0; i != NS(algo, 1)::AlgoType::ALGO_NONE; ++i)
 		{
-			bgr24FrameQueue[i] = new FIFOList(25);
+			bgr24FrameQueue[i] = new FIFOList();
 		}
 
 		boost::shared_ptr<CVAlgo> helmetPtr{
@@ -145,7 +191,7 @@ static void initAlgo(void)
 
 		if (helmetPtr && sleepPtr && phonePtr && fightPtr && facePtr)
 		{
-			cvAlgoHelmetPtr.swap(helmetPtr);
+ 			cvAlgoHelmetPtr.swap(helmetPtr);
 			cvAlgoSleepPtr.swap(sleepPtr);
 			cvAlgoPhonePtr.swap(phonePtr);
 			cvAlgoFightPtr.swap(fightPtr);
@@ -245,6 +291,18 @@ static bool initSerialPort()
 	return clockStatus && aisStatus;
 }
 
+static void initAlarmPusher()
+{
+//	alarmMessageQueue = new FIFOList(1000);
+
+// 	if (alarmMessageQueue)
+// 	{
+//		HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, &alarmMessagePusherHandler, NULL, 0, NULL);
+//		SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
+//		SetThreadAffinityMask(handle, (DWORD)(1 << algoNumber));
+//	}
+}
+
 int main(int argc, char* argv[])
 {
 	FLAGS_stderrthreshold = GLOG_INFO;
@@ -258,6 +316,7 @@ int main(int argc, char* argv[])
 #endif
 	);
 
+	initAlarmPusher();
 	initSerialPort();
 	initAlgo();
 	MQContext ctx;
@@ -295,6 +354,7 @@ int main(int argc, char* argv[])
 
 		getchar();
 
+//		stopped = true;
 		if (publisherModelPtr)
 		{
 			publisherModelPtr->stop(ctx);

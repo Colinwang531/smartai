@@ -6,6 +6,7 @@
 
 #include <vector>
 #include "cuviddec.h"
+#include "nvcuvid.h"
 
 // CdemoDlg dialog
 class CdemoDlg : public CDialogEx
@@ -36,10 +37,40 @@ protected:
 
 private:
 	void insertLogItem(const CString function, const CUresult result);
+	static DWORD WINAPI decodeFrameThread(LPVOID lpThreadParameter = NULL);
+	/**
+	*   @brief  Callback function to be registered for getting a callback when decoding of sequence starts
+	*/
+	static int CUDAAPI handleVideoSequenceCallback(void* ctx = NULL, CUVIDEOFORMAT* cuVideoFormat = NULL);
+	/**
+	*   @brief  Callback function to be registered for getting a callback when a decoded frame is ready to be decoded
+	*/
+	static int CUDAAPI handlePictureDecodeCallback(void* ctx = NULL, CUVIDPICPARAMS* cuvidPictureParams = NULL);
+	/**
+	*   @brief  Callback function to be registered for getting a callback when a decoded frame is available for display
+	*/
+	static int CUDAAPI handlePictureDisplayCallback(void* ctx = NULL, CUVIDPARSERDISPINFO* cuvidParserDisplayInfo = NULL);
+	/**
+*   @brief  This function gets called when a sequence is ready to be decoded. The function also gets called
+	when there is format change
+*/
+	int videoSequenceProcess(CUVIDEOFORMAT* cuVideoFormat = NULL);
+	/**
+	*   @brief  This function gets called when a picture is ready to be decoded. cuvidDecodePicture is called from this function
+	*   to decode the picture
+	*/
+	int pictureDecodeProcess(CUVIDPICPARAMS* cuvidPictureParams = NULL);
+	/**
+	*   @brief  This function gets called after a picture is decoded and available for display. Frames are fetched and stored in
+		internal buffer
+	*/
+	int pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisplayInfo = NULL);
 
 private:
 	std::vector<CUdevice> cuDevices;
 	std::vector<CUcontext> cuContext;
-public:
+	CUvideoctxlock cuVideoCtxLock;
+	CUvideoparser cuVideoParser;
+	CUvideodecoder cuVideoDecoder;
 	CListCtrl logListCtrl;
 };

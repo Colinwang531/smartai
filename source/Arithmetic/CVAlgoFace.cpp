@@ -166,7 +166,11 @@ void CVAlgoFace::mainWorkerProcess()
 
 			vector<DetectNotify> detectNotifies;
 			vector<StruFaceInfo> faceInfos;
+//			static unsigned long long lastKnownTime = GetTickCount64();
 			face.FaceDetectAndFeatureExtract((unsigned char*)frame->frameData, imageWidth, imageHeight, channelNumber, faceInfos);
+//			unsigned long long currentTime = GetTickCount64();
+//			printf("FaceDetectAndFeatureExtract expire %I64u, person number %d.\r\n", currentTime - lastKnownTime, (int)faceInfos.size());
+//			lastKnownTime = currentTime;
 			for (int i = 0; i != faceInfos.size(); ++i)
 			{
 				DetectNotify detect;
@@ -185,9 +189,12 @@ void CVAlgoFace::mainWorkerProcess()
 				int maxFaceIndex = -1;
 				for(int j = 0; j != currentFaceFeatures.size(); ++j)
 				{
+//					unsigned long long lastKnownTime = GetTickCount64();
 					const float currentSimilarity{ 
 						face.FacePairMatch(faceInfos[i].faceFeature, (unsigned char*)currentFaceFeatures[j].feature, FACE_FEATURE_LENGTH) };
-					if (currentSimilarity >= 0.6f && currentSimilarity > maxSimilarity)
+// 					unsigned long long currentTime = GetTickCount64();
+// 					printf("FacePairMatch expire %I64u, similarity %f.\r\n", currentTime - lastKnownTime, currentSimilarity);
+					if (currentSimilarity >= 0.52f && currentSimilarity > maxSimilarity)
 					{
 						maxFaceIndex = j;
 						maxSimilarity = currentSimilarity;
@@ -228,6 +235,10 @@ void CVAlgoFace::mainWorkerProcess()
 			boost::checked_array_delete(frame->jpegData);
 			boost::checked_array_delete(frame->NVRIp);
 			boost::checked_delete(frame);
+			for (int i = 0; i != detectNotifies.size(); ++i)
+			{
+				boost::checked_array_delete(detectNotifies[i].face.imageData);
+			}
 		}
 	}
 }

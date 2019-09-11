@@ -125,11 +125,11 @@ int AsynchronousServer::setNVR(
 		if (hikvisionNVRDevices.end() != it)
 		{
 			//Remove all cameras.
-			for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); ++it)
-			{
-				it->second->close();
-			}
-			livestreams.clear();
+// 			for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); ++it)
+// 			{
+// 				it->second->close();
+// 			}
+// 			livestreams.clear();
 
 			it->second->logout();
 			hikvisionNVRDevices.erase(it);
@@ -226,7 +226,7 @@ int AsynchronousServer::setCamera(
 				if (livestreamPtr)
 				{
 					livestreamPtr->modifyAlgoMask(*algoFlag);
-					LOG(INFO) << "Modify live stream " << NVRIpAddr << " ALGO mask" << *algoFlag << ".";
+					LOG(INFO) << "Modify live stream " << NVRIpAddr << " ALGO mask " << *algoFlag << ".";
 				}
 			}
 		}
@@ -239,7 +239,7 @@ int AsynchronousServer::setCamera(
 				it->second->close();
 				livestreams.erase(it);
 				result = 1;
-				LOG(INFO) << "Remove live stream " << NVRIpAddr;
+				LOG(WARNING) << "Remove live stream " << NVRIpAddr;
 			}
 		}
 	}

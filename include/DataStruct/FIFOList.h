@@ -22,7 +22,7 @@ NS_BEGIN(datastruct, 1)
 class FIFOList
 {
 public:
-	FIFOList(const int capacity = 300);
+	FIFOList(const int capacity = 25);
 	virtual ~FIFOList(void);
 
 public:

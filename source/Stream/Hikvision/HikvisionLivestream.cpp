@@ -62,7 +62,7 @@ void HikvisionLivestream::livestreamDataCaptureCallback(
 {
 	HikvisionLivestream* livestream{ reinterpret_cast<HikvisionLivestream*>(ctx) };
 
-	if (livestream)
+	if (livestream && -1 < livestream->livestreamID && -1 < livestream->channelIndex)
 	{
 		if (NET_DVR_SYSHEAD == dataType || NET_DVR_STREAMDATA == dataType)
 		{

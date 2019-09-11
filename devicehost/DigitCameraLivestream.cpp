@@ -41,6 +41,7 @@ int DigitCameraLivestream::open(const int userID /* = -1 */, const int streamNo 
 int DigitCameraLivestream::close()
 {
 	int status{ HikvisionLivestream::close() };
+	videoStreamDecoderPtr.reset();
 
 	if (ERR_OK == status)
 	{

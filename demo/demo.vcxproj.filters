@@ -33,6 +33,12 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FFmpegDemuxer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NvCodecUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="demo.cpp">

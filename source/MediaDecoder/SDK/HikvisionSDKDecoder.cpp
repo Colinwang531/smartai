@@ -9,11 +9,12 @@ HikvisionSDKDecoder::HikvisionSDKDecoder(FrameDataDecodeHandler handler /* = NUL
 
 HikvisionSDKDecoder::~HikvisionSDKDecoder(void)
 {
-	if (!decoderID)
+	if (-1 < decoderID)
 	{
 		PlayM4_Stop(decoderID);
 		PlayM4_CloseStream(decoderID);
 		PlayM4_FreePort(decoderID);
+		frameDataDecodeHandler = NULL;
 	}
 }
 
@@ -39,6 +40,10 @@ int HikvisionSDKDecoder::decode(const char* data /* = NULL */, const int dataByt
 //				PlayM4_SetDecodeFrameType(decoderID, 5);
 				status = PlayM4_Play(decoderID, NULL) ? ERR_OK : ERR_BAD_OPERATE;
 			}
+			else
+			{
+				status = ERR_BAD_OPERATE;
+			}
 		}
 	}
 
@@ -51,9 +56,9 @@ void HikvisionSDKDecoder::decodeFrameInfoCallback(
 {
 	HikvisionSDKDecoder* decoder{ reinterpret_cast<HikvisionSDKDecoder*>(nUser) };
 
-	if (decoder)
+	if (decoder && decoder->frameDataDecodeHandler)
 	{
-		if (T_YV12 == frameInfo->nType && decoder->frameDataDecodeHandler)
+		if (T_YV12 == frameInfo->nType)
 		{
 			decoder->frameDataDecodeHandler(
 				decodeFrame, frameBytes, DECODE_FRAME_VIDEO, frameInfo->nWidth, frameInfo->nHeight);
