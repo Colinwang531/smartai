@@ -25,7 +25,8 @@ public:
 	~CVAlgoPhone(void);
 
 protected:
-	bool initializeWithParameter(void* parameter = NULL) override;
+	bool initializeWithParameter(
+		const char* configFilePath = NULL, void* parameter = NULL) override;
 	void algorithmWorkerProcess(void) override;
 
 private:

@@ -230,41 +230,72 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 				}
 				else
 				{
-					boost::checked_array_delete(bgr24Frame->frameData);
-					boost::checked_array_delete(bgr24Frame->jpegData);
-					boost::checked_array_delete(bgr24Frame->NVRIp);
-					boost::checked_delete(bgr24Frame);
+					deleteBGR24Frame(bgr24Frame);
 					return;
 				}
 
 				if (algorithmAbility & 0x01)
 				{
-					bgr24FrameNew = helmetBGR24Queue.insert(bgr24Frame);
+					BGR24Frame* frame{ newBGR24Frame(bgr24Frame) };
+					if (frame)
+					{
+						bgr24FrameNew = helmetBGR24Queue.insert(frame);
+						if (!bgr24FrameNew)
+						{
+							deleteBGR24Frame(frame);
+						}
+					}
 				}
 				if ((algorithmAbility >> 1) & 0x01)
 				{
-					bgr24FrameNew = phoneBGR24Queue.insert(bgr24Frame);
+					BGR24Frame* frame{ newBGR24Frame(bgr24Frame) };
+					if (frame)
+					{
+						bgr24FrameNew = phoneBGR24Queue.insert(frame);
+						if (!bgr24FrameNew)
+						{
+							deleteBGR24Frame(frame);
+						}
+					}
 				}
 				if ((algorithmAbility >> 2) & 0x01)
 				{
-					bgr24FrameNew = sleepBGR24Queue.insert(bgr24Frame);
+					BGR24Frame* frame{ newBGR24Frame(bgr24Frame) };
+					if (frame)
+					{
+						bgr24FrameNew = sleepBGR24Queue.insert(frame);
+						if (!bgr24FrameNew)
+						{
+							deleteBGR24Frame(frame);
+						}
+					}
 				}
 				if ((algorithmAbility >> 3) & 0x01)
 				{
-					bgr24FrameNew = fightBGR24Queue.insert(bgr24Frame);
+					BGR24Frame* frame{ newBGR24Frame(bgr24Frame) };
+					if (frame)
+					{
+						bgr24FrameNew = fightBGR24Queue.insert(frame);
+						if (!bgr24FrameNew)
+						{
+							deleteBGR24Frame(frame);
+						}
+					}
 				}
 				if ((algorithmAbility >> 4) & 0x01)
 				{
-					bgr24FrameNew = faceBGR24Queue.insert(bgr24Frame);
+					BGR24Frame* frame{ newBGR24Frame(bgr24Frame) };
+					if (frame)
+					{
+						bgr24FrameNew = faceBGR24Queue.insert(frame);
+						if (!bgr24FrameNew)
+						{
+							deleteBGR24Frame(frame);
+						}
+					}
 				}
 
-				if (!bgr24FrameNew)
-				{
-					boost::checked_array_delete(bgr24Frame->frameData);
-					boost::checked_array_delete(bgr24Frame->jpegData);
-					boost::checked_array_delete(bgr24Frame->NVRIp);
-					boost::checked_delete(bgr24Frame);
-				}
+				deleteBGR24Frame(bgr24Frame);
 			}
 		}
 
@@ -304,5 +335,50 @@ int DigitCameraLivestream::refreshSDLVideo(void* ctx /* = NULL */)
 		e.type = SDL_DISPLAYEVENT;
 		SDL_PushEvent(&e);
 		SDL_Delay(1);
+	}
+}
+
+BGR24Frame* DigitCameraLivestream::newBGR24Frame(const BGR24Frame* frame /*= NULL*/)
+{
+	BGR24Frame* bgr24FrameCopyData = NULL;
+
+	if (frame)
+	{
+		bgr24FrameCopyData = new(std::nothrow) BGR24Frame;
+		if (bgr24FrameCopyData)
+		{
+			bgr24FrameCopyData->frameData = new(std::nothrow) char[frame->frameBytes];
+			bgr24FrameCopyData->jpegData = new(std::nothrow) char[frame->jpegBytes];
+			const int iplen{ (int)strlen(frame->NVRIp) };
+			bgr24FrameCopyData->NVRIp = new(std::nothrow) char[iplen + 1];
+
+			if (bgr24FrameCopyData->frameData && bgr24FrameCopyData->jpegData && bgr24FrameCopyData->NVRIp)
+			{
+				bgr24FrameCopyData->frameBytes = frame->frameBytes;
+				memcpy_s(bgr24FrameCopyData->frameData, frame->frameBytes, frame->frameData, frame->frameBytes);
+				memcpy_s(bgr24FrameCopyData->jpegData, frame->jpegBytes, frame->jpegData, frame->jpegBytes);
+				bgr24FrameCopyData->channelIndex = frame->channelIndex;
+				bgr24FrameCopyData->jpegBytes = frame->jpegBytes;
+				bgr24FrameCopyData->NVRIp[iplen] = 0;
+				memcpy_s(bgr24FrameCopyData->NVRIp, iplen, frame->NVRIp, iplen);
+			}
+			else
+			{
+				deleteBGR24Frame(bgr24FrameCopyData);
+			}
+		}
+	}
+
+	return bgr24FrameCopyData;
+}
+
+void DigitCameraLivestream::deleteBGR24Frame(BGR24Frame* frame)
+{
+	if (frame)
+	{
+		boost::checked_array_delete(frame->frameData);
+		boost::checked_array_delete(frame->jpegData);
+		boost::checked_array_delete(frame->NVRIp);
+		boost::checked_delete(frame);
 	}
 }

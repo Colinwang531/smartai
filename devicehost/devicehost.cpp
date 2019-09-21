@@ -172,8 +172,8 @@ static void initAlgorithm(void)
 	if (helmetPtr && sleepPtr && phonePtr && fightPtr && facePtr)
 	{
 		helmetAlgorithmPtr.swap(helmetPtr);
-		phoneAlgorithmPtr.swap(sleepPtr);
-		sleepAlgorithmPtr.swap(phonePtr);
+		phoneAlgorithmPtr.swap(phonePtr);
+		sleepAlgorithmPtr.swap(sleepPtr);
 		fightAlgorithmPtr.swap(fightPtr);
 		faceAlgorithmPtr.swap(facePtr);
 
@@ -187,45 +187,45 @@ static void initAlgorithm(void)
 			LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
 		}
 
-// 		status = sleepAlgorithmPtr->initialize(exePath.c_str(), 0.2f, 0.15f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
-// 		}
-// 
-// 		status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
-// 		}
-// 
-// 		status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
-// 		}
-// 
-// 		status = facePtr->initialize(exePath.c_str());
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize FACE algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize FACE algorithm status Failed.";
-// 		}
+		/*bool*/ status = sleepAlgorithmPtr->initialize(exePath.c_str(), 0.2f, 0.15f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
+		}
+
+		status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
+		}
+
+		status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
+		}
+
+		/*bool*/ status = faceAlgorithmPtr->initialize(exePath.c_str());
+		if (status)
+		{
+			LOG(INFO) << "Initialize FACE algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize FACE algorithm status Failed.";
+		}
 	}
 }
 

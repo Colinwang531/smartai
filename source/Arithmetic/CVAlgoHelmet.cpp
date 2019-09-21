@@ -1,3 +1,4 @@
+#include "boost/format.hpp"
 #include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
 #include "error.h"
@@ -12,10 +13,14 @@ CVAlgoHelmet::CVAlgoHelmet(CaptureAlarmNotifyHandler handler /* = NULL */)
 CVAlgoHelmet::~CVAlgoHelmet()
 {}
 
-bool CVAlgoHelmet::initializeWithParameter(void* parameter /* = NULL */)
+bool CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {
-	int status{ ERR_INVALID_PARAM };
+	bool status{ false };
+	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % configFilePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % configFilePath).str() };
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
+	initParames->cfgfile = (char*)cfgFile.c_str();
+	initParames->weightFile = (char*)weightFile.c_str();
 
 	if (initParames)
 	{
@@ -29,7 +34,6 @@ void CVAlgoHelmet::algorithmWorkerProcess()
 {
 	while (1)
 	{
-//		Sleep(100);
 		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreamGroup.begin(); it != livestreamGroup.end(); it++)
 		{
 			std::vector<void*> bgr24FrameQueue;

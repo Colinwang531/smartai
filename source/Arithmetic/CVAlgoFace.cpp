@@ -136,7 +136,7 @@ bool CVAlgoFace::removeFaceFeature(const char* name /* = NULL */, const long lon
 	return status;
 }
 
-bool CVAlgoFace::initializeWithParameter(void* parameter /* = NULL */)
+bool CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {
 	bool status{ loadFaceFeature() };
 

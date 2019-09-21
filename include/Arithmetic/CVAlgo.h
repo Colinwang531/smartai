@@ -69,7 +69,7 @@ public:
 	int removeLivestream(const std::string streamID);
 
 protected:
-	virtual bool initializeWithParameter(void* parameter = NULL) = 0;
+	virtual bool initializeWithParameter(const char* configFilePath = NULL, void* parameter = NULL) = 0;
 	virtual void algorithmWorkerProcess(void) = 0;
 
 private:

@@ -1,4 +1,3 @@
-#include "boost/format.hpp"
 #include "DefGlobalVar.h"
 #include "error.h"
 #include "Arithmetic/CVAlgo.h"
@@ -16,15 +15,12 @@ CVAlgo::~CVAlgo()
 bool CVAlgo::initialize(
 	const char* configFilePath /* = NULL */, const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */)
 {
-	const std::string cfgFile{ (boost::format("%s\\model\\fight.cfg") % configFilePath).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\fight.weights") % configFilePath).str() };
 	StruInitParams parameters{};
 	parameters.detectThreshold = detectThreshold;
 	parameters.trackThreshold = trackThreshold;
-	parameters.cfgfile = (char*)cfgFile.c_str();
-	parameters.weightFile = (char*)weightFile.c_str();
+	parameters.savePath = (char*)configFilePath;
 
-	bool status{ initializeWithParameter(&parameters) };
+	bool status{ initializeWithParameter(configFilePath, &parameters) };
 
 	if (status)
 	{

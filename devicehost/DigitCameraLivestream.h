@@ -46,6 +46,8 @@ private:
 	void JPEGPFrameEncodeHandler(const char* data = NULL , const int dataBytes = 0 );
 	static int refreshSDLVideo(void* ctx = NULL);
 	static DWORD WINAPI frameDecodeProcessThread(void* ctx = NULL);
+	BGR24Frame* newBGR24Frame(const BGR24Frame* frame = NULL);
+	void deleteBGR24Frame(BGR24Frame* frame);
 
 private:
 	boost::shared_ptr<MediaDecoder> videoStreamDecoderPtr;
