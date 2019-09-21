@@ -20,22 +20,19 @@ NS_BEGIN(stream, 1)
 class HikvisionLivestream : public Livestream
 {
 public:
-	HikvisionLivestream(void);
+	HikvisionLivestream(const unsigned short idx = 0);
 	virtual ~HikvisionLivestream(void);
 
 public:
-	int open(const int userID = -1, const int streamNo = -1) override;
+	int open(const int userID = -1) override;
 	int close(void) override;
 	int capture(
 		const int userID, const int cameraIndex, char*& jpegData, const int jpegBytes = 1024 * 1024) override;
 
 private:
-	static void __stdcall livestreamDataCaptureCallback(
+	static void /*CALLBACK*/__stdcall livestreamDataCaptureCallback(
 		long livesteamID = 0, unsigned long dataType = 0, 
 		unsigned char* streamData = NULL, unsigned long dataBytes = 0, void* ctx = NULL);
-
-protected:
-	int channelIndex;
 };//class HikvisionLivestream
 
 NS_END

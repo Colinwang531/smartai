@@ -21,12 +21,12 @@ NS_BEGIN(algo, 1)
 class CVAlgoPhone : public CVAlgo
 {
 public:
-	CVAlgoPhone(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoPhone(CaptureAlarmNotifyHandler handler = NULL);
 	~CVAlgoPhone(void);
 
 protected:
 	bool initializeWithParameter(void* parameter = NULL) override;
-	void mainWorkerProcess(void) override;
+	void algorithmWorkerProcess(void) override;
 
 private:
 	CPhoneAlgorithmClass phone;

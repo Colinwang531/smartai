@@ -24,7 +24,8 @@ public:
 	virtual ~MediaDecoder(void);
 
 public:
-	virtual int decode(const char* data = NULL, const int dataBytes = 0);
+	virtual int decode(
+		const unsigned char* frameData = NULL, const int frameBytes = 0, const unsigned long long frameNumber = 0);
 };//class MediaDecoder
 
 NS_END

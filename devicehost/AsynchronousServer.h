@@ -4,8 +4,8 @@
 #include <vector>
 #include "boost/shared_ptr.hpp"
 #include "boost/unordered_map.hpp"
-#include "DataStruct/FIFOList.h"
-using FIFOList = NS(datastruct, 1)::FIFOList;
+// #include "DataStruct/FIFOList.h"
+// using FIFOList = NS(datastruct, 1)::FIFOList;
 #include "MQModel/Transfer/TransferModel.h"
 using TransferModel = NS(model, 1)::TransferModel;
 using MQModel = NS(model, 1)::MQModel;
@@ -16,14 +16,14 @@ using HikvisionNVRDevicePtr = boost::shared_ptr<HikvisionDevice>;
 #include "DigitCameraLivestream.h"
 using Livestream = NS(stream, 1)::Livestream;
 using LivestreamPtr = boost::shared_ptr<Livestream>;
-#include "Arithmetic/CVAlgo.h"
-using CVAlgo = NS(algo, 1)::CVAlgo;
+// #include "Arithmetic/CVAlgo.h"
+// using CVAlgo = NS(algo, 1)::CVAlgo;
 
 class AsynchronousServer final : public TransferModel
 {
 public:
 	AsynchronousServer(
-		boost::shared_ptr<CVAlgo> faceAlgo, const unsigned short port = 60532, FIFOList** fqueue = NULL);
+		/*boost::shared_ptr<CVAlgo> faceAlgo, */const unsigned short port = 60532/*, FIFOList** fqueue = NULL*/);
 	~AsynchronousServer(void);
 
 protected:
@@ -81,8 +81,8 @@ private:
 	std::vector<MQModelPtr> workerModels;
 	boost::unordered_map<const std::string, HikvisionNVRDevicePtr> hikvisionNVRDevices;
 	boost::unordered_map<const std::string, LivestreamPtr> livestreams;
-	FIFOList** bgr24FrameQueue;
-	boost::shared_ptr<CVAlgo> cvAlgoFacePtr;
+//	FIFOList** bgr24FrameQueue;
+//	boost::shared_ptr<CVAlgo> cvAlgoFacePtr;
 };//class AsynchronousServer
 
 #endif//ASYNCHRONOUS_SERVER_H

@@ -35,7 +35,7 @@ typedef struct tagFaceFeature_t
 class CVAlgoFace : public CVAlgo
 {
 public:
-	CVAlgoFace(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoFace(CaptureAlarmNotifyHandler handler = NULL);
 	~CVAlgoFace(void);
 
 public:
@@ -46,8 +46,7 @@ public:
 
 protected:
 	bool initializeWithParameter(void* parameter = NULL) override;
-	void mainWorkerProcess(void) override;
-	void subWorkerProcess(void) override;
+	void algorithmWorkerProcess(void) override;
 
 private:
 	bool loadFaceFeature(void);

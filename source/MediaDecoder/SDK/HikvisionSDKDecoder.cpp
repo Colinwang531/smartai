@@ -18,22 +18,23 @@ HikvisionSDKDecoder::~HikvisionSDKDecoder(void)
 	}
 }
 
-int HikvisionSDKDecoder::decode(const char* data /* = NULL */, const int dataBytes /* = 0 */)
+int HikvisionSDKDecoder::decode(
+	const unsigned char* frameData /* = NULL */, const int frameBytes /* = 0 */, const unsigned long long frameNumber /* = 0 */)
 {
-	int status{ MediaDecoder::decode(data, dataBytes) };
+	int status{ MediaDecoder::decode(frameData, frameBytes, frameNumber) };
 
 	if (ERR_OK == status)
 	{
 		if (-1 < decoderID)
 		{
-			status = PlayM4_InputData(decoderID, (BYTE*)data, dataBytes) ? ERR_OK : ERR_BAD_OPERATE;
+			status = PlayM4_InputData(decoderID, const_cast<BYTE*>(frameData), frameBytes) ? ERR_OK : ERR_BAD_OPERATE;
 		}
 		else
 		{
 			if (PlayM4_GetPort(&decoderID) && -1 < decoderID)
 			{
 				PlayM4_SetStreamOpenMode(decoderID, STREAME_REALTIME);
-				PlayM4_OpenStream(decoderID, (BYTE*)data, dataBytes, 3145728);
+				PlayM4_OpenStream(decoderID, const_cast<BYTE*>(frameData), frameBytes, 3145728);
 				PlayM4_SetDecCallBackExMend(decoderID, &HikvisionSDKDecoder::decodeFrameInfoCallback, NULL, 0, this);
 				//HARD_DECODE_ENGINE / SOFT_DECODE_ENGINE
 				PlayM4_SetDecodeEngineEx(decoderID, SOFT_DECODE_ENGINE);
@@ -61,7 +62,7 @@ void HikvisionSDKDecoder::decodeFrameInfoCallback(
 		if (T_YV12 == frameInfo->nType)
 		{
 			decoder->frameDataDecodeHandler(
-				decodeFrame, frameBytes, DECODE_FRAME_VIDEO, frameInfo->nWidth, frameInfo->nHeight);
+				decodeFrame, frameBytes, 0, DECODE_FRAME_VIDEO, frameInfo->nWidth, frameInfo->nHeight);
 		}
 		else if (T_AUDIO16 == frameInfo->nType)
 		{

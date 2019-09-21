@@ -21,12 +21,12 @@ NS_BEGIN(algo, 1)
 class CVAlgoFight : public CVAlgo
 {
 public:
-	CVAlgoFight(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoFight(CaptureAlarmNotifyHandler handler = NULL);
 	~CVAlgoFight(void);
 
 protected:
 	bool initializeWithParameter(void* parameter = NULL) override;
-	void mainWorkerProcess(void) override;
+	void algorithmWorkerProcess(void) override;
 
 private:
 	CFightAlgorithmClass fight;

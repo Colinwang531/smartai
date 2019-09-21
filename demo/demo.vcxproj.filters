@@ -13,6 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Decoder">
+      <UniqueIdentifier>{9f63466b-a33c-468a-9e69-c64cecccbe9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Decoder\CUDA">
+      <UniqueIdentifier>{dddaad0e-ae15-463a-b0f6-f4cc7b96335c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoder">
+      <UniqueIdentifier>{2ed4cba0-72d8-459d-a3fd-f02e25f59862}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoder\CUDA">
+      <UniqueIdentifier>{08d6da29-c74d-4c33-8e35-b2584c0a5489}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost">
+      <UniqueIdentifier>{a5592894-c6a7-48c2-bcff-7ffc3d46c897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\system">
+      <UniqueIdentifier>{7919d036-86be-4bce-8d9f-86f8c683e09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\thread">
+      <UniqueIdentifier>{8b3b7ac5-bf26-4b9a-ade6-ff8d7b7aa0b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="demo.h">
@@ -33,10 +54,19 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FFmpegDemuxer.h">
+    <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h">
+      <Filter>Header Files\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h">
+      <Filter>Header Files\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDecoder\CUDA\CUDAVideoDecoder.h">
+      <Filter>Header Files\Decoder\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NvCodecUtils.h">
+    <ClInclude Include="..\include\predef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -49,6 +79,30 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp">
+      <Filter>Source Files\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp">
+      <Filter>Source Files\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDecoder\CUDA\CUDAVideoDecoder.cpp">
+      <Filter>Source Files\Decoder\CUDA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp">
+      <Filter>Source Files\boost\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp">
+      <Filter>Source Files\boost\thread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

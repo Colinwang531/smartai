@@ -1,12 +1,12 @@
+#include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
 #include "error.h"
 #include "Arithmetic/CVAlgoHelmet.h"
 
 NS_BEGIN(algo, 1)
 
-CVAlgoHelmet::CVAlgoHelmet(
-	FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
-	: CVAlgo(fqueue, handler)
+CVAlgoHelmet::CVAlgoHelmet(CaptureAlarmNotifyHandler handler /* = NULL */)
+	: CVAlgo(handler)
 {}
 
 CVAlgoHelmet::~CVAlgoHelmet()
@@ -19,48 +19,59 @@ bool CVAlgoHelmet::initializeWithParameter(void* parameter /* = NULL */)
 
 	if (initParames)
 	{
-		status = helmet.InitAlgoriParam(imageWidth, imageHeight, channelNumber, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
+		status = helmet.InitAlgoriParam(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
 }
 
-void CVAlgoHelmet::mainWorkerProcess()
+void CVAlgoHelmet::algorithmWorkerProcess()
 {
 	while (1)
 	{
-		BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(frameQueue->getFront()) };
-
-		if (frame)
+//		Sleep(100);
+		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreamGroup.begin(); it != livestreamGroup.end(); it++)
 		{
-			frameQueue->popFront();
-			FeedBackHelmet feedback;
-			if (helmet.MainProcFunc((unsigned char*)frame->frameData, feedback))
+			std::vector<void*> bgr24FrameQueue;
+			it->second->queue(ALGO_HELMET, bgr24FrameQueue);
+
+			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
-				DetectNotify dectectNotify;
-				std::vector<DetectNotify> detectNotifies;
+				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
+ 				FeedBackHelmet feedback;
+// 				unsigned long long lastKnownTime = GetTickCount64();
+				bool result{ helmet.MainProcFunc((unsigned char*)frame->frameData, feedback) };
+// 				unsigned long long currentTime = GetTickCount64();
+// 				printf("[Helmet] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());
 
-				for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
+				if (result)
 				{
-					dectectNotify.type = ALGO_HELMET;
-					dectectNotify.x = feedback.vecShowInfo[i].rRect.x;
-					dectectNotify.y = feedback.vecShowInfo[i].rRect.y;
-					dectectNotify.w = feedback.vecShowInfo[i].rRect.width;
-					dectectNotify.h = feedback.vecShowInfo[i].rRect.height;
-					dectectNotify.status = feedback.vecShowInfo[i].nLabel;
-					detectNotifies.push_back(dectectNotify);
+					DetectNotify dectectNotify;
+					std::vector<DetectNotify> detectNotifies;
+
+					for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
+					{
+						dectectNotify.type = ALGO_HELMET;
+						dectectNotify.x = feedback.vecShowInfo[i].rRect.x;
+						dectectNotify.y = feedback.vecShowInfo[i].rRect.y;
+						dectectNotify.w = feedback.vecShowInfo[i].rRect.width;
+						dectectNotify.h = feedback.vecShowInfo[i].rRect.height;
+						dectectNotify.status = feedback.vecShowInfo[i].nLabel;
+						detectNotifies.push_back(dectectNotify);
+					}
+
+					if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
+					{
+						captureAlarmNotifyHandler(frame, detectNotifies);
+					}
 				}
 
-				if (0 < detectNotifies.size() && cvAlgoDetectNotifyHandler)
-				{
-					cvAlgoDetectNotifyHandler(frame, detectNotifies);
-				}
+				boost::checked_array_delete(frame->frameData);
+				boost::checked_array_delete(frame->jpegData);
+				boost::checked_array_delete(frame->NVRIp);
+				boost::checked_delete(frame);
+				it = bgr24FrameQueue.erase(it);
 			}
-
-			boost::checked_array_delete(frame->frameData);
-			boost::checked_array_delete(frame->jpegData);
-			boost::checked_array_delete(frame->NVRIp);
-			boost::checked_delete(frame);
 		}
 	}
 }

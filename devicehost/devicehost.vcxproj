@@ -98,7 +98,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\hiksdk\x64\HCNetSDKCom;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\lib\x64;$(SolutionDir)lib\algo\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -291,7 +291,6 @@
     <ClCompile Include="..\source\Arithmetic\CVAlgoHelmet.cpp" />
     <ClCompile Include="..\source\Arithmetic\CVAlgoPhone.cpp" />
     <ClCompile Include="..\source\Arithmetic\CVAlgoSleep.cpp" />
-    <ClCompile Include="..\source\DataStruct\FIFOList.cpp" />
     <ClCompile Include="..\source\Device\Device.cpp" />
     <ClCompile Include="..\source\Device\Hikvision\HikvisionDevice.cpp" />
     <ClCompile Include="..\source\Device\Hikvision\HikvisionNVR.cpp" />
@@ -353,7 +352,7 @@
     <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h" />
     <ClInclude Include="..\include\Arithmetic\CVAlgoPhone.h" />
     <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h" />
-    <ClInclude Include="..\include\DataStruct\FIFOList.h" />
+    <ClInclude Include="..\include\DataStruct\FIFOQueue.h" />
     <ClInclude Include="..\include\Device\Configing.h" />
     <ClInclude Include="..\include\Device\Device.h" />
     <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h" />

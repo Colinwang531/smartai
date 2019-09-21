@@ -21,12 +21,12 @@ NS_BEGIN(algo, 1)
 class CVAlgoSleep : public CVAlgo
 {
 public:
-	CVAlgoSleep(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoSleep(CaptureAlarmNotifyHandler handler = NULL);
 	~CVAlgoSleep(void);
 
 protected:
 	bool initializeWithParameter(void* parameter = NULL) override;
-	void mainWorkerProcess(void) override;
+	void algorithmWorkerProcess(void) override;
 
 private:
 	CSleepAlgorithmClass sleep;

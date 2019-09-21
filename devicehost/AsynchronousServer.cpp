@@ -18,15 +18,20 @@
 #include "MQModel/Worker/WorkerModel.h"
 using WorkerModel = NS(model, 1)::WorkerModel;
 #include "Arithmetic/CVAlgoFace.h"
+using CVAlgo = NS(algo, 1)::CVAlgo;
 using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 #include "AsynchronousServer.h"
 
+extern boost::shared_ptr<CVAlgo> helmetAlgorithmPtr;
+extern boost::shared_ptr<CVAlgo> phoneAlgorithmPtr;
+extern boost::shared_ptr<CVAlgo> sleepAlgorithmPtr;
+extern boost::shared_ptr<CVAlgo> fightAlgorithmPtr;
+extern boost::shared_ptr<CVAlgo> faceAlgorithmPtr;
 extern int sailingStatus;
 extern int autoCheckSwitch;
 
-AsynchronousServer::AsynchronousServer(
-	boost::shared_ptr<CVAlgo> faceAlgo, const unsigned short port /* = 60532 */, FIFOList** fqueue /* = NULL */)
-	: TransferModel(port), bgr24FrameQueue{ fqueue }, cvAlgoFacePtr{ faceAlgo }
+AsynchronousServer::AsynchronousServer(const unsigned short port /* = 60532 */)
+	: TransferModel(port)//, bgr24FrameQueue{ fqueue }, cvAlgoFacePtr{ faceAlgo }
 {}
 
 AsynchronousServer::~AsynchronousServer()
@@ -124,13 +129,6 @@ int AsynchronousServer::setNVR(
 		boost::unordered_map<const std::string, HikvisionNVRDevicePtr>::iterator it{ hikvisionNVRDevices.find(ipaddr) };
 		if (hikvisionNVRDevices.end() != it)
 		{
-			//Remove all cameras.
-// 			for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); ++it)
-// 			{
-// 				it->second->close();
-// 			}
-// 			livestreams.clear();
-
 			it->second->logout();
 			hikvisionNVRDevices.erase(it);
 			result = 1;
@@ -201,32 +199,43 @@ int AsynchronousServer::setCamera(
 	boost::unordered_map<const std::string, HikvisionNVRDevicePtr>::iterator it{ hikvisionNVRDevices.find(ipaddr) };
 	if (hikvisionNVRDevices.end() != it)
 	{
-		const std::string NVRIpAddr{ (boost::format("%s_%d") % ipaddr % *cameraIndex).str() };
+		const std::string streamID{ (boost::format("%s_%d") % ipaddr % *cameraIndex).str() };
 
 		if (0 < *algoFlag)
 		{
 			result = 1;
-			boost::unordered_map<const std::string, LivestreamPtr>::iterator iter = livestreams.find(NVRIpAddr);
+			boost::unordered_map<const std::string, LivestreamPtr>::iterator iter = livestreams.find(streamID);
 
 			if (livestreams.end() == iter)
 			{
-				boost::shared_ptr<Livestream> livestreamPtr{
-					boost::make_shared<DigitCameraLivestream>(ipaddr, bgr24FrameQueue, *algoFlag) };
+				boost::shared_ptr<Livestream> livestreamPtr{ boost::make_shared<DigitCameraLivestream>(ipaddr, *cameraIndex) };
 				if (livestreamPtr)
 				{
-					const int status{ livestreamPtr->open(it->second->getUserID(), *cameraIndex) };
-					livestreams.insert(std::make_pair(NVRIpAddr, livestreamPtr));
-					LOG(INFO) << "Add live stream " << NVRIpAddr << " and " << "ALGO mask "<< *algoFlag << ".";
+					boost::shared_ptr<DigitCameraLivestream> digitCameraLivestreamPtr{
+						boost::dynamic_pointer_cast<DigitCameraLivestream>(livestreamPtr) };
+					if (digitCameraLivestreamPtr)
+					{
+						digitCameraLivestreamPtr->setAlgoAbility(*algoFlag);
+						helmetAlgorithmPtr->addLivestream(streamID, livestreamPtr);
+						phoneAlgorithmPtr->addLivestream(streamID, livestreamPtr);
+						sleepAlgorithmPtr->addLivestream(streamID, livestreamPtr);
+						fightAlgorithmPtr->addLivestream(streamID, livestreamPtr);
+						faceAlgorithmPtr->addLivestream(streamID, livestreamPtr);
+					}
+
+					const int status{ livestreamPtr->open(it->second->getUserID()) };
+					livestreams.insert(std::make_pair(streamID, livestreamPtr));
+					LOG(INFO) << "Add live stream " << streamID << ", algorithm ability "<< *algoFlag << ".";
 				}
 			} 
 			else
 			{
-				boost::shared_ptr<DigitCameraLivestream> livestreamPtr{ 
+				boost::shared_ptr<DigitCameraLivestream> digitCameraLivestreamPtr{
 					boost::dynamic_pointer_cast<DigitCameraLivestream>(iter->second) };
-				if (livestreamPtr)
+				if (digitCameraLivestreamPtr)
 				{
-					livestreamPtr->modifyAlgoMask(*algoFlag);
-					LOG(INFO) << "Modify live stream " << NVRIpAddr << " ALGO mask " << *algoFlag << ".";
+					digitCameraLivestreamPtr->setAlgoAbility(*algoFlag);
+					LOG(INFO) << "Set live stream " << streamID << " algorithm ability to " << *algoFlag << ".";
 				}
 			}
 		}
@@ -237,9 +246,14 @@ int AsynchronousServer::setCamera(
 			if (livestreams.end() != it)
 			{
 				it->second->close();
+				helmetAlgorithmPtr->removeLivestream(streamID);
+				phoneAlgorithmPtr->removeLivestream(streamID);
+				sleepAlgorithmPtr->removeLivestream(streamID);
+				fightAlgorithmPtr->removeLivestream(streamID);
+				faceAlgorithmPtr->removeLivestream(streamID);
 				livestreams.erase(it);
 				result = 1;
-				LOG(WARNING) << "Remove live stream " << NVRIpAddr;
+				LOG(WARNING) << "Remove live stream " << streamID;
 			}
 		}
 	}
@@ -326,7 +340,7 @@ int AsynchronousServer::registerFace(
 	bool status{ false };
 	std::string replyStr;
 	boost::shared_ptr<CVAlgoFace> facePtr{ 
-		boost::dynamic_pointer_cast<CVAlgoFace>(cvAlgoFacePtr) };
+		boost::dynamic_pointer_cast<CVAlgoFace>(faceAlgorithmPtr) };
 	if (facePtr)
 	{
 		const std::string executePath{

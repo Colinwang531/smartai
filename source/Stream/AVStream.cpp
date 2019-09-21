@@ -2,7 +2,7 @@
 
 NS_BEGIN(stream, 1)
 
-AVStream::AVStream() : streamNumber{ -1 }
+AVStream::AVStream()
 {}
 
 AVStream::~AVStream()

@@ -89,18 +89,18 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)lib\CUDA-9.0.20\include;$(SolutionDir)lib\ffmpeg-4.1.4\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)lib\CUDA-9.0.20\include;$(SolutionDir)lib\ffmpeg-4.1.4\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\include;$(SolutionDir)include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\CUDA-9.0.20\Lib\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\lib\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>nvcuvid.lib;cuda.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib</AdditionalDependencies>
+      <AdditionalDependencies>DXGI.lib;nvcuvid.lib;cuda.lib;d3d11.lib;d3dcompiler.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -191,16 +191,27 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\error.h" />
+    <ClInclude Include="..\include\MediaDecoder\CUDA\CUDAVideoDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
+    <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h" />
+    <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="demo.h" />
     <ClInclude Include="demoDlg.h" />
-    <ClInclude Include="FFmpegDemuxer.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="NvCodecUtils.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp" />
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\CUDA\CUDAVideoDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp" />
     <ClCompile Include="demo.cpp" />
     <ClCompile Include="demoDlg.cpp" />
     <ClCompile Include="pch.cpp">

@@ -20,7 +20,7 @@ typedef struct _StruInitParams
 		trackThreshold = 0.3f;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = (char*)"";// "D:/SavePath/";
+		savePath = NULL;
 	}
 }StruInitParams;
 

@@ -8,7 +8,9 @@
 #include "demoDlg.h"
 #include "afxdialogex.h"
 
-#include "FFmpegDemuxer.h"
+#include "MediaDecoder/CUDA/CUDAVideoDecoder.h"
+using CUDAVideoDecoder = NS(decoder, 1)::CUDAVideoDecoder;
+using MediaDecoder = NS(decoder, 1)::MediaDecoder;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -53,7 +55,7 @@ END_MESSAGE_MAP()
 
 
 CdemoDlg::CdemoDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_DEMO_DIALOG, pParent)
+	: CDialogEx(IDD_DEMO_DIALOG, pParent), dxgiAdapter{ NULL }
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -68,6 +70,7 @@ BEGIN_MESSAGE_MAP(CdemoDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_COMMAND(ID_OPEN_FILE, &CdemoDlg::OnOpenFile)
 END_MESSAGE_MAP()
 
 
@@ -104,84 +107,25 @@ BOOL CdemoDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
+	menu.LoadMenu(IDR_MENU1);
+	SetMenu(&menu);
 	DWORD currentLogListStyle{ logListCtrl.GetExtendedStyle() };
 	logListCtrl.SetExtendedStyle(currentLogListStyle | LVS_EX_GRIDLINES | LVS_EX_FULLROWSELECT);
 	logListCtrl.InsertColumn(0, L"Function Name");
 	logListCtrl.InsertColumn(1, L"Invoke result");
+	logListCtrl.InsertColumn(2, L"Message");
 	CRect currentLogListRect;
 	logListCtrl.GetClientRect(&currentLogListRect);
-	const int displayWidthPerCol{ currentLogListRect.Width() / 2 };
+	const int displayWidthPerCol{ currentLogListRect.Width() / 3 };
 	logListCtrl.SetColumnWidth(0, displayWidthPerCol);
 	logListCtrl.SetColumnWidth(1, displayWidthPerCol);
+	logListCtrl.SetColumnWidth(2, displayWidthPerCol);
 
-	//cuInit
-	CUresult result{ cuInit(0) };
-	insertLogItem(L"cuInit", result);
+	statusBarCtrl.Create(WS_CHILD | WS_VISIBLE | SBT_OWNERDRAW, CRect(0, 0, 0, 0), this, 0xFDEF);
+	int statusBarParts[]{ 180, 360, 200, 200, 200, 200, 200, 200, -1 };
+	statusBarCtrl.SetParts(9, statusBarParts);
 
-	//cuDeviceGetCount
-	int deviceCount{ 0 };
-	result = cuDeviceGetCount(&deviceCount);
-	insertLogItem(L"cuDeviceGetCount", result);
-
-	for (int i = 0; i != deviceCount; ++i)
-	{
-		CUdevice cuDevice{ NULL };
-
-		//cuDeviceGet
-		result = cuDeviceGet(&cuDevice, i);
-		insertLogItem(L"cuDeviceGet", result);
-
-		if (CUDA_SUCCESS == result)
-		{
-			char deviceName[100]{ 0 };
-			//cuDeviceGetName
-			result = cuDeviceGetName(deviceName, sizeof(deviceName), cuDevice);
-			insertLogItem(L"cuDeviceGetName", result);
-
-			if (CUDA_SUCCESS == result)
-			{
-				CString deviceNameUsingWideBytes{ deviceName };
-				((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->InsertItem(deviceNameUsingWideBytes);
-				cuDevices.push_back(cuDevice);
-			}
-		}
-	}
-
-	for (int i = 0; i != cuDevices.size(); ++i)
-	{
-		CUcontext ctx{ NULL };
-
-		//cuCtxCreate
-		result = cuCtxCreate(&ctx, CU_CTX_SCHED_AUTO, cuDevices[i]);
-		insertLogItem(L"cuCtxCreate", result);
-		if (CUDA_SUCCESS == result)
-		{
-			//cuvidCtxLockCreate
-			result = cuvidCtxLockCreate(&cuVideoCtxLock, ctx);
-			insertLogItem(L"cuvidCtxLockCreate", result);
-
-			if (CUDA_SUCCESS == result)
-			{
-				CUVIDPARSERPARAMS videoParserParameters{};
-				videoParserParameters.CodecType = cudaVideoCodec_H264;
-				videoParserParameters.ulMaxNumDecodeSurfaces = 1;
-				videoParserParameters.ulMaxDisplayDelay = 0;// bLowLatency ? 0 : 1;
-				videoParserParameters.pUserData = this;
-				videoParserParameters.pfnSequenceCallback = handleVideoSequenceCallback;
-				videoParserParameters.pfnDecodePicture = handlePictureDecodeCallback;
-				videoParserParameters.pfnDisplayPicture = handlePictureDisplayCallback;
-
-				//cuvidCreateVideoParser
-				result = cuvidCreateVideoParser(&cuVideoParser, &videoParserParameters);
-				insertLogItem(L"cuvidCreateVideoParser", result);
-
-				DWORD threadID{ 0 };
-				CreateThread(NULL, 0, &CdemoDlg::decodeFrameThread, this, 0, &threadID);
-			}
-		}
-
-		cuContext.push_back(ctx);
-	}
+	initCudaDriver();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -235,121 +179,176 @@ HCURSOR CdemoDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CdemoDlg::insertLogItem(const CString function, const CUresult result)
+void CdemoDlg::initCudaDriver(void)
 {
-	int currentColumeNumber{ logListCtrl.InsertItem(logListCtrl.GetItemCount(), function) };
-	CString resultStr;
-	resultStr.Format(L"%d", result);
-	logListCtrl.SetItemText(currentColumeNumber, 1, resultStr);
-}
+	CUresult cuResult{ cuInit(0) };
+	insertLogItem(L"cuInit", cuResult);
 
-int CdemoDlg::handleVideoSequenceCallback(void* ctx /* = NULL */, CUVIDEOFORMAT* cuVideoFormat /* = NULL */)
-{ 
-	return ((CdemoDlg*)ctx)->videoSequenceProcess(cuVideoFormat);
-}
+	int driverVersion{ 0 };
+	cuResult = cuDriverGetVersion(&driverVersion);
+	insertLogItem(L"cuDriverGetVersion", cuResult);
+	CString driverVersionStr;
+	driverVersionStr.Format(L"CUDA driver version : %d", driverVersion);
+	statusBarCtrl.SetText(driverVersionStr, 0, 0);
 
-int CdemoDlg::handlePictureDecodeCallback(void* ctx /* = NULL */, CUVIDPICPARAMS* cuvidPictureParams /* = NULL */)
-{ 
-	return ((CdemoDlg*)ctx)->pictureDecodeProcess(cuvidPictureParams);
-}
+	int deviceCount{ 0 };
+	cuResult = cuDeviceGetCount(&deviceCount);
+	insertLogItem(L"cuDeviceGetCount", cuResult);
+	CString driverCountStr;
+	driverCountStr.Format(L"CUDA driver count : %d", deviceCount);
+	statusBarCtrl.SetText(driverCountStr, 1, 0);
 
-int CdemoDlg::handlePictureDisplayCallback(void* ctx /* = NULL */, CUVIDPARSERDISPINFO* cuvidParserDisplayInfo /* = NULL */)
-{ 
-	return ((CdemoDlg*)ctx)->pictureDisplayProcess(cuvidParserDisplayInfo);
-}
-
-int CdemoDlg::videoSequenceProcess(CUVIDEOFORMAT* cuVideoFormat /*= NULL*/)
-{
-	//cuCtxPushCurrent
-	CUresult result{ cuCtxPushCurrent(cuContext[0]) };
-	insertLogItem(L"cuCtxPushCurrent", result);
-
-	if (CUDA_SUCCESS == result)
+	for (int i = 0; i != deviceCount; ++i)
 	{
-		CUVIDDECODECREATEINFO cuvidDecoderCreateInfo{ 0 };
-		cuvidDecoderCreateInfo.ulWidth = cuVideoFormat->coded_width;
-		cuvidDecoderCreateInfo.ulHeight = cuVideoFormat->coded_height;
-		cuvidDecoderCreateInfo.ulNumDecodeSurfaces = 1;// 20;
-		cuvidDecoderCreateInfo.CodecType = cudaVideoCodec_H264;
-		cuvidDecoderCreateInfo.ChromaFormat = cuVideoFormat->chroma_format;
-		cuvidDecoderCreateInfo.ulCreationFlags = cudaVideoCreate_PreferCUVID;
-		cuvidDecoderCreateInfo.bitDepthMinus8 = cuVideoFormat->bit_depth_luma_minus8;
-		cuvidDecoderCreateInfo.ulIntraDecodeOnly = 0;
-		cuvidDecoderCreateInfo.ulMaxWidth = 4096;// cuVideoFormat->coded_width;
-		cuvidDecoderCreateInfo.ulMaxHeight = 2160;// cuVideoFormat->coded_height;
-		cuvidDecoderCreateInfo.OutputFormat = cudaVideoSurfaceFormat_NV12;
-		cuvidDecoderCreateInfo.DeinterlaceMode = cudaVideoDeinterlaceMode_Weave;
-		cuvidDecoderCreateInfo.ulNumOutputSurfaces = 1;// 2;
-		cuvidDecoderCreateInfo.vidLock = cuVideoCtxLock;
+		CUdevice cuDevice{ 0 };
+		cuResult = cuDeviceGet(&cuDevice, i);
+		insertLogItem(L"cuDeviceGet", cuResult);
 
-		//cuvidCreateDecoder
-		result = cuvidCreateDecoder(&cuVideoDecoder, &cuvidDecoderCreateInfo);
-		insertLogItem(L"cuvidCreateDecoder", result);
-		//cuCtxPopCurrent
-		result = cuCtxPopCurrent(&cuContext[0]);
-		insertLogItem(L"cuCtxPopCurrent", result);
-	}
+		CUcontext cuContext{ NULL };
+		cuResult = cuCtxCreate(&cuContext, CU_CTX_SCHED_AUTO, cuDevice);
+		insertLogItem(L"cuCtxCreate", cuResult);
 
-	return 1;
-}
-
-int CdemoDlg::pictureDecodeProcess(CUVIDPICPARAMS* cuvidPictureParams /*= NULL*/)
-{
-	if (cuVideoDecoder)
-	{
-		//cuCtxPopCurrent
-		CUresult result{ cuvidDecodePicture(cuVideoDecoder, cuvidPictureParams) };
-		if (CUDA_SUCCESS != result)
+		if (-1 < cuDevice)
 		{
-			insertLogItem(L"cuvidDecodePicture", result);
-		}
-	}
+			cuDevices.push_back(cuDevice);
+			cuContexts.push_back(cuContext);
 
-	return 1;
-}
+			char deviceName[256]{ 0 };
+			cuResult = cuDeviceGetName(deviceName, 256, cuDevice);
+			insertLogItem(L"cuDeviceGetName", cuResult);
 
-int CdemoDlg::pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisplayInfo /*= NULL*/)
-{
-	return 0;
-}
-
-DWORD CdemoDlg::decodeFrameThread(LPVOID lpThreadParameter /* = NULL */)
-{
-	CdemoDlg* demo = reinterpret_cast<CdemoDlg*>(lpThreadParameter);
-
-	if (demo)
-	{
-// 		FFmpegDemuxer ffDemuxer{
-// 			"d:\\download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv"};
-		FFmpegDemuxer ffDemuxer{
-			"d:\\download\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4" };
-		AVCodecID codecID{ ffDemuxer.GetVideoCodec() };
-		const int imageWidth{ ffDemuxer.GetWidth() }, imageHeight{ ffDemuxer.GetHeight() };
-		long long totalFileDataBytes = 0;
-
-		while(1)
-		{
-			uint8_t* demuxVideoData{ NULL };
-			int demuxVideoBytes{ 0 };
-			ffDemuxer.Demux(&demuxVideoData, &demuxVideoBytes);
-			totalFileDataBytes += demuxVideoBytes;
-
-			CUVIDSOURCEDATAPACKET cuvidSourceDataPacket{ 0 };
-			cuvidSourceDataPacket.payload = demuxVideoData;
-			cuvidSourceDataPacket.payload_size = demuxVideoBytes;
-			cuvidSourceDataPacket.flags |= CUVID_PKT_TIMESTAMP;
-			cuvidSourceDataPacket.timestamp = GetTickCount64();
-
-			//cuvidCreateVideoParser
-			CUresult result{ cuvidParseVideoData(demo->cuVideoParser, &cuvidSourceDataPacket) };
-//			demo->insertLogItem(L"cuvidParseVideoData", result);
-
-			if (!demuxVideoData && !demuxVideoBytes)
+			if (CUDA_SUCCESS == cuResult)
 			{
-				break;
+				CString deviceNameStr{ deviceName };
+				HTREEITEM hTreeParent{ ((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->InsertItem(deviceNameStr) };
+
+				CUuuid cuUUID{ 0 };
+				cuResult = cuDeviceGetUuid(&cuUUID, cuDevice);
+				insertLogItem(L"cuDeviceGetUuid", cuResult);
+				if (CUDA_SUCCESS == cuResult)
+				{
+					CString deviceUUIDStr;
+					deviceUUIDStr.Format(L"UUID : [%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d]", 
+						cuUUID.bytes[0], cuUUID.bytes[1], cuUUID.bytes[2], cuUUID.bytes[3],
+						cuUUID.bytes[4], cuUUID.bytes[5], cuUUID.bytes[6], cuUUID.bytes[7], 
+						cuUUID.bytes[8], cuUUID.bytes[9], cuUUID.bytes[10], cuUUID.bytes[11], 
+						cuUUID.bytes[12], cuUUID.bytes[13], cuUUID.bytes[14], cuUUID.bytes[15]);
+					((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->InsertItem(deviceUUIDStr, hTreeParent);
+				}
+
+				std::size_t deviceTotalMemory{ 0 };
+				cuResult = cuDeviceTotalMem(&deviceTotalMemory, cuDevice);
+				insertLogItem(L"cuDeviceTotalMem", cuResult);
+				if (CUDA_SUCCESS == cuResult)
+				{
+					CString deviceTotalMemStr;
+					deviceTotalMemStr.Format(L"Memory size : [%llu (Bytes)]", deviceTotalMemory);
+					((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->InsertItem(deviceTotalMemStr, hTreeParent);
+				}
+
+				((CTreeCtrl*)GetDlgItem(IDC_DEVICE_LIST))->Expand(hTreeParent, TVE_EXPAND);
 			}
 		}
 	}
 
+}
+
+void CdemoDlg::initCudaDecoder(void)
+{
+// 	for (int i = 0; i != cuDevices.size(); ++i)
+// 	{
+// 		CUcontext ctx{ NULL };
+// 		CUresult cuResult{ cuCtxCreate(&ctx, CU_CTX_SCHED_AUTO, cuDevices[i]) };
+// 		insertLogItem(L"cuCtxCreate", cuResult);
+// 
+// 		if (CUDA_SUCCESS == cuResult)
+// 		{
+// 			cuResult = cuvidCtxLockCreate(&cuVideoCtxLock, ctx);
+// 			insertLogItem(L"cuvidCtxLockCreate", cuResult);
+// 
+// 		}
+// 
+// 		cuContext.push_back(ctx);
+// 	}
+}
+
+void CdemoDlg::initCudaD3d11Renderer(void)
+{
+// 	IDXGIFactory* dxgiFactory{ NULL };
+// 	HRESULT hResult{ CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)& dxgiFactory) };
+// 
+// 	if (SUCCEEDED(hResult))
+// 	{
+// 		for (int i = 0; i != 100; ++i)
+// 		{
+// 			IDXGIAdapter* adapter{ NULL };
+// 			hResult = dxgiFactory->EnumAdapters(i, &adapter);
+// 
+// 			if (FAILED(hResult))
+// 			{
+// 				break;
+// 			}
+// 
+// 			int cudaDevice{ -1 };
+// 			cudaError error = cudaD3D11GetDevice(&cudaDevice, adapter);
+// 			insertLogItem(L"cudaD3D11GetDevice", error);
+// 
+// 			if (cudaSuccess == error)
+// 			{
+// 				dxgiAdapter = adapter;
+// 				dxgiAdapter->AddRef();
+// 			}
+// 
+// 			adapter->Release();
+// 		}
+// 	}
+}
+
+void CdemoDlg::insertLogItem(const CString function, const CUresult error)
+{
+	int currentColumeNumber{ logListCtrl.InsertItem(logListCtrl.GetItemCount(), function) };
+	CString errorNum, errorStr;
+	errorNum.Format(L"%d", error);
+//	errorStr.Format(L"%s", cudaGetErrorString(error));
+	logListCtrl.SetItemText(currentColumeNumber, 1, errorNum);
+//	logListCtrl.SetItemText(currentColumeNumber, 2, errorStr);
+}
+
+DWORD CdemoDlg::decodeFrameThread(LPVOID ctx /* = NULL */)
+{
+	CdemoDlg* demo = reinterpret_cast<CdemoDlg*>(ctx);
+
+	if (demo)
+	{
+		MediaDecoder* mediaDecoder = new CUDAVideoDecoder(demo->cuContexts[0]);
+
+		if (mediaDecoder)
+		{
+			int len = WideCharToMultiByte(CP_ACP, 0, demo->openFilePath, demo->openFilePath.GetLength(), NULL, 0, NULL, NULL);
+			char filePath[MAX_PATH]{ 0 };
+			WideCharToMultiByte(CP_ACP, 0, demo->openFilePath, demo->openFilePath.GetLength(), filePath, len, NULL, NULL);
+			mediaDecoder->decode(filePath);
+			delete mediaDecoder;
+		}
+	}
+
 	return 0;
+}
+
+
+void CdemoDlg::OnOpenFile()
+{
+	// TODO: Add your command handler code here
+
+	CFileDialog fd(TRUE);
+	if (IDOK == fd.DoModal())
+	{
+		openFilePath = fd.GetPathName();
+
+		if (!openFilePath.IsEmpty())
+		{
+			DWORD threadID{ 0 };
+			CreateThread(NULL, 0, &CdemoDlg::decodeFrameThread, this, 0, &threadID);
+		}
+	}
 }

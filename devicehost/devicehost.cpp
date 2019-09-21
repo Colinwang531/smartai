@@ -45,26 +45,18 @@ using ComPort = NS(com, 1)::ComPort;
 
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
-boost::shared_ptr<CVAlgo> cvAlgoHelmetPtr;
-boost::shared_ptr<CVAlgo> cvAlgoSleepPtr;
-boost::shared_ptr<CVAlgo> cvAlgoPhonePtr;
-boost::shared_ptr<CVAlgo> cvAlgoFacePtr;
-boost::shared_ptr<CVAlgo> cvAlgoFightPtr;
+boost::shared_ptr<CVAlgo> helmetAlgorithmPtr;
+boost::shared_ptr<CVAlgo> phoneAlgorithmPtr;
+boost::shared_ptr<CVAlgo> sleepAlgorithmPtr;
+boost::shared_ptr<CVAlgo> fightAlgorithmPtr;
+boost::shared_ptr<CVAlgo> faceAlgorithmPtr;
 boost::mutex publishMtx;
-FIFOList* bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_NONE]{ NULL };
-FIFOList* alarmMessageQueue;
 ComPort* comPortController[2]{ NULL };//0-clock, 1-AIS
 std::string clockAsyncData;
 long long clockUTCTime = 0;
 std::string aisAsyncData;
 int sailingStatus = 0;//0 : sail, 1 : port
 int autoCheckSwitch = 1;//0 : manual, 1 : auto
-// bool stopped = false;
-// typedef struct tagAlarmMessageData_t
-// {
-// 	void* frame;
-// 	std::vector<NS(algo, 1)::DetectNotify> detectNotify;
-// }AlarmMessageData;
 
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
 {
@@ -123,7 +115,7 @@ static void cvAlgoDetectInfoHandler(void* frame, const std::vector<NS(algo, 1)::
 		publisherModel->send(message.getMessageData(), message.getMessageBytes());
 		publishMtx.unlock();
 
-		LOG(INFO) << "Send push alarm " << detectInfos[0].type;
+		LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << detectInfos[0].type;
 	}
 
 // 	if (frame && 0 < detectInfos.size())
@@ -161,99 +153,79 @@ static unsigned int alarmMessagePusherHandler(void* ctx)
 	return 0;
 }
 
-static void initAlgo(void)
+static void initAlgorithm(void)
 {
 	const std::string exePath{ 
 		boost::filesystem::initial_path<boost::filesystem::path>().string() };
 
-	try
+	boost::shared_ptr<CVAlgo> helmetPtr{
+			boost::make_shared<CVAlgoHelmet>(boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
+	boost::shared_ptr<CVAlgo> phonePtr{
+		boost::make_shared<CVAlgoPhone>(boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
+	boost::shared_ptr<CVAlgo> sleepPtr{
+		boost::make_shared<CVAlgoSleep>(boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
+	boost::shared_ptr<CVAlgo> fightPtr{
+		boost::make_shared<CVAlgoFight>(boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
+	boost::shared_ptr<CVAlgo> facePtr{
+		boost::make_shared<CVAlgoFace>(boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
+
+	if (helmetPtr && sleepPtr && phonePtr && fightPtr && facePtr)
 	{
-		for (int i = 0; i != NS(algo, 1)::AlgoType::ALGO_NONE; ++i)
+		helmetAlgorithmPtr.swap(helmetPtr);
+		phoneAlgorithmPtr.swap(sleepPtr);
+		sleepAlgorithmPtr.swap(phonePtr);
+		fightAlgorithmPtr.swap(fightPtr);
+		faceAlgorithmPtr.swap(facePtr);
+
+		bool status = helmetAlgorithmPtr->initialize(exePath.c_str(), 0.25f, 0.15f);
+		if (status)
 		{
-			bgr24FrameQueue[i] = new FIFOList();
+			LOG(INFO) << "Initialize HELMET algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
 		}
 
-		boost::shared_ptr<CVAlgo> helmetPtr{
-			boost::make_shared<CVAlgoHelmet>(
-				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_HELMET], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
-		boost::shared_ptr<CVAlgo> phonePtr{
-			boost::make_shared<CVAlgoPhone>(
-				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_PHONE], boost::bind(&cvAlgoDetectInfoHandler, _1, _2)) };
-		boost::shared_ptr<CVAlgo> sleepPtr{
-			boost::make_shared<CVAlgoSleep>(
-				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_SLEEP], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
-		boost::shared_ptr<CVAlgo> fightPtr{
-			boost::make_shared<CVAlgoFight>(
-				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_FIGHT], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
-		boost::shared_ptr<CVAlgo> facePtr{
-			boost::make_shared<CVAlgoFace>(
-				bgr24FrameQueue[NS(algo, 1)::AlgoType::ALGO_FACE], boost::bind(&cvAlgoDetectInfoHandler, _1, _2))};
-
-		if (helmetPtr && sleepPtr && phonePtr && fightPtr && facePtr)
-		{
- 			cvAlgoHelmetPtr.swap(helmetPtr);
-			cvAlgoSleepPtr.swap(sleepPtr);
-			cvAlgoPhonePtr.swap(phonePtr);
-			cvAlgoFightPtr.swap(fightPtr);
-			cvAlgoFacePtr.swap(facePtr);
-
-			bool status = cvAlgoHelmetPtr->initialize(exePath.c_str(), 0.25f, 0.15f);
-			if (status)
-			{
-				LOG(INFO) << "Initialize HELMET algorithm status Successfully.";
-			} 
-			else
-			{
-				LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
-			}
-
-			status = cvAlgoSleepPtr->initialize(exePath.c_str(), 0.2f, 0.15f);
-			if (status)
-			{
-				LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
-			}
-			else
-			{
-				LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
-			}
-
-			status = cvAlgoPhonePtr->initialize(exePath.c_str(), 0.9f, 0.2f);
-			if (status)
-			{
-				LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
-			}
-			else
-			{
-				LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
-			}
-
-			status = cvAlgoFightPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
-			if (status)
-			{
-				LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
-			}
-			else
-			{
-				LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
-			}
-
-			status = cvAlgoFacePtr->initialize(exePath.c_str());
-			if (status)
-			{
-				LOG(INFO) << "Initialize FACE algorithm status Successfully.";
-			}
-			else
-			{
-				LOG(WARNING) << "Initialize FACE algorithm status Failed.";
-			}
-		}
-	}
-	catch(std::exception*)
-	{
-		for (int i = 0; i != NS(algo, 1)::AlgoType::ALGO_NONE; ++i)
-		{
-			boost::checked_delete(bgr24FrameQueue[i]);
-		}
+// 		status = sleepAlgorithmPtr->initialize(exePath.c_str(), 0.2f, 0.15f);
+// 		if (status)
+// 		{
+// 			LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
+// 		}
+// 		else
+// 		{
+// 			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
+// 		}
+// 
+// 		status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
+// 		if (status)
+// 		{
+// 			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
+// 		}
+// 		else
+// 		{
+// 			LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
+// 		}
+// 
+// 		status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
+// 		if (status)
+// 		{
+// 			LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
+// 		}
+// 		else
+// 		{
+// 			LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
+// 		}
+// 
+// 		status = facePtr->initialize(exePath.c_str());
+// 		if (status)
+// 		{
+// 			LOG(INFO) << "Initialize FACE algorithm status Successfully.";
+// 		}
+// 		else
+// 		{
+// 			LOG(WARNING) << "Initialize FACE algorithm status Failed.";
+// 		}
 	}
 }
 
@@ -318,7 +290,7 @@ int main(int argc, char* argv[])
 
 	initAlarmPusher();
 	initSerialPort();
-	initAlgo();
+	initAlgorithm();
 	MQContext ctx;
 
 	try
@@ -332,8 +304,7 @@ int main(int argc, char* argv[])
 		ctx.initialize(cpuCoreNumber);
 		boost::shared_ptr<MQModel> publisherPtr{ 
 			boost::make_shared<PublisherModel>(publisherPortNumber) };
-		boost::shared_ptr<MQModel> routerPtr{ 
-			boost::make_shared<AsynchronousServer>(cvAlgoFacePtr, routerPortNumber, bgr24FrameQueue) };
+		boost::shared_ptr<MQModel> routerPtr{ boost::make_shared<AsynchronousServer>(routerPortNumber) };
 
 		if (publisherPtr && routerPtr)
 		{

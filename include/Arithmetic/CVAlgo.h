@@ -14,9 +14,14 @@
 #define CV_ALGO_H
 
 #include <vector>
+#include <windows.h>
 #include "boost/function.hpp"
-#include "DataStruct/FIFOList.h"
-using FIFOList = NS(datastruct, 1)::FIFOList;
+#include "boost/shared_ptr.hpp"
+#include "boost/thread/mutex.hpp"
+#include "boost/unordered_map.hpp"
+#include "Stream/Livestream.h"
+using LivestreamPtr = boost::shared_ptr<NS(stream, 1)::Livestream>;
+using LivestreamGroup = boost::unordered_map<const std::string, LivestreamPtr>;
 
 NS_BEGIN(algo, 1)
 
@@ -49,37 +54,37 @@ typedef struct tagDetectNotify_t
 	FaceDetect face;
 }DetectNotify;
 
-typedef boost::function<void(void*, std::vector<DetectNotify>)> CVAlgoDetectNotifyHandler;
+typedef boost::function<void(void*, std::vector<DetectNotify>)> CaptureAlarmNotifyHandler;
 
 class CVAlgo
 {
 public:
-	CVAlgo(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgo(CaptureAlarmNotifyHandler handler = NULL);
 	virtual ~CVAlgo(void);
 
 public:
 	bool initialize(
-		const char* path = NULL, const float detectThreshold = 0.0f, const float trackThreshold = 0.0f,
-		const int width = 1920, const int height = 1080, const int channel = 3);
+		const char* configFilePath = NULL, const float detectThreshold = 0.0f, const float trackThreshold = 0.0f);
+	int addLivestream(const std::string streamID, LivestreamPtr livestreamPtr);
+	int removeLivestream(const std::string streamID);
 
 protected:
 	virtual bool initializeWithParameter(void* parameter = NULL) = 0;
-	virtual void mainWorkerProcess(void) = 0;
-	virtual void subWorkerProcess(void);
+	virtual void algorithmWorkerProcess(void) = 0;
 
 private:
-	static unsigned int __stdcall mainWorkerThread(void* ctx = NULL);
-	static unsigned int __stdcall subWorkerThread(void* ctx = NULL);
+	static DWORD WINAPI algorithmProcessThread(void* ctx = NULL);
 
 protected:
-	FIFOList* frameQueue;
-	CVAlgoDetectNotifyHandler cvAlgoDetectNotifyHandler;
-	int imageWidth;
-	int imageHeight;
-	int channelNumber;
+	CaptureAlarmNotifyHandler captureAlarmNotifyHandler;
+	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_WIDTH = 1920);
+	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_HEIGHT = 1080);
+	BOOST_STATIC_CONSTANT(unsigned short, CHANNEL_NUMBER = 3);
 
-private:
-	static int algoNumber;
+protected:
+	boost::mutex livestreamMtx;
+	LivestreamGroup livestreamGroup;
+	static DWORD enableAlgorithmCount;
 };//class CVAlgo
 
 NS_END

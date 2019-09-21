@@ -22,9 +22,6 @@ class AVStream
 public:
 	AVStream(void);
 	virtual ~AVStream(void);
-
-protected:
-	int streamNumber;
 };//class AVStream
 
 NS_END

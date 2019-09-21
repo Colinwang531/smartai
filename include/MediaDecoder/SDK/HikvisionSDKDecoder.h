@@ -26,7 +26,7 @@ typedef enum tagDecodeFrame_t
 	DECODE_FRAME_AUDIO
 }DecodeFrame;
 
-typedef boost::function<void(const char*, const int, const DecodeFrame&, const int, const int)> FrameDataDecodeHandler;
+typedef boost::function<void(const char*, const int, const unsigned long long, const DecodeFrame&, const int, const int)> FrameDataDecodeHandler;
 
 class HikvisionSDKDecoder : public MediaMixerDecoder
 {
@@ -35,7 +35,8 @@ public:
 	virtual ~HikvisionSDKDecoder(void);
 
 public:
-	int decode(const char* data = NULL, const int dataBytes = 0) override;
+	int decode(
+		const unsigned char* frameData = NULL, const int frameBytes = 0, const unsigned long long frameNumber = 0) override;
 
 private:
 	static void CALLBACK decodeFrameInfoCallback(

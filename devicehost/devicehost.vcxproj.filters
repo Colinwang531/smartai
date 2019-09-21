@@ -148,9 +148,6 @@
     <Filter Include="Source Files\Algorithm">
       <UniqueIdentifier>{6aa7f2cd-d6bf-4271-bc41-7c21bf9928d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\DataStruct">
-      <UniqueIdentifier>{06f018f4-6765-411f-b53f-c98e28c45f77}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\tinyxml2">
       <UniqueIdentifier>{7a56041a-b661-44e9-b5ec-23a6fe798e2b}</UniqueIdentifier>
     </Filter>
@@ -650,9 +647,6 @@
     </ClCompile>
     <ClCompile Include="..\source\MessageQueue\MQConnector.cpp">
       <Filter>Source Files\MQ</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\DataStruct\FIFOList.cpp">
-      <Filter>Source Files\DataStruct</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgo.cpp">
       <Filter>Source Files\Algorithm</Filter>
@@ -1271,9 +1265,6 @@
     <ClInclude Include="..\include\Arithmetic\CVAlgo.h">
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\DataStruct\FIFOList.h">
-      <Filter>Header Files\DataStruct</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h">
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
@@ -1297,6 +1288,9 @@
     </ClInclude>
     <ClInclude Include="..\include\Time\Time.h">
       <Filter>Header Files\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\FIFOQueue.h">
+      <Filter>Header Files\DataStruct</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

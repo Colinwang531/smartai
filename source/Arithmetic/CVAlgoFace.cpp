@@ -11,9 +11,8 @@ using namespace tinyxml2;
 
 NS_BEGIN(algo, 1)
 
-CVAlgoFace::CVAlgoFace(
-	FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
-	: CVAlgo(fqueue, handler), registerFaceID{ 0 }
+CVAlgoFace::CVAlgoFace(CaptureAlarmNotifyHandler handler /* = NULL */)
+	: CVAlgo(handler), registerFaceID{ 0 }
 {}
 
 CVAlgoFace::~CVAlgoFace()
@@ -149,102 +148,112 @@ bool CVAlgoFace::initializeWithParameter(void* parameter /* = NULL */)
 	return status;
 }
 
-void CVAlgoFace::mainWorkerProcess()
+void CVAlgoFace::algorithmWorkerProcess()
 {
 	const std::string executePath{
 		boost::filesystem::initial_path<boost::filesystem::path>().string() };
 
 	while (1)
 	{
-		BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(frameQueue->getFront()) };
-
-		if (frame)
+		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreamGroup.begin(); it != livestreamGroup.end(); it++)
 		{
-			mtx.lock();
-			const std::vector<FaceFeature> currentFaceFeatures{ faceFeatures };
-			mtx.unlock();
+			std::vector<void*> bgr24FrameQueue;
+			it->second->queue(ALGO_HELMET, bgr24FrameQueue);
 
-			vector<DetectNotify> detectNotifies;
-			vector<StruFaceInfo> faceInfos;
-//			static unsigned long long lastKnownTime = GetTickCount64();
-			face.FaceDetectAndFeatureExtract((unsigned char*)frame->frameData, imageWidth, imageHeight, channelNumber, faceInfos);
-//			unsigned long long currentTime = GetTickCount64();
-//			printf("FaceDetectAndFeatureExtract expire %I64u, person number %d.\r\n", currentTime - lastKnownTime, (int)faceInfos.size());
-//			lastKnownTime = currentTime;
-			for (int i = 0; i != faceInfos.size(); ++i)
+			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
-				DetectNotify detect;
-				detect.type = ALGO_FACE;
-				detect.status = 0;
-				detect.x = faceInfos[i].faceRect.x;
-				detect.y = faceInfos[i].faceRect.y;
-				detect.w = faceInfos[i].faceRect.width;
-				detect.h = faceInfos[i].faceRect.height;
-				detect.face.similarity = 0;
-				detect.face.imageBytes = 0;
-				detect.face.imageData = NULL;
-				detect.face.faceID = -1;
-
-				float maxSimilarity = 0.0f;
-				int maxFaceIndex = -1;
-				for(int j = 0; j != currentFaceFeatures.size(); ++j)
+				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
+				if (!frame)
 				{
+					break;
+				}
+				
+				mtx.lock();
+				const std::vector<FaceFeature> currentFaceFeatures{ faceFeatures };
+				mtx.unlock();
+
+				vector<DetectNotify> detectNotifies;
+				vector<StruFaceInfo> faceInfos;
+				//			unsigned long long lastKnownTime = GetTickCount64();
+				face.FaceDetectAndFeatureExtract((unsigned char*)frame->frameData, IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, faceInfos);
+// 				if (0 < faceInfos.size())
+// 				{
+// 					int x = 1;
+// 				}
+// 				unsigned long long currentTime = GetTickCount64();
+// 				printf("FaceDetectAndFeatureExtract expire %I64u, person number %d.\r\n", currentTime - lastKnownTime, (int)faceInfos.size());
+				for (int i = 0; i != faceInfos.size(); ++i)
+				{
+					DetectNotify detect;
+					detect.type = ALGO_FACE;
+					detect.status = 0;
+					detect.x = faceInfos[i].faceRect.x;
+					detect.y = faceInfos[i].faceRect.y;
+					detect.w = faceInfos[i].faceRect.width;
+					detect.h = faceInfos[i].faceRect.height;
+					detect.face.similarity = 0;
+					detect.face.imageBytes = 0;
+					detect.face.imageData = NULL;
+					detect.face.faceID = -1;
+
+					float maxSimilarity = 0.0f;
+					int maxFaceIndex = -1;
 //					unsigned long long lastKnownTime = GetTickCount64();
-					const float currentSimilarity{ 
-						face.FacePairMatch(faceInfos[i].faceFeature, (unsigned char*)currentFaceFeatures[j].feature, FACE_FEATURE_LENGTH) };
-// 					unsigned long long currentTime = GetTickCount64();
-// 					printf("FacePairMatch expire %I64u, similarity %f.\r\n", currentTime - lastKnownTime, currentSimilarity);
-					if (currentSimilarity >= 0.52f && currentSimilarity > maxSimilarity)
+					for (int j = 0; j != currentFaceFeatures.size(); ++j)
 					{
-						maxFaceIndex = j;
-						maxSimilarity = currentSimilarity;
-					}
-				}
-
-				if (-1 < maxFaceIndex)
-				{
-					try
-					{
-						detect.face.imageData = new char[1024 * 1024];
-						detect.face.similarity = (int)(maxSimilarity * 100);
-						detect.face.faceID = currentFaceFeatures[maxFaceIndex].id;
-						FILE* jpegFile{ NULL };
-						fopen_s(&jpegFile, (boost::format("%s\\Face\\%s_%d.jpg") % executePath % currentFaceFeatures[maxFaceIndex].name % currentFaceFeatures[maxFaceIndex].id).str().c_str(), "rb");
-						if (jpegFile)
+						const float currentSimilarity{
+							face.FacePairMatch(faceInfos[i].faceFeature, (unsigned char*)currentFaceFeatures[j].feature, FACE_FEATURE_LENGTH) };
+						if (currentSimilarity >= 0.52f && currentSimilarity > maxSimilarity)
 						{
-							detect.face.imageBytes = _filelength(_fileno(jpegFile));
-							fread(detect.face.imageData, 1024 * 1024, 1, jpegFile);
-							fclose(jpegFile);
+							maxFaceIndex = j;
+							maxSimilarity = currentSimilarity;
 						}
-						detectNotifies.push_back(detect);
 					}
-					catch (const std::exception&)
-					{
+// 					unsigned long long currentTime = GetTickCount64();
+// 					printf("FacePairMatch expire %I64u, similarity %f.\r\n", currentTime - lastKnownTime, maxSimilarity);
 
+					if (-1 < maxFaceIndex)
+					{
+						try
+						{
+							detect.face.imageData = new char[1024 * 1024];
+							detect.face.similarity = (int)(maxSimilarity * 100);
+							detect.face.faceID = currentFaceFeatures[maxFaceIndex].id;
+							FILE* jpegFile{ NULL };
+							fopen_s(&jpegFile, (boost::format("%s\\Face\\%s_%d.jpg") % executePath % currentFaceFeatures[maxFaceIndex].name % currentFaceFeatures[maxFaceIndex].id).str().c_str(), "rb");
+							if (jpegFile)
+							{
+								detect.face.imageBytes = _filelength(_fileno(jpegFile));
+								fread(detect.face.imageData, 1024 * 1024, 1, jpegFile);
+								fclose(jpegFile);
+							}
+							detectNotifies.push_back(detect);
+						}
+						catch (const std::exception&)
+						{
+
+						}
 					}
 				}
-			}
 
-			if (cvAlgoDetectNotifyHandler)
-			{
-				cvAlgoDetectNotifyHandler(frame, detectNotifies);
-			}
+				if (captureAlarmNotifyHandler)
+				{
+					captureAlarmNotifyHandler(frame, detectNotifies);
+				}
 
-			frameQueue->popFront();
-			boost::checked_array_delete(frame->frameData);
-			boost::checked_array_delete(frame->jpegData);
-			boost::checked_array_delete(frame->NVRIp);
-			boost::checked_delete(frame);
-			for (int i = 0; i != detectNotifies.size(); ++i)
-			{
-				boost::checked_array_delete(detectNotifies[i].face.imageData);
+				boost::checked_array_delete(frame->frameData);
+				boost::checked_array_delete(frame->jpegData);
+				boost::checked_array_delete(frame->NVRIp);
+				boost::checked_delete(frame);
+				for (int i = 0; i != detectNotifies.size(); ++i)
+				{
+					boost::checked_array_delete(detectNotifies[i].face.imageData);
+				}
+				it = bgr24FrameQueue.erase(it);
 			}
 		}
 	}
 }
-
-void CVAlgoFace::subWorkerProcess()
-{}
 
 bool CVAlgoFace::loadFaceFeature()
 {

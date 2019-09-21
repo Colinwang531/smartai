@@ -1,29 +1,23 @@
-#include <windows.h>
 #include "boost/format.hpp"
 #include "DefGlobalVar.h"
+#include "error.h"
 #include "Arithmetic/CVAlgo.h"
 
 NS_BEGIN(algo, 1)
 
-int CVAlgo::algoNumber = 0;
+DWORD CVAlgo::enableAlgorithmCount = 0;
 
-CVAlgo::CVAlgo(FIFOList* fqueue /* = NULL */, CVAlgoDetectNotifyHandler handler /* = NULL */)
-	: frameQueue{ fqueue }, cvAlgoDetectNotifyHandler{ handler },
-	imageWidth{ 0 }, imageHeight{ 0 }, channelNumber{ 0 }
+CVAlgo::CVAlgo(CaptureAlarmNotifyHandler handler /* = NULL */) : captureAlarmNotifyHandler{ handler }
 {}
 
 CVAlgo::~CVAlgo()
 {}
 
 bool CVAlgo::initialize(
-	const char* path /* = NULL */, const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */,
-	const int width /* = 1920 */, const int height /* = 1080 */, const int channel /* = 3 */)
+	const char* configFilePath /* = NULL */, const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */)
 {
-	imageWidth = width;
-	imageHeight = height;
-	channelNumber = channel;
-	const std::string cfgFile{ (boost::format("%s\\model\\fight.cfg") % path).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\fight.weights") % path).str() };
+	const std::string cfgFile{ (boost::format("%s\\model\\fight.cfg") % configFilePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\fight.weights") % configFilePath).str() };
 	StruInitParams parameters{};
 	parameters.detectThreshold = detectThreshold;
 	parameters.trackThreshold = trackThreshold;
@@ -34,46 +28,61 @@ bool CVAlgo::initialize(
 
 	if (status)
 	{
-		HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, &mainWorkerThread, this, 0, NULL);
-		SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
-		SetThreadAffinityMask(handle, (DWORD)(1 << algoNumber));
-		algoNumber++;
-
-		handle = (HANDLE)_beginthreadex(NULL, 0, &subWorkerThread, this, 0, NULL);
-		SetThreadPriority(handle, THREAD_PRIORITY_NORMAL);
-		SetThreadAffinityMask(handle, (DWORD)(1 << algoNumber));
-		algoNumber++;
+		//Each algorithm run on different thread of CPU.
+		HANDLE threadHandle = (HANDLE)CreateThread(NULL, 0, &algorithmProcessThread, this, 0, NULL);
+		if (threadHandle)
+		{
+			SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
+			SetThreadAffinityMask(threadHandle, (DWORD)(1 << enableAlgorithmCount));
+			enableAlgorithmCount++;
+		}
 	}
 
 	return status;
 }
 
-void CVAlgo::subWorkerProcess()
-{}
-
-unsigned int CVAlgo::mainWorkerThread(void* ctx /* = NULL */)
+DWORD CVAlgo::algorithmProcessThread(void* ctx /* = NULL */)
 {
 	CVAlgo* cvalgo{ reinterpret_cast<CVAlgo*>(ctx) };
 
 	if (cvalgo)
 	{
-		cvalgo->mainWorkerProcess();
+		cvalgo->algorithmWorkerProcess();
 	}
 
 	return 0;
 }
 
-unsigned int CVAlgo::subWorkerThread(void* ctx /* = NULL */)
+int CVAlgo::addLivestream(const std::string streamID, LivestreamPtr livestreamPtr)
 {
-	CVAlgo* cvalgo{ reinterpret_cast<CVAlgo*>(ctx) };
+	int status{ ERR_EXISTED };
 
-	if (cvalgo)
+	livestreamMtx.lock();
+	LivestreamGroup::const_iterator it = livestreamGroup.find(streamID);
+	if (livestreamGroup.end() == it)
 	{
-		cvalgo->subWorkerProcess();
+		livestreamGroup.insert(std::make_pair(streamID, livestreamPtr));
+		status = ERR_OK;
 	}
+	livestreamMtx.unlock();
 
-	return 0;
+	return status;
 }
 
+int CVAlgo::removeLivestream(const std::string streamID)
+{
+	int status{ ERR_NOT_FOUND };
+
+	livestreamMtx.lock();
+	LivestreamGroup::iterator it = livestreamGroup.find(streamID);
+	if (livestreamGroup.end() != it)
+	{
+		livestreamGroup.erase(it);
+		status = ERR_OK;
+	}
+	livestreamMtx.unlock();
+
+	return status;
+}
 
 NS_END

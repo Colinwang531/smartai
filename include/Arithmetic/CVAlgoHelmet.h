@@ -21,12 +21,12 @@ NS_BEGIN(algo, 1)
 class CVAlgoHelmet : public CVAlgo
 {
 public:
-	CVAlgoHelmet(FIFOList* fqueue = NULL, CVAlgoDetectNotifyHandler handler = NULL);
+	CVAlgoHelmet(CaptureAlarmNotifyHandler handler = NULL);
 	~CVAlgoHelmet(void);
 
 protected:
 	bool initializeWithParameter(void* parameter = NULL) override;
-	void mainWorkerProcess(void) override;
+	void algorithmWorkerProcess(void) override;
 
 private:
 	CHelmetAlgorithmClass helmet;
