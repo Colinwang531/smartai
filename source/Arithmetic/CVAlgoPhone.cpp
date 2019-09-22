@@ -44,31 +44,31 @@ void CVAlgoPhone::algorithmWorkerProcess()
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
 				FeedBackPhone feedback;
 				//			unsigned long long lastKnownTime = GetTickCount64();
-// 				bool result{ phone.MainProcFunc((unsigned char*)frame->frameData, feedback) };
-// 				// 			unsigned long long currentTime = GetTickCount64();
-// 				// 			printf("[Phone] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());
-// 
-// 				if (result)
-// 				{
-// 					DetectNotify detectNotify;
-// 					std::vector<DetectNotify> detectNotifies;
-// 
-// 					for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
-// 					{
-// 						detectNotify.type = ALGO_PHONE;
-// 						detectNotify.x = feedback.vecShowInfo[i].rRect.x;
-// 						detectNotify.y = feedback.vecShowInfo[i].rRect.y;
-// 						detectNotify.w = feedback.vecShowInfo[i].rRect.width;
-// 						detectNotify.h = feedback.vecShowInfo[i].rRect.height;
-// 						detectNotify.status = feedback.vecShowInfo[i].nLabel;
-// 						detectNotifies.push_back(detectNotify);
-// 					}
-// 
-// 					if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
-// 					{
-// 						captureAlarmNotifyHandler(frame, detectNotifies);
-// 					}
-// 				}
+				bool result{ phone.MainProcFunc((unsigned char*)frame->frameData, feedback) };
+				// 			unsigned long long currentTime = GetTickCount64();
+				// 			printf("[Phone] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());
+
+				if (result)
+				{
+					DetectNotify detectNotify;
+					std::vector<DetectNotify> detectNotifies;
+
+					for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
+					{
+						detectNotify.type = ALGO_PHONE;
+						detectNotify.x = feedback.vecShowInfo[i].rRect.x;
+						detectNotify.y = feedback.vecShowInfo[i].rRect.y;
+						detectNotify.w = feedback.vecShowInfo[i].rRect.width;
+						detectNotify.h = feedback.vecShowInfo[i].rRect.height;
+						detectNotify.status = feedback.vecShowInfo[i].nLabel;
+						detectNotifies.push_back(detectNotify);
+					}
+
+					if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
+					{
+						captureAlarmNotifyHandler(frame, detectNotifies);
+					}
+				}
 
 				boost::checked_array_delete(frame->frameData);
 				boost::checked_array_delete(frame->jpegData);

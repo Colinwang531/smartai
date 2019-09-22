@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <io.h>
 #include "boost/algorithm/string.hpp"
 #include "boost/checked_delete.hpp"
@@ -13,10 +14,14 @@ NS_BEGIN(algo, 1)
 
 CVAlgoFace::CVAlgoFace(CaptureAlarmNotifyHandler handler /* = NULL */)
 	: CVAlgo(handler), registerFaceID{ 0 }
-{}
+{
+	InitializeCriticalSection(&criticalSection);
+}
 
 CVAlgoFace::~CVAlgoFace()
-{}
+{
+	DeleteCriticalSection(&criticalSection);
+}
 
 bool CVAlgoFace::registerFace(StruFaceInfo& featureInfo, const char* fileName /* = NULL */)
 {
@@ -24,7 +29,7 @@ bool CVAlgoFace::registerFace(StruFaceInfo& featureInfo, const char* fileName /*
 
 	if (fileName)
 	{
-		status = face.RegisterFace((char*)fileName, ++registerFaceID, &featureInfo);
+		status = face.RegisterFace((char*)fileName, ++registerFaceID);
 	}
 
 	return status;
@@ -139,10 +144,53 @@ bool CVAlgoFace::removeFaceFeature(const char* name /* = NULL */, const long lon
 bool CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {
 	bool status{ loadFaceFeature() };
+	const std::string cfgFile{ (boost::format("%s\\model\\face.cfg") % configFilePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\face.weights") % configFilePath).str() };
+	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
+	initParames->cfgfile = (char*)cfgFile.c_str();
+	initParames->weightFile = (char*)weightFile.c_str();
 
 	if(status)
 	{
-		status = face.InitModel();
+		initParames->matchThreshold = 0.6f;
+		status = face.InitModel(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, &criticalSection);
+
+		if (status)
+		{
+			WIN32_FIND_DATAA ffd;
+// 			LARGE_INTEGER filesize;
+// 			TCHAR szDir[MAX_PATH];
+// 			size_t length_of_arg;
+//			HANDLE hFind = INVALID_HANDLE_VALUE;
+//			DWORD dwError = 0;
+
+			const std::string jpegFilePath{ (boost::format("%s\\face\\*") % configFilePath).str() };
+			HANDLE hFind{ FindFirstFileA(jpegFilePath.c_str(), &ffd) };
+			BOOL findResult{ TRUE };
+
+			while (INVALID_HANDLE_VALUE != hFind && findResult)
+			{
+				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+				{
+				}
+				else
+				{
+					const std::string faceFileName{ ffd.cFileName };
+					const std::size_t dotCharPos{ faceFileName.rfind('.') };
+					const std::string faceFileAppendix{ faceFileName.substr(dotCharPos + 1, 3) };
+
+					if (!faceFileAppendix.compare("jpg"))
+					{
+						const std::string faceFilePath{ (boost::format("%s\\face\\%s") % configFilePath % ffd.cFileName).str() };
+						face.RegisterFace((char*)(faceFilePath.c_str()), ++registerFaceID);
+					}
+				}
+
+				findResult = FindNextFileA(hFind, &ffd);
+			}
+
+			FindClose(hFind);
+		}
 	}
 
 	return status;
@@ -173,73 +221,48 @@ void CVAlgoFace::algorithmWorkerProcess()
 				mtx.unlock();
 
 				vector<DetectNotify> detectNotifies;
-				vector<StruFaceInfo> faceInfos;
+//				vector<StruFaceInfo> faceInfos;
 				//			unsigned long long lastKnownTime = GetTickCount64();
-				face.FaceDetectAndFeatureExtract((unsigned char*)frame->frameData, IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, faceInfos);
-// 				if (0 < faceInfos.size())
-// 				{
-// 					int x = 1;
-// 				}
+				//face.FaceDetectAndFeatureExtract((unsigned char*)frame->frameData, IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, faceInfos);
+
+				FeedBackFaceRecog faceDetect;
+				bool result{ face.MainProcFunc((unsigned char*)frame->frameData, faceDetect) };
 // 				unsigned long long currentTime = GetTickCount64();
 // 				printf("FaceDetectAndFeatureExtract expire %I64u, person number %d.\r\n", currentTime - lastKnownTime, (int)faceInfos.size());
-				for (int i = 0; i != faceInfos.size(); ++i)
+
+				for (int i = 0; i != faceDetect.vecShowInfo.size(); ++i)
 				{
-					DetectNotify detect;
-					detect.type = ALGO_FACE;
-					detect.status = 0;
-					detect.x = faceInfos[i].faceRect.x;
-					detect.y = faceInfos[i].faceRect.y;
-					detect.w = faceInfos[i].faceRect.width;
-					detect.h = faceInfos[i].faceRect.height;
-					detect.face.similarity = 0;
-					detect.face.imageBytes = 0;
-					detect.face.imageData = NULL;
-					detect.face.faceID = -1;
-
-					float maxSimilarity = 0.0f;
-					int maxFaceIndex = -1;
-//					unsigned long long lastKnownTime = GetTickCount64();
-					for (int j = 0; j != currentFaceFeatures.size(); ++j)
-					{
-						const float currentSimilarity{
-							face.FacePairMatch(faceInfos[i].faceFeature, (unsigned char*)currentFaceFeatures[j].feature, FACE_FEATURE_LENGTH) };
-						if (currentSimilarity >= 0.52f && currentSimilarity > maxSimilarity)
-						{
-							maxFaceIndex = j;
-							maxSimilarity = currentSimilarity;
-						}
-					}
-// 					unsigned long long currentTime = GetTickCount64();
-// 					printf("FacePairMatch expire %I64u, similarity %f.\r\n", currentTime - lastKnownTime, maxSimilarity);
-
-					if (-1 < maxFaceIndex)
-					{
-						try
-						{
-							detect.face.imageData = new char[1024 * 1024];
-							detect.face.similarity = (int)(maxSimilarity * 100);
-							detect.face.faceID = currentFaceFeatures[maxFaceIndex].id;
-							FILE* jpegFile{ NULL };
-							fopen_s(&jpegFile, (boost::format("%s\\Face\\%s_%d.jpg") % executePath % currentFaceFeatures[maxFaceIndex].name % currentFaceFeatures[maxFaceIndex].id).str().c_str(), "rb");
-							if (jpegFile)
-							{
-								detect.face.imageBytes = _filelength(_fileno(jpegFile));
-								fread(detect.face.imageData, 1024 * 1024, 1, jpegFile);
-								fclose(jpegFile);
-							}
-							detectNotifies.push_back(detect);
-						}
-						catch (const std::exception&)
-						{
-
-						}
-					}
+// 					DetectNotify detect;
+// 					detect.type = ALGO_FACE;
+// 					detect.status = 0;
+// 					detect.x = faceDetect.vecShowInfo[i].rRect.x;
+// 					detect.y = faceDetect.vecShowInfo[i].rRect.y;
+// 					detect.w = faceDetect.vecShowInfo[i].rRect.width;
+// 					detect.h = faceDetect.vecShowInfo[i].rRect.height;
+// 					detect.face.similarity = 0;
+// 					detect.face.imageBytes = 0;
+// 					detect.face.imageData = NULL;
+// //					detect.face.faceID = faceDetect.vecShowInfo[i].nSerioNo;
+// 
+// 					detect.face.imageData = new char[1024 * 1024];
+// 					detect.face.similarity = 0;// (int)(maxSimilarity * 100);
+// 					detect.face.faceID = currentFaceFeatures[faceDetect.vecShowInfo[i].nSerioNo].id;
+// 					FILE* jpegFile{ NULL };
+// 					fopen_s(&jpegFile, (boost::format("%s\\Face\\%s_%d.jpg") % executePath % currentFaceFeatures[faceDetect.vecShowInfo[i].nSerioNo].name % currentFaceFeatures[faceDetect.vecShowInfo[i].nSerioNo].id).str().c_str(), "rb");
+// 					if (jpegFile)
+// 					{
+// 						detect.face.imageBytes = _filelength(_fileno(jpegFile));
+// 						fread(detect.face.imageData, 1024 * 1024, 1, jpegFile);
+// 						fclose(jpegFile);
+// 					}
+// 
+// 					detectNotifies.push_back(detect);
 				}
 
-				if (captureAlarmNotifyHandler)
-				{
-					captureAlarmNotifyHandler(frame, detectNotifies);
-				}
+// 				if (captureAlarmNotifyHandler && 0 < detectNotifies.size())
+// 				{
+// 					captureAlarmNotifyHandler(frame, detectNotifies);
+// 				}
 
 				boost::checked_array_delete(frame->frameData);
 				boost::checked_array_delete(frame->jpegData);

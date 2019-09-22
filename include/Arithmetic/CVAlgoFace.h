@@ -54,6 +54,7 @@ private:
 
 private:
 	CFaceAlgorithmClass face;
+	CRITICAL_SECTION criticalSection;
 	int registerFaceID;
 	std::vector<FaceFeature> faceFeatures;
 	boost::mutex mtx;

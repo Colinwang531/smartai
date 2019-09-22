@@ -8,32 +8,32 @@ using YV12ToJPEG = NS(encoder, 1)::YV12ToJPEG;
 
 extern int sailingStatus;//0 : sail, 1 : port
 extern int autoCheckSwitch;//0 : manual, 1 : auto
-unsigned char covertBuffer[1920 * 1080 * 4];
+//unsigned char covertBuffer[1920 * 1080 * 4];
 
-void c24To32(unsigned char* src, unsigned char* dest, int w, int h)
-{
-	for (int i = 0; i < h; i++)
-	{
-		for (int j = 0; j < w; j++)
-		{
-			if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-			{
-				dest[(i * w + j) * 4 + 0] = src[(i * w + j) * 3 + 2];
-				dest[(i * w + j) * 4 + 1] = src[(i * w + j) * 3 + 1];
-				dest[(i * w + j) * 4 + 2] = src[(i * w + j) * 3];
-				dest[(i * w + j) * 4 + 3] = 0;
-			}
-			else
-			{
-				dest[(i * w + j) * 4] = 0;
-				memcpy_s(dest + (i * w + j) * 4 + 1, 3, src + (i * w + j) * 3, 3);
-			}
-		}
-	}
-}
+// void c24To32(unsigned char* src, unsigned char* dest, int w, int h)
+// {
+// 	for (int i = 0; i < h; i++)
+// 	{
+// 		for (int j = 0; j < w; j++)
+// 		{
+// 			if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
+// 			{
+// 				dest[(i * w + j) * 4 + 0] = src[(i * w + j) * 3 + 2];
+// 				dest[(i * w + j) * 4 + 1] = src[(i * w + j) * 3 + 1];
+// 				dest[(i * w + j) * 4 + 2] = src[(i * w + j) * 3];
+// 				dest[(i * w + j) * 4 + 3] = 0;
+// 			}
+// 			else
+// 			{
+// 				dest[(i * w + j) * 4] = 0;
+// 				memcpy_s(dest + (i * w + j) * 4 + 1, 3, src + (i * w + j) * 3, 3);
+// 			}
+// 		}
+// 	}
+// }
 
 DigitCameraLivestream::DigitCameraLivestream(const std::string nvrip, const unsigned short idx /* = 0 */)
-	: HikvisionLivestream(idx), algorithmAbility{ 0 }, NVRIp{ nvrip }, stopped{ false }//,
+	: HikvisionLivestream(idx), algorithmAbility{ 0 }, NVRIp{ nvrip }, stopped{ false }, livestreamFrameNumber{ 0 }//,
 //	sdlWindow{ NULL }, sdlRenderer{ NULL }, sdlTexture{ NULL }
 {}
 
@@ -65,14 +65,14 @@ int DigitCameraLivestream::open(const int userID /* = -1 */)
 
 		status = HikvisionLivestream::open(userID) ? ERR_OK : ERR_BAD_OPERATE;
 
-		SDL_Init(SDL_INIT_VIDEO);
-		sdlWindow = SDL_CreateWindow("SDL Player", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 540, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		if (sdlWindow)
-		{
-			sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
-			sdlTexture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_BGR888, SDL_TEXTUREACCESS_STREAMING, 1920, 1080);
-			SDL_CreateThread(&DigitCameraLivestream::refreshSDLVideo, NULL, NULL);
-		}
+// 		SDL_Init(SDL_INIT_VIDEO);
+// 		sdlWindow = SDL_CreateWindow("SDL Player", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 540, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+// 		if (sdlWindow)
+// 		{
+// 			sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
+// 			sdlTexture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_BGR888, SDL_TEXTUREACCESS_STREAMING, 1920, 1080);
+// 			SDL_CreateThread(&DigitCameraLivestream::refreshSDLVideo, NULL, NULL);
+// 		}
 	}
 
 	return status;
@@ -179,7 +179,7 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 	}
 
 	//If not sailing, do nothing.
-	if (0 < sailingStatus /*|| (1 != (++livestreamFrameNumber % 3))*/)
+	if (0 < sailingStatus || (1 != (++livestreamFrameNumber % 3)))
 	{
 		return;
 	}
@@ -192,19 +192,19 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 		const int bgr24FrameDataBytes{ width * height * 3 };
 		const char* bgr24FrameData{ videoFrameScalerPtr->scale(frameData, dataBytes, width, height) };
 
-		if (sdlTexture && sdlRenderer)
-		{
-			c24To32((unsigned char*)bgr24FrameData, covertBuffer, width, height);
-			SDL_UpdateTexture(sdlTexture, NULL, covertBuffer, width * 4);
-			SDL_Rect rc;
-			rc.x = 0;
-			rc.y = 0;
-			rc.w = 960;
-			rc.h = 540;
-			SDL_RenderClear(sdlRenderer);
-			SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, &rc);
-			SDL_RenderPresent(sdlRenderer);
-		}
+// 		if (sdlTexture && sdlRenderer)
+// 		{
+// 			c24To32((unsigned char*)bgr24FrameData, covertBuffer, width, height);
+// 			SDL_UpdateTexture(sdlTexture, NULL, covertBuffer, width * 4);
+// 			SDL_Rect rc;
+// 			rc.x = 0;
+// 			rc.y = 0;
+// 			rc.w = 960;
+// 			rc.h = 540;
+// 			SDL_RenderClear(sdlRenderer);
+// 			SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, &rc);
+// 			SDL_RenderPresent(sdlRenderer);
+// 		}
 
 		if (bgr24FrameData)
 		{
@@ -327,16 +327,16 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 	return 0;
 }
 
-int DigitCameraLivestream::refreshSDLVideo(void* ctx /* = NULL */)
-{
-	while (1)
-	{
-		SDL_Event e;
-		e.type = SDL_DISPLAYEVENT;
-		SDL_PushEvent(&e);
-		SDL_Delay(1);
-	}
-}
+// int DigitCameraLivestream::refreshSDLVideo(void* ctx /* = NULL */)
+// {
+// 	while (1)
+// 	{
+// 		SDL_Event e;
+// 		e.type = SDL_DISPLAYEVENT;
+// 		SDL_PushEvent(&e);
+// 		SDL_Delay(1);
+// 	}
+// }
 
 BGR24Frame* DigitCameraLivestream::newBGR24Frame(const BGR24Frame* frame /*= NULL*/)
 {

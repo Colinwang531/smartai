@@ -3,7 +3,7 @@
 
 #include "boost/shared_ptr.hpp"
 #include "boost/thread/condition.hpp"
-#include "SDL.h"
+//#include "SDL.h"
 #include "DataStruct/FIFOQueue.h"
 using FIFOQueue = NS(datastruct, 1)::FIFOQueue<void*>;
 #include "Stream/Hikvision/HikvisionLivestream.h"
@@ -44,7 +44,7 @@ private:
 		const NS(decoder, 1)::DecodeFrame& decodeFrame = NS(decoder, 1)::DecodeFrame::DECODE_FRAME_NONE,
 		const int width = 0, const int height = 0);
 	void JPEGPFrameEncodeHandler(const char* data = NULL , const int dataBytes = 0 );
-	static int refreshSDLVideo(void* ctx = NULL);
+//	static int refreshSDLVideo(void* ctx = NULL);
 	static DWORD WINAPI frameDecodeProcessThread(void* ctx = NULL);
 	BGR24Frame* newBGR24Frame(const BGR24Frame* frame = NULL);
 	void deleteBGR24Frame(BGR24Frame* frame);
@@ -60,6 +60,7 @@ private:
 	FIFOQueue faceBGR24Queue;
 	FIFOQueue h264LivestreamQueue;
 
+	unsigned long long livestreamFrameNumber;
 	unsigned int algorithmAbility;
 	const std::string NVRIp;
 	bool stopped;
@@ -67,9 +68,9 @@ private:
 	boost::mutex mtx[3];
 	boost::condition condition[3];
 
-	SDL_Window* sdlWindow;
-	SDL_Renderer* sdlRenderer;
-	SDL_Texture* sdlTexture;
+// 	SDL_Window* sdlWindow;
+// 	SDL_Renderer* sdlRenderer;
+// 	SDL_Texture* sdlTexture;
 };//class DigitCameraChannel
 
 #endif//DIGITAL_CAMERA_LIVE_STREAM_H

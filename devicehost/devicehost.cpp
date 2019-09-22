@@ -217,7 +217,7 @@ static void initAlgorithm(void)
 			LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
 		}
 
-		/*bool*/ status = faceAlgorithmPtr->initialize(exePath.c_str());
+		/*bool*/ status = faceAlgorithmPtr->initialize(exePath.c_str(), 0.3f, 0.15f);
 		if (status)
 		{
 			LOG(INFO) << "Initialize FACE algorithm status Successfully.";
@@ -317,6 +317,10 @@ int main(int argc, char* argv[])
 					" and router port number " << routerPortNumber << 
 					" and CPU core number " << cpuCoreNumber << ".";
 			}
+
+			publishMtx.lock();
+			publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
+			publishMtx.unlock();
 		}
 		else
 		{

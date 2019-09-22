@@ -43,7 +43,7 @@ void CVAlgoHelmet::algorithmWorkerProcess()
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
  				FeedBackHelmet feedback;
-// 				unsigned long long lastKnownTime = GetTickCount64();
+				unsigned long long lastKnownTime = GetTickCount64();
 				bool result{ helmet.MainProcFunc((unsigned char*)frame->frameData, feedback) };
 // 				unsigned long long currentTime = GetTickCount64();
 // 				printf("[Helmet] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());

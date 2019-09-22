@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <windows.h>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ typedef struct _StruInitParams
 	int   sleepTime;          // 睡觉检测用，以秒为单位  
 	float detectThreshold;    // 检测阈值  值越小越灵敏，越大误捡率越少
 	float trackThreshold;     // 跟踪阈值 值越小，跟踪越久但可能出现误跟踪
+	float matchThreshold;     // 人脸识别比对阈值
 	char* cfgfile;            // 检测模型的cfg格式文件，为网络结构
 	char* weightFile;         // 训练的检测模型weights格式文件，存储权重信息
 	char* savePath;           // 处理结果保存目录
@@ -18,9 +20,10 @@ typedef struct _StruInitParams
 		sleepTime = 10;
 		detectThreshold = 0.2f;
 		trackThreshold = 0.3f;
+		matchThreshold = 0.6f;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = NULL;
+		savePath = NULL;// "D:/SavePath/";
 	}
 }StruInitParams;
 
@@ -56,6 +59,8 @@ typedef struct _StruPoint  // 检测框中心点
 
 typedef struct _StruResult
 {
+	bool bFaceProcessed;//face have processed! 人脸识别专用
+	bool bFaceMatched;// each face match ok! 人脸识别专用
 	int nLabel;      
 	int nSerioNo;    
 	float detectConfidence;
@@ -66,6 +71,8 @@ typedef struct _StruResult
 	char *pUcharImage;
 	_StruResult()
 	{
+		bFaceProcessed = false;
+		bFaceMatched = false;
 		nLabel = 0;
 		nSerioNo = 0;
 		detectConfidence = 0.f;
@@ -160,3 +167,38 @@ typedef struct _StruFaceInfo
 		memset(faceFeature, 0, FACE_FEATURE_LENGTH);
 	}
 }StruFaceInfo;
+
+//人脸识别结果
+typedef struct _StruFaceResult
+{
+	int matchId; // 匹配上的目标id
+	float similarValue; // 匹配上的相似度
+	int imgWidth;
+	int imgHeight;
+	int ingChannel;
+	char *pUcharImage;
+	_StruFaceResult()
+	{
+		matchId = 0;
+		similarValue = 0.f;
+		imgWidth = 0;
+		imgHeight = 0;
+		ingChannel = 0;
+		pUcharImage = nullptr;
+	}
+}StruFaceResult;
+
+// 用于人脸识别项目参数
+#ifndef _FEEDBACKFACERECOG_H
+#define _FEEDBACKFACERECOG_H
+typedef struct _FeedBackFaceRecog
+{
+	vector<StruFaceResult> vecFaceResult;
+	vector<StruResult> vecShowInfo;        // 用于显示
+	map<int, StruMemoryInfo> mapMemory;    // 有效目标的存储
+	_FeedBackFaceRecog() {
+		vecShowInfo.clear();
+		mapMemory.clear();
+	}
+}FeedBackFaceRecog;
+#endif
