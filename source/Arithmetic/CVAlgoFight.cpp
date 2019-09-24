@@ -34,19 +34,20 @@ void CVAlgoFight::algorithmWorkerProcess()
 {
 	while (1)
 	{
-		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreamGroup.begin(); it != livestreamGroup.end(); it++)
+		livestreamMtx.lock();
+		LivestreamGroup livestreams{ livestreamGroup };
+		livestreamMtx.unlock();
+
+		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); it++)
 		{
 			std::vector<void*> bgr24FrameQueue;
-			it->second->queue(ALGO_HELMET, bgr24FrameQueue);
+			it->second->queue(ALGO_FIGHT, bgr24FrameQueue);
 
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
 				FeedBackFight feedback;
-				//			unsigned long long lastKnownTime = GetTickCount64();
 				bool result{ fight.MainProcFunc((unsigned char*)frame->frameData, feedback) };
-				//			unsigned long long currentTime = GetTickCount64();
-				//			printf("[Fight] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());
 
 				if (result)
 				{

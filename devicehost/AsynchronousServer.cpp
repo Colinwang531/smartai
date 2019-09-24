@@ -1,8 +1,8 @@
 #include <io.h>
 #include "boost/bind.hpp"
 #include "boost/format.hpp"
-#include "boost/filesystem/path.hpp"
-#include "boost/filesystem/operations.hpp"
+// #include "boost/filesystem/path.hpp"
+// #include "boost/filesystem/operations.hpp"
 #include "boost/make_shared.hpp"
 // #include "boost/property_tree/ptree.hpp"
 // using PTREE = boost::property_tree::ptree;
@@ -132,7 +132,7 @@ int AsynchronousServer::setNVR(
 			it->second->logout();
 			hikvisionNVRDevices.erase(it);
 			result = 1;
-			LOG(INFO) << "Logout HIKVISION NVR " << ipaddr;
+			LOG(WARNING) << "Logout HIKVISION NVR " << ipaddr;
 		}
 		else
 		{
@@ -338,55 +338,32 @@ int AsynchronousServer::registerFace(
 	pos += 4;
 
 	bool status{ false };
-	std::string replyStr;
 	boost::shared_ptr<CVAlgoFace> facePtr{ 
 		boost::dynamic_pointer_cast<CVAlgoFace>(faceAlgorithmPtr) };
 	if (facePtr)
 	{
-		const std::string executePath{
-				boost::filesystem::initial_path<boost::filesystem::path>().string() };
-		const std::string jpegFileName{
-			(boost::format("%s\\Face\\%s_%d.jpg") % executePath % name % *uuid).str() };
-		const std::string featureFileName{
-			(boost::format("%s\\Face\\Feature.xml") % executePath).str() };
-		const std::string personName{ (boost::format("%s_%d.Feature") % name % *uuid).str() };
-		const std::string personID{ (boost::format("%s_%d.ID") % name % *uuid).str() };
-
 		if (1 == *type)
 		{
-			try
-			{
-				FILE* jpegFile{ NULL };
-				fopen_s(&jpegFile, jpegFileName.c_str(), "wb+");
-				fwrite(request + pos, *imagelen, 1, jpegFile);
-				fclose(jpegFile);
+			status = facePtr->addFace(request + pos, *imagelen, *uuid, name.c_str());
 
-				StruFaceInfo featureInfo;
-				status = facePtr->registerFace(featureInfo, jpegFileName.c_str());
-				if (status)
-				{
-					status = facePtr->addFaceFeature(name.c_str(), *uuid, featureInfo.faceFeature);
-					LOG(INFO) << "Add face feature of user " << name << " UUID " << *uuid << " status = " << status << ".";
-				}
-			}
-			catch (std::exception*)
+			if (ERR_OK == status)
 			{
-				status = false;
+				LOG(INFO) << "Add face image " << *uuid << "_" << name << "[ " << *imagelen << " B ].";
+			} 
+			else
+			{
+				LOG(ERROR) << "Add face image " << *uuid << "_" << name << "[ " << *imagelen << " B ].";
 			}
 		} 
 		else
 		{
-			if (!std::remove(jpegFileName.c_str()))
-			{
-				status = facePtr->removeFaceFeature(name.c_str(), *uuid);
-				LOG(WARNING) << "Remove face feature of user " << name << " UUID " << *uuid << " status = " << status << ".";
-			}
+			status = facePtr->removeFace(*uuid);
 		}
 
 		*((long long*)response) = sequenceNo;
 		*((int*)(response + 8)) = 13;
 		*((int*)(response + 12)) = 4;
-		*((int*)(response + 16)) = status;
+		*((int*)(response + 16)) = (ERR_OK == status ? 1 : 0);
 	}
 
 	return pos;
@@ -397,64 +374,48 @@ int AsynchronousServer::queryFaceInfos(
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
-	const std::string executePath{
-			boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	boost::shared_ptr<CVAlgoFace> facePtr{
+		boost::dynamic_pointer_cast<CVAlgoFace>(faceAlgorithmPtr) };
 	std::vector<char*> jpegFiles;
-	std::vector<int> jpegFileBytes;
-	std::vector<long long> faceIDs;
+	std::vector<int> jpegFilesBytes;
+	std::vector<long long> uuids;
 	int pos = 0, status = ERR_BAD_OPERATE, replyDataBytes = 24;
 	int* number{ (int*)request };
 	pos += 4;
-
+	
 	for (int i = 0; i != *number; ++i)
 	{
-		long long* faceid{ (long long*)(request + pos) };
+		long long* uuid{ (long long*)(request + pos) };
 		pos += 8;
 		int* namelen{ (int*)(request + pos) };
 		pos += 4;
 		const std::string fileName(request + pos, *namelen);
-		const std::string jpegFileName{
-			(boost::format("%s\\Face\\%s_%d.jpg") % executePath % fileName % *faceid).str() };
 		pos += *namelen;
 
-		try
+		char* jpegImageData = new(std::nothrow) char[512 * 1024];
+		if (jpegImageData)
 		{
-			char* jpegData = new char[1024 * 1024];
-			FILE* jpegFile{ NULL };
-			fopen_s(&jpegFile, jpegFileName.c_str(), "rb+");
+			int jpegImageBytes{ 0 };
+			const int queryFaceResult{ facePtr->queryFace(*uuid, jpegImageData, jpegImageBytes) };
 
-			if (jpegFile)
+			if (0 < jpegImageBytes)
 			{
-				const int readBytes{ (const int)_filelength(_fileno(jpegFile)) };
-				fread(jpegData, 1024 * 1024, 1, jpegFile);
-				fclose(jpegFile);
-				jpegFiles.push_back(jpegData);
-				jpegFileBytes.push_back(readBytes);
-				faceIDs.push_back(*faceid);
-				replyDataBytes += readBytes;
-			}
+				jpegFiles.push_back(jpegImageData);
+				jpegFilesBytes.push_back(jpegImageBytes);
+				uuids.push_back(*uuid);
+				replyDataBytes += (12 + jpegImageBytes);
 
-			status = jpegFile ? ERR_OK : ERR_BAD_OPERATE;
-		}
-		catch (std::exception*)
-		{
-			for (int i = 0; i != jpegFileBytes.size(); ++i)
-			{
-				delete[] jpegFiles[i];
+				LOG(INFO) << "Query face image " << *uuid << "_" << fileName << "[ " << jpegImageBytes << " B ].";
 			}
-			jpegFiles.clear();
-			jpegFileBytes.clear();
 		}
-
-		LOG(INFO) << "Query face info of user " << jpegFileName << ".";
 	}
 
-	return replyQueryFace(jpegFiles, jpegFileBytes, faceIDs, replyDataBytes, sequenceNo, response, responseBytes);
+	return replyQueryFace(jpegFiles, jpegFilesBytes, uuids, replyDataBytes, sequenceNo, response, responseBytes);
 }
 
 int AsynchronousServer::replyQueryFace(
 	const std::vector<char *>& jpegFiles, const std::vector<int> jpegFileBytes, 
-	const std::vector<long long> faceIDs, const int replyBytes /* = 0 */, 
+	const std::vector<long long> uuids, const int replyBytes /* = 0 */, 
 	const long long sequenceNo /* = 0 */,
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
@@ -473,7 +434,7 @@ int AsynchronousServer::replyQueryFace(
 
 		for (int i = 0; i != jpegFileNumber; ++i)
 		{
-			memcpy_s((char*)response + pos, 8, &faceIDs[i], 8);
+			memcpy_s((char*)response + pos, 8, &uuids[i], 8);
 			pos += 8;
 			memcpy_s((char*)response + pos, 4, &jpegFileBytes[i], 4);
 			pos += 4;
@@ -500,7 +461,7 @@ int AsynchronousServer::captureCameraPicture(
 {
 	int pos = 0;
 	int* iplen{ (int*)request };
-	char* nvrip{ new char[*iplen + 1] };
+	char* nvrip{ new(std::nothrow) char[*iplen + 1] };
 	if (nvrip)
 	{
 		nvrip[*iplen] = 0;
@@ -549,7 +510,6 @@ int AsynchronousServer::getRequestMessageNotifyHandler(
 		long long* sequence{ (long long*)(request) };
 		int* command{ (int*)(request + 8) };
 		int* packlen{ (int*)(request + 12) };
-
 		if (1 == *command)
 		{
 			responseDataUsedBytes = setNVR(*sequence, request + 16, *packlen, response, responseBytes);

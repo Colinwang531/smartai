@@ -11,7 +11,11 @@ long long AlarmMessage::sequenceNumber = 0;
 AlarmMessage::AlarmMessage(const int messageBytes/* = 10 * 1024 * 1024 */) : message{NULL}, messageBytes{0}
 {
     message = new(std::nothrow) char[messageBytes];
-	memset(message, 0, messageBytes);
+
+	if (message)
+	{
+		memset(message, 0, messageBytes);
+	}
 }
 
 AlarmMessage::~AlarmMessage()

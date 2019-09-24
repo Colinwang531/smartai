@@ -197,7 +197,7 @@ static void initAlgorithm(void)
 			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
 		}
 
-		status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
+		/*bool*/ status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
 		if (status)
 		{
 			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
@@ -275,6 +275,23 @@ static void initAlarmPusher()
 //	}
 }
 
+static DWORD WINAPI notifyStartingProcessThread(void* ctx = NULL)
+{
+	while (1)
+	{
+		char startingNotify[16]{ 0 };
+		int* messageID{ (int*)(startingNotify + 8) };
+		*messageID = 21;
+		boost::shared_ptr<PublisherModel> publisherModel{
+			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+		publishMtx.lock();
+		publisherModel->send(startingNotify, 16);
+		publishMtx.unlock();
+
+		Sleep(10000);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	FLAGS_stderrthreshold = GLOG_INFO;
@@ -317,16 +334,14 @@ int main(int argc, char* argv[])
 					" and router port number " << routerPortNumber << 
 					" and CPU core number " << cpuCoreNumber << ".";
 			}
-
-			publishMtx.lock();
-			publisherModelPtr->send(message.getMessageData(), message.getMessageBytes());
-			publishMtx.unlock();
 		}
 		else
 		{
 			LOG(ERROR) << "Failed to create publisher and router service.";
 		}
 
+		DWORD threadID{ 0 };
+		CreateThread(NULL, 0, &notifyStartingProcessThread, NULL, 0, &threadID);
 		getchar();
 
 //		stopped = true;

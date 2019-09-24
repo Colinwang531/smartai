@@ -21,10 +21,11 @@ bool CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL *
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
+	initParames->sleepTime = 3;
 
 	if (initParames)
 	{
-		status = sleep.InitAlgoriParam(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
+		status = sleep.InitAlgoriParam(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames);
 	}
 
 	return status;
@@ -32,21 +33,25 @@ bool CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL *
 
 void CVAlgoSleep::algorithmWorkerProcess()
 {
+	boost::winapi::ULONGLONG_ lastTickCount = 0;
+	bool enableAlarmFlag = false;
+
 	while (1)
 	{
-		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreamGroup.begin(); it != livestreamGroup.end(); it++)
+		livestreamMtx.lock();
+		LivestreamGroup livestreams{ livestreamGroup };
+		livestreamMtx.unlock();
+
+		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); it++)
 		{
 			std::vector<void*> bgr24FrameQueue;
-			it->second->queue(ALGO_HELMET, bgr24FrameQueue);
+			it->second->queue(ALGO_SLEEP, bgr24FrameQueue);
 
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
 				FeedBackSleep feedback;
-				//			unsigned long long lastKnownTime = GetTickCount64();
 				bool result{ sleep.MainProcFunc((unsigned char*)frame->frameData, feedback) };
-				//			unsigned long long currentTime = GetTickCount64();
-				//			printf("[Sleep] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());
 
 				if (result)
 				{
@@ -55,16 +60,30 @@ void CVAlgoSleep::algorithmWorkerProcess()
 
 					for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
 					{
-						detectNotify.type = ALGO_SLEEP;
-						detectNotify.x = feedback.vecShowInfo[i].rRect.x;
-						detectNotify.y = feedback.vecShowInfo[i].rRect.y;
-						detectNotify.w = feedback.vecShowInfo[i].rRect.width;
-						detectNotify.h = feedback.vecShowInfo[i].rRect.height;
-						detectNotify.status = feedback.vecShowInfo[i].nLabel;
-						detectNotifies.push_back(detectNotify);
+						if (feedback.vecShowInfo[i].catchTime >= 3)
+						{
+							detectNotify.type = ALGO_SLEEP;
+							detectNotify.x = feedback.vecShowInfo[i].rRect.x;
+							detectNotify.y = feedback.vecShowInfo[i].rRect.y;
+							detectNotify.w = feedback.vecShowInfo[i].rRect.width;
+							detectNotify.h = feedback.vecShowInfo[i].rRect.height;
+							detectNotify.status = feedback.vecShowInfo[i].nLabel;
+							detectNotifies.push_back(detectNotify);
+						}
 					}
 
-					if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
+					boost::winapi::ULONGLONG_ currentTickCount = GetTickCount64();
+					if (0 == lastTickCount || currentTickCount - lastTickCount > 30000)
+					{
+						lastTickCount = currentTickCount;
+						enableAlarmFlag = true;
+					}
+					else
+					{
+						enableAlarmFlag = false;
+					}
+
+					if (enableAlarmFlag && 0 < detectNotifies.size() && captureAlarmNotifyHandler)
 					{
 						captureAlarmNotifyHandler(frame, detectNotifies);
 					}

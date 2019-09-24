@@ -34,7 +34,11 @@ void CVAlgoHelmet::algorithmWorkerProcess()
 {
 	while (1)
 	{
-		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreamGroup.begin(); it != livestreamGroup.end(); it++)
+		livestreamMtx.lock();
+		LivestreamGroup livestreams{ livestreamGroup };
+		livestreamMtx.unlock();
+
+		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); it++)
 		{
 			std::vector<void*> bgr24FrameQueue;
 			it->second->queue(ALGO_HELMET, bgr24FrameQueue);
@@ -45,8 +49,6 @@ void CVAlgoHelmet::algorithmWorkerProcess()
  				FeedBackHelmet feedback;
 				unsigned long long lastKnownTime = GetTickCount64();
 				bool result{ helmet.MainProcFunc((unsigned char*)frame->frameData, feedback) };
-// 				unsigned long long currentTime = GetTickCount64();
-// 				printf("[Helmet] MainProcFunc expire %I64u, vecShowInfo size %d.\r\n", currentTime - lastKnownTime, (int)feedback.vecShowInfo.size());
 
 				if (result)
 				{

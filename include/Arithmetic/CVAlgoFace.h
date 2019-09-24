@@ -13,24 +13,12 @@
 #ifndef CV_ALGO_FACE_H
 #define CV_ALGO_FACE_H
 
-#include <vector>
 #include "boost/thread/mutex.hpp"
+#include "boost/unordered_map.hpp"
 #include "Arithmetic/CVAlgo.h"
 #include "BaseFaceDll.h"
 
 NS_BEGIN(algo, 1)
-
-enum
-{
-	FACE_NAME_LENGTH = 260
-};
-
-typedef struct tagFaceFeature_t
-{
-	long long id;
-	char name[FACE_NAME_LENGTH];
-	unsigned char feature[FACE_FEATURE_LENGTH];
-}FaceFeature;
 
 class CVAlgoFace : public CVAlgo
 {
@@ -39,10 +27,10 @@ public:
 	~CVAlgoFace(void);
 
 public:
-	bool registerFace(StruFaceInfo& featureInfo, const char* fileName = NULL);
-	bool addFaceFeature(
-		const char* name = NULL, const long long id = -1, const unsigned char* feature = NULL);
-	bool removeFaceFeature(const char* name = NULL, const long long id = -1);
+	int addFace(
+		const char* jpegData = NULL, const int jpegBytes = 0, const long long uuid = -1, const char* name = NULL);
+	int removeFace(const long long uuid = -1);
+	int queryFace(const long long uuid, char*& jpegData, int& jpegBytes);
 
 protected:
 	bool initializeWithParameter(
@@ -50,13 +38,13 @@ protected:
 	void algorithmWorkerProcess(void) override;
 
 private:
-	bool loadFaceFeature(void);
+	int loadAndRegisterFacePicture(const char* directoryFilePath = NULL);
 
 private:
 	CFaceAlgorithmClass face;
 	CRITICAL_SECTION criticalSection;
-	int registerFaceID;
-	std::vector<FaceFeature> faceFeatures;
+	int largestRegisterFaceID;
+	boost::unordered_map<int, const std::string> registerFaceImageGroup;
 	boost::mutex mtx;
 };//class CVAlgoHelmet
 
