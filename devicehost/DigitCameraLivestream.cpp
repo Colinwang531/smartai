@@ -54,7 +54,7 @@ int DigitCameraLivestream::open(const int userID /* = -1 */)
 		videoStreamDecoderPtr.swap(decoderPtr);
  		videoFrameScalerPtr.swap(scalerPtr);
 		jpegFrameEncoderPtr.swap(encoderPtr);
-		helmetBGR24Queue.setCapacity(8);
+		helmetBGR24Queue.setCapacity(16);
 		phoneBGR24Queue.setCapacity(8);
 		sleepBGR24Queue.setCapacity(8);
 		fightBGR24Queue.setCapacity(8);
@@ -179,7 +179,7 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 	}
 
 	//If not sailing, do nothing.
-	if (0 < sailingStatus || (1 != (++livestreamFrameNumber % 3)))
+	if (0 < sailingStatus/* || (1 != (++livestreamFrameNumber % 3))*/)
 	{
 		return;
 	}

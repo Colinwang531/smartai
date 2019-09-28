@@ -325,8 +325,8 @@ DWORD CdemoDlg::decodeFrameThread(LPVOID ctx /* = NULL */)
 		if (mediaDecoder)
 		{
 			int len = WideCharToMultiByte(CP_ACP, 0, demo->openFilePath, demo->openFilePath.GetLength(), NULL, 0, NULL, NULL);
-			char filePath[MAX_PATH]{ 0 };
-			WideCharToMultiByte(CP_ACP, 0, demo->openFilePath, demo->openFilePath.GetLength(), filePath, len, NULL, NULL);
+			unsigned char filePath[MAX_PATH]{ 0 };
+			WideCharToMultiByte(CP_ACP, 0, demo->openFilePath, demo->openFilePath.GetLength(), (char*)filePath, len, NULL, NULL);
 			mediaDecoder->decode(filePath);
 			delete mediaDecoder;
 		}

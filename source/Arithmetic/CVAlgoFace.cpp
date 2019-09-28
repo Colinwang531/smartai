@@ -64,12 +64,13 @@ int CVAlgoFace::removeFace(const long long uuid /* = -1 */)
 	for(boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.begin(); it != registerFaceImageGroup.end(); ++it)
 	{
 		std::string uuidStr{ (boost::format("%lld") % uuid).str() };
-		const char* isSubstr{ std::strstr(it->second.c_str(), uuidStr.c_str()) };
+		const std::string faceImagePath{ it->second };
+		const char* isSubstr{ std::strstr(faceImagePath.c_str(), uuidStr.c_str()) };
 
 		if (isSubstr)
 		{
 			registerFaceImageGroup.erase(it);
-			std::remove(it->second.c_str());
+			std::remove(faceImagePath.c_str());
 			break;
 		}
 	}
@@ -118,7 +119,7 @@ bool CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->matchThreshold = 0.10f;
+	initParames->matchThreshold = 0.52f;
 	bool status{ face.InitModel(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, &criticalSection) };
 
 	if (status)
@@ -145,28 +146,41 @@ void CVAlgoFace::algorithmWorkerProcess()
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
-				FeedBackFaceRecog faceDetect;
+				FeedBackFaceRecog faceDetect, feedback;
 				std::vector<DetectNotify> detectNotifiers;
-				bool result{ face.MainProcFunc((unsigned char*)frame->frameData, faceDetect) };
+				DWORD mainProcStart = GetTickCount64();
+				bool result{ face.MainProcFunc((unsigned char*)frame->frameData, feedback) };
+				printf("MainProcFunc cost %d.\r\n", (int)(GetTickCount64() - mainProcStart));
 
-				for (int i = 0; i != faceDetect.vecShowInfo.size(); ++i)
+				for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
 				{
-					if (face.PostProcessFunc(faceDetect))
+					DWORD postProcStart = GetTickCount64();
+					if (face.PostProcessFunc(feedback))
 					{
+						printf("PostProcFunc cost %d.\r\n", (int)(GetTickCount64() - postProcStart));
+						faceDetect = feedback;
 						for (int j = 0; j != faceDetect.vecFaceResult.size(); ++j)
 						{
 							DetectNotify detect;
 							detect.type = ALGO_FACE;
 							detect.status = 0;
-							detect.x = faceDetect.vecShowInfo[i].rRect.x;
-							detect.y = faceDetect.vecShowInfo[i].rRect.y;
-							detect.w = faceDetect.vecShowInfo[i].rRect.width;
-							detect.h = faceDetect.vecShowInfo[i].rRect.height;
-							detect.face.faceID = faceDetect.vecFaceResult[j].matchId;
-							detect.face.similarity = faceDetect.vecFaceResult[j].similarValue;
+
+							try
+							{
+								detect.x = faceDetect.vecShowInfo[i].rRect.x;
+								detect.y = faceDetect.vecShowInfo[i].rRect.y;
+								detect.w = faceDetect.vecShowInfo[i].rRect.width;
+								detect.h = faceDetect.vecShowInfo[i].rRect.height;
+								//							detect.face.faceID = faceDetect.vecFaceResult[j].matchId;
+								detect.face.similarity = faceDetect.vecFaceResult[j].similarValue;
+							}
+							catch (std::exception* e)
+							{
+								continue;
+							}
 
 							mtx.lock();
-							boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.find(detect.face.faceID);
+							boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.find(faceDetect.vecFaceResult[j].matchId/*detect.face.faceID*/);
 							if (registerFaceImageGroup.end() != it)
 							{
 								FILE* jpegFile{ NULL };
@@ -180,12 +194,17 @@ void CVAlgoFace::algorithmWorkerProcess()
 										fread(detect.face.imageData, detect.face.imageBytes, 1, jpegFile);
 									}
 									fclose(jpegFile);
+
+									std::vector<std::string> faceImageFileNameSegment;
+									boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
+									detect.face.faceID = atoll(faceImageFileNameSegment[1].c_str());
 								}
 							}
 							mtx.unlock();
 
 							detectNotifiers.push_back(detect);
-							boost::checked_array_delete(faceDetect.vecFaceResult[j].pUcharImage);
+//							boost::checked_array_delete(faceDetect.vecFaceResult[j].pUcharImage);
+							faceDetect.vecShowInfo.clear();
 						}
 					}
 				}

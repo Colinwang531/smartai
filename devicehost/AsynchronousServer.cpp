@@ -358,6 +358,7 @@ int AsynchronousServer::registerFace(
 		else
 		{
 			status = facePtr->removeFace(*uuid);
+			LOG(WARNING) << "Remove face image " << *uuid << "_" << status << " ].";
 		}
 
 		*((long long*)response) = sequenceNo;

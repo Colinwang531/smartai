@@ -2,20 +2,22 @@ extern "C"
 {
 #include "libavformat/avformat.h"
 }
+#include "cuda.h"
 #include "error.h"
 #include "MediaDecoder/CUDA/CUDAVideoDecoder.h"
 
 NS_BEGIN(decoder, 1)
 
 CUDAVideoDecoder::CUDAVideoDecoder(CUcontext ctx /* = NULL */)
-	: MediaMixerDecoder(), cudaContext{ ctx }, cudaVideoCtxLock{ NULL }, 
-	cudaVideoSource{ NULL }, cudaVideoParser{ NULL }, cudaVideoDecoder{ NULL }
+	: MediaMixerDecoder(), cudaContext{ ctx }, cudaVideoCtxLock{ NULL },
+	cudaVideoSource{ NULL }, cudaVideoParser{ NULL }, cudaVideoDecoder{ NULL }, cudaVideoStream{ NULL }
 {}
 
 CUDAVideoDecoder::~CUDAVideoDecoder(void)
 {}
 
-int CUDAVideoDecoder::decode(const char* filePath /* = NULL */, const int /* = 0 */)
+int CUDAVideoDecoder::decode(
+	const unsigned char* frameData /* = NULL */, const int frameBytes /* = 0 */, const unsigned long long frameNumber /* = 0 */)
 {
 	if (!cudaVideoParser && !cudaVideoCtxLock)
 	{
@@ -38,7 +40,7 @@ int CUDAVideoDecoder::decode(const char* filePath /* = NULL */, const int /* = 0
 		const AVBitStreamFilter* avBitStreamFilter{ av_bsf_get_by_name("h264_mp4toannexb") };
 		AVBSFContext* avBSFContext{ NULL };
 
-		if (!avformat_open_input(&avFormatCtx, filePath, NULL, NULL))
+		if (!avformat_open_input(&avFormatCtx, (const char*)frameData, NULL, NULL))
 		{
 			if (!avformat_find_stream_info(avFormatCtx, NULL))
 			{
@@ -140,7 +142,7 @@ int CUDAVideoDecoder::pictureDecodeProcess(CUVIDPICPARAMS* cuvidPictureParams /*
 
 int CUDAVideoDecoder::pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisplayInfo /*= NULL*/)
 {
-	CUVIDPROCPARAMS videoProcessingParameters;
+	CUVIDPROCPARAMS videoProcessingParameters{0};
 	videoProcessingParameters.progressive_frame = cuvidParserDisplayInfo->progressive_frame;
 	videoProcessingParameters.second_field = cuvidParserDisplayInfo->repeat_first_field + 1;
 	videoProcessingParameters.top_field_first = cuvidParserDisplayInfo->top_field_first;
@@ -159,69 +161,76 @@ int CUDAVideoDecoder::pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisp
 		printf("Decode Error occurred for picture %d\n", cuvidParserDisplayInfo->picture_index/*m_nPicNumInDecodeOrder[pDispInfo->picture_index]*/);
 	}
 
-	uint8_t* pDecodedFrame = nullptr;
-	{
-		std::lock_guard<std::mutex> lock(m_mtxVPFrame);
-		if ((unsigned)++m_nDecodedFrame > m_vpFrame.size())
-		{
-			// Not enough frames in stock
-			m_nFrameAlloc++;
-			uint8_t* pFrame = NULL;
-			if (m_bUseDeviceFrame)
-			{
-				CUDA_DRVAPI_CALL(cuCtxPushCurrent(m_cuContext));
-				if (m_bDeviceFramePitched)
-				{
-					CUDA_DRVAPI_CALL(cuMemAllocPitch((CUdeviceptr*)& pFrame, &m_nDeviceFramePitch, m_nWidth * m_nBPP, m_nLumaHeight + (m_nChromaHeight * m_nNumChromaPlanes), 16));
-				}
-				else
-				{
-					CUDA_DRVAPI_CALL(cuMemAlloc((CUdeviceptr*)& pFrame, GetFrameSize()));
-				}
-				CUDA_DRVAPI_CALL(cuCtxPopCurrent(NULL));
-			}
-			else
-			{
-				pFrame = new uint8_t[GetFrameSize()];
-			}
-			m_vpFrame.push_back(pFrame);
-		}
-		pDecodedFrame = m_vpFrame[m_nDecodedFrame - 1];
-	}
+	uint8_t* pDecodedFrame = new uint8_t[1920 * 1080 * 3];
+// 	{
+// 		std::lock_guard<std::mutex> lock(m_mtxVPFrame);
+// 		if ((unsigned)++m_nDecodedFrame > m_vpFrame.size())
+// 		{
+// 			// Not enough frames in stock
+// 			m_nFrameAlloc++;
+// 			uint8_t* pFrame = NULL;
+// 			if (m_bUseDeviceFrame)
+// 			{
+// 				CUDA_DRVAPI_CALL(cuCtxPushCurrent(m_cuContext));
+// 				if (m_bDeviceFramePitched)
+// 				{
+// 					CUDA_DRVAPI_CALL(cuMemAllocPitch((CUdeviceptr*)& pFrame, &m_nDeviceFramePitch, m_nWidth * m_nBPP, m_nLumaHeight + (m_nChromaHeight * m_nNumChromaPlanes), 16));
+// 				}
+// 				else
+// 				{
+// 					CUDA_DRVAPI_CALL(cuMemAlloc((CUdeviceptr*)& pFrame, GetFrameSize()));
+// 				}
+// 				CUDA_DRVAPI_CALL(cuCtxPopCurrent(NULL));
+// 			}
+// 			else
+// 			{
+// 				pFrame = new uint8_t[GetFrameSize()];
+// 			}
+// 			m_vpFrame.push_back(pFrame);
+// 		}
+// 		pDecodedFrame = m_vpFrame[m_nDecodedFrame - 1];
+// 	}
 
-	CUDA_DRVAPI_CALL(cuCtxPushCurrent(m_cuContext));
+	cuCtxPushCurrent(cudaContext);
 	CUDA_MEMCPY2D m = { 0 };
 	m.srcMemoryType = CU_MEMORYTYPE_DEVICE;
 	m.srcDevice = dpSrcFrame;
 	m.srcPitch = nSrcPitch;
-	m.dstMemoryType = m_bUseDeviceFrame ? CU_MEMORYTYPE_DEVICE : CU_MEMORYTYPE_HOST;
+	m.dstMemoryType = /*m_bUseDeviceFrame ? CU_MEMORYTYPE_DEVICE : */CU_MEMORYTYPE_HOST;
 	m.dstDevice = (CUdeviceptr)(m.dstHost = pDecodedFrame);
-	m.dstPitch = m_nDeviceFramePitch ? m_nDeviceFramePitch : m_nWidth * m_nBPP;
-	m.WidthInBytes = m_nWidth * m_nBPP;
-	m.Height = m_nLumaHeight;
-	CUDA_DRVAPI_CALL(cuMemcpy2DAsync(&m, m_cuvidStream));
+	m.dstPitch = 1920;// m_nDeviceFramePitch ? m_nDeviceFramePitch : m_nWidth * m_nBPP;
+	m.WidthInBytes = 1920;// m_nWidth* m_nBPP;
+	m.Height = 1080;// m_nLumaHeight;
+	cuMemcpy2DAsync(&m, cudaVideoStream);
 
-	m.srcDevice = (CUdeviceptr)((uint8_t*)dpSrcFrame + m.srcPitch * m_nSurfaceHeight);
-	m.dstDevice = (CUdeviceptr)(m.dstHost = pDecodedFrame + m.dstPitch * m_nLumaHeight);
-	m.Height = m_nChromaHeight;
-	CUDA_DRVAPI_CALL(cuMemcpy2DAsync(&m, m_cuvidStream));
+	m.srcDevice = (CUdeviceptr)((uint8_t*)dpSrcFrame + m.srcPitch * 1088/*m_nSurfaceHeight*/);
+	m.dstDevice = (CUdeviceptr)(m.dstHost = pDecodedFrame + m.dstPitch * 1080/*m_nLumaHeight*/);
+	m.Height = 1080/*m_nChromaHeight*/;
+	cuMemcpy2DAsync(&m, cudaVideoStream);
 
-	if (m_nNumChromaPlanes == 2)
-	{
-		m.srcDevice = (CUdeviceptr)((uint8_t*)dpSrcFrame + m.srcPitch * m_nSurfaceHeight * 2);
-		m.dstDevice = (CUdeviceptr)(m.dstHost = pDecodedFrame + m.dstPitch * m_nLumaHeight * 2);
-		m.Height = m_nChromaHeight;
-		CUDA_DRVAPI_CALL(cuMemcpy2DAsync(&m, m_cuvidStream));
-	}
-	CUDA_DRVAPI_CALL(cuStreamSynchronize(m_cuvidStream));
-	CUDA_DRVAPI_CALL(cuCtxPopCurrent(NULL));
+		// 	if (m_nNumChromaPlanes == 2)
+		// 	{
+		// 		m.srcDevice = (CUdeviceptr)((uint8_t*)dpSrcFrame + m.srcPitch * m_nSurfaceHeight * 2);
+		// 		m.dstDevice = (CUdeviceptr)(m.dstHost = pDecodedFrame + m.dstPitch * m_nLumaHeight * 2);
+		// 		m.Height = m_nChromaHeight;
+		// 		CUDA_DRVAPI_CALL(cuMemcpy2DAsync(&m, m_cuvidStream));
+		// 	}
+	cuStreamSynchronize(cudaVideoStream);
+	cuCtxPopCurrent(NULL);
 
-	if ((int)m_vTimestamp.size() < m_nDecodedFrame) {
-		m_vTimestamp.resize(m_vpFrame.size());
-	}
-	m_vTimestamp[m_nDecodedFrame - 1] = pDispInfo->timestamp;
+// 	if ((int)m_vTimestamp.size() < m_nDecodedFrame) {
+// 		m_vTimestamp.resize(m_vpFrame.size());
+// 	}
+// 	m_vTimestamp[m_nDecodedFrame - 1] = pDispInfo->timestamp;
 
-	NVDEC_API_CALL(cuvidUnmapVideoFrame(m_hDecoder, dpSrcFrame));
+	cuvidUnmapVideoFrame(cudaVideoDecoder, dpSrcFrame);
+
+// 	static FILE* f{ NULL };
+// 	if (!f)
+// 	{
+// 		fopen_s(&f, "d:\\decodeFile.yuv", "wb+");
+// 	}
+// 	fwrite(pDecodedFrame, 1920 * 1080 * 3, 1, f);
 
 	return 1;
 }

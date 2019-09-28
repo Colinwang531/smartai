@@ -25,7 +25,8 @@ public:
 	virtual ~CUDAVideoDecoder(void);
 
 public:
-	int decode(const char* filePath = NULL, const int = 0) override;
+	int decode(
+		const unsigned char* frameData = NULL, const int frameBytes = 0, const unsigned long long frameNumber = 0) override;
 
 private:
 	/**

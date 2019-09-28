@@ -35,6 +35,7 @@ void CVAlgoSleep::algorithmWorkerProcess()
 {
 	boost::winapi::ULONGLONG_ lastTickCount = 0;
 	bool enableAlarmFlag = false;
+	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{
@@ -85,7 +86,13 @@ void CVAlgoSleep::algorithmWorkerProcess()
 
 					if (enableAlarmFlag && 0 < detectNotifies.size() && captureAlarmNotifyHandler)
 					{
-						captureAlarmNotifyHandler(frame, detectNotifies);
+						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+						if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+						{
+							lastKnownTickTime = currentTickTime;
+							captureAlarmNotifyHandler(frame, detectNotifies);
+						}
 					}
 				}
 
@@ -94,6 +101,7 @@ void CVAlgoSleep::algorithmWorkerProcess()
 				boost::checked_array_delete(frame->NVRIp);
 				boost::checked_delete(frame);
 				it = bgr24FrameQueue.erase(it);
+				feedback.vecShowInfo.clear();
 			}
 		}
 	}

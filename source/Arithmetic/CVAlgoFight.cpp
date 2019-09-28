@@ -32,6 +32,8 @@ bool CVAlgoFight::initializeWithParameter(const char* configFilePath /* = NULL *
 
 void CVAlgoFight::algorithmWorkerProcess()
 {
+	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
+
 	while (1)
 	{
 		livestreamMtx.lock();
@@ -67,7 +69,13 @@ void CVAlgoFight::algorithmWorkerProcess()
 
 					if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
 					{
-						captureAlarmNotifyHandler(frame, detectNotifies);
+						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+						if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+						{
+							lastKnownTickTime = currentTickTime;
+							captureAlarmNotifyHandler(frame, detectNotifies);
+						}
 					}
 				}
 
@@ -76,6 +84,7 @@ void CVAlgoFight::algorithmWorkerProcess()
 				boost::checked_array_delete(frame->NVRIp);
 				boost::checked_delete(frame);
 				it = bgr24FrameQueue.erase(it);
+				feedback.vecShowInfo.clear();
 			}
 		}
 	}
