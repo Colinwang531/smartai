@@ -162,35 +162,6 @@ int CUDAVideoDecoder::pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisp
 	}
 
 	uint8_t* pDecodedFrame = new uint8_t[1920 * 1080 * 3];
-// 	{
-// 		std::lock_guard<std::mutex> lock(m_mtxVPFrame);
-// 		if ((unsigned)++m_nDecodedFrame > m_vpFrame.size())
-// 		{
-// 			// Not enough frames in stock
-// 			m_nFrameAlloc++;
-// 			uint8_t* pFrame = NULL;
-// 			if (m_bUseDeviceFrame)
-// 			{
-// 				CUDA_DRVAPI_CALL(cuCtxPushCurrent(m_cuContext));
-// 				if (m_bDeviceFramePitched)
-// 				{
-// 					CUDA_DRVAPI_CALL(cuMemAllocPitch((CUdeviceptr*)& pFrame, &m_nDeviceFramePitch, m_nWidth * m_nBPP, m_nLumaHeight + (m_nChromaHeight * m_nNumChromaPlanes), 16));
-// 				}
-// 				else
-// 				{
-// 					CUDA_DRVAPI_CALL(cuMemAlloc((CUdeviceptr*)& pFrame, GetFrameSize()));
-// 				}
-// 				CUDA_DRVAPI_CALL(cuCtxPopCurrent(NULL));
-// 			}
-// 			else
-// 			{
-// 				pFrame = new uint8_t[GetFrameSize()];
-// 			}
-// 			m_vpFrame.push_back(pFrame);
-// 		}
-// 		pDecodedFrame = m_vpFrame[m_nDecodedFrame - 1];
-// 	}
-
 	cuCtxPushCurrent(cudaContext);
 	CUDA_MEMCPY2D m = { 0 };
 	m.srcMemoryType = CU_MEMORYTYPE_DEVICE;
@@ -231,6 +202,7 @@ int CUDAVideoDecoder::pictureDisplayProcess(CUVIDPARSERDISPINFO* cuvidParserDisp
 // 		fopen_s(&f, "d:\\decodeFile.yuv", "wb+");
 // 	}
 // 	fwrite(pDecodedFrame, 1920 * 1080 * 3, 1, f);
+	delete[] pDecodedFrame;
 
 	return 1;
 }

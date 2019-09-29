@@ -104,6 +104,9 @@
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp">
       <Filter>Source Files\boost\thread</Filter>
     </ClCompile>
+    <ClCompile Include="simpleD3D11Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="demo.rc">
@@ -113,6 +116,15 @@
   <ItemGroup>
     <None Include="res\demo.rc2">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="texture_2d.cu">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="texture_3d.cu">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="texture_cube.cu">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

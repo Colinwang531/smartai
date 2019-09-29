@@ -33,7 +33,7 @@ bool CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL 
 void CVAlgoHelmet::algorithmWorkerProcess()
 {
 	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
-	std::vector<StruResult> lastKnownMotionRect;
+//	boost::winapi::ULONGLONG_ runtimeForPerLivestream{ GetTickCount64() };
 
 	while (1)
 	{
@@ -43,89 +43,26 @@ void CVAlgoHelmet::algorithmWorkerProcess()
 
 		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); it++)
 		{
-			std::vector<StruResult> currentMotionRect;
+			helmet.clear_oldvec();
 			std::vector<void*> bgr24FrameQueue;
 			it->second->queue(ALGO_HELMET, bgr24FrameQueue);
-//			bool isLastFrame{ true };
+			FeedBackHelmet feedback;
 
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
- 				FeedBackHelmet feedback;
+				boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
 				bool result{ helmet.MainProcFunc((unsigned char*)frame->frameData, feedback) };
+				printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 				if (result)
 				{
-//					result = helmet.PostProcessFunc(feedback);
-// 					if (!lastKnownMotionRect.size() && 0 < feedback.vecShowInfo.size())
-// 					{
-// 						lastKnownMotionRect.push_back(feedback.vecShowInfo[0]);
-// 						currentMotionRect.push_back(feedback.vecShowInfo[0]);
-// 					}
-
-// 					if (it == bgr24FrameQueue.end() - 1)
-// 					{
-// 						if (0 < lastKnownMotionRect.size())
-// 						{
-// 							for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
-// 							{
-// 								bool foundSamePos{ false };
-// 
-// 								for (int j = 0; j != lastKnownMotionRect.size(); ++j)
-// 								{
-// 									const int diff_x{ abs(lastKnownMotionRect[j].rRect.x - feedback.vecShowInfo[i].rRect.x) };
-// 									const int diff_y{ abs(lastKnownMotionRect[j].rRect.y - feedback.vecShowInfo[i].rRect.y) };
-// 									const int diff_w{ abs(lastKnownMotionRect[j].rRect.width - feedback.vecShowInfo[i].rRect.width) };
-// 									const int diff_h{ abs(lastKnownMotionRect[j].rRect.height - feedback.vecShowInfo[i].rRect.height) };
-// 
-// 									if ((50 > diff_x && 50 > diff_y)/* || (50 > diff_w && 50 > diff_h)*/)
-// 									{
-// 										printf_s("dx = %d, dy = %d, dw =  %d, dh = %d.\r\n", diff_x, diff_y, diff_w, diff_h);
-// 										foundSamePos = true;
-// 									}
-// 								}
-// 
-// 								if (!foundSamePos)
-// 								{
-// 									currentMotionRect.push_back(feedback.vecShowInfo[i]);
-// 								}
-// 
-// 								printf_s("Current motion rect count %d, last motion rect %d, vectShowInfo rect %d.\r\n",
-// 									currentMotionRect.size(), lastKnownMotionRect.size(), feedback.vecShowInfo.size());
-// 							}
-// 						}
-// 						else
-// 						{
-// 							currentMotionRect.clear();
-// 							currentMotionRect = feedback.vecShowInfo;
-// 						}
-// 
-// //						isFirstFrame = false;
-// 						DetectNotify dectectNotify;
-// 						std::vector<DetectNotify> detectNotifies;
-// 						for (int i = 0; i != currentMotionRect.size(); ++i)
-// 						{
-// 							dectectNotify.type = ALGO_HELMET;
-// 							dectectNotify.x = currentMotionRect[i].rRect.x;
-// 							dectectNotify.y = currentMotionRect[i].rRect.y;
-// 							dectectNotify.w = currentMotionRect[i].rRect.width;
-// 							dectectNotify.h = currentMotionRect[i].rRect.height;
-// 							dectectNotify.status = currentMotionRect[i].nLabel;
-// 							detectNotifies.push_back(dectectNotify);
-// 						}
-//
-					
-					DetectNotify dectectNotify;
+					DetectNotify detectNotify;
 					std::vector<DetectNotify> detectNotifies;
-					map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin();
+					std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin();
 
 					for (; iter != feedback.mapMemory.end(); ++iter)
 					{
-// 						if (!iter->second.bDone)
-// 						{
-// 							continue;
-// 						}
-						// 计算最大的detectConfidence 和 fTrackConfidence;
 						float maxConfidence = 0.0f;
 						int nSaveId = 0;
 						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
@@ -137,26 +74,24 @@ void CVAlgoHelmet::algorithmWorkerProcess()
 							}
 						}
 
-						dectectNotify.type = ALGO_HELMET;
-						dectectNotify.x = iter->second.vecSaveMat[nSaveId].rRect.x;
-						dectectNotify.y = iter->second.vecSaveMat[nSaveId].rRect.y;
-						dectectNotify.w = iter->second.vecSaveMat[nSaveId].rRect.width;
-						dectectNotify.h = iter->second.vecSaveMat[nSaveId].rRect.height;
-						dectectNotify.status = iter->second.vecSaveMat[nSaveId].nLabel;
-						detectNotifies.push_back(dectectNotify);
+						detectNotify.type = ALGO_HELMET;
+						detectNotify.x = iter->second.vecSaveMat[nSaveId].rRect.x;
+						detectNotify.y = iter->second.vecSaveMat[nSaveId].rRect.y;
+						detectNotify.w = iter->second.vecSaveMat[nSaveId].rRect.width;
+						detectNotify.h = iter->second.vecSaveMat[nSaveId].rRect.height;
+						detectNotify.status = iter->second.vecSaveMat[nSaveId].nLabel;
+						detectNotifies.push_back(detectNotify);
 
-						captureAlarmNotifyHandler(frame, detectNotifies);
+						if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
+						{
+							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-// 						if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
-// 						{
-// 							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
-// 
-// 							if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
-// 							{
-// 								lastKnownTickTime = currentTickTime;
-// 								captureAlarmNotifyHandler(frame, detectNotifies);
-// 							}
-// 						}
+							if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+							{
+								lastKnownTickTime = currentTickTime;
+								captureAlarmNotifyHandler(frame, detectNotifies);
+							}
+						}
 					}
 				}
 
@@ -169,8 +104,9 @@ void CVAlgoHelmet::algorithmWorkerProcess()
 				feedback.mapMemory.clear();
 			}
 
-			lastKnownMotionRect.swap(currentMotionRect);
-			break;
+// 			boost::winapi::ULONGLONG_ now{ GetTickCount64() };
+// 			printf("=====  Process run time = %lld.\r\n", now - runtimeForPerLivestream);
+// 			runtimeForPerLivestream = now;
 		}
 	}
 }

@@ -17,6 +17,7 @@ public:
 	virtual ~CHelmetAlgorithmClass();
 
 	// 初始化算法
+	virtual bool clear_oldvec();
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
 	// 算法检测跟踪
@@ -24,9 +25,10 @@ public:
 
 	// 算法后处理
 	virtual bool PostProcessFunc(FeedBackHelmet &objFeed);
+	CHelmetAlgorithmClass *m_pTreat;
 
 private:
-	CHelmetAlgorithmClass *m_pTreat;
+	//CHelmetAlgorithmClass *m_pTreat;
 };
 
 

@@ -2,12 +2,8 @@
 #include <io.h>
 #include "boost/algorithm/string.hpp"
 #include "boost/checked_delete.hpp"
-// #include "boost/filesystem/path.hpp"
-// #include "boost/filesystem/operations.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/format.hpp"
-// #include "tinyxml2.h"
-// using namespace tinyxml2;
 #include "error.h"
 #include "Arithmetic/CVAlgoFace.h"
 
@@ -140,44 +136,35 @@ void CVAlgoFace::algorithmWorkerProcess()
 
 		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); it++)
 		{
+			FeedBackFaceRecog faceDetect, feedback;
 			std::vector<void*> bgr24FrameQueue;
 			it->second->queue(ALGO_FACE, bgr24FrameQueue);
 
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
-				FeedBackFaceRecog faceDetect, feedback;
 				std::vector<DetectNotify> detectNotifiers;
 				DWORD mainProcStart = GetTickCount64();
 				bool result{ face.MainProcFunc((unsigned char*)frame->frameData, feedback) };
-				printf("MainProcFunc cost %d.\r\n", (int)(GetTickCount64() - mainProcStart));
+//				printf("MainProcFunc cost %d.\r\n", (int)(GetTickCount64() - mainProcStart));
 
 				for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
 				{
 					DWORD postProcStart = GetTickCount64();
 					if (face.PostProcessFunc(feedback))
 					{
-						printf("PostProcFunc cost %d.\r\n", (int)(GetTickCount64() - postProcStart));
+//						printf("PostProcFunc cost %d.\r\n", (int)(GetTickCount64() - postProcStart));
 						faceDetect = feedback;
 						for (int j = 0; j != faceDetect.vecFaceResult.size(); ++j)
 						{
 							DetectNotify detect;
 							detect.type = ALGO_FACE;
 							detect.status = 0;
-
-							try
-							{
-								detect.x = faceDetect.vecShowInfo[i].rRect.x;
-								detect.y = faceDetect.vecShowInfo[i].rRect.y;
-								detect.w = faceDetect.vecShowInfo[i].rRect.width;
-								detect.h = faceDetect.vecShowInfo[i].rRect.height;
-								//							detect.face.faceID = faceDetect.vecFaceResult[j].matchId;
-								detect.face.similarity = faceDetect.vecFaceResult[j].similarValue;
-							}
-							catch (std::exception* e)
-							{
-								continue;
-							}
+							detect.x = faceDetect.vecShowInfo[i].rRect.x;
+							detect.y = faceDetect.vecShowInfo[i].rRect.y;
+							detect.w = faceDetect.vecShowInfo[i].rRect.width;
+							detect.h = faceDetect.vecShowInfo[i].rRect.height;
+							detect.face.similarity = faceDetect.vecFaceResult[j].similarValue;
 
 							mtx.lock();
 							boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.find(faceDetect.vecFaceResult[j].matchId/*detect.face.faceID*/);
@@ -205,6 +192,7 @@ void CVAlgoFace::algorithmWorkerProcess()
 							detectNotifiers.push_back(detect);
 //							boost::checked_array_delete(faceDetect.vecFaceResult[j].pUcharImage);
 							faceDetect.vecShowInfo.clear();
+							faceDetect.mapMemory.clear();
 						}
 					}
 				}

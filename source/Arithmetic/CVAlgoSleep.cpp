@@ -33,8 +33,6 @@ bool CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL *
 
 void CVAlgoSleep::algorithmWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastTickCount = 0;
-	bool enableAlarmFlag = false;
 	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
@@ -45,53 +43,52 @@ void CVAlgoSleep::algorithmWorkerProcess()
 
 		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it = livestreams.begin(); it != livestreams.end(); it++)
 		{
+			sleep.clear_oldvec();
 			std::vector<void*> bgr24FrameQueue;
 			it->second->queue(ALGO_SLEEP, bgr24FrameQueue);
+			FeedBackSleep feedback;
 
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
-				FeedBackSleep feedback;
 				bool result{ sleep.MainProcFunc((unsigned char*)frame->frameData, feedback) };
 
 				if (result)
 				{
 					DetectNotify detectNotify;
 					std::vector<DetectNotify> detectNotifies;
+					std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin();
 
-					for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
+					for (; iter != feedback.mapMemory.end(); ++iter)
 					{
-						if (feedback.vecShowInfo[i].catchTime >= 3)
+						float maxConfidence = 0.0f;
+						int nSaveId = 0;
+						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
 						{
-							detectNotify.type = ALGO_SLEEP;
-							detectNotify.x = feedback.vecShowInfo[i].rRect.x;
-							detectNotify.y = feedback.vecShowInfo[i].rRect.y;
-							detectNotify.w = feedback.vecShowInfo[i].rRect.width;
-							detectNotify.h = feedback.vecShowInfo[i].rRect.height;
-							detectNotify.status = feedback.vecShowInfo[i].nLabel;
-							detectNotifies.push_back(detectNotify);
+							if (iter->second.vecSaveMat[i].detectConfidence > maxConfidence)
+							{
+								maxConfidence = iter->second.vecSaveMat[i].detectConfidence;
+								nSaveId = i;
+							}
 						}
-					}
 
-					boost::winapi::ULONGLONG_ currentTickCount = GetTickCount64();
-					if (0 == lastTickCount || currentTickCount - lastTickCount > 30000)
-					{
-						lastTickCount = currentTickCount;
-						enableAlarmFlag = true;
-					}
-					else
-					{
-						enableAlarmFlag = false;
-					}
+						detectNotify.type = ALGO_SLEEP;
+						detectNotify.x = iter->second.vecSaveMat[nSaveId].rRect.x;
+						detectNotify.y = iter->second.vecSaveMat[nSaveId].rRect.y;
+						detectNotify.w = iter->second.vecSaveMat[nSaveId].rRect.width;
+						detectNotify.h = iter->second.vecSaveMat[nSaveId].rRect.height;
+						detectNotify.status = iter->second.vecSaveMat[nSaveId].nLabel;
+						detectNotifies.push_back(detectNotify);
 
-					if (enableAlarmFlag && 0 < detectNotifies.size() && captureAlarmNotifyHandler)
-					{
-						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
-
-						if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+						if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
 						{
-							lastKnownTickTime = currentTickTime;
-							captureAlarmNotifyHandler(frame, detectNotifies);
+							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+							if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+							{
+								lastKnownTickTime = currentTickTime;
+								captureAlarmNotifyHandler(frame, detectNotifies);
+							}
 						}
 					}
 				}
@@ -102,6 +99,7 @@ void CVAlgoSleep::algorithmWorkerProcess()
 				boost::checked_delete(frame);
 				it = bgr24FrameQueue.erase(it);
 				feedback.vecShowInfo.clear();
+				feedback.mapMemory.clear();
 			}
 		}
 	}

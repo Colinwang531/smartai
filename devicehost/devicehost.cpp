@@ -117,17 +117,6 @@ static void cvAlgoDetectInfoHandler(void* frame, const std::vector<NS(algo, 1)::
 
 		LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << detectInfos[0].type;
 	}
-
-// 	if (frame && 0 < detectInfos.size())
-// 	{
-// 		AlarmMessageData* alarmMessageData = new AlarmMessageData;
-// 		if (alarmMessageData)
-// 		{
-// 			alarmMessageData->frame = frame;
-// 			alarmMessageData->detectNotify = detectInfos;
-// 			alarmMessageQueue->pushBack(alarmMessageData);
-// 		}
-// 	}
 }
 
 static unsigned int alarmMessagePusherHandler(void* ctx)
@@ -177,47 +166,47 @@ static void initAlgorithm(void)
 		fightAlgorithmPtr.swap(fightPtr);
 		faceAlgorithmPtr.swap(facePtr);
 
-// 		bool status = helmetAlgorithmPtr->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize HELMET algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
-// 		}
+		bool status = helmetAlgorithmPtr->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize HELMET algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
+		}
 
-// 		bool status = sleepAlgorithmPtr->initialize(exePath.c_str(), /*0.2f*/0.9f, 0.15f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
-// 		}
-// 
-// 		/*bool*/ status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
-// 		}
-// 
-// 		status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
-// 		if (status)
-// 		{
-// 			LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
-// 		}
-// 		else
-// 		{
-// 			LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
-// 		}
+		/*bool*/ status = sleepAlgorithmPtr->initialize(exePath.c_str(), /*0.2f*/0.9f, 0.15f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
+		}
 
-		bool status = faceAlgorithmPtr->initialize(exePath.c_str(), /*0.3f*/0.9f, 0.15f);
+		/*bool*/ status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
+		}
+
+		/*bool*/ status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
+		if (status)
+		{
+			LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";
+		}
+		else
+		{
+			LOG(WARNING) << "Initialize FIGHT algorithm status Failed.";
+		}
+
+		/*bool*/ status = faceAlgorithmPtr->initialize(exePath.c_str(), /*0.3f*/0.9f, 0.15f);
 		if (status)
 		{
 			LOG(INFO) << "Initialize FACE algorithm status Successfully.";

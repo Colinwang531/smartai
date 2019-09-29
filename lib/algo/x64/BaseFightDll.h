@@ -16,6 +16,8 @@ public:
 	CFightAlgorithmClass();
 	virtual ~CFightAlgorithmClass();
 
+	//清空特征
+	virtual bool clear_oldvec();
 	// 初始化算法
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
@@ -24,9 +26,9 @@ public:
 
 	// 算法后处理
 	virtual bool PostProcessFunc(FeedBackFight &objFeed);
-
-private:
 	CFightAlgorithmClass *m_pTreat;
+private:
+	
 };
 
 
