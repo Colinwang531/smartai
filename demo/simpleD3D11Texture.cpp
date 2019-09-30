@@ -279,7 +279,7 @@ bool findCUDADevice()
     int nGraphicsGPU = 0;
     int deviceCount = 0;
     bool bFoundGraphics = false;
-    char firstGraphicsName[NAME_LEN], devname[NAME_LEN];
+    char /*firstGraphicsName[NAME_LEN],*/ devname[NAME_LEN];
 
     // This function call returns 0 if there are no CUDA capable devices.
     cudaError_t error_id = cudaGetDeviceCount(&deviceCount);
@@ -380,44 +380,44 @@ bool findDXDevice(char *dev_name)
 ////////////////////////////////////////////////////////////////////////////////
 // Program main
 ////////////////////////////////////////////////////////////////////////////////
-int main(int argc, char *argv[])
+int main_run(int argc, char *argv[])
 {
-    char device_name[256];
-    char *ref_file = NULL;
-//	char* ref_file = "d:\\download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv";
-
-    pArgc = &argc;
-    pArgv = argv;
-
-    printf("[%s] - Starting...\n", SDK_name);
-
-    if (!findCUDADevice())                   // Search for CUDA GPU
-    {
-        printf("> CUDA Device NOT found on \"%s\".. Exiting.\n", device_name);
-        exit(EXIT_SUCCESS);
-    }
-
-    if (!dynlinkLoadD3D11API())                  // Search for D3D API (locate drivers, does not mean device is found)
-    {
-        printf("> D3D11 API libraries NOT found on.. Exiting.\n");
-        dynlinkUnloadD3D11API();
-        exit(EXIT_SUCCESS);
-    }
-
-    if (!findDXDevice(device_name))           // Search for D3D Hardware Device
-    {
-        printf("> D3D11 Graphics Device NOT found.. Exiting.\n");
-        dynlinkUnloadD3D11API();
-        exit(EXIT_SUCCESS);
-    }
-
-    // command line options
-    if (argc > 1)
-    {
-        // automatied build testing harness
-        if (checkCmdLineFlag(argc, (const char **)argv, "file"))
-            getCmdLineArgumentString(argc, (const char **)argv, "file", &ref_file);
-    }
+//     char device_name[256];
+//     char *ref_file = NULL;
+// //	char* ref_file = "d:\\download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv";
+// 
+//     pArgc = &argc;
+//     pArgv = argv;
+// 
+//     printf("[%s] - Starting...\n", SDK_name);
+// 
+//     if (!findCUDADevice())                   // Search for CUDA GPU
+//     {
+//         printf("> CUDA Device NOT found on \"%s\".. Exiting.\n", device_name);
+//         exit(EXIT_SUCCESS);
+//     }
+// 
+//     if (!dynlinkLoadD3D11API())                  // Search for D3D API (locate drivers, does not mean device is found)
+//     {
+//         printf("> D3D11 API libraries NOT found on.. Exiting.\n");
+//         dynlinkUnloadD3D11API();
+//         exit(EXIT_SUCCESS);
+//     }
+// 
+//     if (!findDXDevice(device_name))           // Search for D3D Hardware Device
+//     {
+//         printf("> D3D11 Graphics Device NOT found.. Exiting.\n");
+//         dynlinkUnloadD3D11API();
+//         exit(EXIT_SUCCESS);
+//     }
+// 
+//     // command line options
+//     if (argc > 1)
+//     {
+//         // automatied build testing harness
+//         if (checkCmdLineFlag(argc, (const char **)argv, "file"))
+//             getCmdLineArgumentString(argc, (const char **)argv, "file", &ref_file);
+//     }
 
     //
     // create window
@@ -426,7 +426,7 @@ int main(int argc, char *argv[])
 #if 1
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L,
                       GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
-                      "CUDA SDK", NULL
+                      L"CUDA SDK", NULL
                     };
     RegisterClassEx(&wc);
 
@@ -434,7 +434,7 @@ int main(int argc, char *argv[])
     int xBorder = ::GetSystemMetrics(SM_CXSIZEFRAME);
     int yMenu = ::GetSystemMetrics(SM_CYMENU);
     int yBorder = ::GetSystemMetrics(SM_CYSIZEFRAME);
-    HWND hWnd = CreateWindow(wc.lpszClassName, "CUDA/D3D11 Texture InterOP",
+    HWND hWnd = CreateWindow(wc.lpszClassName, L"CUDA/D3D11 Texture InterOP",
                              WS_OVERLAPPEDWINDOW, 0, 0, g_WindowWidth + 2*xBorder, g_WindowHeight+ 2*yBorder+yMenu,
                              NULL, NULL, wc.hInstance, NULL);
 #else
@@ -461,33 +461,33 @@ int main(int argc, char *argv[])
         // register the Direct3D resources that we'll use
         // we'll read to and write from g_texture_2d, so don't set any special map flags for it
         cudaGraphicsD3D11RegisterResource(&g_texture_2d.cudaResource, g_texture_2d.pTexture, cudaGraphicsRegisterFlagsNone);
-        getLastCudaError("cudaGraphicsD3D11RegisterResource (g_texture_2d) failed");
+//        getLastCudaError("cudaGraphicsD3D11RegisterResource (g_texture_2d) failed");
         // cuda cannot write into the texture directly : the texture is seen as a cudaArray and can only be mapped as a texture
         // Create a buffer so that cuda can write into it
         // pixel fmt is DXGI_FORMAT_R32G32B32A32_FLOAT
         cudaMallocPitch(&g_texture_2d.cudaLinearMemory, &g_texture_2d.pitch, g_texture_2d.width * sizeof(float) * 4, g_texture_2d.height);
-        getLastCudaError("cudaMallocPitch (g_texture_2d) failed");
+//        getLastCudaError("cudaMallocPitch (g_texture_2d) failed");
         cudaMemset(g_texture_2d.cudaLinearMemory, 1, g_texture_2d.pitch * g_texture_2d.height);
 
         // CUBE
         cudaGraphicsD3D11RegisterResource(&g_texture_cube.cudaResource, g_texture_cube.pTexture, cudaGraphicsRegisterFlagsNone);
-        getLastCudaError("cudaGraphicsD3D11RegisterResource (g_texture_cube) failed");
+//        getLastCudaError("cudaGraphicsD3D11RegisterResource (g_texture_cube) failed");
         // create the buffer. pixel fmt is DXGI_FORMAT_R8G8B8A8_SNORM
         cudaMallocPitch(&g_texture_cube.cudaLinearMemory, &g_texture_cube.pitch, g_texture_cube.size * 4, g_texture_cube.size);
-        getLastCudaError("cudaMallocPitch (g_texture_cube) failed");
+//        getLastCudaError("cudaMallocPitch (g_texture_cube) failed");
         cudaMemset(g_texture_cube.cudaLinearMemory, 1, g_texture_cube.pitch * g_texture_cube.size);
-        getLastCudaError("cudaMemset (g_texture_cube) failed");
+// 		getLastCudaError("cudaMemset (g_texture_cube) failed");
 
         // 3D
         cudaGraphicsD3D11RegisterResource(&g_texture_3d.cudaResource, g_texture_3d.pTexture, cudaGraphicsRegisterFlagsNone);
-        getLastCudaError("cudaGraphicsD3D11RegisterResource (g_texture_3d) failed");
+//        getLastCudaError("cudaGraphicsD3D11RegisterResource (g_texture_3d) failed");
         // create the buffer. pixel fmt is DXGI_FORMAT_R8G8B8A8_SNORM
         //cudaMallocPitch(&g_texture_3d.cudaLinearMemory, &g_texture_3d.pitch, g_texture_3d.width * 4, g_texture_3d.height * g_texture_3d.depth);
         cudaMalloc(&g_texture_3d.cudaLinearMemory, g_texture_3d.width * 4 * g_texture_3d.height * g_texture_3d.depth);
         g_texture_3d.pitch = g_texture_3d.width * 4;
-        getLastCudaError("cudaMallocPitch (g_texture_3d) failed");
+//        getLastCudaError("cudaMallocPitch (g_texture_3d) failed");
         cudaMemset(g_texture_3d.cudaLinearMemory, 1, g_texture_3d.pitch * g_texture_3d.height * g_texture_3d.depth);
-        getLastCudaError("cudaMemset (g_texture_3d) failed");
+//        getLastCudaError("cudaMemset (g_texture_3d) failed");
     }
 
     //
@@ -545,7 +545,7 @@ int main(int argc, char *argv[])
     };
 
     // Release D3D Library (after message loop)
-    dynlinkUnloadD3D11API();
+//    dynlinkUnloadD3D11API();
 
     // Unregister windows class
     UnregisterClass(wc.lpszClassName, wc.hInstance);
@@ -553,9 +553,11 @@ int main(int argc, char *argv[])
     //
     // and exit
     //
-    printf("> %s running on %s exiting...\n", SDK_name, device_name);
+//    printf("> %s running on %s exiting...\n", SDK_name, device_name);
 
-    exit(g_bPassed ? EXIT_SUCCESS : EXIT_FAILURE);
+//    exit(g_bPassed ? EXIT_SUCCESS : EXIT_FAILURE);
+
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -565,7 +567,7 @@ int main(int argc, char *argv[])
 HRESULT InitD3D(HWND hWnd)
 {
     HRESULT hr = S_OK;
-    cudaError cuStatus;
+//    cudaError cuStatus;
 
     // Set up the structure used to create the device and swapchain
     DXGI_SWAP_CHAIN_DESC sd;

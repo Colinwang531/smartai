@@ -9,36 +9,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "demo", "demo\demo.vcxproj",
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|ARM = Debug|ARM
-		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Release|ARM = Release|ARM
-		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{94D7ED34-A168-48C7-A588-9442942A2946}.Debug|ARM.ActiveCfg = Debug|Win32
-		{94D7ED34-A168-48C7-A588-9442942A2946}.Debug|ARM64.ActiveCfg = Debug|Win32
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Debug|x64.ActiveCfg = Debug|x64
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Debug|x64.Build.0 = Debug|x64
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Debug|x86.ActiveCfg = Debug|Win32
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Debug|x86.Build.0 = Debug|Win32
-		{94D7ED34-A168-48C7-A588-9442942A2946}.Release|ARM.ActiveCfg = Release|Win32
-		{94D7ED34-A168-48C7-A588-9442942A2946}.Release|ARM64.ActiveCfg = Release|Win32
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Release|x64.ActiveCfg = Release|x64
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Release|x64.Build.0 = Release|x64
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Release|x86.ActiveCfg = Release|Win32
 		{94D7ED34-A168-48C7-A588-9442942A2946}.Release|x86.Build.0 = Release|Win32
-		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Debug|ARM.ActiveCfg = Debug|Win32
-		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Debug|ARM64.ActiveCfg = Debug|Win32
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Debug|x64.ActiveCfg = Debug|x64
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Debug|x64.Build.0 = Debug|x64
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Debug|x86.ActiveCfg = Debug|Win32
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Debug|x86.Build.0 = Debug|Win32
-		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Release|ARM.ActiveCfg = Release|Win32
-		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Release|ARM64.ActiveCfg = Release|Win32
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Release|x64.ActiveCfg = Release|x64
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Release|x64.Build.0 = Release|x64
 		{F94DB57D-8318-430D-AE56-CDF469997CA3}.Release|x86.ActiveCfg = Release|Win32

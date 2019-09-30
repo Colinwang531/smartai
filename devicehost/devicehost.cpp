@@ -176,7 +176,7 @@ static void initAlgorithm(void)
 			LOG(WARNING) << "Initialize HELMET algorithm status Failed.";
 		}
 
-		/*bool*/ status = sleepAlgorithmPtr->initialize(exePath.c_str(), /*0.2f*/0.9f, 0.15f);
+		/*bool*/ status = sleepAlgorithmPtr->initialize(exePath.c_str(), /*0.2f*/0.9f, 0.10f/*5*/);
 		if (status)
 		{
 			LOG(INFO) << "Initialize SLEEP algorithm status Successfully.";
@@ -186,7 +186,7 @@ static void initAlgorithm(void)
 			LOG(WARNING) << "Initialize SLEEP algorithm status Failed.";
 		}
 
-		/*bool*/ status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, 0.2f);
+		/*bool*/ status = phoneAlgorithmPtr->initialize(exePath.c_str(), 0.9f, /*0.2*/0.10f);
 		if (status)
 		{
 			LOG(INFO) << "Initialize PHONE algorithm status Successfully.";
@@ -196,7 +196,7 @@ static void initAlgorithm(void)
 			LOG(WARNING) << "Initialize PHONE algorithm status Failed.";
 		}
 
-		/*bool*/ status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, 0.2f);
+		/*bool*/ status = fightAlgorithmPtr->initialize(exePath.c_str(), 0.995f, /*0.2*/0.10f);
 		if (status)
 		{
 			LOG(INFO) << "Initialize FIGHT algorithm status Successfully.";

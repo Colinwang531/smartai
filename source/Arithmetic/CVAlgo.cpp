@@ -26,12 +26,12 @@ bool CVAlgo::initialize(
 	{
 		//Each algorithm run on different thread of CPU.
 		HANDLE threadHandle = (HANDLE)CreateThread(NULL, 0, &algorithmProcessThread, this, 0, NULL);
-// 		if (threadHandle)
-// 		{
-// 			SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
-// 			SetThreadAffinityMask(threadHandle, (DWORD)(1 << enableAlgorithmCount));
-// 			enableAlgorithmCount++;
-// 		}
+ 		if (threadHandle)
+ 		{
+ 			SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
+ 			SetThreadAffinityMask(threadHandle, (DWORD)(1 << enableAlgorithmCount));
+ 			enableAlgorithmCount++;
+ 		}
 	}
 
 	return status;

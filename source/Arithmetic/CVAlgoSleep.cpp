@@ -46,15 +46,16 @@ void CVAlgoSleep::algorithmWorkerProcess()
 			sleep.clear_oldvec();
 			std::vector<void*> bgr24FrameQueue;
 			it->second->queue(ALGO_SLEEP, bgr24FrameQueue);
-			FeedBackSleep feedback;
+			FeedBackSleep feedback, backup;
 
 			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
 			{
 				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
-				bool result{ sleep.MainProcFunc((unsigned char*)frame->frameData, feedback) };
+				bool result{ sleep.MainProcFunc((unsigned char*)frame->frameData, backup) };
 
 				if (result)
 				{
+					feedback = backup;
 					DetectNotify detectNotify;
 					std::vector<DetectNotify> detectNotifies;
 					std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin();
@@ -62,7 +63,7 @@ void CVAlgoSleep::algorithmWorkerProcess()
 					for (; iter != feedback.mapMemory.end(); ++iter)
 					{
 						float maxConfidence = 0.0f;
-						int nSaveId = 0;
+						int nSaveId{ -1 };
 						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
 						{
 							if (iter->second.vecSaveMat[i].detectConfidence > maxConfidence)
@@ -72,13 +73,16 @@ void CVAlgoSleep::algorithmWorkerProcess()
 							}
 						}
 
-						detectNotify.type = ALGO_SLEEP;
-						detectNotify.x = iter->second.vecSaveMat[nSaveId].rRect.x;
-						detectNotify.y = iter->second.vecSaveMat[nSaveId].rRect.y;
-						detectNotify.w = iter->second.vecSaveMat[nSaveId].rRect.width;
-						detectNotify.h = iter->second.vecSaveMat[nSaveId].rRect.height;
-						detectNotify.status = iter->second.vecSaveMat[nSaveId].nLabel;
-						detectNotifies.push_back(detectNotify);
+						if (-1 < nSaveId)
+						{
+							detectNotify.type = ALGO_SLEEP;
+							detectNotify.x = iter->second.vecSaveMat[nSaveId].rRect.x;
+							detectNotify.y = iter->second.vecSaveMat[nSaveId].rRect.y;
+							detectNotify.w = iter->second.vecSaveMat[nSaveId].rRect.width;
+							detectNotify.h = iter->second.vecSaveMat[nSaveId].rRect.height;
+							detectNotify.status = iter->second.vecSaveMat[nSaveId].nLabel;
+							detectNotifies.push_back(detectNotify);
+						}
 
 						if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
 						{
@@ -100,6 +104,8 @@ void CVAlgoSleep::algorithmWorkerProcess()
 				it = bgr24FrameQueue.erase(it);
 				feedback.vecShowInfo.clear();
 				feedback.mapMemory.clear();
+				backup.vecShowInfo.clear();
+				backup.mapMemory.clear();
 			}
 		}
 	}
