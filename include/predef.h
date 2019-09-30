@@ -17,42 +17,16 @@
 #define NS_END }
 #define NS(name, version) NS_##name##_##version
 
-/***
-// ÕûÊý
-using Int8 = signed char;
-using Int16 = signed short;
-using int = signed int;
-using Long32 = signed long;
-using Int64 = signed long long;
-using UInt8 = unsigned char;
-using unsigned short = unsigned short;
-using unsigned int = unsigned int;
-using UInt64 = unsigned long long;
-//×Ö·û´®
-using const char* = const char*;
-using PChar = char*;
-
-#ifndef _WINDOWS
-using HANDLE = void*;
-using SOCKET = void*;
-using NULL = 0;
+#ifdef _WINDOWS
+#ifndef CALLBACK
+#define CALLBACK __stdcall
+#endif//CALLBACK
+#ifndef NULL
+#define NULL 0
+#endif//NULL
+#define CALLBACK
 #else
-//#include <windows.h>
-#ifndef NULL
-#define NULL 0
-#endif//NULL
 #endif//_WINDOWS
-
-static const unsigned int maxTransportMTUBytes = 65530;
-static const unsigned short gMaxBytesOfMediaHeader = 12;
-static const unsigned int gMaxBytesOfMediaData = 3 * 1024 * 1024;
-static const unsigned int gMaxURIBytes = 1024;
-static const unsigned int gMaxFilePath = 260;
-***/
-
-#ifndef NULL
-#define NULL 0
-#endif//NULL
 
 static const unsigned short minPortNumber = 5000;
 static const unsigned short maxPortNumber = 65535;

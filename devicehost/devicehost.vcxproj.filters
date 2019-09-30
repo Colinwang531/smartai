@@ -698,9 +698,6 @@
     <ClInclude Include="..\include\Device\Device.h">
       <Filter>Header Files\Device</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Device\Logging.h">
-      <Filter>Header Files\Device</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1196,9 +1193,6 @@
     <ClInclude Include="..\include\MediaScaler\FrameScaler.h">
       <Filter>Header Files\Scaler</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Device\Configing.h">
-      <Filter>Header Files\Device</Filter>
-    </ClInclude>
     <ClInclude Include="AlarmMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1291,6 +1285,15 @@
     </ClInclude>
     <ClInclude Include="..\include\DataStruct\FIFOQueue.h">
       <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Stream\EnablePictureCapture.h">
+      <Filter>Header Files\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Device\EnableDeviceConfig.h">
+      <Filter>Header Files\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Device\EnableDeviceLoginAndLogout.h">
+      <Filter>Header Files\Device</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

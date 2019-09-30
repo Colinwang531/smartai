@@ -14,13 +14,16 @@
 #define HIKVISION_DEVICE_H
 
 #include "Device/Device.h"
+#include "Device/EnableDeviceLoginAndLogout.h"
 
 NS_BEGIN(device, 1)
 
-class HikvisionDevice : protected Device
+class HikvisionDevice : public Device, protected EnableDeviceLoginAndLogout
 {
 public:
-	HikvisionDevice(void);
+	HikvisionDevice(
+		const char* userName = NULL, const char* userPassword = NULL,
+		const char* deviceIP = NULL, const unsigned short devicePort = 0);
 	virtual ~HikvisionDevice(void);
 
 	inline int getUserID(void) const 
@@ -28,15 +31,16 @@ public:
 		return userID;
 	}
 
-public:
-	virtual int login(
-		const char* name = NULL, const char* password = NULL,
-		const char* ip = NULL, const unsigned short port = 0,
-		const bool sync = true) = 0;
-	virtual int logout(void) = 0;
+protected:
+	int createDevice(void) override;
+	int destoryDevice(void) override;
+	int logoutDevice(void) override;
 
 protected:
-	//Start from 0
+	const std::string loginUserName;
+	const std::string loginUserPassword;
+	const std::string loginDeviceIP;
+	const unsigned short loginDevicePort;
 	int userID;
 };//class HikvisionDevice
 

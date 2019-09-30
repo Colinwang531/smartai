@@ -13,6 +13,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include "boost/thread/mutex.hpp"
 #include "predef.h"
 
 NS_BEGIN(device, 1)
@@ -23,12 +24,13 @@ public:
 	Device(void);
 	virtual ~Device(void);
 
-protected:
-	int createNew(void);
-	int destory(void);
+public:
+	virtual int createDevice(void);
+	virtual int destoryDevice(void);
 
 protected:
-	static int counter;
+	boost::mutex mtx;
+	static unsigned long long deviceNumber;
 };//class Device
 
 NS_END

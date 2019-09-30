@@ -4,7 +4,7 @@
 //		Author :						王科威
 //		E-mail :						wangkw531@icloud.com
 //		Date :							2019-07-19
-//		Description :				海康实时流抽象基类
+//		Description :				海康实时流类
 //
 //		History:						Author										Date													Description
 //											王科威										2019-07-22									创建
@@ -20,19 +20,26 @@ NS_BEGIN(stream, 1)
 class HikvisionLivestream : public Livestream
 {
 public:
-	HikvisionLivestream(const unsigned short idx = 0);
+	HikvisionLivestream(const long uid = -1, const unsigned short idx = -1);
 	virtual ~HikvisionLivestream(void);
 
 public:
-	int open(const int userID = -1) override;
-	int close(void) override;
-	int capture(
-		const int userID, const int cameraIndex, char*& jpegData, const int jpegBytes = 1024 * 1024) override;
+	int openStream(void) override;
+	int closeStream(void) override;
+	unsigned long long capturePicture(
+		const char* data = NULL, const unsigned long long dataBytes = 0) override;
+
+protected:
+	unsigned long long captureJPEGPicture(
+		const char* data = NULL, const unsigned long long dataBytes = 0) override;
 
 private:
-	static void /*CALLBACK*/__stdcall livestreamDataCaptureCallback(
+	static void CALLBACK livestreamDataCaptureCallback(
 		long livesteamID = 0, unsigned long dataType = 0, 
 		unsigned char* streamData = NULL, unsigned long dataBytes = 0, void* ctx = NULL);
+
+private:
+	const long userID;
 };//class HikvisionLivestream
 
 NS_END

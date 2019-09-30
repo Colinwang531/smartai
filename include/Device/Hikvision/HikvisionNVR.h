@@ -13,28 +13,22 @@
 #ifndef HIKVISION_NVR_H
 #define HIKVISION_NVR_H
 
-#include "Device/Configing.h"
+#include "Device/EnableDeviceConfig.h"
 #include "Device/Hikvision/HikvisionDevice.h"
 
 NS_BEGIN(device, 1)
 
-class HikvisionNVR 
-	: public HikvisionDevice, protected Configing
+class HikvisionNVR : public HikvisionDevice, protected EnableDeviceConfig
 {
 public:
-	HikvisionNVR(void);
+	HikvisionNVR(
+		const char* userName = NULL, const char* userPassword = NULL,
+		const char* deviceIP = NULL, const unsigned short devicePort = 0);
 	virtual ~HikvisionNVR(void);
 
-public:
-	int getDigitCameras(
-		const int userID, const char* NVRIp, std::vector<DigitCamera>& cameras) override;
-
 protected:
-	int login(
-		const char* name = NULL, const char* password = NULL,
-		const char* ip = NULL, const unsigned short port = 0,
-		const bool sync = true) override;
-	int logout(void) override;
+	int loginDevice(void) override;
+	int getNVRDigitCameras(void) override;
 };//class HikvisionNVR
 
 NS_END

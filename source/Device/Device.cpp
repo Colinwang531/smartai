@@ -1,8 +1,9 @@
+#include "error.h"
 #include "Device/Device.h"
 
 NS_BEGIN(device, 1)
 
-int Device::counter = 0;
+unsigned long long Device::deviceNumber = 0;
 
 Device::Device()
 {}
@@ -10,14 +11,22 @@ Device::Device()
 Device::~Device()
 {}
 
-int Device::createNew()
+int Device::createDevice()
 {
-	return ++counter;
+	mtx.lock();
+	++deviceNumber;
+	mtx.lock();
+
+	return ERR_OK;
 }
 
-int Device::destory()
+int Device::destoryDevice()
 {
-	return --counter;
+	mtx.lock();
+	--deviceNumber;
+	mtx.lock();
+
+	return ERR_OK;
 }
 
 NS_END

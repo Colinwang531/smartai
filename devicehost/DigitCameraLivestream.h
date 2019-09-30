@@ -21,22 +21,26 @@ typedef struct tagH264Frame_t
 	long bytes;
 }H264Frame;
 
+class Hikvision7xxxNVR;
+
 class DigitCameraLivestream final : public HikvisionLivestream
 {
 public:
-	DigitCameraLivestream(const std::string nvrip, const unsigned short idx = 0);
+	DigitCameraLivestream(Hikvision7xxxNVR& nvr, const unsigned short idx = -1);
 	~DigitCameraLivestream(void);
 
 public:
-	int open(const int userID = -1) override;
-	int close(void) override;
-	void queue(const int type, std::vector<void*>& out) override;
-	void setAlgoAbility(const unsigned int ability = 0);
+	int openStream(void) override;
+	int closeStream(void) override;
+	void setAlgoAbility(const unsigned long long ability = 0);
 
 protected:
-	void captureVideoDataNotifiy(
-		const unsigned char* streamData = NULL, const long dataBytes = 0, const long dataType = -1) override;
-//	void audioDataCaptureNotifier(const char* data = NULL, const int dataBytes = 0) override;
+	unsigned long long captureJPEGPicture(
+		const char* data = NULL, const unsigned long long dataBytes = 0) override;
+	void captureVideoStreamProcess(
+		const unsigned char* data = NULL, const long long dataBytes = 0, const long dataType = -1) override;
+	void captureAudioStreamProcess(
+		const unsigned char* data = NULL, const long long dataBytes = 0) override;
 
 private:
 	void videoStreamDecodeHandler(
@@ -50,6 +54,7 @@ private:
 	void deleteBGR24Frame(BGR24Frame* frame);
 
 private:
+	Hikvision7xxxNVR& hikvisionNVRDevice;
 	boost::shared_ptr<MediaDecoder> videoStreamDecoderPtr;
 	boost::shared_ptr<FrameScaler> videoFrameScalerPtr;
 	boost::shared_ptr<MediaEncoder> jpegFrameEncoderPtr;

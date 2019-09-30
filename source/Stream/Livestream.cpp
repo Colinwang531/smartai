@@ -2,11 +2,18 @@
 
 NS_BEGIN(stream, 1)
 
-Livestream::Livestream(const unsigned short idx /* = -1 */)
-	: AVStream(), livestreamID{ -1 }, cameraIndex{ idx }
+Livestream::Livestream(const unsigned short idx /* = -1 */) : AVStream(idx), streamID{ -1 }
 {}
 
 Livestream::~Livestream()
+{}
+
+void Livestream::captureVideoStreamProcess(
+	const unsigned char* data /*= NULL*/, const long long dataBytes /*= 0*/, const long dataType /*= -1*/)
+{}
+
+void Livestream::captureAudioStreamProcess(
+	const unsigned char* data /*= NULL*/, const long long dataBytes /*= 0*/)
 {}
 
 NS_END

@@ -2,7 +2,7 @@
 
 NS_BEGIN(stream, 1)
 
-AVStream::AVStream()
+AVStream::AVStream(const unsigned short idx /* = -1 */) : streamIndex{ idx }
 {}
 
 AVStream::~AVStream()
