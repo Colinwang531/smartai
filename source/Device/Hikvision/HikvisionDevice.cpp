@@ -7,8 +7,9 @@ NS_BEGIN(device, 1)
 HikvisionDevice::HikvisionDevice(
 	const char* userName /* = NULL */, const char* userPassword /* = NULL */,
 	const char* deviceIP /* = NULL */, const unsigned short devicePort /* = 0 */)
-	: Device(), EnableDeviceLoginAndLogout(), 
-	loginUserName{ userName }, loginUserPassword{ userPassword }, loginDeviceIP{ deviceIP }, loginDevicePort{ devicePort }
+	: Device(), EnableDeviceLoginAndLogout(),
+	loginUserName{ userName }, loginUserPassword{ userPassword }, 
+	loginDeviceIP{ deviceIP }, loginDevicePort{ devicePort }, loginUserID{ -1 }
 {}
 
 HikvisionDevice::~HikvisionDevice()
@@ -24,12 +25,17 @@ int HikvisionDevice::createDevice()
 		status = NET_DVR_Init() ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
-	return status;
+	return ERR_OK == status ? loginDevice() : status;
 }
 
 int HikvisionDevice::destoryDevice()
 {
 	int status{ Device::destoryDevice() };
+
+	if (ERR_OK == status)
+	{
+		status = logoutDevice();
+	}
 
 	//Release SDK when the last device was destroyed.
 	if (0 == Device::deviceNumber)
@@ -44,9 +50,9 @@ int HikvisionDevice::logoutDevice()
 {
 	int status{ ERR_INVALID_PARAM };
 
-	if (-1 < userID)
+	if (-1 < loginUserID)
 	{
-		status = NET_DVR_Logout(userID) ? ERR_OK : ERR_BAD_OPERATE;
+		status = NET_DVR_Logout(loginUserID) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;

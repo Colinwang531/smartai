@@ -11,11 +11,6 @@ public:
 		const char* userName = NULL, const char* userPassword = NULL,
 		const char* deviceIP = NULL, const unsigned short devicePort = 0);
     ~Hikvision7xxxNVR(void);
-
-protected:
-	int createDevice(void) override;
-	int destoryDevice(void) override;
-	int getNVRDigitCameras(void) override;
 };//class Hikvision7xxxNVR
 
 #endif//HIKVISION_7XXX_NVR_H

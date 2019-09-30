@@ -28,7 +28,7 @@ public:
 
 	inline int getUserID(void) const 
 	{
-		return userID;
+		return loginUserID;
 	}
 
 protected:
@@ -41,7 +41,7 @@ protected:
 	const std::string loginUserPassword;
 	const std::string loginDeviceIP;
 	const unsigned short loginDevicePort;
-	int userID;
+	int loginUserID;
 };//class HikvisionDevice
 
 NS_END

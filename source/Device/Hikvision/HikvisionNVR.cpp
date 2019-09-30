@@ -4,56 +4,45 @@
 
 NS_BEGIN(device, 1)
 
-HikvisionNVR::HikvisionNVR() : HikvisionDevice(), Configing()
+HikvisionNVR::HikvisionNVR(
+	const char* userName /* = NULL */, const char* userPassword /* = NULL */, 
+	const char* deviceIP /* = NULL */, const unsigned short devicePort /* = 0 */)
+	: HikvisionDevice(userName, userPassword, deviceIP, devicePort), EnableDeviceConfig()
 {}
 
 HikvisionNVR::~HikvisionNVR()
 {}
 
-int HikvisionNVR::login(
-	const char* name /* = NULL */, const char* password /* = NULL */, 
-	const char* ip /* = NULL */, const unsigned short port /* = 0 */,
-	const bool sync /* = true */)
+int HikvisionNVR::loginDevice()
 {
-	NET_DVR_USER_LOGIN_INFO userLoginInfo{ 0 };
-	NET_DVR_DEVICEINFO_V40 deviceInfoV40{ 0 };
+	int status{ ERR_BAD_OPERATE };
 
-#ifdef _WINDOWS
-	strncpy_s(userLoginInfo.sDeviceAddress, ip, MAX_IPV6_LEN);
-	strncpy_s(userLoginInfo.sUserName, name, MAX_NAME_LEN);
-	strncpy_s(userLoginInfo.sPassword, password, MAX_PASSWD_LEN_EX);
-#else
-	strncpy(userLoginInfo.sDeviceAddress, ip, MAX_IPV6_LEN);
-	strncpy(userLoginInfo.sUserName, name, MAX_NAME_LEN);
-	strncpy(userLoginInfo.sPassword, password, MAX_PASSWD_LEN_EX);
-#endif//_WINDOWS
-	userLoginInfo.wPort = port;
-	userLoginInfo.bUseAsynLogin = sync ? TRUE : FALSE;
-	userLoginInfo.cbLoginResult = NULL;
-	userLoginInfo.pUser = this;
-//	userID = NET_DVR_Login_V40(&userLoginInfo, &deviceInfoV40);
+	if (!loginUserName.empty() && !loginUserPassword.empty() && !loginDeviceIP.empty() && 
+		minPortNumber < loginDevicePort && maxPortNumber > loginDevicePort)
+	{
+		NET_DVR_DEVICEINFO_V30 deviceInfoV30{ 0 };
+		loginUserID = NET_DVR_Login_V30(
+			const_cast<char*>(loginDeviceIP.c_str()), loginDevicePort, 
+			const_cast<char*>(loginUserName.c_str()), const_cast<char*>(loginUserPassword.c_str()),
+			&deviceInfoV30);
 
-	NET_DVR_DEVICEINFO_V30 deviceInfoV30{ 0 };
-	userID = NET_DVR_Login_V30((char*)ip, port, (char*)name, (char*)password, &deviceInfoV30);
-	return userID;
+		if (-1 < loginUserID)
+		{
+			status = getNVRDigitCameras();
+		}
+	}
+
+	return status;
 }
 
-int HikvisionNVR::logout()
-{
-	return NET_DVR_Logout(userID);
-}
-
-int HikvisionNVR::getDigitCameras(
-	const int userID, const char* NVRIp, std::vector<DigitCamera>& cameras)
+int HikvisionNVR::getNVRDigitCameras()
 {
 	int status{ ERR_BAD_OPERATE };
 	LONG groupNo = 0;
 	DWORD dwReturned = 0;
-	//Get digital channel parameters
 	NET_DVR_IPPARACFG_V40 IPAccessCfgV40{ 0 };
-//	memset(&IPAccessCfgV40, 0, sizeof(NET_DVR_IPPARACFG_V40));
 
-	if (NET_DVR_GetDVRConfig(userID, NET_DVR_GET_IPPARACFG_V40, groupNo, &IPAccessCfgV40, sizeof(NET_DVR_IPPARACFG_V40), &dwReturned))
+	if (NET_DVR_GetDVRConfig(loginUserID, NET_DVR_GET_IPPARACFG_V40, groupNo, &IPAccessCfgV40, sizeof(NET_DVR_IPPARACFG_V40), &dwReturned))
 	{
 		status = ERR_OK;
 		for (DWORD i = 0; i < IPAccessCfgV40.dwDChanNum; i++)
@@ -68,11 +57,11 @@ int HikvisionNVR::getDigitCameras(
 						BYTE byIPIDHigh{ IPAccessCfgV40.struStreamMode[i].uGetStream.struChanInfo.byIPIDHigh };
 						int iDevInfoIndex{ byIPIDHigh * 256 + byIPID - 1 - groupNo * 64 };
 
-						DigitCamera camera;
-						camera.NVRIp = NVRIp;
-						camera.cameraIp = IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4;
-						camera.cameraIndex = (int)(IPAccessCfgV40.dwStartDChan + i);
-						cameras.push_back(camera);
+// 						DigitCamera camera;
+// 						camera.NVRIp = NVRIp;
+// 						camera.cameraIp = IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4;
+// 						camera.cameraIndex = (int)(IPAccessCfgV40.dwStartDChan + i);
+// 						cameras.push_back(camera);
 					}
 
 					break;
@@ -93,6 +82,8 @@ int HikvisionNVR::getDigitCameras(
 					break;
 			}
 		}
+
+		status = ERR_OK;
 	}
 
 	return status;
