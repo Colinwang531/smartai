@@ -1,5 +1,6 @@
 #include "HCNetSDK.h"
 #include "error.h"
+#include "Camera/Camera.h"
 #include "Device/Hikvision/HikvisionNVR.h"
 
 NS_BEGIN(device, 1)
@@ -57,11 +58,8 @@ int HikvisionNVR::getNVRDigitCameras()
 						BYTE byIPIDHigh{ IPAccessCfgV40.struStreamMode[i].uGetStream.struChanInfo.byIPIDHigh };
 						int iDevInfoIndex{ byIPIDHigh * 256 + byIPID - 1 - groupNo * 64 };
 
-// 						DigitCamera camera;
-// 						camera.NVRIp = NVRIp;
-// 						camera.cameraIp = IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4;
-// 						camera.cameraIndex = (int)(IPAccessCfgV40.dwStartDChan + i);
-// 						cameras.push_back(camera);
+ 						Camera camera(loginDeviceIP, IPAccessCfgV40.struIPDevInfo[iDevInfoIndex].struIP.sIpV4, IPAccessCfgV40.dwStartDChan + i);
+ 						digitCameras.push_back(camera);
 					}
 
 					break;

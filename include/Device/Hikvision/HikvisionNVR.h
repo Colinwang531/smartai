@@ -4,7 +4,7 @@
 //		Author :						王科威
 //		E-mail :						wangkw531@icloud.com
 //		Date :							2019-07-19
-//		Description :				海康NVR系列实例类
+//		Description :				海康NVR类
 //
 //		History:						Author										Date													Description
 //											王科威										2019-07-19									创建
@@ -18,6 +18,8 @@
 
 NS_BEGIN(device, 1)
 
+class Camera;
+
 class HikvisionNVR : public HikvisionDevice, protected EnableDeviceConfig
 {
 public:
@@ -29,6 +31,9 @@ public:
 protected:
 	int loginDevice(void) override;
 	int getNVRDigitCameras(void) override;
+
+private:
+	std::vector<Camera> digitCameras;
 };//class HikvisionNVR
 
 NS_END

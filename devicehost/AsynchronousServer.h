@@ -1,19 +1,12 @@
 #ifndef ASYNCHRONOUS_SERVER_H
 #define ASYNCHRONOUS_SERVER_H
 
-// #include <vector>
-// #include "boost/shared_ptr.hpp"
-// #include "boost/unordered_map.hpp"
+#include <vector>
+#include "boost/shared_ptr.hpp"
 #include "MQModel/Transfer/TransferModel.h"
 using TransferModel = NS(model, 1)::TransferModel;
 using MQModel = NS(model, 1)::MQModel;
 using MQModelPtr = boost::shared_ptr<MQModel>;
-// #include "Hikvision7xxxNVR.h"
-// using HikvisionDevice = NS(device, 1)::HikvisionDevice;
-// using HikvisionNVRDevicePtr = boost::shared_ptr<HikvisionDevice>;
-// #include "DigitCameraLivestream.h"
-// using Livestream = NS(stream, 1)::Livestream;
-// using LivestreamPtr = boost::shared_ptr<Livestream>;
 
 class AsynchronousServer final : public TransferModel
 {
@@ -72,8 +65,8 @@ private:
 		const char* response = NULL, const int responseBytes = 0);
 
 private:
-// 	BOOST_STATIC_CONSTANT(int, WORKER_THREAD_NUMBER = 5);
-// 	std::vector<MQModelPtr> workerModels;
+ 	BOOST_STATIC_CONSTANT(int, WORKER_THREAD_NUMBER = 5);
+ 	std::vector<MQModelPtr> workerModels;
 // 	boost::unordered_map<const std::string, HikvisionNVRDevicePtr> hikvisionNVRDevices;
 // 	boost::unordered_map<const std::string, LivestreamPtr> livestreams;
 };//class AsynchronousServer

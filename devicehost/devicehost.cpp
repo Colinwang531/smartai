@@ -12,6 +12,7 @@
 #include "boost/property_tree/ptree.hpp"
 using PTREE = boost::property_tree::ptree;
 #include "boost/property_tree/ini_parser.hpp"
+#include "boost/unordered_map.hpp"
 #ifdef _WINDOWS
 #include "glog/log_severity.h"
 #include "glog/logging.h"
@@ -42,6 +43,12 @@ using MQModel = NS(model, 1)::MQModel;
 #include "File/Com/ComPort.h"
 using ComPort = NS(com, 1)::ComPort;
 #include "AlarmMessage.h"
+#include "Hikvision7xxxNVR.h"
+using NVRDevicePtr = boost::shared_ptr<NS(device, 1)::Device>;
+using NVRDeviceGroup = boost::unordered_map<const std::string, NVRDevicePtr>;
+#include "DigitCameraLivestream.h"
+using AVStreamPtr = boost::shared_ptr<NS(stream, 1)::AVStream>;
+using AVStreamGroup = boost::unordered_map<const std::string, AVStreamPtr>;
 
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
@@ -57,6 +64,54 @@ long long clockUTCTime = 0;
 std::string aisAsyncData;
 int sailingStatus = 0;//0 : sail, 1 : port
 int autoCheckSwitch = 1;//0 : manual, 1 : auto
+NVRDeviceGroup NVRDevices;
+AVStreamGroup livestreams;
+
+static int createNewNVRDevice(
+	const std::string address, const unsigned short port, const std::string name, const std::string password)
+{
+	int status{ERR_OK};
+	NVRDeviceGroup::iterator it = NVRDevices.find(address);
+
+	if(it != NVRDevices.end())
+	{
+		status = ERR_EXISTED;
+	}
+	else
+	{
+		NVRDevicePtr newNVRDevicePtr{ 
+			boost::make_shared<Hikvision7xxxNVR>(name.c_str(), password.c_str(), address.c_str(), port) };
+		if (newNVRDevicePtr)
+		{
+			status = newNVRDevicePtr->createDevice();
+
+			if (ERR_OK == status)
+			{
+				boost::shared_ptr<Hikvision7xxxNVR> newHikvision7xxxNVRDevicePtr{
+					boost::dynamic_pointer_cast<Hikvision7xxxNVR>(newNVRDevicePtr) };
+				const int loginUserID{newHikvision7xxxNVRDevicePtr->getUserID()};
+				NVRDevices.insert(std::make_pair(address, newNVRDevicePtr));
+				LOG(INFO) << "Login HIKVISION NVR device [ " << address << " ], user ID [ " << userID << " ].";
+			}
+			else
+			{
+				LOG(WARNING) << "Login HIKVISION NVR device [ " << address << " ], user ID [ " << userID << " ].";
+			}
+		}
+		else
+		{
+			LOG(ERROR) << "Create new HIKVISION NVR device failed.";
+			status = ERR_BAD_ALLOC;
+		}
+	}
+
+	return status;
+}
+
+static int destroyNVRDevice(const std::string address)
+{
+
+}
 
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
 {
