@@ -18,12 +18,12 @@ typedef struct _StruInitParams
 	_StruInitParams()
 	{
 		sleepTime = 10;
-		detectThreshold = 0.2;
-		trackThreshold = 0.3;
-		matchThreshold = 0.6;
+		detectThreshold = 0.2f;
+		trackThreshold = 0.3f;
+		matchThreshold = 0.6f;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = "D:/SavePath/";
+		savePath = NULL;// "D:/SavePath/";
 	}
 }StruInitParams;
 

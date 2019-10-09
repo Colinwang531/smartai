@@ -43,22 +43,30 @@ int HikvisionLivestream::closeStream()
 	return status;
 }
 
-int HikvisionLivestream::capture(
-	const int userID, const int cameraIndex, char*& jpegData, const int jpegBytes/* = 1024 * 1024*/)
+unsigned long long HikvisionLivestream::capturePicture(
+	const char* data /* = NULL */, const unsigned long long dataBytes /* = 0 */)
 {
-	int status{ 0 };
+// 	int status{ 0 };
+// 
+// 	if (-1 < userID && -1 < cameraIndex && jpegData && 0 < jpegBytes)
+// 	{
+// 		DWORD captureDataBytes{ 0 };
+// 		NET_DVR_JPEGPARA jpegParam{ 0xFF, 0 };
+// 		if (NET_DVR_CaptureJPEGPicture_NEW(userID, cameraIndex, &jpegParam, jpegData, jpegBytes, &captureDataBytes))
+// 		{
+// 			status = (int)captureDataBytes;
+// 		}
+// 	}
+// 	
+// 	return status;
 
-	if (-1 < userID && -1 < cameraIndex && jpegData && 0 < jpegBytes)
-	{
-		DWORD captureDataBytes{ 0 };
-		NET_DVR_JPEGPARA jpegParam{ 0xFF, 0 };
-		if (NET_DVR_CaptureJPEGPicture_NEW(userID, cameraIndex, &jpegParam, jpegData, jpegBytes, &captureDataBytes))
-		{
-			status = (int)captureDataBytes;
-		}
-	}
-	
-	return status;
+	return 0;
+}
+
+unsigned long long HikvisionLivestream::captureJPEGPicture(
+	const char* data /*= NULL*/, const unsigned long long dataBytes /*= 0*/)
+{
+	return 0;
 }
 
 void HikvisionLivestream::livestreamDataCaptureCallback(

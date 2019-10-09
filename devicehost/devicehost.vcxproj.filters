@@ -1343,5 +1343,8 @@
     <ClInclude Include="..\include\MediaEncoder\JPEG\YUV420PToJPEGEncoder.h">
       <Filter>Header Files\Encoder\JPEG</Filter>
     </ClInclude>
+    <ClInclude Include="devicehost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

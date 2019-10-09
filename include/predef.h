@@ -24,8 +24,8 @@
 #ifndef NULL
 #define NULL 0
 #endif//NULL
-#define CALLBACK
 #else
+#define CALLBACK
 #endif//_WINDOWS
 
 static const unsigned short minPortNumber = 5000;

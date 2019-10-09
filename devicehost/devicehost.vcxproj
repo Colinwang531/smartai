@@ -536,6 +536,7 @@
     <ClInclude Include="..\libzmq-master\src\zmq_draft.h" />
     <ClInclude Include="AlarmMessage.h" />
     <ClInclude Include="AsynchronousServer.h" />
+    <ClInclude Include="devicehost.h" />
     <ClInclude Include="DigitCameraLivestream.h" />
     <ClInclude Include="Hikvision7xxxNVR.h" />
   </ItemGroup>

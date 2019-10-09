@@ -13,12 +13,12 @@ public:
     int setMessageData(
         const int type, const int w, const int h,
 		const char* NVRIp, const int channelIndex,
-		const std::vector<NS(algo, 1)::DetectNotify> alarmInfos, 
+		const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos, 
 		const char* jpeg, const int jpegBytes);
 	int setFaceMessageData(
 		const int type, const int w, const int h,
 		const char* NVRIp, const int channelIndex,
-		const std::vector<NS(algo, 1)::DetectNotify> alarmInfos,
+		const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos,
 		const char* jpeg, const int jpegBytes);
     inline char* getMessageData(void) const
     {

@@ -14,12 +14,11 @@
 #define HIKVISION_NVR_H
 
 #include <vector>
+#include "Camera/Camera.h"
 #include "Device/EnableDeviceConfig.h"
 #include "Device/Hikvision/HikvisionDevice.h"
 
 NS_BEGIN(device, 1)
-
-class Camera;
 
 class HikvisionNVR : public HikvisionDevice, protected EnableDeviceConfig
 {
@@ -30,7 +29,7 @@ public:
 	virtual ~HikvisionNVR(void);
 
 public:
-	inline const std::vector<Camera> getDigitCameras(void) const 
+	inline const std::vector<Camera> getDigitCameras(void) const
 	{
 		return digitCameras;
 	}

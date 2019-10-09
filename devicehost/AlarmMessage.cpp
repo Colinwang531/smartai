@@ -29,12 +29,12 @@ AlarmMessage::~AlarmMessage()
 int AlarmMessage::setMessageData(
 	const int type, const int w, const int h, 
 	const char* NVRIp, const int channelIndex, 
-	const std::vector<NS(algo, 1)::DetectNotify> alarmInfos,
+	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos,
 	const char* jpeg, const int jpegBytes)
 {
     int ret{ERR_BAD_OPERATE};
 
-	if (NS(algo, 1)::AlgoType::ALGO_FACE == type)
+	if ((int)NS(algo, 1)::AlarmType::ALARM_TYPE_FACE == type)
 	{
 		return setFaceMessageData(type, w, h, NVRIp, channelIndex, alarmInfos, jpeg, jpegBytes);
 	}
@@ -71,7 +71,7 @@ int AlarmMessage::setMessageData(
 
 		for (int i = 0; i != alarmInfos.size(); ++i)
 		{
-			int type{ alarmInfos[i].type }, x{ alarmInfos[i].x }, y{ alarmInfos[i].y }, w{ alarmInfos[i].w }, h{ alarmInfos[i].h }, status{ alarmInfos[i].status };
+			int type{ (int)alarmInfos[i].type }, x{ alarmInfos[i].x }, y{ alarmInfos[i].y }, w{ alarmInfos[i].w }, h{ alarmInfos[i].h }, status{ alarmInfos[i].status };
 			memcpy_s(messageData + pos, 4, &type, 4);
 			memcpy_s(messageData + pos + 4, 4, &x, 4);
 			memcpy_s(messageData + pos + 8, 4, &y, 4);
@@ -97,7 +97,7 @@ int AlarmMessage::setMessageData(
 int AlarmMessage::setFaceMessageData(
 	const int type, const int w, const int h,
 	const char* NVRIp, const int channelIndex,
-	const std::vector<NS(algo, 1)::DetectNotify> alarmInfos,
+	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos,
 	const char* jpeg, const int jpegBytes)
 {
 	int ret{ ERR_BAD_OPERATE };

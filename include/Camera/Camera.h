@@ -42,9 +42,9 @@ public:
 	}
 
 protected:
-	const std::string parentIP;
-	const std::string cameraIP;
-	const unsigned long long cameraIndex;
+	std::string parentIP;
+	std::string cameraIP;
+	unsigned long long cameraIndex;
 };//class Camera
 
 NS_END

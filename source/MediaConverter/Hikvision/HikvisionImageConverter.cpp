@@ -48,7 +48,7 @@ const unsigned char* HikvisionImageConverter::convert(
 	const unsigned char* imageData /* = NULL */, const unsigned long long imageBytes /* = 0 */,
 	const unsigned short imageWidth /* = 1920 */, const unsigned short imageHeight /* = 1080 */)
 {
-	const unsigned long long yuv420PImageBytes{ 
+	const int yuv420PImageBytes{ 
 		av_image_get_buffer_size(AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1) };
 	const unsigned char* yuv420PImageData{ 
 		yv12ToYUV420PConverterPtr->convert(imageData, imageBytes, imageWidth, imageHeight) };

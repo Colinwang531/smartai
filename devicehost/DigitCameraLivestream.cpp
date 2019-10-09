@@ -33,34 +33,10 @@ using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 
 extern int sailingStatus;//0 : sail, 1 : port
 extern int autoCheckSwitch;//0 : manual, 1 : auto
-//unsigned char covertBuffer[1920 * 1080 * 4];
-
-// void c24To32(unsigned char* src, unsigned char* dest, int w, int h)
-// {
-// 	for (int i = 0; i < h; i++)
-// 	{
-// 		for (int j = 0; j < w; j++)
-// 		{
-// 			if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-// 			{
-// 				dest[(i * w + j) * 4 + 0] = src[(i * w + j) * 3 + 2];
-// 				dest[(i * w + j) * 4 + 1] = src[(i * w + j) * 3 + 1];
-// 				dest[(i * w + j) * 4 + 2] = src[(i * w + j) * 3];
-// 				dest[(i * w + j) * 4 + 3] = 0;
-// 			}
-// 			else
-// 			{
-// 				dest[(i * w + j) * 4] = 0;
-// 				memcpy_s(dest + (i * w + j) * 4 + 1, 3, src + (i * w + j) * 3, 3);
-// 			}
-// 		}
-// 	}
-// }
 
 DigitCameraLivestream::DigitCameraLivestream(
 	const long uid /* = -1 */, const unsigned short idx /* = -1 */)
-	: HikvisionLivestream(uid, idx), arithmeticAbilities{ 0 }, stopped{ false }, livestreamFrameNumber{ 0 }//,
-//	sdlWindow{ NULL }, sdlRenderer{ NULL }, sdlTexture{ NULL }
+	: HikvisionLivestream(uid, idx), arithmeticAbilities{ 0 }, stopped{ false }, livestreamFrameNumber{ 0 }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -71,7 +47,7 @@ int DigitCameraLivestream::openStream()
 	int status{ ERR_BAD_ALLOC };
 	boost::shared_ptr<MediaDecoder> videoDecoderPtr{ 
 		boost::make_shared<HikvisionSDKDecoder>(
-			boost::bind(&DigitCameraLivestream::videoStreamDecodeHandler, this, _1, _2, _3, _4, _5, _6)) };
+			boost::bind(&DigitCameraLivestream::videoStreamDecodeHandler, this, _1, _2, _3, _4)) };
 	boost::shared_ptr<MediaConverter> yv12ToYuv420pConverterPtr{ boost::make_shared<YV12ToYUV420PConverter>() };
 	boost::shared_ptr<MediaConverter> yuv420pToConverterPtr{ boost::make_shared<YV12ToYUV420PConverter>() };
 	boost::shared_ptr<MediaEncoder> jpegEncoderPtr{ boost::make_shared<YUV420PToJPEGEncoder>() };
@@ -90,15 +66,6 @@ int DigitCameraLivestream::openStream()
 		SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
 
 		status = HikvisionLivestream::openStream() ? ERR_OK : ERR_BAD_OPERATE;
-
-// 		SDL_Init(SDL_INIT_VIDEO);
-// 		sdlWindow = SDL_CreateWindow("SDL Player", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 960, 540, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-// 		if (sdlWindow)
-// 		{
-// 			sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
-// 			sdlTexture = SDL_CreateTexture(sdlRenderer, SDL_PIXELFORMAT_BGR888, SDL_TEXTUREACCESS_STREAMING, 1920, 1080);
-// 			SDL_CreateThread(&DigitCameraLivestream::refreshSDLVideo, NULL, NULL);
-// 		}
 	}
 
 	return status;
@@ -279,29 +246,11 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	}
 }
 
-// void DigitCameraLivestream::queue(const int type, std::vector<void*>& out)
-// {
-// 	if (0 == type)
-// 	{
-// 		helmetBGR24Queue.swap(out);
-// 	} 
-// 	else if (1 == type)
-// 	{
-// 		phoneBGR24Queue.swap(out);
-// 	}
-// 	else if (2 == type)
-// 	{
-// 		sleepBGR24Queue.swap(out);
-// 	}
-// 	else if(3 == type)
-// 	{
-// 		fightBGR24Queue.swap(out);
-// 	}
-// 	else if (4 == type)
-// 	{
-// 		faceBGR24Queue.swap(out);
-// 	}
-// }
+unsigned long long DigitCameraLivestream::captureJPEGPicture(
+	const char* data /* = NULL */, const unsigned long long dataBytes /* = 0 */)
+{
+	return 0;
+}
 
 void DigitCameraLivestream::captureVideoStreamProcess(
 	const unsigned char* data /* = NULL */, const long long dataBytes /* = 0 */)
@@ -331,9 +280,6 @@ void DigitCameraLivestream::captureVideoStreamProcess(
 void DigitCameraLivestream::JPEGPFrameEncodeHandler(const char* data /* = NULL */, const int dataBytes /* = 0 */)
 {}
 
-// void DigitCameraChannel::audioDataCaptureNotifier(const char* data /* = NULL */, const int dataBytes /* = 0 */)
-// {}
-
 void DigitCameraLivestream::videoStreamDecodeHandler(
 	const char* frameData /* = NULL */, const long frameBytes /* = 0 */, 
 	const long imageWidth /* = 0 */, const long imageHeight /* = 0 */)
@@ -356,21 +302,7 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 		const unsigned char* yuv420ImageData{ 
 			yv12FrameConverterPtr->convert((const unsigned char*)frameData, frameBytes, imageWidth, imageHeight) };
 		const unsigned char* bgr24ImageData{
-			yuv420pFrameConverterPtr->convert(yuv420ImageData, imageDataBytes, imageWidth, imageHeight) };
-
-// 		if (sdlTexture && sdlRenderer)
-// 		{
-// 			c24To32((unsigned char*)bgr24FrameData, covertBuffer, width, height);
-// 			SDL_UpdateTexture(sdlTexture, NULL, covertBuffer, width * 4);
-// 			SDL_Rect rc;
-// 			rc.x = 0;
-// 			rc.y = 0;
-// 			rc.w = 960;
-// 			rc.h = 540;
-// 			SDL_RenderClear(sdlRenderer);
-// 			SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, &rc);
-// 			SDL_RenderPresent(sdlRenderer);
-// 		}
+			yuv420pFrameConverterPtr->convert(yuv420ImageData, imageDataBytes, (const unsigned short)imageWidth, (const unsigned short)imageHeight) };
 
 		if (bgr24ImageData)
 		{
@@ -404,8 +336,6 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 				}
 			}
 		}
-
-//		boost::checked_array_delete(jpegFrameData);
  	}
 }
 
@@ -424,7 +354,7 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 		MediaImagePtr h264ImagePtr{ livestream->h264LivestreamQueue.remove() };
 		if (h264ImagePtr)
 		{
-			livestream->videoStreamDecoderPtr->decode(h264ImagePtr->getImage(), h264ImagePtr->getImageBytes());
+			livestream->videoStreamDecoderPtr->decode(h264ImagePtr->getImage(), (int)h264ImagePtr->getImageBytes());
 		}
 	}
 
@@ -434,74 +364,18 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 void DigitCameraLivestream::alarmInfoProcessHandler(
 	MediaImagePtr image, std::vector<NS(algo, 1)::AlarmInfo> alarmInfos)
 {
-	if (image && 0 < alarmInfos.size())
-	{
-		AlarmMessage message;
-		message.setMessageData(
-			(int)alarmInfos[0].type, 1920, 1080, bgr24Frame->NVRIp, streamIndex, alarmInfos, bgr24Frame->jpegData, bgr24Frame->jpegBytes);
-		boost::shared_ptr<PublisherModel> publisherModel{
-			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
-
-		publishMtx.lock();
-		publisherModel->send(message.getMessageData(), message.getMessageBytes());
-		publishMtx.unlock();
-
-		LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << detectInfos[0].type;
-	}
+// 	if (image && 0 < alarmInfos.size())
+// 	{
+// 		AlarmMessage message;
+// 		message.setMessageData(
+// 			(int)alarmInfos[0].type, 1920, 1080, bgr24Frame->NVRIp, streamIndex, alarmInfos, bgr24Frame->jpegData, bgr24Frame->jpegBytes);
+// 		boost::shared_ptr<PublisherModel> publisherModel{
+// 			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+// 
+// 		publishMtx.lock();
+// 		publisherModel->send(message.getMessageData(), message.getMessageBytes());
+// 		publishMtx.unlock();
+// 
+// 		LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << detectInfos[0].type;
+// 	}
 }
-
-// int DigitCameraLivestream::refreshSDLVideo(void* ctx /* = NULL */)
-// {
-// 	while (1)
-// 	{
-// 		SDL_Event e;
-// 		e.type = SDL_DISPLAYEVENT;
-// 		SDL_PushEvent(&e);
-// 		SDL_Delay(1);
-// 	}
-// }
-
-// BGR24Frame* DigitCameraLivestream::newBGR24Frame(const BGR24Frame* frame /*= NULL*/)
-// {
-// 	BGR24Frame* bgr24FrameCopyData = NULL;
-// 
-// 	if (frame)
-// 	{
-// 		bgr24FrameCopyData = new(std::nothrow) BGR24Frame;
-// 		if (bgr24FrameCopyData)
-// 		{
-// 			bgr24FrameCopyData->frameData = new(std::nothrow) char[frame->frameBytes];
-// 			bgr24FrameCopyData->jpegData = new(std::nothrow) char[frame->jpegBytes];
-// 			const int iplen{ (int)strlen(frame->NVRIp) };
-// 			bgr24FrameCopyData->NVRIp = new(std::nothrow) char[iplen + 1];
-// 
-// 			if (bgr24FrameCopyData->frameData && bgr24FrameCopyData->jpegData && bgr24FrameCopyData->NVRIp)
-// 			{
-// 				bgr24FrameCopyData->frameBytes = frame->frameBytes;
-// 				memcpy_s(bgr24FrameCopyData->frameData, frame->frameBytes, frame->frameData, frame->frameBytes);
-// 				memcpy_s(bgr24FrameCopyData->jpegData, frame->jpegBytes, frame->jpegData, frame->jpegBytes);
-// 				bgr24FrameCopyData->channelIndex = frame->channelIndex;
-// 				bgr24FrameCopyData->jpegBytes = frame->jpegBytes;
-// 				bgr24FrameCopyData->NVRIp[iplen] = 0;
-// 				memcpy_s(bgr24FrameCopyData->NVRIp, iplen, frame->NVRIp, iplen);
-// 			}
-// 			else
-// 			{
-// 				deleteBGR24Frame(bgr24FrameCopyData);
-// 			}
-// 		}
-// 	}
-// 
-// 	return bgr24FrameCopyData;
-// }
-// 
-// void DigitCameraLivestream::deleteBGR24Frame(BGR24Frame* frame)
-// {
-// 	if (frame)
-// 	{
-// 		boost::checked_array_delete(frame->frameData);
-// 		boost::checked_array_delete(frame->jpegData);
-// 		boost::checked_array_delete(frame->NVRIp);
-// 		boost::checked_delete(frame);
-// 	}
-// }
