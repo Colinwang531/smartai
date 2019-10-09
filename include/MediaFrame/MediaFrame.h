@@ -41,7 +41,6 @@ public:
 		const unsigned char* data = NULL, const unsigned long long dataBytes = 0);
 	void setImageParams(
 		const unsigned short width = 1920, const unsigned short height = 1080);
-	void cleanup(void);
 	inline const unsigned char* getImage(void) const
 	{
 		return imageData;
@@ -70,6 +69,9 @@ public:
 	{
 		return imageHeight;
 	}
+
+private:
+	void cleanup(void);
 
 private:
 	unsigned char* imageData;

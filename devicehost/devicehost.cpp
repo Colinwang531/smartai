@@ -2,6 +2,7 @@
 //
 
 #include <process.h>
+#include <io.h>
 #include "boost/algorithm/string.hpp"
 #include "boost/bind.hpp"
 #include "boost/checked_delete.hpp"
@@ -23,17 +24,6 @@ using PTREE = boost::property_tree::ptree;
 #include "error.h"
 #include "Hardware/Cpu.h"
 using CPU = NS(hardware, 1)::Cpu;
-#include "Arithmetic/CVAlgoHelmet.h"
-#include "Arithmetic/CVAlgoPhone.h"
-#include "Arithmetic/CVAlgoSleep.h"
-#include "Arithmetic/CVAlgoFace.h"
-#include "Arithmetic/CVAlgoFight.h"
-using CVAlgo = NS(algo, 1)::CVAlgo;
-using CVAlgoHelmet = NS(algo, 1)::CVAlgoHelmet;
-using CVAlgoPhone = NS(algo, 1)::CVAlgoPhone;
-using CVAlgoSleep = NS(algo, 1)::CVAlgoSleep;
-using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
-using CVAlgoFight = NS(algo, 1)::CVAlgoFight;
 #include "MessageQueue/MQContext.h"
 using MQContext = NS(mq, 1)::MQContext;
 #include "MQModel/Publisher/PublisherModel.h"
@@ -53,11 +43,6 @@ using AVStreamGroup = boost::unordered_map<const std::string, AVStreamPtr>;
 
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
-boost::shared_ptr<CVAlgo> helmetAlgorithmPtr;
-boost::shared_ptr<CVAlgo> phoneAlgorithmPtr;
-boost::shared_ptr<CVAlgo> sleepAlgorithmPtr;
-boost::shared_ptr<CVAlgo> fightAlgorithmPtr;
-boost::shared_ptr<CVAlgo> faceAlgorithmPtr;
 boost::mutex publishMtx;
 ComPort* comPortController[2]{ NULL };//0-clock, 1-AIS
 std::string clockAsyncData;
@@ -65,6 +50,7 @@ long long clockUTCTime = 0;
 std::string aisAsyncData;
 int sailingStatus = 0;//0 : sail, 1 : port
 int autoCheckSailOrPort = 1;//0 : manual, 1 : auto
+int largestRegisterFaceID = 0;
 NVRDeviceGroup NVRDevices;
 AVStreamGroup livestreams;
 
@@ -100,6 +86,7 @@ int createNewNVRDevice(
 			}
 			else
 			{
+				newNVRDevicePtr->destoryDevice();
 				LOG(WARNING) << "Login HIKVISION NVR device [ " << address << " ], failed.";
 			}
 		}
@@ -140,7 +127,8 @@ int destroyNVRDevice(const std::string address)
 		}
 
 		status = it->second->destoryDevice();
-		LOG(WARNING) << "Destroy NVR device [ " << address << " ].";
+		NVRDevices.erase(it);
+		LOG(WARNING) << "Destroy and Remove NVR device [ " << address << " ].";
 	}
 
 	return status;
@@ -155,7 +143,7 @@ int createNewDigitCamera(
 	if (NVRDevices.end() != cit)
 	{
 		const std::string livestreamID{
-			(boost::format("%s_%ulld") % NVRAddress % cameraIndex).str() };
+			(boost::format("%s_%d") % NVRAddress % cameraIndex).str() };
 		AVStreamGroup::iterator it = livestreams.find(livestreamID);
 
 		if (livestreams.end() == it)
@@ -163,7 +151,8 @@ int createNewDigitCamera(
 			boost::shared_ptr<NS(device, 1)::HikvisionDevice> hikvisionDevicePtr{
 				boost::dynamic_pointer_cast<NS(device, 1)::HikvisionDevice>(cit->second) };
 			AVStreamPtr livestreamPtr{ 
-				boost::make_shared<DigitCameraLivestream>(hikvisionDevicePtr->getUserID(), cameraIndex) };
+				boost::make_shared<DigitCameraLivestream>(
+					publisherModelPtr, NVRAddress, hikvisionDevicePtr->getUserID(), cameraIndex) };
 
 			if (livestreamPtr)
 			{
@@ -193,7 +182,7 @@ int createNewDigitCamera(
 			if (livestreamPtr)
 			{
 				livestreamPtr->setArithmeticAbilities(abilities);
-				LOG(INFO) << "Set live stream [ " << livestreamID << " ] arithmetic abilities [ " << abilities << " ].";
+				LOG(INFO) << "Set live stream [ " << livestreamID << " ] arithmetic abilities (" << abilities <<" ).";
 			}
 		}
 	}
@@ -214,7 +203,7 @@ int destroyDigitCamera(
 	if (NVRDevices.end() != cit)
 	{
 		const std::string livestreamID{ 
-			(boost::format("%s_%ulld") % NVRAddress % cameraIndex).str() };
+			(boost::format("%s_%d") % NVRAddress % cameraIndex).str() };
 		AVStreamGroup::iterator it{ livestreams.find(livestreamID) };
 
 		if (livestreams.end() != it)
@@ -236,6 +225,58 @@ int destroyDigitCamera(
 	return status;
 }
 
+MediaImagePtr captureDigitCameraLivePicture(
+	const std::string NVRAddress, const unsigned long long cameraIndex/* = 0*/)
+{
+	MediaImagePtr captureImagePtr{ 
+		boost::make_shared<MediaImage>(NS(frame, 1)::MediaImageType::MEDIA_IMAGE_JPEG) };
+
+	if (captureImagePtr)
+	{
+		const std::string cameraID{ 
+			(boost::format("%s_%d") % NVRAddress % cameraIndex).str() };
+		AVStreamGroup::iterator it{ livestreams.find(cameraID) };
+
+		if (livestreams.end() != it)
+		{
+			const int jpegPictureBytes = 1024 * 1024;
+			char* jpegPictureData{ new(std::nothrow) char[jpegPictureBytes] };
+
+			if (jpegPictureData)
+			{
+				const unsigned long long capturePictureBytes{ 
+					it->second->capturePicture(jpegPictureData, jpegPictureBytes) };
+
+				if (0 < capturePictureBytes)
+				{
+					captureImagePtr->setImage((const unsigned char*)jpegPictureData, capturePictureBytes);
+					LOG(INFO) << "Capture live picture [ " << NVRAddress << "_" << cameraIndex << " ] bytes ( " << capturePictureBytes << " ).";
+				}
+				else
+				{
+					LOG(WARNING) << "Capture live picture [ " << NVRAddress << "_" << cameraIndex << " ] failed.";
+				}
+
+				boost::checked_array_delete(jpegPictureData);
+			}
+			else
+			{
+				LOG(ERROR) << "Bad alloc memory while capturing live picture [ " << NVRAddress << "_" << cameraIndex << " ].";
+			}
+		}
+		else
+		{
+			LOG(WARNING) << "Can not find camera while capturing live picture [ " << NVRAddress << "_" << cameraIndex << " ].";
+		}
+	} 
+	else
+	{
+		LOG(ERROR) << "Bad alloc memory while capturing live picture [ " << NVRAddress << "_" << cameraIndex << " ].";
+	}
+
+	return captureImagePtr;
+}
+
 int setAutoCheckSailOrPort(const int autoCheck/* = 1*/)
 {
 	autoCheckSailOrPort = autoCheck;
@@ -252,8 +293,93 @@ int setSailingStatus(const int status/* = 0*/)
 
 int getSailingStatus(void)
 {
-	LOG(INFO) << "Get sailing status flag (0 : sailing, 1 : porting) " << sailingStatus;
+//	LOG(INFO) << "Get sailing status flag (0 : sailing, 1 : porting) " << sailingStatus;
 	return sailingStatus;
+}
+
+int createNewFacePicture(
+	const char* imageData /*= NULL*/, const int imageBytes /*= 0*/, const char* name /*= NULL*/, const long long uuid /*= 0*/)
+{
+	int status{ ERR_INVALID_PARAM };
+
+	if (imageData && imageBytes && name && 0 < uuid)
+	{
+		const std::string executePath{
+				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+		const std::string jpegFileName{
+			(boost::format("%s\\Face\\%lld_%lld_%s.jpg") % executePath % ++largestRegisterFaceID % uuid % name).str() };
+
+		FILE* fd{ NULL };
+		fopen_s(&fd, jpegFileName.c_str(), "wb+");
+		if (fd)
+		{
+			fwrite(imageData, imageBytes, 1, fd);
+			fclose(fd);
+
+			for (AVStreamGroup::iterator it = livestreams.begin(); it != livestreams.end(); ++it)
+			{
+				boost::shared_ptr<DigitCameraLivestream> livestreamPtr{ 
+					boost::dynamic_pointer_cast<DigitCameraLivestream>(it->second) };
+				if (livestreamPtr)
+				{
+					status = livestreamPtr->addFacePicture(jpegFileName.c_str(), largestRegisterFaceID);
+					LOG(INFO) << "Add face picture [ " << largestRegisterFaceID << "_" << uuid << "_" << name << " ].";
+				}
+			}
+		}
+		else
+		{
+			LOG(WARNING) << "Can not write face picture file [ " << largestRegisterFaceID << "_" << uuid << "_" << name << " ].";
+		}
+	}
+	else
+	{
+		LOG(WARNING) << "Can not add face picture [ " << largestRegisterFaceID << "_" << uuid << "_" << name << " ].";
+	}
+
+	return status;
+}
+
+int queryFacePicture(const long long uuid, char*& imageData, int& imageBytes)
+{
+	const std::string executePath{
+				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	boost::filesystem::path recursiveDirPath((boost::format("%s\\Face") % executePath).str());
+	boost::filesystem::recursive_directory_iterator endIter;
+
+	for (boost::filesystem::recursive_directory_iterator it(recursiveDirPath); it != endIter; ++it)
+	{
+		if (!boost::filesystem::is_directory(*it))
+		{
+			const std::string faceImageFileName{ it->path().filename().string() };
+
+			if (!faceImageFileName.empty())
+			{
+				std::vector<std::string> faceImageFileNameSegment;
+				boost::split(faceImageFileNameSegment, faceImageFileName, boost::is_any_of("_"));
+				const int currentUUID{ atoi(faceImageFileNameSegment[1].c_str()) };
+
+				if (uuid == currentUUID)
+				{
+					FILE* fd{ NULL };
+					fopen_s(&fd, faceImageFileName.c_str(), "rb+");
+
+					if (fd)
+					{
+						imageBytes = _filelength(_fileno(fd));
+						fread(imageData, imageBytes, 1, fd);
+						fclose(fd);
+
+						LOG(INFO) << "Query face image " << faceImageFileName << "[ " << imageBytes << " Bytes ].";
+					}
+
+					break;
+				}
+			}
+		}
+	}
+
+	return 0;
 }
 
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
@@ -296,25 +422,6 @@ static void AISStatusUpdateNotifyHandler(const char* data = NULL, const int data
 	}
 
 	aisAsyncData.append(data, dataBytes);
-}
-
-static void cvAlgoDetectInfoHandler(void* frame, const std::vector<NS(algo, 1)::AlarmInfo> detectInfos)
-{
-// 	if (frame && 0 < detectInfos.size())
-// 	{
-// 		BGR24Frame* bgr24Frame{ reinterpret_cast<BGR24Frame*>(frame) };
-// 		AlarmMessage message;
-// 		message.setMessageData(
-// 			detectInfos[0].type, 1920, 1080, bgr24Frame->NVRIp, bgr24Frame->channelIndex, detectInfos, bgr24Frame->jpegData, bgr24Frame->jpegBytes);
-// 		boost::shared_ptr<PublisherModel> publisherModel{
-// 			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
-// 
-// 		publishMtx.lock();
-// 		publisherModel->send(message.getMessageData(), message.getMessageBytes());
-// 		publishMtx.unlock();
-// 
-// 		LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << detectInfos[0].type;
-// 	}
 }
 
 static bool initSerialPort()

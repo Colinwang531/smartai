@@ -27,10 +27,9 @@ public:
 	~CVAlgoFace(void);
 
 public:
-	int addFace(
-		const char* jpegData = NULL, const int jpegBytes = 0, const long long uuid = -1, const char* name = NULL);
-	int removeFace(const long long uuid = -1);
-	int queryFace(const long long uuid, char*& jpegData, int& jpegBytes);
+	int addFacePicture(const char* filePath = NULL, const int faceID = 0);
+	int removeFacePicture(const long long uuid = -1);
+//	int queryFace(const long long uuid, char*& jpegData, int& jpegBytes);
 
 protected:
 	int initializeWithParameter(

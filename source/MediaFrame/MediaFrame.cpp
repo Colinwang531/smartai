@@ -6,7 +6,8 @@
 NS_BEGIN(frame, 1)
 
 MediaImage::MediaImage(const MediaImageType& type /* = MediaImageType::MEDIA_IMAGE_NONE */)
-	: imageData{ NULL }, imageBytes{ 0 }, imageType{ type }, imageWidth{ 0 }, imageHeight{ 0 }
+	: imageData{ NULL }, originImageData{ NULL }, imageBytes{ 0 }, originImageBytes{ 0 },
+	imageType{ type }, imageWidth{ 0 }, imageHeight{ 0 }
 {}
 
 MediaImage::~MediaImage()
@@ -20,14 +21,11 @@ int MediaImage::setImage(
 {
 	int status{ ERR_INVALID_PARAM };
 
-	if (data && 0 < dataBytes)
+	if (data && 0 < dataBytes && !imageData)
 	{
-		cleanup();
-
-		imageData = new(std::nothrow) unsigned char[dataBytes + 1];
+		imageData = new(std::nothrow) unsigned char[dataBytes];
 		if (imageData)
 		{
-			imageData[dataBytes] = 0;
 			imageBytes = dataBytes;
 #ifdef _WINDOWS
 			memcpy_s(imageData, imageBytes, data, dataBytes);
@@ -51,17 +49,14 @@ int MediaImage::setOriginImage(
 {
 	int status{ ERR_INVALID_PARAM };
 
-	if (data && 0 < dataBytes)
+	if (data && 0 < dataBytes && !originImageData)
 	{
-		cleanup();
-
-		originImageData = new(std::nothrow) unsigned char[dataBytes + 1];
+		originImageData = new(std::nothrow) unsigned char[dataBytes];
 		if (originImageData)
 		{
-			originImageData[dataBytes] = 0;
 			originImageBytes = dataBytes;
 #ifdef _WINDOWS
-			memcpy_s(originImageData, imageBytes, data, dataBytes);
+			memcpy_s(originImageData, originImageBytes, data, dataBytes);
 #else
 			memcpy(originImageData, data, dataBytes);
 #endif//_WINDOWS
@@ -87,9 +82,7 @@ void MediaImage::setImageParams(
 void MediaImage::cleanup()
 {
 	boost::checked_array_delete(imageData);
-	imageBytes = 0;
 	boost::checked_array_delete(originImageData);
-	originImageBytes = 0;
 }
 
 NS_END

@@ -15,7 +15,7 @@ int Device::createDevice()
 {
 	mtx.lock();
 	++deviceNumber;
-	mtx.lock();
+	mtx.unlock();
 
 	return ERR_OK;
 }
@@ -24,7 +24,7 @@ int Device::destoryDevice()
 {
 	mtx.lock();
 	--deviceNumber;
-	mtx.lock();
+	mtx.unlock();
 
 	return ERR_OK;
 }

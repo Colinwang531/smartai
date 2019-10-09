@@ -22,9 +22,7 @@ int FFmpegConverter::initialize(const unsigned short imageWidth /* = 1920 */, co
 		outputAVFrame = av_frame_alloc();
 		//It should be invoked only once.
 		swsContext = sws_getContext(
-			imageWidth, imageHeight, AV_PIX_FMT_YUV420P,
-			imageWidth, imageHeight, AV_PIX_FMT_BGR24,
-			SWS_BICUBIC, NULL, NULL, NULL);
+			imageWidth, imageHeight, AV_PIX_FMT_YUV420P, imageWidth, imageHeight, AV_PIX_FMT_BGR24, SWS_BICUBIC, NULL, NULL, NULL);
 
 		if (inputAVFrame && outputAVFrame && swsContext)
 		{

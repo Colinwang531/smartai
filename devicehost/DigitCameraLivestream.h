@@ -3,7 +3,6 @@
 
 #include "boost/shared_ptr.hpp"
 #include "boost/thread/condition.hpp"
-//#include "SDL.h"
 #include "MediaFrame/MediaFrame.h"
 using MediaImage = NS(frame, 1)::MediaImage;
 #include "Stream/Hikvision/HikvisionLivestream.h"
@@ -16,17 +15,22 @@ using MediaConverter = NS(converter, 1)::MediaConverter;
 using MediaEncoder = NS(encoder, 1)::MediaEncoder;
 #include "Arithmetic/CVAlgo.h"
 using CVAlgoPtr = boost::shared_ptr<NS(algo, 1)::CVAlgo>;
+#include "AsynchronousServer.h"
+using MQModel = NS(model, 1)::MQModel;
 
 class DigitCameraLivestream final : public HikvisionLivestream
 {
 public:
-	DigitCameraLivestream(const long uid = -1, const unsigned short idx = -1);
+	DigitCameraLivestream(
+		boost::shared_ptr<MQModel> publisher, const std::string NVRIp, 
+		const long uid = -1, const unsigned short idx = -1);
 	~DigitCameraLivestream(void);
 
 public:
 	int openStream(void) override;
 	int closeStream(void) override;
 	void setArithmeticAbilities(const unsigned int abilities = 0);
+	int addFacePicture(const char* filePath = NULL, const int faceID = 0);
 
 protected:
 	unsigned long long captureJPEGPicture(
@@ -39,16 +43,14 @@ private:
 		const char* frameData = NULL, const long frameBytes = 0, 
 		const long imageWidth = 0, const long imageHeight = 0);
 	void JPEGPFrameEncodeHandler(const char* data = NULL , const int dataBytes = 0 );
-//	static int refreshSDLVideo(void* ctx = NULL);
 	static DWORD WINAPI frameDecodeProcessThread(void* ctx = NULL);
-// 	BGR24Frame* newBGR24Frame(const BGR24Frame* frame = NULL);
-// 	void deleteBGR24Frame(BGR24Frame* frame);
-	void alarmInfoProcessHandler(MediaImagePtr image, std::vector<NS(algo, 1)::AlarmInfo> alarmInfos);
+	void alarmInfoProcessHandler(
+		MediaImagePtr image, std::vector<NS(algo, 1)::AlarmInfo> alarmInfos);
 
 private:
 	boost::shared_ptr<MediaDecoder> videoStreamDecoderPtr;
-	boost::shared_ptr<MediaConverter> yv12FrameConverterPtr;
-	boost::shared_ptr<MediaConverter> yuv420pFrameConverterPtr;
+	boost::shared_ptr<MediaConverter> yv12ToYuv420pConverterPtr;
+	boost::shared_ptr<MediaConverter> yuv420pToBGR24ConverterPtr;
 	boost::shared_ptr<MediaEncoder> jpegPictureEncoderPtr;
 	CVAlgoPtr helmetArithmeticPtr;
 	CVAlgoPtr phoneArithmeticPtr;
@@ -59,15 +61,13 @@ private:
 
 	unsigned long long livestreamFrameNumber;
 	unsigned int arithmeticAbilities;
-	const std::string NVRIp;
+	const std::string NVRIpAddress;
+	boost::mutex publisherMtx;
+	boost::shared_ptr<MQModel> publisherModelPtr;
 	bool stopped;
 	//Guarantee work thread exited safely. 
 	boost::mutex mtx[3];
 	boost::condition condition[3];
-
-// 	SDL_Window* sdlWindow;
-// 	SDL_Renderer* sdlRenderer;
-// 	SDL_Texture* sdlTexture;
 };//class DigitCameraChannel
 
 #endif//DIGITAL_CAMERA_LIVE_STREAM_H

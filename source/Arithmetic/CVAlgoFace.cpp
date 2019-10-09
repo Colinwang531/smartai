@@ -1,5 +1,4 @@
 #include <windows.h>
-#include <io.h>
 #include "boost/algorithm/string.hpp"
 #include "boost/checked_delete.hpp"
 #include "boost/filesystem.hpp"
@@ -20,93 +19,73 @@ CVAlgoFace::~CVAlgoFace()
 	DeleteCriticalSection(&criticalSection);
 }
 
-int CVAlgoFace::addFace(
-	const char* jpegData /* = NULL */, const int jpegBytes /* = 0 */, const long long uuid /* = -1 */, const char* name /* = NULL */)
+int CVAlgoFace::addFacePicture(const char* filePath /* = NULL */, const int faceID /* = 0 */)
 {
 	int status{ ERR_INVALID_PARAM };
 
-	if (jpegData && 0 < jpegBytes && 0 < uuid && name)
+	if (filePath && 0 < faceID)
 	{
-		const std::string executePath{
-				boost::filesystem::initial_path<boost::filesystem::path>().string() };
-		const std::string jpegFileName{
-			(boost::format("%s\\Face\\%lld_%lld_%s.jpg") % executePath % ++largestRegisterFaceID % uuid % name).str() };
-
-		FILE* jpegFile{ NULL };
-		fopen_s(&jpegFile, jpegFileName.c_str(), "wb+");
-		if (jpegFile)
-		{
-			fwrite(jpegData, jpegBytes, 1, jpegFile);
-			fclose(jpegFile);
-			status = face.RegisterFace(const_cast<char*>(jpegFileName.c_str()), largestRegisterFaceID) ? ERR_OK : ERR_BAD_OPERATE;
-
-			if (ERR_OK == status)
-			{
-				mtx.lock();
-				registerFaceImageGroup.insert(std::make_pair(largestRegisterFaceID, jpegFileName));
-				mtx.unlock();
-			}
-		}
+		status = face.RegisterFace((char*)filePath, faceID) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
 }
 
-int CVAlgoFace::removeFace(const long long uuid /* = -1 */)
+int CVAlgoFace::removeFacePicture(const long long uuid /* = -1 */)
 {
 	int status{ ERR_NOT_FOUND };
 
-	mtx.lock();
-	for(boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.begin(); it != registerFaceImageGroup.end(); ++it)
-	{
-		std::string uuidStr{ (boost::format("%lld") % uuid).str() };
-		const std::string faceImagePath{ it->second };
-		const char* isSubstr{ std::strstr(faceImagePath.c_str(), uuidStr.c_str()) };
-
-		if (isSubstr)
-		{
-			registerFaceImageGroup.erase(it);
-			std::remove(faceImagePath.c_str());
-			break;
-		}
-	}
-	mtx.unlock();
+// 	mtx.lock();
+// 	for(boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.begin(); it != registerFaceImageGroup.end(); ++it)
+// 	{
+// 		std::string uuidStr{ (boost::format("%lld") % uuid).str() };
+// 		const std::string faceImagePath{ it->second };
+// 		const char* isSubstr{ std::strstr(faceImagePath.c_str(), uuidStr.c_str()) };
+// 
+// 		if (isSubstr)
+// 		{
+// 			registerFaceImageGroup.erase(it);
+// 			std::remove(faceImagePath.c_str());
+// 			break;
+// 		}
+// 	}
+// 	mtx.unlock();
 
 	return status;
 }
 
-int CVAlgoFace::queryFace(const long long uuid, char*& jpegData, int& jpegBytes)
-{
-	mtx.lock();
-	for (boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.begin(); it != registerFaceImageGroup.end(); ++it)
-	{
-		std::string uuidStr{ (boost::format("%lld") % uuid).str() };
-		const char* isSubstr{ std::strstr(it->second.c_str(), uuidStr.c_str()) };
-
-		if (isSubstr)
-		{
-			FILE* jpegFile{ NULL };
-			fopen_s(&jpegFile, it->second.c_str(), "rb+");
-			
-			if (jpegFile)
-			{
-				const long jpegDataBytes{ _filelength(_fileno(jpegFile)) };
-				if (jpegData)
-				{
-					fread(jpegData, jpegDataBytes, 1, jpegFile);
-					jpegBytes = jpegDataBytes;
-				}
-
-				fclose(jpegFile);
-			}
-
-			break;
-		}
-	}
-	mtx.unlock();
-
-	return ERR_OK;
-}
+// int CVAlgoFace::queryFace(const long long uuid, char*& jpegData, int& jpegBytes)
+// {
+// 	mtx.lock();
+// 	for (boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.begin(); it != registerFaceImageGroup.end(); ++it)
+// 	{
+// 		std::string uuidStr{ (boost::format("%lld") % uuid).str() };
+// 		const char* isSubstr{ std::strstr(it->second.c_str(), uuidStr.c_str()) };
+// 
+// 		if (isSubstr)
+// 		{
+// 			FILE* jpegFile{ NULL };
+// 			fopen_s(&jpegFile, it->second.c_str(), "rb+");
+// 			
+// 			if (jpegFile)
+// 			{
+// 				const long jpegDataBytes{ _filelength(_fileno(jpegFile)) };
+// 				if (jpegData)
+// 				{
+// 					fread(jpegData, jpegDataBytes, 1, jpegFile);
+// 					jpegBytes = jpegDataBytes;
+// 				}
+// 
+// 				fclose(jpegFile);
+// 			}
+// 
+// 			break;
+// 		}
+// 	}
+// 	mtx.unlock();
+// 
+// 	return ERR_OK;
+// }
 
 int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {

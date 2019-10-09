@@ -10,6 +10,8 @@
 #include "glog/logging.h"
 #endif//_WINDOWS
 #include "error.h"
+#include "MQModel/Publisher/PublisherModel.h"
+using PublisherModel = NS(model, 1)::PublisherModel;
 #include "MediaDecoder/SDK/HikvisionSDKDecoder.h"
 using HikvisionSDKDecoder = NS(decoder, 1)::HikvisionSDKDecoder;
 #include "MediaConverter/YV12ToYUV420PConverter.h"
@@ -35,8 +37,10 @@ extern int sailingStatus;//0 : sail, 1 : port
 extern int autoCheckSwitch;//0 : manual, 1 : auto
 
 DigitCameraLivestream::DigitCameraLivestream(
+	boost::shared_ptr<MQModel> publisher, const std::string NVRIp,
 	const long uid /* = -1 */, const unsigned short idx /* = -1 */)
-	: HikvisionLivestream(uid, idx), arithmeticAbilities{ 0 }, stopped{ false }, livestreamFrameNumber{ 0 }
+	: HikvisionLivestream(uid, idx), arithmeticAbilities{ 0 }, stopped{ false },
+	livestreamFrameNumber{ 0 }, NVRIpAddress{ NVRIp }, publisherModelPtr{ publisher }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -48,22 +52,27 @@ int DigitCameraLivestream::openStream()
 	boost::shared_ptr<MediaDecoder> videoDecoderPtr{ 
 		boost::make_shared<HikvisionSDKDecoder>(
 			boost::bind(&DigitCameraLivestream::videoStreamDecodeHandler, this, _1, _2, _3, _4)) };
-	boost::shared_ptr<MediaConverter> yv12ToYuv420pConverterPtr{ boost::make_shared<YV12ToYUV420PConverter>() };
-	boost::shared_ptr<MediaConverter> yuv420pToConverterPtr{ boost::make_shared<YV12ToYUV420PConverter>() };
+	boost::shared_ptr<MediaConverter> yv12ToYuv420pConverter{ boost::make_shared<YV12ToYUV420PConverter>() };
+	boost::shared_ptr<MediaConverter> yuv420pToBGR24Converter{ boost::make_shared<YUV420PToBGR24Converter>() };
 	boost::shared_ptr<MediaEncoder> jpegEncoderPtr{ boost::make_shared<YUV420PToJPEGEncoder>() };
 
-	if (videoDecoderPtr && yv12ToYuv420pConverterPtr && yuv420pToConverterPtr && jpegEncoderPtr)
+	if (videoDecoderPtr && yv12ToYuv420pConverter && yuv420pToBGR24Converter && jpegEncoderPtr)
 	{
 		videoStreamDecoderPtr.swap(videoDecoderPtr);
- 		yv12FrameConverterPtr.swap(yv12ToYuv420pConverterPtr);
-		yuv420pFrameConverterPtr.swap(yuv420pToConverterPtr);
+		yv12ToYuv420pConverterPtr.swap(yv12ToYuv420pConverter);
+		yv12ToYuv420pConverterPtr->initialize();
+		yuv420pToBGR24ConverterPtr.swap(yuv420pToBGR24Converter);
+		yuv420pToBGR24ConverterPtr->initialize();
 		jpegPictureEncoderPtr.swap(jpegEncoderPtr);
+		jpegPictureEncoderPtr->initialize();
 
 		h264LivestreamQueue.setCapacity(1000);
 		DWORD threadID{ 0 };
-		HANDLE handle{ 
-			CreateThread(NULL, 0, &DigitCameraLivestream::frameDecodeProcessThread, this, 0, &threadID) };
-		SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
+		HANDLE handle{ CreateThread(NULL, 0, &DigitCameraLivestream::frameDecodeProcessThread, this, 0, &threadID) };
+		if (handle)
+		{
+			SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
+		}
 
 		status = HikvisionLivestream::openStream() ? ERR_OK : ERR_BAD_OPERATE;
 	}
@@ -82,6 +91,10 @@ int DigitCameraLivestream::closeStream()
 		condition[0].wait_for(lock1, boost::chrono::seconds(1));
 		condition[1].wait_for(lock2, boost::chrono::seconds(1));
 		condition[2].wait_for(lock3, boost::chrono::seconds(1));
+
+		yv12ToYuv420pConverterPtr->deinitialize();
+		yuv420pToBGR24ConverterPtr->deinitialize();
+		jpegPictureEncoderPtr->deinitialize();
 
 		helmetArithmeticPtr.reset();
 		phoneArithmeticPtr.reset();
@@ -296,13 +309,14 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 		return;
 	}
 
-	if (yv12FrameConverterPtr && yuv420pFrameConverterPtr)
+	if (yv12ToYuv420pConverterPtr && yuv420pToBGR24ConverterPtr)
 	{
-		const long imageDataBytes{ imageWidth * imageHeight * 3 };
-		const unsigned char* yuv420ImageData{ 
-			yv12FrameConverterPtr->convert((const unsigned char*)frameData, frameBytes, imageWidth, imageHeight) };
+		const long imageDataBytes{ imageWidth * imageHeight * 3 / 2 };
+		const unsigned char* yuv420pImageData{ 
+			yv12ToYuv420pConverterPtr->convert(
+				(const unsigned char*)frameData, frameBytes, (unsigned short)imageWidth, (unsigned short)imageHeight) };
 		const unsigned char* bgr24ImageData{
-			yuv420pFrameConverterPtr->convert(yuv420ImageData, imageDataBytes, (const unsigned short)imageWidth, (const unsigned short)imageHeight) };
+			yuv420pToBGR24ConverterPtr->convert(yuv420pImageData, imageDataBytes, (const unsigned short)imageWidth, (const unsigned short)imageHeight) };
 
 		if (bgr24ImageData)
 		{
@@ -311,8 +325,8 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 
 			if (bgr24ImagePtr)
 			{
-				bgr24ImagePtr->setOriginImage((const unsigned char*)frameData, frameBytes);
-				bgr24ImagePtr->setImage(bgr24ImageData, imageDataBytes);
+				bgr24ImagePtr->setOriginImage(yuv420pImageData, imageWidth * imageHeight * 3 / 2);
+				bgr24ImagePtr->setImage(bgr24ImageData, imageWidth * imageHeight * 3);
 
 				if (helmetArithmeticPtr)
 				{
@@ -364,18 +378,40 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 void DigitCameraLivestream::alarmInfoProcessHandler(
 	MediaImagePtr image, std::vector<NS(algo, 1)::AlarmInfo> alarmInfos)
 {
-// 	if (image && 0 < alarmInfos.size())
-// 	{
-// 		AlarmMessage message;
-// 		message.setMessageData(
-// 			(int)alarmInfos[0].type, 1920, 1080, bgr24Frame->NVRIp, streamIndex, alarmInfos, bgr24Frame->jpegData, bgr24Frame->jpegBytes);
-// 		boost::shared_ptr<PublisherModel> publisherModel{
-// 			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
-// 
-// 		publishMtx.lock();
-// 		publisherModel->send(message.getMessageData(), message.getMessageBytes());
-// 		publishMtx.unlock();
-// 
-// 		LOG(INFO) << "Send push alarm " << bgr24Frame->NVRIp << "_" << bgr24Frame->channelIndex << "_" << detectInfos[0].type;
-// 	}
+	if (image && 0 < alarmInfos.size() && jpegPictureEncoderPtr)
+	{
+		unsigned char* jpegPictureData{ NULL };
+		unsigned long long jpegPictureDataBytes{ 0 };
+
+		if (ERR_OK == jpegPictureEncoderPtr->encode(image->getOriginImage(), image->getOriginImageBytes()))
+		{
+			jpegPictureEncoderPtr->data(jpegPictureData, jpegPictureDataBytes);
+
+			AlarmMessage message;
+			message.setMessageData(
+				(int)alarmInfos[0].type, 1920, 1080, NVRIpAddress.c_str(), streamIndex, alarmInfos, (const char*)jpegPictureData, (int)jpegPictureDataBytes);
+			boost::shared_ptr<PublisherModel> publisherModel{
+				boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+
+			publisherMtx.lock();
+			publisherModel->send(message.getMessageData(), message.getMessageBytes());
+			publisherMtx.unlock();
+
+			LOG(INFO) << "Send push alarm " << NVRIpAddress << "_" << streamIndex << "_" << (int)alarmInfos[0].type;
+		}
+	}
+}
+
+int DigitCameraLivestream::addFacePicture(const char* filePath /*= NULL*/, const int faceID /*= 0*/)
+{
+	int status{ ERR_INVALID_PARAM };
+
+	if (filePath && 0 < faceID && faceArithmeticPtr)
+	{
+		boost::shared_ptr<CVAlgoFace> facePtr{
+					boost::dynamic_pointer_cast<CVAlgoFace>(faceArithmeticPtr) };
+		status = facePtr->addFacePicture((char*)filePath, faceID);
+	}
+
+	return status;
 }
