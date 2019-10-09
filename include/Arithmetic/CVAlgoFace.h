@@ -23,7 +23,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoFace : public CVAlgo
 {
 public:
-	CVAlgoFace(CaptureAlarmNotifyHandler handler = NULL);
+	CVAlgoFace(CaptureAlarmInfoHandler handler = NULL);
 	~CVAlgoFace(void);
 
 public:
@@ -33,9 +33,9 @@ public:
 	int queryFace(const long long uuid, char*& jpegData, int& jpegBytes);
 
 protected:
-	bool initializeWithParameter(
+	int initializeWithParameter(
 		const char* configFilePath = NULL, void* parameter = NULL) override;
-	void algorithmWorkerProcess(void) override;
+	void arithmeticWorkerProcess(void) override;
 
 private:
 	int loadAndRegisterFacePicture(const char* directoryFilePath = NULL);

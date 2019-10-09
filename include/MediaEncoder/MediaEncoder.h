@@ -1,13 +1,13 @@
 //
-//		Copyright :					@2017, ***, All Rights Reserved
+//		Copyright :					@2019, ***, All Rights Reserved
 //
 //		Author :						王科威
 //		E-mail :						wangkw531@icloud.com
-//		Date :							2017-12-11
-//		Description:					多媒体编码器抽象基类，所有解码器都可以继承于此
+//		Date :							2019-10-04
+//		Description:					多媒体编码器抽象基类
 //
 //		History:						Author									Date														Description
-//											王科威									2017-12-11										创建
+//											王科威									2019-10-04										创建
 //
 
 #ifndef MEDIA_ENCODER_H
@@ -24,8 +24,13 @@ public:
 	virtual ~MediaEncoder(void);
 
 public:
-	virtual int encode(char*& jpegData, int& jpegBytes,
-		const char* data = NULL, const int dataBytes = 0, const int w = 1920, const int h = 1080);
+	virtual int initialize(
+		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) = 0;
+	virtual void deinitialize(void) = 0;
+	virtual int encode(
+		const unsigned char* imageData = NULL, const unsigned long long imageBytes = 0,
+		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) = 0;
+	virtual void data(unsigned char*& outputData, unsigned long long& outputBytes) = 0;
 };//class MediaEncoder
 
 NS_END

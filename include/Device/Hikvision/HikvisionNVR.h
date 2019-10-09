@@ -13,6 +13,7 @@
 #ifndef HIKVISION_NVR_H
 #define HIKVISION_NVR_H
 
+#include <vector>
 #include "Device/EnableDeviceConfig.h"
 #include "Device/Hikvision/HikvisionDevice.h"
 
@@ -27,6 +28,12 @@ public:
 		const char* userName = NULL, const char* userPassword = NULL,
 		const char* deviceIP = NULL, const unsigned short devicePort = 0);
 	virtual ~HikvisionNVR(void);
+
+public:
+	inline const std::vector<Camera> getDigitCameras(void) const 
+	{
+		return digitCameras;
+	}
 
 protected:
 	int loginDevice(void) override;

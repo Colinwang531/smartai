@@ -58,18 +58,6 @@
     <Filter Include="Source Files\Decoder\SDK">
       <UniqueIdentifier>{3aae4a4d-4316-4a14-805a-008c895f0551}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Scaler">
-      <UniqueIdentifier>{e107f76a-3696-4f21-a848-42c0e8dd9901}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Scaler">
-      <UniqueIdentifier>{8622de00-d822-4793-8ccd-731a38b88abb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Scaler\FFmpeg">
-      <UniqueIdentifier>{f7fe2315-3de7-412f-a47e-4418b0ac2774}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Scaler\FFmpeg">
-      <UniqueIdentifier>{0014be48-93c9-411e-8d34-e001f18a13ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Device\Hikvision">
       <UniqueIdentifier>{91ebe1dc-17d0-4dc9-b8cc-e1b9b2051aa3}</UniqueIdentifier>
     </Filter>
@@ -103,12 +91,6 @@
     <Filter Include="Source Files\Encoder">
       <UniqueIdentifier>{4a2cf3b3-acd8-4028-a279-a3f871febc27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Encoder\FFmpeg">
-      <UniqueIdentifier>{3192df35-908e-494d-9785-997f4c813398}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Encoder\FFmpeg">
-      <UniqueIdentifier>{20c238d5-05f1-4244-baa6-f71427854111}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Thread">
       <UniqueIdentifier>{24344969-500a-46d4-9f79-4728e0b5088a}</UniqueIdentifier>
     </Filter>
@@ -139,14 +121,8 @@
     <Filter Include="Source Files\MQModel\Worker">
       <UniqueIdentifier>{54ca020e-e181-486f-aaa4-37dbff082899}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Algorithm">
-      <UniqueIdentifier>{cdbce29e-1779-4dcc-b790-ea4641d341b1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\DataStruct">
       <UniqueIdentifier>{14f6af40-c767-455e-99da-f4512ed9d7a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Algorithm">
-      <UniqueIdentifier>{6aa7f2cd-d6bf-4271-bc41-7c21bf9928d4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\tinyxml2">
       <UniqueIdentifier>{7a56041a-b661-44e9-b5ec-23a6fe798e2b}</UniqueIdentifier>
@@ -180,6 +156,42 @@
     </Filter>
     <Filter Include="Source Files\Time">
       <UniqueIdentifier>{2bba6e5c-77d9-49df-baa8-ab28b41b7b9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Camera">
+      <UniqueIdentifier>{613fffa3-eb2c-4206-b91e-0cfe2f23373e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{a6b167b1-03c9-4977-b8ed-a2bb4fd09947}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Arithmetic">
+      <UniqueIdentifier>{cdbce29e-1779-4dcc-b790-ea4641d341b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Arithmetic">
+      <UniqueIdentifier>{6aa7f2cd-d6bf-4271-bc41-7c21bf9928d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Converter">
+      <UniqueIdentifier>{8622de00-d822-4793-8ccd-731a38b88abb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Converter">
+      <UniqueIdentifier>{e107f76a-3696-4f21-a848-42c0e8dd9901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Frame">
+      <UniqueIdentifier>{f4865e04-1f31-4aa6-a216-e72340449f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Frame">
+      <UniqueIdentifier>{102dfce5-eadf-440c-9be5-c62020831e41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Converter\Hikvision">
+      <UniqueIdentifier>{4361c8de-c22e-49e9-90d3-f4208563695d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Converter\Hikvision">
+      <UniqueIdentifier>{c4ce1ad1-94e9-4a59-b3d2-6de31226d259}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Encoder\JPEG">
+      <UniqueIdentifier>{381ae10e-b7a5-420f-b8b6-e9f443ddfdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Encoder\JPEG">
+      <UniqueIdentifier>{227d19fc-5361-4404-b94f-cef2a14584ef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -546,9 +558,6 @@
     <ClCompile Include="..\source\MediaDecoder\SDK\HikvisionSDKDecoder.cpp">
       <Filter>Source Files\Decoder\SDK</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaScaler\FrameScaler.cpp">
-      <Filter>Source Files\Scaler</Filter>
-    </ClCompile>
     <ClCompile Include="AlarmMessage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -600,12 +609,6 @@
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp">
       <Filter>Source Files\Encoder</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaEncoder\FFmpeg\YV12ToJPEG.cpp">
-      <Filter>Source Files\Encoder\FFmpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaScaler\FFmpeg\YV12ToBGR24.cpp">
-      <Filter>Source Files\Scaler\FFmpeg</Filter>
-    </ClCompile>
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
       <Filter>Source Files\boost\thread</Filter>
     </ClCompile>
@@ -649,22 +652,22 @@
       <Filter>Source Files\MQ</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgo.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgoHelmet.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgoFace.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgoPhone.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgoSleep.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="..\source\Arithmetic\CVAlgoFight.cpp">
-      <Filter>Source Files\Algorithm</Filter>
+      <Filter>Source Files\Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="..\tinyxml2-master\tinyxml2.cpp">
       <Filter>Source Files\tinyxml2</Filter>
@@ -692,6 +695,33 @@
     </ClCompile>
     <ClCompile Include="..\source\Time\Time.cpp">
       <Filter>Source Files\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Camera\Camera.cpp">
+      <Filter>Source Files\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaConverter\MediaConverter.cpp">
+      <Filter>Source Files\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFrame\MediaFrame.cpp">
+      <Filter>Source Files\Frame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaConverter\Hikvision\HikvisionImageConverter.cpp">
+      <Filter>Source Files\Converter\Hikvision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaConverter\FFmpegConverter.cpp">
+      <Filter>Source Files\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaConverter\YUV420PToBGR24Converter.cpp">
+      <Filter>Source Files\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaConverter\YV12ToYUV420PConverter.cpp">
+      <Filter>Source Files\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaEncoder\FFmpegEncoder.cpp">
+      <Filter>Source Files\Encoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaEncoder\JPEG\YUV420PToJPEGEncoder.cpp">
+      <Filter>Source Files\Encoder\JPEG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1190,9 +1220,6 @@
     <ClInclude Include="..\include\MediaDecoder\SDK\HikvisionSDKDecoder.h">
       <Filter>Header Files\Decoder\SDK</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaScaler\FrameScaler.h">
-      <Filter>Header Files\Scaler</Filter>
-    </ClInclude>
     <ClInclude Include="AlarmMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1219,12 +1246,6 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h">
       <Filter>Header Files\Encoder</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaEncoder\FFmpeg\YV12ToJPEG.h">
-      <Filter>Header Files\Encoder\FFmpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaScaler\FFmpeg\YV12ToBGR24.h">
-      <Filter>Header Files\Scaler\FFmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h">
       <Filter>Header Files\Device\Hikvision</Filter>
@@ -1257,22 +1278,22 @@
       <Filter>Header Files\MQ</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgo.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgoFace.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgoPhone.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Arithmetic\CVAlgoFight.h">
-      <Filter>Header Files\Algorithm</Filter>
+      <Filter>Header Files\Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="..\include\File\Com\ComPort.h">
       <Filter>Header Files\File\Com</Filter>
@@ -1294,6 +1315,33 @@
     </ClInclude>
     <ClInclude Include="..\include\Device\EnableDeviceLoginAndLogout.h">
       <Filter>Header Files\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Camera\Camera.h">
+      <Filter>Header Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaConverter\MediaConverter.h">
+      <Filter>Header Files\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFrame\MediaFrame.h">
+      <Filter>Header Files\Frame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaConverter\Hikvision\HikvisionImageConverter.h">
+      <Filter>Header Files\Converter\Hikvision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaConverter\FFmpegConverter.h">
+      <Filter>Header Files\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaConverter\YUV420PToBGR24Converter.h">
+      <Filter>Header Files\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaConverter\YV12ToYUV420PConverter.h">
+      <Filter>Header Files\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaEncoder\FFmpegEncoder.h">
+      <Filter>Header Files\Encoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaEncoder\JPEG\YUV420PToJPEGEncoder.h">
+      <Filter>Header Files\Encoder\JPEG</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

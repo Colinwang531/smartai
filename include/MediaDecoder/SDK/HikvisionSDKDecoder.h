@@ -19,14 +19,8 @@
 
 NS_BEGIN(decoder, 1)
 
-typedef enum tagDecodeFrame_t
-{
-	DECODE_FRAME_NONE = 0,
-	DECODE_FRAME_VIDEO,
-	DECODE_FRAME_AUDIO
-}DecodeFrame;
-
-typedef boost::function<void(const char*, const int, const unsigned long long, const DecodeFrame&, const int, const int)> FrameDataDecodeHandler;
+typedef boost::function<
+	void(const char*, const long, const long, const long)> FrameDataDecodeHandler;
 
 class HikvisionSDKDecoder : public MediaMixerDecoder
 {
@@ -36,7 +30,7 @@ public:
 
 public:
 	int decode(
-		const unsigned char* frameData = NULL, const int frameBytes = 0, const unsigned long long frameNumber = 0) override;
+		const unsigned char* frameData = NULL, const int frameBytes = 0) override;
 
 private:
 	static void CALLBACK decodeFrameInfoCallback(

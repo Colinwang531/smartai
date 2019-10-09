@@ -13,6 +13,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <string>
 #include "predef.h"
 
 NS_BEGIN(device, 1)
@@ -34,7 +35,7 @@ public:
 	{
 		return cameraIP;
 	}
-	
+
 	inline const unsigned long long getCameraIndex(void) const
 	{
 		return cameraIndex;

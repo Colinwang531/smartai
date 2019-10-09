@@ -18,22 +18,23 @@
 #include "boost/function.hpp"
 #include "boost/shared_ptr.hpp"
 #include "boost/thread/mutex.hpp"
-#include "boost/unordered_map.hpp"
-#include "Stream/Livestream.h"
-using LivestreamPtr = boost::shared_ptr<NS(stream, 1)::Livestream>;
-using LivestreamGroup = boost::unordered_map<const std::string, LivestreamPtr>;
+#include "MediaFrame/MediaFrame.h"
+using MediaImage = NS(frame, 1)::MediaImage;
+#include "DataStruct/FIFOQueue.h"
+using MediaImagePtr = boost::shared_ptr<MediaImage>;
+using FIFOQueue = NS(datastruct, 1)::FIFOQueue<MediaImagePtr>;
 
 NS_BEGIN(algo, 1)
 
-typedef enum tagAlgoType_t
+typedef enum class tagAlarmType_t
 {
-	ALGO_HELMET = 0,
-	ALGO_PHONE,
-	ALGO_SLEEP,
-	ALGO_FIGHT,
-	ALGO_FACE,
-	ALGO_NONE
-}AlgoType;
+	ALARM_TYPE_HELMET = 0,
+	ALARM_TYPE_PHONE,
+	ALARM_TYPE_SLEEP,
+	ALARM_TYPE_FIGHT,
+	ALARM_TYPE_FACE,
+	ALARM_TYPE_NONE
+}AlarmType;
 
 typedef struct tagFaceDetect_t
 {
@@ -43,48 +44,49 @@ typedef struct tagFaceDetect_t
 	long long faceID;
 }FaceDetect;
 
-typedef struct tagDetectNotify_t
+typedef struct tagAlarmInfo_t
 {
-	int type;
+	AlarmType type;
 	int status;
 	int x;
 	int y;
 	int w;
 	int h;
 	FaceDetect face;
-}DetectNotify;
+}AlarmInfo;
 
-typedef boost::function<void(void*, std::vector<DetectNotify>)> CaptureAlarmNotifyHandler;
+typedef boost::function<void(MediaImagePtr, std::vector<AlarmInfo>)> CaptureAlarmInfoHandler;
 
 class CVAlgo
 {
 public:
-	CVAlgo(CaptureAlarmNotifyHandler handler = NULL);
+	CVAlgo(CaptureAlarmInfoHandler handler = NULL);
 	virtual ~CVAlgo(void);
 
 public:
-	bool initialize(
+	virtual int initialize(
 		const char* configFilePath = NULL, const float detectThreshold = 0.0f, const float trackThreshold = 0.0f);
-	int addLivestream(const std::string streamID, LivestreamPtr livestreamPtr);
-	int removeLivestream(const std::string streamID);
+//	virtual void deinitialize(void) = 0;
+	int tryInputMediaImage(MediaImagePtr image);
 
 protected:
-	virtual bool initializeWithParameter(const char* configFilePath = NULL, void* parameter = NULL) = 0;
-	virtual void algorithmWorkerProcess(void) = 0;
+	virtual int initializeWithParameter(const char* configFilePath = NULL, void* parameter = NULL) = 0;
+	virtual void arithmeticWorkerProcess(void) = 0;
 
 private:
-	static DWORD WINAPI algorithmProcessThread(void* ctx = NULL);
+	static DWORD WINAPI arithmeticProcessThread(void* ctx = NULL);
 
 protected:
-	CaptureAlarmNotifyHandler captureAlarmNotifyHandler;
+	CaptureAlarmInfoHandler captureAlarmInfoHandler;
 	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_WIDTH = 1920);
 	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_HEIGHT = 1080);
 	BOOST_STATIC_CONSTANT(unsigned short, CHANNEL_NUMBER = 3);
 
 protected:
-	boost::mutex livestreamMtx;
-	LivestreamGroup livestreamGroup;
-	static DWORD enableAlgorithmCount;
+//	boost::mutex livestreamMtx;
+	FIFOQueue BGR24ImageQueue;
+//	static DWORD enableAlgorithmCount;
+	bool arithmeticProcessing;
 };//class CVAlgo
 
 NS_END

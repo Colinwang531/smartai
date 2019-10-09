@@ -22,13 +22,26 @@ using CVAlgo = NS(algo, 1)::CVAlgo;
 using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 #include "AsynchronousServer.h"
 
-extern boost::shared_ptr<CVAlgo> helmetAlgorithmPtr;
-extern boost::shared_ptr<CVAlgo> phoneAlgorithmPtr;
-extern boost::shared_ptr<CVAlgo> sleepAlgorithmPtr;
-extern boost::shared_ptr<CVAlgo> fightAlgorithmPtr;
-extern boost::shared_ptr<CVAlgo> faceAlgorithmPtr;
-extern int sailingStatus;
-extern int autoCheckSwitch;
+// extern boost::shared_ptr<CVAlgo> helmetAlgorithmPtr;
+// extern boost::shared_ptr<CVAlgo> phoneAlgorithmPtr;
+// extern boost::shared_ptr<CVAlgo> sleepAlgorithmPtr;
+// extern boost::shared_ptr<CVAlgo> fightAlgorithmPtr;
+// extern boost::shared_ptr<CVAlgo> faceAlgorithmPtr;
+// extern int sailingStatus;
+// extern int autoCheckSwitch;
+
+extern int createNewNVRDevice(
+	const std::string address, const unsigned short port,
+	const std::string name, const std::string password,
+	std::vector<Camera>& digitCameras);
+extern int destroyNVRDevice(const std::string address);
+extern int createNewDigitCamera(
+	const std::string NVRAddress, const unsigned long long cameraIndex = 0, const unsigned int abilities = 0);
+extern int destroyDigitCamera(
+	const std::string NVRAddress, const unsigned long long cameraIndex = 0);
+extern int setAutoCheckSailOrPort(const int autoCheck = 1);
+extern int setSailingStatus(const int status = 0);
+extern int getSailingStatus(void);
 
 AsynchronousServer::AsynchronousServer(const unsigned short port /* = 60532 */)
 	: TransferModel(port)//, bgr24FrameQueue{ fqueue }, cvAlgoFacePtr{ faceAlgo }
@@ -74,7 +87,6 @@ int AsynchronousServer::setNVR(
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
-	//Reply error message.
 	int result{ 0 }, responseDataUsedBytes{ 20 };
 	int* flag{ (int*)request };
 	int* iplen{ (int*)(request + 4) };
@@ -94,50 +106,27 @@ int AsynchronousServer::setNVR(
 		const std::string name(request + pos, *namelen);
 		pos += *namelen;
 
-		boost::shared_ptr<HikvisionDevice> devicePtr{ boost::make_shared<Hikvision7xxxNVR>() };
-		if (devicePtr)
-		{
-			const int userID{ devicePtr->login(name.c_str(), password.c_str(), ipaddr.c_str(), *port) };
+		std::vector<Camera> digitCameras;
+		result = createNewNVRDevice(ipaddr, *port, name, password, digitCameras);
 
-			if (-1 < userID)
-			{
-				result = 1;
-				hikvisionNVRDevices.insert(std::make_pair(ipaddr, devicePtr));
-				LOG(INFO) << "Login HIKVISION NVR " << ipaddr << " user ID " << userID;
-				
-				boost::shared_ptr<Hikvision7xxxNVR> nvr{
-					boost::dynamic_pointer_cast<Hikvision7xxxNVR>(devicePtr) };
-				std::vector<DigitCamera> cameras;
-				nvr->getDigitCameras(userID, ipaddr.c_str(), cameras);
-				responseDataUsedBytes = replySetNVR(cameras, ipaddr.c_str(), sequenceNo, response, responseBytes);
-			}
-			else
-			{
-				*((long long*)response) = sequenceNo;
-				*((int*)(response + 8)) = 2;
-				*((int*)(response + 12)) = 4;
-				*((int*)(response + 16)) = result;
-				*((int*)(response + 20)) = 0;
-				*((int*)(response + 24)) = 0;
-				responseDataUsedBytes = 28;
-				LOG(WARNING) << "Login HIKVISION NVR " << ipaddr << " user ID " << userID;
-			}
+		if (ERR_OK == result)
+		{
+			responseDataUsedBytes = replySetNVR(digitCameras, ipaddr.c_str(), sequenceNo, response, responseBytes);
+		}
+		else
+		{
+			*((long long*)response) = sequenceNo;
+			*((int*)(response + 8)) = 2;
+			*((int*)(response + 12)) = 4;
+			*((int*)(response + 16)) = result;
+			*((int*)(response + 20)) = 0;
+			*((int*)(response + 24)) = 0;
+			responseDataUsedBytes = 28;
 		}
 	}
 	else if (0 == *flag)
 	{
-		boost::unordered_map<const std::string, HikvisionNVRDevicePtr>::iterator it{ hikvisionNVRDevices.find(ipaddr) };
-		if (hikvisionNVRDevices.end() != it)
-		{
-			it->second->logout();
-			hikvisionNVRDevices.erase(it);
-			result = 1;
-			LOG(WARNING) << "Logout HIKVISION NVR " << ipaddr;
-		}
-		else
-		{
-			LOG(WARNING) << "Logout HIKVISION NVR failed " << ipaddr;
-		}
+		result = destroyNVRDevice(ipaddr);
 
 		*((long long*)response) = sequenceNo;
 		*((int*)(response + 8)) = 2;
@@ -152,12 +141,12 @@ int AsynchronousServer::setNVR(
 }
 
 int AsynchronousServer::replySetNVR(
-	const std::vector<DigitCamera>& cameras, 
+	const std::vector<Camera>& digitCameras, 
 	const char* NVRIp /* = NULL */, const long long sequenceNo /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
 	int pos{ 0 };
-	const int messageID{ 2 }, result{ 1 }, NVRIpLen{ (int)strlen(NVRIp) }, cameraNumber{ (int)cameras.size() };
+	const int messageID{ 2 }, result{ 1 }, NVRIpLen{ (int)strlen(NVRIp) }, cameraNumber{ (int)digitCameras.size() };
 	memcpy_s((char*)response, 8, &sequenceNo, 8);
 	pos += 8;
 	memcpy_s((char*)response + pos, 4, &messageID, 4);
@@ -173,9 +162,9 @@ int AsynchronousServer::replySetNVR(
 
 	for (int i = 0; i != cameraNumber; ++i)
 	{
-		const int cameraIpLen{ (int)cameras[i].cameraIp.length() }, cameraIndex{ cameras[i].cameraIndex };
+		const int cameraIpLen{ (int)digitCameras[i].getCameraIP().length() }, cameraIndex{ digitCameras[i].getCameraIndex() };
 		memcpy_s((char*)response + pos, 4, &cameraIpLen, 4);
-		memcpy_s((char*)response + pos + 4, cameraIpLen, cameras[i].cameraIp.c_str(), cameraIpLen);
+		memcpy_s((char*)response + pos + 4, cameraIpLen, digitCameras[i].getCameraIP().c_str(), cameraIpLen);
 		memcpy_s((char*)response + pos + 4 + cameraIpLen, 4, &cameraIndex, 4);
 		pos += (8 + cameraIpLen);
 	}
@@ -193,96 +182,38 @@ int AsynchronousServer::setCamera(
 	int* NVRIpLen{ (int*)request };
 	const std::string ipaddr(request + 4, *NVRIpLen);
 	int* cameraIndex{ (int*)(request + 4 + *NVRIpLen) };
-	int* algoFlag{ (int*)(request + 8 + *NVRIpLen) };
+	int* arithmeticAbilities{ (int*)(request + 8 + *NVRIpLen) };
 	int result{ 0 }, responseDataUsedBytes{ 20 };
 
-	boost::unordered_map<const std::string, HikvisionNVRDevicePtr>::iterator it{ hikvisionNVRDevices.find(ipaddr) };
-	if (hikvisionNVRDevices.end() != it)
+	if (0 < *arithmeticAbilities)
 	{
-		const std::string streamID{ (boost::format("%s_%d") % ipaddr % *cameraIndex).str() };
-
-		if (0 < *algoFlag)
-		{
-			result = 1;
-			boost::unordered_map<const std::string, LivestreamPtr>::iterator iter = livestreams.find(streamID);
-
-			if (livestreams.end() == iter)
-			{
-				boost::shared_ptr<Livestream> livestreamPtr{ boost::make_shared<DigitCameraLivestream>(ipaddr, *cameraIndex) };
-				if (livestreamPtr)
-				{
-					boost::shared_ptr<DigitCameraLivestream> digitCameraLivestreamPtr{
-						boost::dynamic_pointer_cast<DigitCameraLivestream>(livestreamPtr) };
-					if (digitCameraLivestreamPtr)
-					{
-						digitCameraLivestreamPtr->setAlgoAbility(*algoFlag);
-						helmetAlgorithmPtr->addLivestream(streamID, livestreamPtr);
-						phoneAlgorithmPtr->addLivestream(streamID, livestreamPtr);
-						sleepAlgorithmPtr->addLivestream(streamID, livestreamPtr);
-						fightAlgorithmPtr->addLivestream(streamID, livestreamPtr);
-						faceAlgorithmPtr->addLivestream(streamID, livestreamPtr);
-					}
-
-					const int status{ livestreamPtr->open(it->second->getUserID()) };
-					livestreams.insert(std::make_pair(streamID, livestreamPtr));
-					LOG(INFO) << "Add live stream " << streamID << ", algorithm ability "<< *algoFlag << ".";
-				}
-			} 
-			else
-			{
-				boost::shared_ptr<DigitCameraLivestream> digitCameraLivestreamPtr{
-					boost::dynamic_pointer_cast<DigitCameraLivestream>(iter->second) };
-				if (digitCameraLivestreamPtr)
-				{
-					digitCameraLivestreamPtr->setAlgoAbility(*algoFlag);
-					LOG(INFO) << "Set live stream " << streamID << " algorithm ability to " << *algoFlag << ".";
-				}
-			}
-		}
-		else
-		{
-			boost::unordered_map<const std::string, LivestreamPtr>::iterator it{
-				livestreams.find((boost::format("%s_%d") % ipaddr % *cameraIndex).str()) };
-			if (livestreams.end() != it)
-			{
-				it->second->close();
-				helmetAlgorithmPtr->removeLivestream(streamID);
-				phoneAlgorithmPtr->removeLivestream(streamID);
-				sleepAlgorithmPtr->removeLivestream(streamID);
-				fightAlgorithmPtr->removeLivestream(streamID);
-				faceAlgorithmPtr->removeLivestream(streamID);
-				livestreams.erase(it);
-				result = 1;
-				LOG(WARNING) << "Remove live stream " << streamID;
-			}
-		}
+		result = createNewDigitCamera(ipaddr, *cameraIndex, *arithmeticAbilities);
 	}
 	else
 	{
-		LOG(WARNING) << "Can not find NVR device " << ipaddr;
+		result = destroyDigitCamera(ipaddr, *cameraIndex);
 	}
 
 	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 4;
 	*((int*)(response + 12)) = 4;
 	*((int*)(response + 16)) = result;
+
 	return responseDataUsedBytes;
 }
 
-int AsynchronousServer::setAutoSailingCheck(
+int AsynchronousServer::setAutoCheck(
 	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
-	int result{ 1 }, responseDataUsedBytes{ 20 };
+	int responseDataUsedBytes{ 20 };
 	int* autoSailing{ (int*)(request) };
-	autoCheckSwitch = *autoSailing;
-	LOG(INFO) << "Set auto sailing control flag(0 : manual, 1 : auto) " << autoCheckSwitch;
 
 	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 6;
 	*((int*)(response + 12)) = 4;
-	*((int*)(response + 16)) = result;
+	*((int*)(response + 16)) = setAutoCheckSailOrPort(*autoSailing);
 
 	return responseDataUsedBytes;
 }
@@ -292,15 +223,13 @@ int AsynchronousServer::setSailingStatus(
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
-	int result{ 1 }, responseDataUsedBytes{ 20 };
-	int* currentSailingStatus{ (int*)(request) };
-	sailingStatus = *currentSailingStatus;
-	LOG(INFO) << "Set sailing status flag(0 : sailing, 1 : porting) " << sailingStatus;
+	int responseDataUsedBytes{ 20 };
+	int* sailingStatus{ (int*)(request) };
 
 	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 8;
 	*((int*)(response + 12)) = 4;
-	*((int*)(response + 16)) = 1;
+	*((int*)(response + 16)) = setSailingStatus(*sailingStatus);
 
 	return responseDataUsedBytes;
 }
@@ -309,13 +238,12 @@ int AsynchronousServer::querySailingStatus(
 	const long long sequenceNo /* = 0 */,
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
 {
-	int result{ 1 }, responseDataUsedBytes{ 20 };
+	int responseDataUsedBytes{ 20 };
 
 	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 10;
 	*((int*)(response + 12)) = 4;
-	*((int*)(response + 16)) = sailingStatus;
-	LOG(INFO) << "Reply sailing status flag(0 : sailing, 1 : porting) " << sailingStatus;
+	*((int*)(response + 16)) = getSailingStatus();
 
 	return responseDataUsedBytes;
 }
@@ -521,7 +449,7 @@ int AsynchronousServer::getRequestMessageNotifyHandler(
 		}
 		else if (5 == *command)
 		{
-			responseDataUsedBytes = setAutoSailingCheck(*sequence, request + 16, *packlen, response, responseBytes);
+			responseDataUsedBytes = setAutoCheck(*sequence, request + 16, *packlen, response, responseBytes);
 		}
 		else if (7 == *command)
 		{

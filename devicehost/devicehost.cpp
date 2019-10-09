@@ -49,6 +49,8 @@ using NVRDeviceGroup = boost::unordered_map<const std::string, NVRDevicePtr>;
 #include "DigitCameraLivestream.h"
 using AVStreamPtr = boost::shared_ptr<NS(stream, 1)::AVStream>;
 using AVStreamGroup = boost::unordered_map<const std::string, AVStreamPtr>;
+#include "Camera/Camera.h"
+using Camera = NS(device, 1)::Camera;
 
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
@@ -63,12 +65,14 @@ std::string clockAsyncData;
 long long clockUTCTime = 0;
 std::string aisAsyncData;
 int sailingStatus = 0;//0 : sail, 1 : port
-int autoCheckSwitch = 1;//0 : manual, 1 : auto
+int autoCheckSailOrPort = 1;//0 : manual, 1 : auto
 NVRDeviceGroup NVRDevices;
 AVStreamGroup livestreams;
 
 static int createNewNVRDevice(
-	const std::string address, const unsigned short port, const std::string name, const std::string password)
+	const std::string address, const unsigned short port, 
+	const std::string name, const std::string password,
+	std::vector<Camera>& digitCameras)
 {
 	int status{ERR_OK};
 	NVRDeviceGroup::iterator it = NVRDevices.find(address);
@@ -90,12 +94,14 @@ static int createNewNVRDevice(
 				boost::shared_ptr<Hikvision7xxxNVR> newHikvision7xxxNVRDevicePtr{
 					boost::dynamic_pointer_cast<Hikvision7xxxNVR>(newNVRDevicePtr) };
 				const int loginUserID{newHikvision7xxxNVRDevicePtr->getUserID()};
+				digitCameras = newHikvision7xxxNVRDevicePtr->getDigitCameras();
+
 				NVRDevices.insert(std::make_pair(address, newNVRDevicePtr));
-				LOG(INFO) << "Login HIKVISION NVR device [ " << address << " ], user ID [ " << userID << " ].";
+				LOG(INFO) << "Login HIKVISION NVR device [ " << address << "_" << digitCameras.size() << " ], user ID [ " << loginUserID << " ].";
 			}
 			else
 			{
-				LOG(WARNING) << "Login HIKVISION NVR device [ " << address << " ], user ID [ " << userID << " ].";
+				LOG(WARNING) << "Login HIKVISION NVR device [ " << address << " ], failed.";
 			}
 		}
 		else
@@ -110,7 +116,145 @@ static int createNewNVRDevice(
 
 static int destroyNVRDevice(const std::string address)
 {
+	int status{ ERR_OK };
+	NVRDeviceGroup::iterator it = NVRDevices.find(address);
 
+	if (it == NVRDevices.end())
+	{
+		LOG(WARNING) << "Can not found NVR device [ " << address << " ].";
+		status = ERR_NOT_FOUND;
+	}
+	else
+	{
+		for (AVStreamGroup::iterator it = livestreams.begin(); it != livestreams.end();)
+		{
+			if (std::strstr(it->first.c_str(), address.c_str()))
+			{
+				status = it->second->closeStream();
+				LOG(WARNING) << "Close live stream [ " << it->first << " ] before destroying NVR device.";
+				it = livestreams.erase(it);
+			} 
+			else
+			{
+				++it;
+			}
+		}
+
+		status = it->second->destoryDevice();
+		LOG(WARNING) << "Destroy NVR device [ " << address << " ].";
+	}
+
+	return status;
+}
+
+static int createNewDigitCamera(
+	const std::string NVRAddress, const unsigned long long cameraIndex = 0, const unsigned int abilities = 0)
+{
+	int status{ ERR_NOT_FOUND };
+	NVRDeviceGroup::const_iterator cit = NVRDevices.find(NVRAddress);
+
+	if (NVRDevices.end() != cit)
+	{
+		const std::string livestreamID{
+			(boost::format("%s_%ulld") % NVRAddress % cameraIndex).str() };
+		AVStreamGroup::iterator it = livestreams.find(livestreamID);
+
+		if (livestreams.end() == it)
+		{
+			boost::shared_ptr<NS(device, 1)::HikvisionDevice> hikvisionDevicePtr{
+				boost::dynamic_pointer_cast<NS(device, 1)::HikvisionDevice>(cit->second) };
+			AVStreamPtr livestreamPtr{ 
+				boost::make_shared<DigitCameraLivestream>(hikvisionDevicePtr->getUserID(), cameraIndex) };
+
+			if (livestreamPtr)
+			{
+				boost::shared_ptr<DigitCameraLivestream> digitCameraLivestreamPtr{
+					boost::dynamic_pointer_cast<DigitCameraLivestream>(livestreamPtr) };
+				if (digitCameraLivestreamPtr)
+				{
+					digitCameraLivestreamPtr->setArithmeticAbilities(abilities);
+				}
+
+				status = livestreamPtr->openStream();
+				if (ERR_OK == status)
+				{
+					livestreams.insert(std::make_pair(livestreamID, livestreamPtr));
+					LOG(INFO) << "Add live stream [ " << livestreamID << " (" << abilities << ") ].";
+				}
+				else
+				{
+					LOG(WARNING) << "Add live stream [ " << livestreamID << " (" << abilities << ") ] failed.";
+				}
+			}
+		}
+		else
+		{
+			boost::shared_ptr<DigitCameraLivestream> livestreamPtr{
+				boost::dynamic_pointer_cast<DigitCameraLivestream>(it->second) };
+			if (livestreamPtr)
+			{
+				livestreamPtr->setArithmeticAbilities(abilities);
+				LOG(INFO) << "Set live stream [ " << livestreamID << " ] arithmetic abilities [ " << abilities << " ].";
+			}
+		}
+	}
+	else
+	{
+		LOG(ERROR) << "Can not create new digit camera [ " << NVRAddress << "_" << cameraIndex << " ].";
+	}
+
+	return status;
+}
+
+static int destroyDigitCamera(
+	const std::string NVRAddress, const unsigned long long cameraIndex = 0)
+{
+	int status{ ERR_NOT_FOUND };
+	NVRDeviceGroup::const_iterator cit = NVRDevices.find(NVRAddress);
+
+	if (NVRDevices.end() != cit)
+	{
+		const std::string livestreamID{ 
+			(boost::format("%s_%ulld") % NVRAddress % cameraIndex).str() };
+		AVStreamGroup::iterator it{ livestreams.find(livestreamID) };
+
+		if (livestreams.end() != it)
+		{
+			status = it->second->closeStream();
+			livestreams.erase(it);
+			LOG(INFO) << "Remove live stream [ " << livestreamID << " ].";
+		}
+		else
+		{
+			LOG(WARNING) << "Remove live stream [ " << livestreamID << " ] failed.";
+		}
+	}
+	else
+	{
+		LOG(ERROR) << "Can not destroy digit camera [ " << NVRAddress << "_" << cameraIndex << " ].";
+	}
+
+	return status;
+}
+
+static int setAutoCheckSailOrPort(const int autoCheck = 1)
+{
+	autoCheckSailOrPort = autoCheck;
+	LOG(INFO) << "Set auto check sail or port flag (0 : manual, 1 : auto) [ " << autoCheckSailOrPort << " ].";
+	return ERR_OK;
+}
+
+static int setSailingStatus(const int status = 0)
+{
+	sailingStatus = status;
+	LOG(INFO) << "Set sailing status flag (0 : sailing, 1 : porting) " << sailingStatus;
+	return ERR_OK;
+}
+
+static int getSailingStatus(void)
+{
+	LOG(INFO) << "Get sailing status flag (0 : sailing, 1 : porting) " << sailingStatus;
+	return sailingStatus;
 }
 
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
@@ -388,7 +532,6 @@ int main(int argc, char* argv[])
 		CreateThread(NULL, 0, &notifyStartingProcessThread, NULL, 0, &threadID);
 		getchar();
 
-//		stopped = true;
 		if (publisherModelPtr)
 		{
 			publisherModelPtr->stop(ctx);

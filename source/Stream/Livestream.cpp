@@ -9,7 +9,7 @@ Livestream::~Livestream()
 {}
 
 void Livestream::captureVideoStreamProcess(
-	const unsigned char* data /*= NULL*/, const long long dataBytes /*= 0*/, const long dataType /*= -1*/)
+	const unsigned char* data /*= NULL*/, const long long dataBytes /*= 0*/)
 {}
 
 void Livestream::captureAudioStreamProcess(

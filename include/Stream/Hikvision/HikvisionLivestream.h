@@ -35,11 +35,11 @@ protected:
 
 private:
 	static void CALLBACK livestreamDataCaptureCallback(
-		long livesteamID = 0, unsigned long dataType = 0, 
+		long livestreamID = 0, unsigned long dataType = 0, 
 		unsigned char* streamData = NULL, unsigned long dataBytes = 0, void* ctx = NULL);
 
 private:
-	const long userID;
+	const long loginUserID;
 };//class HikvisionLivestream
 
 NS_END

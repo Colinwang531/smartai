@@ -6,16 +6,16 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoHelmet::CVAlgoHelmet(CaptureAlarmNotifyHandler handler /* = NULL */)
+CVAlgoHelmet::CVAlgoHelmet(CaptureAlarmInfoHandler handler /* = NULL */)
 	: CVAlgo(handler)
 {}
 
 CVAlgoHelmet::~CVAlgoHelmet()
 {}
 
-bool CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
+int CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {
-	bool status{ false };
+	int status{ ERR_OK };
 	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % configFilePath).str() };
 	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % configFilePath).str() };
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
@@ -24,137 +24,72 @@ bool CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL 
 
 	if (initParames)
 	{
-		status = helmet.InitAlgoriParam(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
+		status = helmet.InitAlgoriParam(
+			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
 }
 
-void CVAlgoHelmet::algorithmWorkerProcess()
+void CVAlgoHelmet::arithmeticWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
-	boost::winapi::ULONGLONG_ runtimeForPerLivestream{ GetTickCount64() };
+	FeedBackHelmet feedback;
 
 	while (1)
 	{
-		livestreamMtx.lock();
-		LivestreamGroup livestreams{ livestreamGroup };
-		livestreamMtx.unlock();
-// 		int i = 0;
-// 		static FILE* f{ NULL };
-// 		if (!f)
-// 		{
-// 			fopen_s(&f, "d:\\decodeFile.bgr", "wb+");
-// 		}
+		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
-
-
-		//printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - runtimeForPerLivestream);
-
-
-
-		for (boost::unordered_map<const std::string, LivestreamPtr>::iterator it_ = livestreams.begin(); it_ != livestreams.end(); it_++)
+		if (bgr24ImagePtr)
 		{
-			helmet.clear_oldvec();
-			std::vector<void*> bgr24FrameQueue;
-			it_->second->queue(ALGO_HELMET, bgr24FrameQueue);
-			FeedBackHelmet feedback, backup;
+			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
+			bool result{ helmet.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
+			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
-
-
-			
-
-
-
-
-			for (std::vector<void*>::iterator it = bgr24FrameQueue.begin(); it != bgr24FrameQueue.end();)
+			if (result)
 			{
-				BGR24Frame* frame{ reinterpret_cast<BGR24Frame*>(*it) };
-				boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-				bool result{ helmet.MainProcFunc((unsigned char*)frame->frameData, backup) };
-				printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
-
-
-//				fwrite((unsigned char*)frame->frameData, frame->frameBytes, 1, f);
-
-
-
-
-				std::vector<DetectNotify> detectNotifies;
-
-
-				if (result)
+				std::vector<AlarmInfo> alarmInfos;
+				for (std::map<int, StruMemoryInfo>::iterator it = feedback.mapMemory.begin(); 
+					it != feedback.mapMemory.end(); 
+					++it)
 				{
-					feedback = backup;
-					std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin();
-
-					for (; iter != feedback.mapMemory.end(); ++iter)
+					float maxConfidence = 0.0f;
+					int nSaveId{ -1 };
+					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
 					{
-						float maxConfidence = 0.0f;
-						int nSaveId{ -1 };
-						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
+						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
 						{
-							if (iter->second.vecSaveMat[i].detectConfidence > maxConfidence)
-							{
-								maxConfidence = iter->second.vecSaveMat[i].detectConfidence;
-								nSaveId = i;
-							}
+							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
+							nSaveId = i;
 						}
 
-						if (-1 < nSaveId)
-						{
-							DetectNotify detectNotify;
-							detectNotify.type = ALGO_HELMET;
-							detectNotify.x = iter->second.vecSaveMat[nSaveId].rRect.x;
-							detectNotify.y = iter->second.vecSaveMat[nSaveId].rRect.y;
-							detectNotify.w = iter->second.vecSaveMat[nSaveId].rRect.width;
-							detectNotify.h = iter->second.vecSaveMat[nSaveId].rRect.height;
-							detectNotify.status = iter->second.vecSaveMat[nSaveId].nLabel;
-							detectNotifies.push_back(detectNotify);
-						}
+						boost::checked_array_delete(it->second.vecSaveMat[i].pUcharImage);
+					}
 
-						if (0 < detectNotifies.size() && captureAlarmNotifyHandler)
-						{
-							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+					if (-1 < nSaveId)
+					{
+						AlarmInfo alarmInfo;
+						alarmInfo.type = AlarmType::ALARM_TYPE_HELMET;
+						alarmInfo.x = it->second.vecSaveMat[nSaveId].rRect.x;
+						alarmInfo.y = it->second.vecSaveMat[nSaveId].rRect.y;
+						alarmInfo.w = it->second.vecSaveMat[nSaveId].rRect.width;
+						alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
+						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
+						alarmInfos.push_back(alarmInfo);
+					}
 
-							if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
-							{
-								lastKnownTickTime = currentTickTime;
-//								captureAlarmNotifyHandler(frame, detectNotifies);
-							}
-						}
+					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
+					{
+						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
 					}
 				}
-				else
-				{
-					DetectNotify detectNotify;
-					detectNotify.type = ALGO_HELMET;
-					detectNotify.x = 1;
-					detectNotify.y = 1;
-					detectNotify.w = 1;
-					detectNotify.h = 1;
-					detectNotify.status = 1;
-					detectNotifies.push_back(detectNotify);
-				}
-
-				captureAlarmNotifyHandler(frame, detectNotifies);
-
-				boost::checked_array_delete(frame->frameData);
-				boost::checked_array_delete(frame->jpegData);
-				boost::checked_array_delete(frame->NVRIp);
-				boost::checked_delete(frame);
-				it = bgr24FrameQueue.erase(it);
-				feedback.vecShowInfo.clear();
-				feedback.mapMemory.clear();
-				backup.vecShowInfo.clear();
-				backup.mapMemory.clear();
 			}
 
-//			i++;
-
-// 			boost::winapi::ULONGLONG_ now{ GetTickCount64() };
-// 			printf("=====  Process run time = %lld.\r\n", now - runtimeForPerLivestream);
-// 			runtimeForPerLivestream = now;
+			feedback.vecShowInfo.clear();
+			feedback.mapMemory.clear();
+		}
+		else
+		{
+			break;
 		}
 	}
 }

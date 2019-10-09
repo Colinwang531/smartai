@@ -21,13 +21,14 @@ NS_BEGIN(algo, 1)
 class CVAlgoHelmet : public CVAlgo
 {
 public:
-	CVAlgoHelmet(CaptureAlarmNotifyHandler handler = NULL);
+	CVAlgoHelmet(CaptureAlarmInfoHandler handler = NULL);
 	~CVAlgoHelmet(void);
 
 protected:
-	bool initializeWithParameter(
+	int initializeWithParameter(
 		const char* configFilePath = NULL, void* parameter = NULL) override;
-	void algorithmWorkerProcess(void) override;
+//	void deinitialize(void) override;
+	void arithmeticWorkerProcess(void) override;
 
 private:
 	CHelmetAlgorithmClass helmet;

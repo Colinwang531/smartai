@@ -1,12 +1,13 @@
 #ifndef ASYNCHRONOUS_SERVER_H
 #define ASYNCHRONOUS_SERVER_H
 
-#include <vector>
 #include "boost/shared_ptr.hpp"
 #include "MQModel/Transfer/TransferModel.h"
 using TransferModel = NS(model, 1)::TransferModel;
 using MQModel = NS(model, 1)::MQModel;
 using MQModelPtr = boost::shared_ptr<MQModel>;
+#include "Camera/Camera.h"
+using Camera = NS(device, 1)::Camera;
 
 class AsynchronousServer final : public TransferModel
 {
@@ -24,14 +25,14 @@ private:
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int replySetNVR(
-		const std::vector<DigitCamera>& cameras, 
+		const std::vector<Camera>& digitCameras, 
 		const char* NVRIp = NULL, const long long sequenceNo = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int setCamera(
 		const long long seqenceNo = 0, 
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
-	int setAutoSailingCheck(
+	int setAutoCheck(
 		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);

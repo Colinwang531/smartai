@@ -16,7 +16,6 @@ public:
 	CSleepAlgorithmClass();
 	virtual ~CSleepAlgorithmClass();
 
-	virtual bool clear_oldvec();
 	// 初始化算法
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
@@ -25,9 +24,9 @@ public:
 
 	// 算法后处理
 	virtual bool PostProcessFunc(FeedBackSleep &objFeed);
-	CSleepAlgorithmClass *m_pTreat;
+
 private:
-	//CSleepAlgorithmClass *m_pTreat;
+	CSleepAlgorithmClass *m_pTreat;
 };
 
 

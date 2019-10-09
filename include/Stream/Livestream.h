@@ -26,7 +26,7 @@ public:
 
 protected:
 	virtual void captureVideoStreamProcess(
-		const unsigned char* data = NULL, const long long dataBytes = 0, const long dataType = -1);
+		const unsigned char* data = NULL, const long long dataBytes = 0);
  	virtual void captureAudioStreamProcess(
 		const unsigned char* data = NULL, const long long dataBytes = 0);
 

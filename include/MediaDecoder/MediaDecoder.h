@@ -4,7 +4,7 @@
 //		Author :						王科威
 //		E-mail :						wangkw531@icloud.com
 //		Date :							2017-12-11
-//		Description:					多媒体解码器抽象基类，所有解码器都可以继承于此
+//		Description:					多媒体解码器抽象基类
 //
 //		History:						Author									Date														Description
 //											王科威									2017-12-11										创建
@@ -25,7 +25,7 @@ public:
 
 public:
 	virtual int decode(
-		const unsigned char* frameData = NULL, const int frameBytes = 0, const unsigned long long frameNumber = 0);
+		const unsigned char* frameData = NULL, const int frameBytes = 0) = 0;
 };//class MediaDecoder
 
 NS_END
