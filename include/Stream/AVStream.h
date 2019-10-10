@@ -17,6 +17,13 @@
 
 NS_BEGIN(stream, 1)
 
+typedef enum class tagAVStreamStatus_t
+{
+	AVSTREAM_STATUS_STOP = 0,
+	AVSTREAM_STATUS_PLAY,
+	AVSTREAM_STATUS_PAUSE
+}AVStreamStatus;
+
 class AVStream
 {
 public:
@@ -32,6 +39,7 @@ public:
 
 protected:
 	const unsigned short streamIndex;
+	AVStreamStatus streamStatus;
 };//class AVStream
 
 NS_END

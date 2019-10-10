@@ -14,6 +14,8 @@ HikvisionLivestream::~HikvisionLivestream()
 
 int HikvisionLivestream::openStream()
 {
+	int status{ ERR_BAD_OPERATE };
+
 	if (-1 < loginUserID && -1 < streamIndex)
 	{
 		NET_DVR_SetCapturePictureMode(JPEG_MODE);
@@ -22,21 +24,30 @@ int HikvisionLivestream::openStream()
 
 		streamID = NET_DVR_RealPlay_V40(
 			loginUserID, &previewInfo, &HikvisionLivestream::livestreamDataCaptureCallback, this);
+		if (-1 < streamID)
+		{
+			streamStatus = AVStreamStatus::AVSTREAM_STATUS_PLAY;
+			status = ERR_OK;
+		}
 	}
 
-	return -1 < streamID ? ERR_OK : ERR_BAD_OPERATE;
+	return status;
 }
 
 int HikvisionLivestream::closeStream()
 {
 	int status{ ERR_BAD_OPERATE };
 
-	if (-1 < streamID)
+	if (-1 < streamID && AVStreamStatus::AVSTREAM_STATUS_PLAY == streamStatus)
 	{
 		if (NET_DVR_StopRealPlay(streamID))
 		{
 			status = ERR_OK;
 			streamID = -1;
+			streamStatus = AVStreamStatus::AVSTREAM_STATUS_STOP;
+
+			boost::unique_lock<boost::mutex> lock{ mtx };
+			condition.wait_for(lock, boost::chrono::seconds(1));
 		}
 	}
 
@@ -46,7 +57,7 @@ int HikvisionLivestream::closeStream()
 unsigned long long HikvisionLivestream::capturePicture(
 	const char* data /* = NULL */, const unsigned long long dataBytes /* = 0 */)
 {
-	return data && 0 < dataBytes ? captureJPEGPicture(data, dataBytes) : 0;
+	return data && 0 < dataBytes && AVStreamStatus::AVSTREAM_STATUS_PLAY == streamStatus ? captureJPEGPicture(data, dataBytes) : 0;
 }
 
 unsigned long long HikvisionLivestream::captureJPEGPicture(
@@ -72,6 +83,12 @@ void HikvisionLivestream::livestreamDataCaptureCallback(
 
 	if (livestreamID == livestream->streamID)
 	{
+		if (AVStreamStatus::AVSTREAM_STATUS_STOP == livestream->streamStatus)
+		{
+			livestream->condition.notify_one();
+			return;
+		}
+
 		if (NET_DVR_SYSHEAD == dataType || NET_DVR_STREAMDATA == dataType)
 		{
 			livestream->captureVideoStreamProcess(streamData, dataBytes);

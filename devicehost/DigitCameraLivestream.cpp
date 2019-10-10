@@ -39,8 +39,7 @@ extern int autoCheckSwitch;//0 : manual, 1 : auto
 DigitCameraLivestream::DigitCameraLivestream(
 	boost::shared_ptr<MQModel> publisher, const std::string NVRIp,
 	const long uid /* = -1 */, const unsigned short idx /* = -1 */)
-	: HikvisionLivestream(uid, idx), arithmeticAbilities{ 0 }, stopped{ false },
-	livestreamFrameNumber{ 0 }, NVRIpAddress{ NVRIp }, publisherModelPtr{ publisher }
+	: HikvisionLivestream(uid, idx), arithmeticAbilities{ 0 }, livestreamFrameNumber{ 0 }, NVRIpAddress{ NVRIp }, publisherModelPtr{ publisher }
 {}
 
 DigitCameraLivestream::~DigitCameraLivestream()
@@ -58,6 +57,7 @@ int DigitCameraLivestream::openStream()
 
 	if (videoDecoderPtr && yv12ToYuv420pConverter && yuv420pToBGR24Converter && jpegEncoderPtr)
 	{
+		h264LivestreamQueue.setCapacity(1000);
 		videoStreamDecoderPtr.swap(videoDecoderPtr);
 		yv12ToYuv420pConverterPtr.swap(yv12ToYuv420pConverter);
 		yv12ToYuv420pConverterPtr->initialize();
@@ -66,15 +66,16 @@ int DigitCameraLivestream::openStream()
 		jpegPictureEncoderPtr.swap(jpegEncoderPtr);
 		jpegPictureEncoderPtr->initialize();
 
-		h264LivestreamQueue.setCapacity(1000);
-		DWORD threadID{ 0 };
-		HANDLE handle{ CreateThread(NULL, 0, &DigitCameraLivestream::frameDecodeProcessThread, this, 0, &threadID) };
-		if (handle)
+		status = HikvisionLivestream::openStream();
+		if (ERR_OK == status)
 		{
-			SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
+			DWORD threadID{ 0 };
+			HANDLE handle{ CreateThread(NULL, 0, &DigitCameraLivestream::frameDecodeProcessThread, this, 0, &threadID) };
+			if (handle)
+			{
+				SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
+			}
 		}
-
-		status = HikvisionLivestream::openStream() ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
@@ -86,15 +87,25 @@ int DigitCameraLivestream::closeStream()
 
 	if (ERR_OK == status)
 	{
-		stopped = true;
 		boost::unique_lock<boost::mutex> lock1{ mtx[0] }, lock2{ mtx[1] }, lock3{ mtx[2] };
-		condition[0].wait_for(lock1, boost::chrono::seconds(1));
-		condition[1].wait_for(lock2, boost::chrono::seconds(1));
-		condition[2].wait_for(lock3, boost::chrono::seconds(1));
+		condition[0].wait_for(lock1, boost::chrono::seconds(3));
+		condition[1].wait_for(lock2, boost::chrono::seconds(3));
+		condition[2].wait_for(lock3, boost::chrono::seconds(3));
 
-		yv12ToYuv420pConverterPtr->deinitialize();
-		yuv420pToBGR24ConverterPtr->deinitialize();
-		jpegPictureEncoderPtr->deinitialize();
+		if (yv12ToYuv420pConverterPtr)
+		{
+			yv12ToYuv420pConverterPtr->deinitialize();
+		}
+		
+		if (yuv420pToBGR24ConverterPtr)
+		{
+			yuv420pToBGR24ConverterPtr->deinitialize();
+		}
+		
+		if (jpegPictureEncoderPtr)
+		{
+			jpegPictureEncoderPtr->deinitialize();
+		}
 
 		helmetArithmeticPtr.reset();
 		phoneArithmeticPtr.reset();
@@ -259,16 +270,10 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	}
 }
 
-unsigned long long DigitCameraLivestream::captureJPEGPicture(
-	const char* data /* = NULL */, const unsigned long long dataBytes /* = 0 */)
-{
-	return 0;
-}
-
 void DigitCameraLivestream::captureVideoStreamProcess(
 	const unsigned char* data /* = NULL */, const long long dataBytes /* = 0 */)
 {
-	if (stopped)
+	if (NS(stream, 1)::AVStreamStatus::AVSTREAM_STATUS_STOP == streamStatus)
 	{
 		condition[0].notify_one();
 		return;
@@ -290,14 +295,11 @@ void DigitCameraLivestream::captureVideoStreamProcess(
 	}
 }
 
-void DigitCameraLivestream::JPEGPFrameEncodeHandler(const char* data /* = NULL */, const int dataBytes /* = 0 */)
-{}
-
 void DigitCameraLivestream::videoStreamDecodeHandler(
 	const char* frameData /* = NULL */, const long frameBytes /* = 0 */, 
 	const long imageWidth /* = 0 */, const long imageHeight /* = 0 */)
 {
-	if (stopped)
+	if (NS(stream, 1)::AVStreamStatus::AVSTREAM_STATUS_STOP == streamStatus)
 	{
 		condition[1].notify_one();
 		return;
@@ -359,16 +361,19 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 
 	while (livestream && livestream->videoStreamDecoderPtr)
 	{
-		if (livestream->stopped)
+		if (NS(stream, 1)::AVStreamStatus::AVSTREAM_STATUS_STOP == livestream->streamStatus)
 		{
+			while (livestream->h264LivestreamQueue.remove()){}
 			livestream->condition[2].notify_one();
-			return 0;
+			break;
 		}
-
-		MediaImagePtr h264ImagePtr{ livestream->h264LivestreamQueue.remove() };
-		if (h264ImagePtr)
+		else
 		{
-			livestream->videoStreamDecoderPtr->decode(h264ImagePtr->getImage(), (int)h264ImagePtr->getImageBytes());
+			MediaImagePtr h264ImagePtr{ livestream->h264LivestreamQueue.remove() };
+			if (h264ImagePtr)
+			{
+				livestream->videoStreamDecoderPtr->decode(h264ImagePtr->getImage(), (int)h264ImagePtr->getImageBytes());
+			}
 		}
 	}
 
@@ -410,7 +415,7 @@ int DigitCameraLivestream::addFacePicture(const char* filePath /*= NULL*/, const
 	{
 		boost::shared_ptr<CVAlgoFace> facePtr{
 					boost::dynamic_pointer_cast<CVAlgoFace>(faceArithmeticPtr) };
-		status = facePtr->addFacePicture((char*)filePath, faceID);
+		status = facePtr ? facePtr->addFacePicture((char*)filePath, faceID) : ERR_BAD_OPERATE;
 	}
 
 	return status;

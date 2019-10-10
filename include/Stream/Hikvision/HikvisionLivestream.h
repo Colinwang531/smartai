@@ -13,6 +13,7 @@
 #ifndef HIKVISION_LIVE_STREAM_H
 #define HIKVISION_LIVE_STREAM_H
 
+#include "boost/thread/condition.hpp"
 #include "Stream/Livestream.h"
 
 NS_BEGIN(stream, 1)
@@ -40,6 +41,9 @@ private:
 
 private:
 	const long loginUserID;
+	//Guarantee work thread exited safely.
+	boost::mutex mtx;
+	boost::condition condition;
 };//class HikvisionLivestream
 
 NS_END

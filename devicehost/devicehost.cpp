@@ -315,6 +315,7 @@ int createNewFacePicture(
 		{
 			fwrite(imageData, imageBytes, 1, fd);
 			fclose(fd);
+			LOG(INFO) << "Save face picture [ " << jpegFileName << " ].";
 
 			for (AVStreamGroup::iterator it = livestreams.begin(); it != livestreams.end(); ++it)
 			{

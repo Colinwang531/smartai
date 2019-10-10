@@ -2,7 +2,6 @@
 #define DIGITAL_CAMERA_LIVE_STREAM_H
 
 #include "boost/shared_ptr.hpp"
-#include "boost/thread/condition.hpp"
 #include "MediaFrame/MediaFrame.h"
 using MediaImage = NS(frame, 1)::MediaImage;
 #include "Stream/Hikvision/HikvisionLivestream.h"
@@ -33,8 +32,6 @@ public:
 	int addFacePicture(const char* filePath = NULL, const int faceID = 0);
 
 protected:
-	unsigned long long captureJPEGPicture(
-		const char* data = NULL, const unsigned long long dataBytes = 0) override;
 	void captureVideoStreamProcess(
 		const unsigned char* data = NULL, const long long dataBytes = 0) override;
 
@@ -42,7 +39,6 @@ private:
 	void videoStreamDecodeHandler(
 		const char* frameData = NULL, const long frameBytes = 0, 
 		const long imageWidth = 0, const long imageHeight = 0);
-	void JPEGPFrameEncodeHandler(const char* data = NULL , const int dataBytes = 0 );
 	static DWORD WINAPI frameDecodeProcessThread(void* ctx = NULL);
 	void alarmInfoProcessHandler(
 		MediaImagePtr image, std::vector<NS(algo, 1)::AlarmInfo> alarmInfos);
@@ -64,7 +60,6 @@ private:
 	const std::string NVRIpAddress;
 	boost::mutex publisherMtx;
 	boost::shared_ptr<MQModel> publisherModelPtr;
-	bool stopped;
 	//Guarantee work thread exited safely. 
 	boost::mutex mtx[3];
 	boost::condition condition[3];

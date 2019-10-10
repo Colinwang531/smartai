@@ -42,7 +42,7 @@ void CVAlgoFight::arithmeticWorkerProcess()
 		{
 			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
 			bool result{ fight.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
-			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
+//			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 			if (result)
 			{

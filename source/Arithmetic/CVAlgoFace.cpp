@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <io.h>
 #include "boost/algorithm/string.hpp"
 #include "boost/checked_delete.hpp"
 #include "boost/filesystem.hpp"
@@ -26,6 +27,13 @@ int CVAlgoFace::addFacePicture(const char* filePath /* = NULL */, const int face
 	if (filePath && 0 < faceID)
 	{
 		status = face.RegisterFace((char*)filePath, faceID) ? ERR_OK : ERR_BAD_OPERATE;
+
+		if (ERR_OK == status)
+		{
+			mtx.lock();
+			registerFaceImageGroup.insert(std::make_pair(faceID, filePath));
+			mtx.unlock();
+		}
 	}
 
 	return status;
@@ -118,7 +126,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 			std::vector<AlarmInfo> alarmInfos;
 			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
 			bool result{ face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
-			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
+//			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 			for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
 			{
@@ -134,30 +142,31 @@ void CVAlgoFace::arithmeticWorkerProcess()
 						alarmInfo.y = feedback.vecShowInfo[i].rRect.y;
 						alarmInfo.w = feedback.vecShowInfo[i].rRect.width;
 						alarmInfo.h = feedback.vecShowInfo[i].rRect.height;
-						alarmInfo.face.similarity = feedback.vecFaceResult[j].similarValue;
+						alarmInfo.faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
 						alarmInfos.push_back(alarmInfo);
 
 						mtx.lock();
-						boost::unordered_map<int, const std::string>::iterator it = 
-							registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId/*detect.face.faceID*/);
+						boost::unordered_map<int, const std::string>::iterator it{ 
+							registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId) };
 						if (registerFaceImageGroup.end() != it)
 						{
-// 							FILE* jpegFile{ NULL };
-// 							fopen_s(&jpegFile, it->second.c_str(), "rb");
-// 							if (jpegFile)
-// 							{
-// 								detect.face.imageBytes = _filelength(_fileno(jpegFile));
-// 								detect.face.imageData = new(std::nothrow) char[detect.face.imageBytes];
-// 								if (detect.face.imageData)
-// 								{
-// 									fread(detect.face.imageData, detect.face.imageBytes, 1, jpegFile);
-// 								}
-// 								fclose(jpegFile);
-// 
+							FILE* fd{ NULL };
+							fopen_s(&fd, it->second.c_str(), "rb+");
+							if (fd)
+							{
+								alarmInfo.faceInfo.faceID = feedback.vecFaceResult[j].matchId;
+								alarmInfo.faceInfo.imageBytes = _filelength(_fileno(fd));
+								alarmInfo.faceInfo.imageData = new(std::nothrow) char[alarmInfo.faceInfo.imageBytes];
+								if (alarmInfo.faceInfo.imageData)
+								{
+									fread(alarmInfo.faceInfo.imageData, alarmInfo.faceInfo.imageBytes, 1, fd);
+								}
+								fclose(fd);
+
 // 								std::vector<std::string> faceImageFileNameSegment;
 // 								boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
-// 								detect.face.faceID = atoll(faceImageFileNameSegment[1].c_str());
-// 							}
+//								alarmInfo.faceInfo.faceID = atoll(faceImageFileNameSegment[1].c_str());
+							}
 						}
 						mtx.unlock();
 						
@@ -175,6 +184,10 @@ void CVAlgoFace::arithmeticWorkerProcess()
 
 			feedback.vecShowInfo.clear();
 			feedback.mapMemory.clear();
+			for (int i = 0; i != alarmInfos.size(); ++i)
+			{
+				boost::checked_array_delete(alarmInfos[i].faceInfo.imageData);
+			}
 		}
 	}
 }
@@ -206,7 +219,9 @@ int CVAlgoFace::loadAndRegisterFacePicture(const char* directoryFilePath /* = NU
 				const std::string jpegFileFullPath{ (boost::format("%s\\face\\%s") % directoryFilePath % faceImageFileName).str() };
 				if (face.RegisterFace(const_cast<char*>(jpegFileFullPath.c_str()), currentRegisterFaceID))
 				{
+					mtx.lock();
 					registerFaceImageGroup.insert(std::make_pair(currentRegisterFaceID, jpegFileFullPath.c_str()));
+					mtx.unlock();
 				}
 			}
 		}

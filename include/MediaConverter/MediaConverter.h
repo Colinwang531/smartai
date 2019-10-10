@@ -13,6 +13,7 @@
 #ifndef MEDIA_CONVERTER_H
 #define MEDIA_CONVERTER_H
 
+#include "boost/thread/mutex.hpp"
 #include "predef.h"
 
 NS_BEGIN(converter, 1)

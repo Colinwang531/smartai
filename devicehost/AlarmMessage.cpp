@@ -137,11 +137,11 @@ int AlarmMessage::setFaceMessageData(
 
 		for (int i = 0; i != alarmInfos.size(); ++i)
 		{
-			long long faceid{ alarmInfos[i].face.faceID };
+			long long faceid{ alarmInfos[i].faceInfo.faceID };
 			memcpy_s(messageData + pos, 8, &faceid, 8);
-			memcpy_s(messageData + pos + 8, 4, &alarmInfos[i].face.imageBytes, 4);
-			memcpy_s(messageData + pos + 12, alarmInfos[i].face.imageBytes, alarmInfos[i].face.imageData, alarmInfos[i].face.imageBytes);
-			pos += (12 + alarmInfos[i].face.imageBytes);
+			memcpy_s(messageData + pos + 8, 4, &alarmInfos[i].faceInfo.imageBytes, 4);
+			memcpy_s(messageData + pos + 12, alarmInfos[i].faceInfo.imageBytes, alarmInfos[i].faceInfo.imageData, alarmInfos[i].faceInfo.imageBytes);
+			pos += (12 + alarmInfos[i].faceInfo.imageBytes);
 		}
 
 		int packageBytes{ pos - 16 };

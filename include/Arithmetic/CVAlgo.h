@@ -36,13 +36,13 @@ typedef enum class tagAlarmType_t
 	ALARM_TYPE_NONE
 }AlarmType;
 
-typedef struct tagFaceDetect_t
+typedef struct tagFaceInfo_t
 {
 	int similarity;
 	int imageBytes;
 	char* imageData;
 	long long faceID;
-}FaceDetect;
+}FaceInfo;
 
 typedef struct tagAlarmInfo_t
 {
@@ -52,7 +52,7 @@ typedef struct tagAlarmInfo_t
 	int y;
 	int w;
 	int h;
-	FaceDetect face;
+	FaceInfo faceInfo;
 }AlarmInfo;
 
 typedef boost::function<void(MediaImagePtr, std::vector<AlarmInfo>)> CaptureAlarmInfoHandler;
