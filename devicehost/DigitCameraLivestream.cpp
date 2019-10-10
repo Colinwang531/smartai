@@ -129,7 +129,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 		if (!helmetArithmeticPtr)
 		{
 			CVAlgoPtr helmet{ 
-				boost::make_shared<CVAlgoHelmet>(
+				boost::make_shared<CVAlgoHelmet>(NVRIpAddress, streamIndex,
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (helmet)
 			{

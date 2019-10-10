@@ -182,7 +182,12 @@ int createNewDigitCamera(
 			if (livestreamPtr)
 			{
 				livestreamPtr->setArithmeticAbilities(abilities);
+				status = ERR_OK;
 				LOG(INFO) << "Set live stream [ " << livestreamID << " ] arithmetic abilities (" << abilities <<" ).";
+			}
+			else
+			{
+				status = ERR_BAD_OPERATE;
 			}
 		}
 	}

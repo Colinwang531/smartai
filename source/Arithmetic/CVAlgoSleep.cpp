@@ -35,6 +35,7 @@ int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */
 void CVAlgoSleep::arithmeticWorkerProcess()
 {
 	FeedBackSleep feedback;
+	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{
@@ -80,7 +81,13 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 
 					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
 					{
-						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+						if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+						{
+							lastKnownTickTime = currentTickTime;
+							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+						}
 					}
 				}
 			}

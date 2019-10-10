@@ -189,6 +189,10 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				boost::checked_array_delete(alarmInfos[i].faceInfo.imageData);
 			}
 		}
+		else
+		{
+			break;
+		}
 	}
 }
 

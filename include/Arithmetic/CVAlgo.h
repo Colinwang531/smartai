@@ -17,7 +17,7 @@
 #include <windows.h>
 #include "boost/function.hpp"
 #include "boost/shared_ptr.hpp"
-#include "boost/thread/mutex.hpp"
+#include "boost/thread/condition.hpp"
 #include "MediaFrame/MediaFrame.h"
 using MediaImage = NS(frame, 1)::MediaImage;
 #include "DataStruct/FIFOQueue.h"
@@ -66,7 +66,7 @@ public:
 public:
 	virtual int initialize(
 		const char* configFilePath = NULL, const float detectThreshold = 0.0f, const float trackThreshold = 0.0f);
-//	virtual void deinitialize(void) = 0;
+	virtual void deinitialize(void);
 	int tryInputMediaImage(MediaImagePtr image);
 
 protected:
@@ -87,6 +87,10 @@ protected:
 	FIFOQueue BGR24ImageQueue;
 //	static DWORD enableAlgorithmCount;
 	bool arithmeticProcessing;
+	bool stopped;
+	//Guarantee work thread exited safely. 
+	boost::mutex mtx;
+	boost::condition condition;
 };//class CVAlgo
 
 NS_END

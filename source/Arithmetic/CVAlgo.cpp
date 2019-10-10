@@ -7,7 +7,7 @@ NS_BEGIN(algo, 1)
 //DWORD CVAlgo::enableAlgorithmCount = 0;
 
 CVAlgo::CVAlgo(CaptureAlarmInfoHandler handler /* = NULL */)
-	: captureAlarmInfoHandler{ handler }, arithmeticProcessing{ false }
+	: captureAlarmInfoHandler{ handler }, arithmeticProcessing{ false }, stopped{ false }
 {}
 
 CVAlgo::~CVAlgo()
@@ -40,6 +40,13 @@ int CVAlgo::initialize(
 	return status;
 }
 
+void CVAlgo::deinitialize(void)
+{
+	stopped = true;
+	boost::unique_lock<boost::mutex> lock{ mtx };
+	condition.wait_for(lock, boost::chrono::seconds(3));
+}
+
 int CVAlgo::tryInputMediaImage(MediaImagePtr image)
 {
 	int status{ ERR_INVALID_PARAM };
@@ -69,7 +76,7 @@ DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
 {
 	CVAlgo* cvalgo{ reinterpret_cast<CVAlgo*>(ctx) };
 
-	while (cvalgo)
+	while (cvalgo && !cvalgo->stopped)
 	{
 		if (cvalgo->arithmeticProcessing)
 		{
@@ -80,6 +87,11 @@ DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
 		{
 			Sleep(1);
 		}
+	}
+
+	if (cvalgo)
+	{
+		cvalgo->condition.notify_one();
 	}
 
 	return 0;

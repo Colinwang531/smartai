@@ -45,6 +45,13 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 			bool result{ phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
+// 			static FILE* fd{ NULL };
+// 			if (!fd)
+// 			{
+// 				fopen_s(&fd, "d:\\phone.rgb", "wb+");
+// 			}
+// 			fwrite(bgr24ImagePtr->getImage(), bgr24ImagePtr->getImageBytes(), 1, fd);
+
 			if (result)
 			{
 				std::vector<AlarmInfo> alarmInfos;

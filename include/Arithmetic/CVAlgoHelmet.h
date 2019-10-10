@@ -21,7 +21,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoHelmet : public CVAlgo
 {
 public:
-	CVAlgoHelmet(CaptureAlarmInfoHandler handler = NULL);
+	CVAlgoHelmet(const std::string NVRIP, const int cameraIndex, CaptureAlarmInfoHandler handler = NULL);
 	~CVAlgoHelmet(void);
 
 protected:
@@ -32,6 +32,8 @@ protected:
 
 private:
 	CHelmetAlgorithmClass helmet;
+	const std::string NVRIpAddress;
+	const int cameraIndexID;
 };//class CVAlgoHelmet
 
 NS_END

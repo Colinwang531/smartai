@@ -6,8 +6,8 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoHelmet::CVAlgoHelmet(CaptureAlarmInfoHandler handler /* = NULL */)
-	: CVAlgo(handler)
+CVAlgoHelmet::CVAlgoHelmet(const std::string NVRIP, const int cameraIndex, CaptureAlarmInfoHandler handler /* = NULL */)
+	: CVAlgo(handler), NVRIpAddress{ NVRIP }, cameraIndexID{ cameraIndex }
 {}
 
 CVAlgoHelmet::~CVAlgoHelmet()
@@ -34,6 +34,7 @@ int CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL *
 void CVAlgoHelmet::arithmeticWorkerProcess()
 {
 	FeedBackHelmet feedback;
+	DWORD threadID{ GetCurrentThreadId() };
 
 	while (1)
 	{
@@ -43,7 +44,8 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 		{
 			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
 			bool result{ helmet.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
-//			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
+			printf("=====  MainProcFunc run time = %lld, thread ID = %d, %s_%d.\r\n", 
+				GetTickCount64() - mainProcTime, (int)threadID, NVRIpAddress.c_str(), cameraIndexID);
 
 			if (result)
 			{
