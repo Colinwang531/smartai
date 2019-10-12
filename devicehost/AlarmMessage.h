@@ -10,7 +10,8 @@ public:
     AlarmMessage(const int messageBytes = 10 * 1024 * 1024);
     ~AlarmMessage(void);
 
-    int setMessageData(
+public:
+    int setAlarmMessageData(
         const int type, const int w, const int h,
 		const char* NVRIp, const int channelIndex,
 		const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos, 
@@ -18,7 +19,7 @@ public:
 	int setFaceMessageData(
 		const int type, const int w, const int h,
 		const char* NVRIp, const int channelIndex,
-		const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos,
+		const std::vector<NS(algo, 1)::FaceInfo> faceInfos,
 		const char* jpeg, const int jpegBytes);
     inline char* getMessageData(void) const
     {

@@ -6,8 +6,9 @@ NS_BEGIN(algo, 1)
 
 //DWORD CVAlgo::enableAlgorithmCount = 0;
 
-CVAlgo::CVAlgo(CaptureAlarmInfoHandler handler /* = NULL */)
-	: captureAlarmInfoHandler{ handler }, arithmeticProcessing{ false }, stopped{ false }
+CVAlgo::CVAlgo(
+	CaptureAlarmInfoHandler alarmHandler /* = NULL */, CaptureFaceInfoHandler faceHandler /* = NULL */)
+	: captureAlarmInfoHandler{ alarmHandler }, capturefaceInfoHandler{ faceHandler }, arithmeticProcessing{ false }, stopped{ false }
 {}
 
 CVAlgo::~CVAlgo()
@@ -58,10 +59,10 @@ int CVAlgo::tryInputMediaImage(MediaImagePtr image)
 			BGR24ImageQueue.insert(image);
 			status = ERR_OK;
 
-			if (BGR24ImageQueue.total() == BGR24ImageQueue.size())
-			{
-				arithmeticProcessing = true;
-			}
+// 			if (BGR24ImageQueue.total() == BGR24ImageQueue.size())
+// 			{
+// 				arithmeticProcessing = true;
+// 			}
 		}
 		else
 		{
@@ -78,15 +79,19 @@ DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
 
 	while (cvalgo && !cvalgo->stopped)
 	{
-		if (cvalgo->arithmeticProcessing)
-		{
-			cvalgo->arithmeticWorkerProcess();
-			cvalgo->arithmeticProcessing = false;
-		}
-		else
-		{
-			Sleep(1);
-		}
+		cvalgo->arithmeticWorkerProcess();
+
+// 		if (cvalgo->arithmeticProcessing)
+// 		{
+// 			cvalgo->arithmeticWorkerProcess();
+// 			cvalgo->arithmeticProcessing = false;
+// 		}
+// 		else
+// 		{
+// 			Sleep(1);
+// 		}
+
+		Sleep(1);
 	}
 
 	if (cvalgo)

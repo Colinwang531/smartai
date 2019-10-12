@@ -26,7 +26,7 @@ public:
 
 public:
 	int decode(
-		const unsigned char* frameData = NULL, const int frameBytes = 0, const unsigned long long frameNumber = 0) override;
+		const unsigned char* frameData = NULL, const int frameBytes = 0) override;
 
 private:
 	/**

@@ -15,7 +15,7 @@ CVAlgoSleep::~CVAlgoSleep()
 
 int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {
-	bool status{ ERR_OK };
+	int status{ ERR_OK };
 	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % configFilePath).str() };
 	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % configFilePath).str() };
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
@@ -26,7 +26,7 @@ int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */
 	if (initParames)
 	{
 		status = sleep.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames);
+			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
@@ -34,7 +34,6 @@ int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */
 
 void CVAlgoSleep::arithmeticWorkerProcess()
 {
-	FeedBackSleep feedback;
 	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
@@ -43,57 +42,57 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 
 		if (bgr24ImagePtr)
 		{
-			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			bool result{ sleep.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
+			std::vector<AlarmInfo> alarmInfos;
+//			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
+			sleep.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
-			if (result)
+			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
+			for (Iterator it = feedback.mapMemory.begin(); it != feedback.mapMemory.end();)
 			{
-				std::vector<AlarmInfo> alarmInfos;
-				for (std::map<int, StruMemoryInfo>::iterator it = feedback.mapMemory.begin();
-					it != feedback.mapMemory.end();
-					++it)
+				if (1 == it->second.nCatch)
 				{
-					float maxConfidence = 0.0f;
-					int nSaveId{ -1 };
-					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
+					it->second.nCatch = 2;
+
+					AlarmInfo alarmInfo;
+					alarmInfo.type = AlarmType::ALARM_TYPE_SLEEP;
+					alarmInfo.x = it->second.vecSaveMat[0].rRect.x;
+					alarmInfo.y = it->second.vecSaveMat[0].rRect.y;
+					alarmInfo.w = it->second.vecSaveMat[0].rRect.width;
+					alarmInfo.h = it->second.vecSaveMat[0].rRect.height;
+					alarmInfo.status = it->second.vecSaveMat[0].nLabel;
+					alarmInfos.push_back(alarmInfo);
+
+					bgr24ImagePtr->setOriginImage(
+						(const unsigned char*)(it->second.vecSaveMat[0].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+					boost::checked_array_delete(it->second.vecSaveMat[0].pUcharImage);
+					it = feedback.mapMemory.erase(it);
+				}
+				else
+				{
+					++it;
+				}
+
+				if (0 < alarmInfos.size() && captureAlarmInfoHandler)
+				{
+					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
 					{
-						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
-						{
-							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
-							nSaveId = i;
-						}
-
-						boost::checked_array_delete(it->second.vecSaveMat[i].pUcharImage);
-					}
-
-					if (-1 < nSaveId)
-					{
-						AlarmInfo alarmInfo;
-						alarmInfo.type = AlarmType::ALARM_TYPE_SLEEP;
-						alarmInfo.x = it->second.vecSaveMat[nSaveId].rRect.x;
-						alarmInfo.y = it->second.vecSaveMat[nSaveId].rRect.y;
-						alarmInfo.w = it->second.vecSaveMat[nSaveId].rRect.width;
-						alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
-						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
-						alarmInfos.push_back(alarmInfo);
-					}
-
-					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
-					{
-						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
-
-						if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
-						{
-							lastKnownTickTime = currentTickTime;
-							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-						}
+						lastKnownTickTime = currentTickTime;
+						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
 					}
 				}
-			}
 
-			feedback.vecShowInfo.clear();
-			feedback.mapMemory.clear();
+// 				if (it->second.bDone)
+// 				{
+// 					it = feedback.mapMemory.erase(it);
+// 				}
+// 				else
+// 				{
+// 					++it;
+// 				}
+			}
 		}
 		else
 		{

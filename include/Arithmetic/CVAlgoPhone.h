@@ -31,6 +31,7 @@ protected:
 
 private:
 	CPhoneAlgorithmClass phone;
+	FeedBackPhone feedback;
 };//class CVAlgoPhone
 
 NS_END

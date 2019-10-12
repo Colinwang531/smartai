@@ -33,7 +33,7 @@ int CVAlgoPhone::initializeWithParameter(const char* configFilePath /* = NULL */
 
 void CVAlgoPhone::arithmeticWorkerProcess()
 {
-	FeedBackPhone feedback;
+	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{
@@ -41,38 +41,39 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 
 		if (bgr24ImagePtr)
 		{
-			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			bool result{ phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
+			std::vector<AlarmInfo> alarmInfos;
+//			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
+			phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
-// 			static FILE* fd{ NULL };
-// 			if (!fd)
-// 			{
-// 				fopen_s(&fd, "d:\\phone.rgb", "wb+");
-// 			}
-// 			fwrite(bgr24ImagePtr->getImage(), bgr24ImagePtr->getImageBytes(), 1, fd);
-
-			if (result)
+			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
+			for (Iterator it = feedback.mapMemory.begin(); it != feedback.mapMemory.end();)
 			{
-				std::vector<AlarmInfo> alarmInfos;
-				for (std::map<int, StruMemoryInfo>::iterator it = feedback.mapMemory.begin();
-					it != feedback.mapMemory.end();
-					++it)
-				{
-					float maxConfidence = 0.0f;
+// 				if (it->second.bDone)
+// 				{
+					int nonePhoneNumber{ 0 }, havePhoneNumber{ 0 };
+					float maxConfidence{ 0.0f };
 					int nSaveId{ -1 };
+
 					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
 					{
+						if (0 == it->second.vecSaveMat[i].nLabel)
+						{
+							havePhoneNumber++;
+						}
+						else
+						{
+							nonePhoneNumber++;
+						}
+
 						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
 						{
 							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
 							nSaveId = i;
 						}
-
-						boost::checked_array_delete(it->second.vecSaveMat[i].pUcharImage);
 					}
 
-					if (-1 < nSaveId)
+					if (havePhoneNumber > nonePhoneNumber && -1 < nSaveId)
 					{
 						AlarmInfo alarmInfo;
 						alarmInfo.type = AlarmType::ALARM_TYPE_PHONE;
@@ -82,17 +83,33 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
 						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 						alarmInfos.push_back(alarmInfo);
+
+						bgr24ImagePtr->setOriginImage(
+							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
+						it = feedback.mapMemory.erase(it);
+					}
+					else
+					{
+						++it;
 					}
 
 					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
 					{
-						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-					}
-				}
-			}
+						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-			feedback.vecShowInfo.clear();
-			feedback.mapMemory.clear();
+						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+						{
+							lastKnownTickTime = currentTickTime;
+							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+						}
+					}
+// 				}
+// 				else
+// 				{
+// 					++it;
+// 				}
+			}
 		}
 		else
 		{

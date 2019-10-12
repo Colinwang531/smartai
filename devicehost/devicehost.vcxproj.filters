@@ -723,6 +723,9 @@
     <ClCompile Include="..\source\MediaEncoder\JPEG\YUV420PToJPEGEncoder.cpp">
       <Filter>Source Files\Encoder\JPEG</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\MediaConverter\BGR24ToYUV420PConverter.cpp">
+      <Filter>Source Files\Converter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Device\Device.h">
@@ -1345,6 +1348,9 @@
     </ClInclude>
     <ClInclude Include="devicehost.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaConverter\BGR24ToYUV420PConverter.h">
+      <Filter>Header Files\Converter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

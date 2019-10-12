@@ -3,9 +3,9 @@
 
 NS_BEGIN(converter, 1)
 
-FFmpegConverter::FFmpegConverter()
+FFmpegConverter::FFmpegConverter(const AVPixelFormat src, const AVPixelFormat target)
 	: MediaConverter(), inputAVFrame{ NULL }, outputAVFrame{ NULL }, swsContext{ NULL },
-	inputFrameData{ NULL }, outputFrameData{ NULL }
+	inputFrameData{ NULL }, outputFrameData{ NULL }, sourceFormat{ src }, targetFormat{ target }
 {}
 
 FFmpegConverter::~FFmpegConverter()
@@ -22,7 +22,7 @@ int FFmpegConverter::initialize(const unsigned short imageWidth /* = 1920 */, co
 		outputAVFrame = av_frame_alloc();
 		//It should be invoked only once.
 		swsContext = sws_getContext(
-			imageWidth, imageHeight, AV_PIX_FMT_YUV420P, imageWidth, imageHeight, AV_PIX_FMT_BGR24, SWS_BICUBIC, NULL, NULL, NULL);
+			imageWidth, imageHeight, sourceFormat/*AV_PIX_FMT_YUV420P*/, imageWidth, imageHeight, targetFormat/*AV_PIX_FMT_BGR24*/, SWS_BICUBIC, NULL, NULL, NULL);
 
 		if (inputAVFrame && outputAVFrame && swsContext)
 		{

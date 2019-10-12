@@ -17,7 +17,7 @@ CUDAVideoDecoder::~CUDAVideoDecoder(void)
 {}
 
 int CUDAVideoDecoder::decode(
-	const unsigned char* frameData /* = NULL */, const int frameBytes /* = 0 */, const unsigned long long frameNumber /* = 0 */)
+	const unsigned char* frameData /* = NULL */, const int frameBytes /* = 0 */)
 {
 	if (!cudaVideoParser && !cudaVideoCtxLock)
 	{

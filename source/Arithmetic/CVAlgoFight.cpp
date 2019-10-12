@@ -24,7 +24,8 @@ int CVAlgoFight::initializeWithParameter(const char* configFilePath /* = NULL */
 
 	if (initParames)
 	{
-		status = fight.InitAlgoriParam(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
+		status = fight.InitAlgoriParam(
+			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
@@ -32,7 +33,7 @@ int CVAlgoFight::initializeWithParameter(const char* configFilePath /* = NULL */
 
 void CVAlgoFight::arithmeticWorkerProcess()
 {
-	FeedBackFight feedback;
+	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{
@@ -40,31 +41,38 @@ void CVAlgoFight::arithmeticWorkerProcess()
 
 		if (bgr24ImagePtr)
 		{
-			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			bool result{ fight.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
+			std::vector<AlarmInfo> alarmInfos;
+//			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
+			fight.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
-			if (result)
+//			printf("=====  feedback.mapMemory.size() = %d.\r\n", feedback.mapMemory.size());
+
+			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
+			for (Iterator it = feedback.mapMemory.begin(); it != feedback.mapMemory.end();)
 			{
-				std::vector<AlarmInfo> alarmInfos;
-				for (std::map<int, StruMemoryInfo>::iterator it = feedback.mapMemory.begin();
-					it != feedback.mapMemory.end();
-					++it)
-				{
-					float maxConfidence = 0.0f;
+// 				if (it->second.bDone)
+// 				{
+					int validNumber{ 0 };
+					float maxConfidence{ 0.0f };
 					int nSaveId{ -1 };
+
 					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
 					{
+//						printf("=====  detectConfidence = %f.\r\n", it->second.vecSaveMat[i].detectConfidence);
+						if (0.90f < it->second.vecSaveMat[i].detectConfidence)
+						{
+							++validNumber;
+						}
+
 						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
 						{
 							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
 							nSaveId = i;
 						}
-
-						boost::checked_array_delete(it->second.vecSaveMat[i].pUcharImage);
 					}
 
-					if (-1 < nSaveId)
+					if (0 < validNumber && -1 < nSaveId)
 					{
 						AlarmInfo alarmInfo;
 						alarmInfo.type = AlarmType::ALARM_TYPE_FIGHT;
@@ -74,17 +82,29 @@ void CVAlgoFight::arithmeticWorkerProcess()
 						alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
 						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 						alarmInfos.push_back(alarmInfo);
+
+						bgr24ImagePtr->setOriginImage(
+							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
+						it = feedback.mapMemory.erase(it);
 					}
 
 					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
 					{
-						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-					}
-				}
-			}
+						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-			feedback.vecShowInfo.clear();
-			feedback.mapMemory.clear();
+						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+						{
+							lastKnownTickTime = currentTickTime;
+							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+						}
+					}
+// 				}
+// 				else
+// 				{
+// 					++it;
+// 				}
+			}
 		}
 		else
 		{

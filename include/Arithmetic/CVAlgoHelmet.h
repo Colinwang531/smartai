@@ -32,6 +32,7 @@ protected:
 
 private:
 	CHelmetAlgorithmClass helmet;
+	FeedBackHelmet feedback;
 	const std::string NVRIpAddress;
 	const int cameraIndexID;
 };//class CVAlgoHelmet

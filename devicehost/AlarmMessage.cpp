@@ -26,18 +26,13 @@ AlarmMessage::~AlarmMessage()
     }
 }
 
-int AlarmMessage::setMessageData(
+int AlarmMessage::setAlarmMessageData(
 	const int type, const int w, const int h, 
 	const char* NVRIp, const int channelIndex, 
 	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos,
 	const char* jpeg, const int jpegBytes)
 {
     int ret{ERR_BAD_OPERATE};
-
-	if ((int)NS(algo, 1)::AlarmType::ALARM_TYPE_FACE == type)
-	{
-		return setFaceMessageData(type, w, h, NVRIp, channelIndex, alarmInfos, jpeg, jpegBytes);
-	}
 
     if(message)
     {
@@ -97,7 +92,7 @@ int AlarmMessage::setMessageData(
 int AlarmMessage::setFaceMessageData(
 	const int type, const int w, const int h,
 	const char* NVRIp, const int channelIndex,
-	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfos,
+	const std::vector<NS(algo, 1)::FaceInfo> faceInfos,
 	const char* jpeg, const int jpegBytes)
 {
 	int ret{ ERR_BAD_OPERATE };
@@ -131,17 +126,17 @@ int AlarmMessage::setFaceMessageData(
 		pos += 4;
 		memcpy_s(messageData + pos, jpegBytes, jpeg, jpegBytes);
 		pos += jpegBytes;
-		const int faceNum{ (int)(alarmInfos.size()) };
+		const int faceNum{ (int)(faceInfos.size()) };
 		memcpy_s(messageData + pos, 4, &faceNum, 4);
 		pos += 4;
 
-		for (int i = 0; i != alarmInfos.size(); ++i)
+		for (int i = 0; i != faceInfos.size(); ++i)
 		{
-			long long faceid{ alarmInfos[i].faceInfo.faceID };
+			long long faceid{ faceInfos[i].faceID };
 			memcpy_s(messageData + pos, 8, &faceid, 8);
-			memcpy_s(messageData + pos + 8, 4, &alarmInfos[i].faceInfo.imageBytes, 4);
-			memcpy_s(messageData + pos + 12, alarmInfos[i].faceInfo.imageBytes, alarmInfos[i].faceInfo.imageData, alarmInfos[i].faceInfo.imageBytes);
-			pos += (12 + alarmInfos[i].faceInfo.imageBytes);
+			memcpy_s(messageData + pos + 8, 4, &faceInfos[i].imageBytes, 4);
+			memcpy_s(messageData + pos + 12, faceInfos[i].imageBytes, faceInfos[i].imageData, faceInfos[i].imageBytes);
+			pos += (12 + faceInfos[i].imageBytes);
 		}
 
 		int packageBytes{ pos - 16 };

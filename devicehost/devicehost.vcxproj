@@ -297,6 +297,7 @@
     <ClCompile Include="..\source\Device\Hikvision\HikvisionNVR.cpp" />
     <ClCompile Include="..\source\File\Com\ComPort.cpp" />
     <ClCompile Include="..\source\Hardware\Cpu.cpp" />
+    <ClCompile Include="..\source\MediaConverter\BGR24ToYUV420PConverter.cpp" />
     <ClCompile Include="..\source\MediaConverter\FFmpegConverter.cpp" />
     <ClCompile Include="..\source\MediaConverter\Hikvision\HikvisionImageConverter.cpp" />
     <ClCompile Include="..\source\MediaConverter\MediaConverter.cpp" />
@@ -368,6 +369,7 @@
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\File\Com\ComPort.h" />
     <ClInclude Include="..\include\Hardware\Cpu.h" />
+    <ClInclude Include="..\include\MediaConverter\BGR24ToYUV420PConverter.h" />
     <ClInclude Include="..\include\MediaConverter\FFmpegConverter.h" />
     <ClInclude Include="..\include\MediaConverter\Hikvision\HikvisionImageConverter.h" />
     <ClInclude Include="..\include\MediaConverter\MediaConverter.h" />

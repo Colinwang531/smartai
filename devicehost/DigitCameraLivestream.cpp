@@ -18,6 +18,8 @@ using HikvisionSDKDecoder = NS(decoder, 1)::HikvisionSDKDecoder;
 using YV12ToYUV420PConverter = NS(converter, 1)::YV12ToYUV420PConverter;
 #include "MediaConverter/YUV420PToBGR24Converter.h"
 using YUV420PToBGR24Converter = NS(converter, 1)::YUV420PToBGR24Converter;
+#include "MediaConverter/BGR24ToYUV420PConverter.h"
+using BGR24ToYUV420PConverter = NS(converter, 1)::BGR24ToYUV420PConverter;
 #include "MediaEncoder/JPEG/YUV420PToJPEGEncoder.h"
 using YUV420PToJPEGEncoder = NS(encoder, 1)::YUV420PToJPEGEncoder;
 #include "Arithmetic/CVAlgoHelmet.h"
@@ -53,9 +55,10 @@ int DigitCameraLivestream::openStream()
 			boost::bind(&DigitCameraLivestream::videoStreamDecodeHandler, this, _1, _2, _3, _4)) };
 	boost::shared_ptr<MediaConverter> yv12ToYuv420pConverter{ boost::make_shared<YV12ToYUV420PConverter>() };
 	boost::shared_ptr<MediaConverter> yuv420pToBGR24Converter{ boost::make_shared<YUV420PToBGR24Converter>() };
+	boost::shared_ptr<MediaConverter> bgr24ToYuv420pConverter{ boost::make_shared<BGR24ToYUV420PConverter>() };
 	boost::shared_ptr<MediaEncoder> jpegEncoderPtr{ boost::make_shared<YUV420PToJPEGEncoder>() };
 
-	if (videoDecoderPtr && yv12ToYuv420pConverter && yuv420pToBGR24Converter && jpegEncoderPtr)
+	if (videoDecoderPtr && yv12ToYuv420pConverter && yuv420pToBGR24Converter && bgr24ToYuv420pConverter && jpegEncoderPtr)
 	{
 		h264LivestreamQueue.setCapacity(1000);
 		videoStreamDecoderPtr.swap(videoDecoderPtr);
@@ -63,6 +66,8 @@ int DigitCameraLivestream::openStream()
 		yv12ToYuv420pConverterPtr->initialize();
 		yuv420pToBGR24ConverterPtr.swap(yuv420pToBGR24Converter);
 		yuv420pToBGR24ConverterPtr->initialize();
+		bgr24ToYuv420pConverterPtr.swap(bgr24ToYuv420pConverter);
+		bgr24ToYuv420pConverterPtr->initialize();
 		jpegPictureEncoderPtr.swap(jpegEncoderPtr);
 		jpegPictureEncoderPtr->initialize();
 
@@ -100,6 +105,11 @@ int DigitCameraLivestream::closeStream()
 		if (yuv420pToBGR24ConverterPtr)
 		{
 			yuv420pToBGR24ConverterPtr->deinitialize();
+		}
+
+		if (bgr24ToYuv420pConverterPtr)
+		{
+			bgr24ToYuv420pConverterPtr->deinitialize();
 		}
 		
 		if (jpegPictureEncoderPtr)
@@ -191,7 +201,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (sleep)
 			{
-				if (sleep->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f))
+				if (sleep->initialize(exePath.c_str(), 0.65f, 0.15f))
 				{
 					sleepArithmeticPtr.swap(sleep);
 					LOG(INFO) << "Initialize SLEEP arithmetic Successfully.";
@@ -246,7 +256,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 		{
 			CVAlgoPtr face{ 
 				boost::make_shared<CVAlgoFace>(
-					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
+					boost::bind(&DigitCameraLivestream::faceInfoProcessHandler, this, _1, _2)) };
 			if (face)
 			{
 				if (face->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f))
@@ -306,7 +316,7 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 	}
 
 	//If not sailing, do nothing.
-	if (1 == sailingStatus/* || (1 != (++livestreamFrameNumber % 3))*/)
+	if (1 == sailingStatus || (1 != (++livestreamFrameNumber % 3)))
 	{
 		return;
 	}
@@ -327,8 +337,8 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 
 			if (bgr24ImagePtr)
 			{
-				bgr24ImagePtr->setOriginImage(yuv420pImageData, imageWidth * imageHeight * 3 / 2);
-				bgr24ImagePtr->setImage(bgr24ImageData, imageWidth * imageHeight * 3);
+// 				bgr24ImagePtr->setOriginImage(yuv420pImageData, imageWidth * imageHeight * 3 / 2);
+ 				bgr24ImagePtr->setImage(bgr24ImageData, imageWidth * imageHeight * 3);
 
 				if (helmetArithmeticPtr)
 				{
@@ -383,26 +393,65 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 void DigitCameraLivestream::alarmInfoProcessHandler(
 	MediaImagePtr image, std::vector<NS(algo, 1)::AlarmInfo> alarmInfos)
 {
-	if (image && 0 < alarmInfos.size() && jpegPictureEncoderPtr)
+	if (image && 0 < alarmInfos.size() && jpegPictureEncoderPtr && bgr24ToYuv420pConverterPtr)
 	{
-		unsigned char* jpegPictureData{ NULL };
-		unsigned long long jpegPictureDataBytes{ 0 };
+		const unsigned char* yuv420pImageData{
+			bgr24ToYuv420pConverterPtr->convert(image->getOriginImage(), image->getOriginImageBytes(), 1920, 1080) };
 
-		if (ERR_OK == jpegPictureEncoderPtr->encode(image->getOriginImage(), image->getOriginImageBytes()))
+		if (yuv420pImageData)
 		{
-			jpegPictureEncoderPtr->data(jpegPictureData, jpegPictureDataBytes);
+			unsigned char* jpegPictureData{ NULL };
+			unsigned long long jpegPictureDataBytes{ 0 };
 
-			AlarmMessage message;
-			message.setMessageData(
-				(int)alarmInfos[0].type, 1920, 1080, NVRIpAddress.c_str(), streamIndex, alarmInfos, (const char*)jpegPictureData, (int)jpegPictureDataBytes);
-			boost::shared_ptr<PublisherModel> publisherModel{
-				boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+			if (ERR_OK == jpegPictureEncoderPtr->encode(yuv420pImageData, 1920 * 1080 * 3 / 2))
+			{
+				jpegPictureEncoderPtr->data(jpegPictureData, jpegPictureDataBytes);
 
-			publisherMtx.lock();
-			publisherModel->send(message.getMessageData(), message.getMessageBytes());
-			publisherMtx.unlock();
+				AlarmMessage message;
+				message.setAlarmMessageData(
+					(int)alarmInfos[0].type, 1920, 1080, NVRIpAddress.c_str(), streamIndex, alarmInfos, (const char*)jpegPictureData, (int)jpegPictureDataBytes);
+				boost::shared_ptr<PublisherModel> publisherModel{
+					boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
 
-			LOG(INFO) << "Send push alarm " << NVRIpAddress << "_" << streamIndex << "_" << (int)alarmInfos[0].type;
+				publisherMtx.lock();
+				publisherModel->send(message.getMessageData(), message.getMessageBytes());
+				publisherMtx.unlock();
+
+				LOG(INFO) << "Send alarm message " << NVRIpAddress << "_" << streamIndex << "_" << (int)alarmInfos[0].type << ".";
+			}
+		}
+	}
+}
+
+void DigitCameraLivestream::faceInfoProcessHandler(
+	MediaImagePtr image, std::vector<NS(algo, 1)::FaceInfo> faceInfos)
+{
+	if (image && 0 < faceInfos.size() && jpegPictureEncoderPtr && bgr24ToYuv420pConverterPtr)
+	{
+		const unsigned char* yuv420pImageData{
+			bgr24ToYuv420pConverterPtr->convert(image->getImage(), image->getImageBytes(), 1920, 1080) };
+
+		if (yuv420pImageData)
+		{
+			unsigned char* jpegPictureData{ NULL };
+			unsigned long long jpegPictureDataBytes{ 0 };
+
+			if (ERR_OK == jpegPictureEncoderPtr->encode(yuv420pImageData, 1920 * 1080 * 3 / 2))
+			{
+				jpegPictureEncoderPtr->data(jpegPictureData, jpegPictureDataBytes);
+
+				AlarmMessage message;
+				message.setFaceMessageData(
+					(int)faceInfos[0].type, 1920, 1080, NVRIpAddress.c_str(), streamIndex, faceInfos, (const char*)jpegPictureData, (int)jpegPictureDataBytes);
+				boost::shared_ptr<PublisherModel> publisherModel{
+					boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+
+				publisherMtx.lock();
+				publisherModel->send(message.getMessageData(), message.getMessageBytes());
+				publisherMtx.unlock();
+
+				LOG(INFO) << "Send FACE detected message " << NVRIpAddress << "_" << streamIndex << ".";
+			}
 		}
 	}
 }

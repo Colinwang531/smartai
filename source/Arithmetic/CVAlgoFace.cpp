@@ -9,8 +9,8 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoFace::CVAlgoFace(CaptureAlarmInfoHandler handler /* = NULL */)
-	: CVAlgo(handler), largestRegisterFaceID{ 0 }
+CVAlgoFace::CVAlgoFace(CaptureFaceInfoHandler handler /* = NULL */)
+	: CVAlgo(NULL, handler), largestRegisterFaceID{ 0 }
 {
 	InitializeCriticalSection(&criticalSection);
 }
@@ -115,17 +115,18 @@ int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */,
 
 void CVAlgoFace::arithmeticWorkerProcess()
 {
-	FeedBackFaceRecog feedback;
+	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{
+		FeedBackFaceRecog feedback;
 		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
 		if (bgr24ImagePtr)
 		{
-			std::vector<AlarmInfo> alarmInfos;
-			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			bool result{ face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback) };
+			std::vector<FaceInfo> faceInfos;
+//			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
+			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 			for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
@@ -135,15 +136,10 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				{
 					for (int j = 0; j != feedback.vecFaceResult.size(); ++j)
 					{
-						AlarmInfo alarmInfo;
-						alarmInfo.type = AlarmType::ALARM_TYPE_FACE;
-						alarmInfo.status = 0;
-						alarmInfo.x = feedback.vecShowInfo[i].rRect.x;
-						alarmInfo.y = feedback.vecShowInfo[i].rRect.y;
-						alarmInfo.w = feedback.vecShowInfo[i].rRect.width;
-						alarmInfo.h = feedback.vecShowInfo[i].rRect.height;
-						alarmInfo.faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
-						alarmInfos.push_back(alarmInfo);
+						FaceInfo faceInfo;
+						faceInfo.type = AlarmType::ALARM_TYPE_FACE;
+						faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
+						faceInfo.faceID = feedback.vecFaceResult[j].matchId;
 
 						mtx.lock();
 						boost::unordered_map<int, const std::string>::iterator it{ 
@@ -154,40 +150,36 @@ void CVAlgoFace::arithmeticWorkerProcess()
 							fopen_s(&fd, it->second.c_str(), "rb+");
 							if (fd)
 							{
-								alarmInfo.faceInfo.faceID = feedback.vecFaceResult[j].matchId;
-								alarmInfo.faceInfo.imageBytes = _filelength(_fileno(fd));
-								alarmInfo.faceInfo.imageData = new(std::nothrow) char[alarmInfo.faceInfo.imageBytes];
-								if (alarmInfo.faceInfo.imageData)
+								faceInfo.imageBytes = _filelength(_fileno(fd));
+								faceInfo.imageData = new(std::nothrow) char[faceInfo.imageBytes];
+								if (faceInfo.imageData)
 								{
-									fread(alarmInfo.faceInfo.imageData, alarmInfo.faceInfo.imageBytes, 1, fd);
+									fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
 								}
 								fclose(fd);
-
-// 								std::vector<std::string> faceImageFileNameSegment;
-// 								boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
-//								alarmInfo.faceInfo.faceID = atoll(faceImageFileNameSegment[1].c_str());
 							}
 						}
 						mtx.unlock();
-						
-						boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
-						feedback.vecShowInfo.clear();
-						feedback.mapMemory.clear();
+
+						faceInfos.push_back(faceInfo);
+//						boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
 					}
 				}
 			}
 
-			if (captureAlarmInfoHandler && 0 < alarmInfos.size())
+			if (capturefaceInfoHandler && 0 < faceInfos.size())
 			{
-				captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+				boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+				if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+				{
+					lastKnownTickTime = currentTickTime;
+					capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
+				}
 			}
 
 			feedback.vecShowInfo.clear();
 			feedback.mapMemory.clear();
-			for (int i = 0; i != alarmInfos.size(); ++i)
-			{
-				boost::checked_array_delete(alarmInfos[i].faceInfo.imageData);
-			}
 		}
 		else
 		{

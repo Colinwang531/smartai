@@ -25,7 +25,7 @@ public:
 	// 算法后处理
 	virtual bool PostProcessFunc(FeedBackSleep &objFeed);
 
-private:
+public:
 	CSleepAlgorithmClass *m_pTreat;
 };
 

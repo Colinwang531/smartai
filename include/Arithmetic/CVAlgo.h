@@ -38,6 +38,7 @@ typedef enum class tagAlarmType_t
 
 typedef struct tagFaceInfo_t
 {
+	AlarmType type;
 	int similarity;
 	int imageBytes;
 	char* imageData;
@@ -52,15 +53,16 @@ typedef struct tagAlarmInfo_t
 	int y;
 	int w;
 	int h;
-	FaceInfo faceInfo;
 }AlarmInfo;
 
 typedef boost::function<void(MediaImagePtr, std::vector<AlarmInfo>)> CaptureAlarmInfoHandler;
+typedef boost::function<void(MediaImagePtr, std::vector<FaceInfo>)> CaptureFaceInfoHandler;
 
 class CVAlgo
 {
 public:
-	CVAlgo(CaptureAlarmInfoHandler handler = NULL);
+	CVAlgo(
+		CaptureAlarmInfoHandler alarmHandler = NULL, CaptureFaceInfoHandler faceHandler = NULL);
 	virtual ~CVAlgo(void);
 
 public:
@@ -78,6 +80,7 @@ private:
 
 protected:
 	CaptureAlarmInfoHandler captureAlarmInfoHandler;
+	CaptureFaceInfoHandler capturefaceInfoHandler;
 	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_WIDTH = 1920);
 	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_HEIGHT = 1080);
 	BOOST_STATIC_CONSTANT(unsigned short, CHANNEL_NUMBER = 3);

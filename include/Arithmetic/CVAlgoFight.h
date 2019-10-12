@@ -31,6 +31,7 @@ protected:
 
 private:
 	CFightAlgorithmClass fight;
+	FeedBackFight feedback;
 };//class CVAlgoFight
 
 NS_END

@@ -31,6 +31,7 @@ protected:
 
 private:
 	CSleepAlgorithmClass sleep;
+	FeedBackSleep feedback;
 };//class CVAlgoSleep
 
 NS_END

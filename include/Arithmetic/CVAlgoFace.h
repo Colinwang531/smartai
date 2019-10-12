@@ -23,7 +23,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoFace : public CVAlgo
 {
 public:
-	CVAlgoFace(CaptureAlarmInfoHandler handler = NULL);
+	CVAlgoFace(CaptureFaceInfoHandler handler = NULL);
 	~CVAlgoFace(void);
 
 public:

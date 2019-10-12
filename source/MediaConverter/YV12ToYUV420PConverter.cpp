@@ -11,9 +11,7 @@ YV12ToYUV420PConverter::YV12ToYUV420PConverter() : MediaConverter(), outputFrame
 {}
 
 YV12ToYUV420PConverter::~YV12ToYUV420PConverter()
-{
-	deinitialize();
-}
+{}
 
 int YV12ToYUV420PConverter::initialize(
 	const unsigned short imageWidth /* = 1920 */, const unsigned short imageHeight /* = 1080 */)

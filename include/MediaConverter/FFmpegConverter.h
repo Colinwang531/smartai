@@ -25,7 +25,7 @@ NS_BEGIN(converter, 1)
 class FFmpegConverter : public MediaConverter
 {
 public:
-	FFmpegConverter(void);
+	FFmpegConverter(const AVPixelFormat src, const AVPixelFormat target);
 	virtual ~FFmpegConverter(void);
 
 protected:
@@ -42,6 +42,8 @@ protected:
 	unsigned char* inputFrameData;
 	unsigned char* outputFrameData;
 	struct SwsContext* swsContext;
+	const AVPixelFormat sourceFormat;
+	const AVPixelFormat targetFormat;
 };//class FFmpegConverter
 
 NS_END
