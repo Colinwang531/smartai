@@ -62,39 +62,6 @@ int CVAlgoFace::removeFacePicture(const long long uuid /* = -1 */)
 	return status;
 }
 
-// int CVAlgoFace::queryFace(const long long uuid, char*& jpegData, int& jpegBytes)
-// {
-// 	mtx.lock();
-// 	for (boost::unordered_map<int, const std::string>::iterator it = registerFaceImageGroup.begin(); it != registerFaceImageGroup.end(); ++it)
-// 	{
-// 		std::string uuidStr{ (boost::format("%lld") % uuid).str() };
-// 		const char* isSubstr{ std::strstr(it->second.c_str(), uuidStr.c_str()) };
-// 
-// 		if (isSubstr)
-// 		{
-// 			FILE* jpegFile{ NULL };
-// 			fopen_s(&jpegFile, it->second.c_str(), "rb+");
-// 			
-// 			if (jpegFile)
-// 			{
-// 				const long jpegDataBytes{ _filelength(_fileno(jpegFile)) };
-// 				if (jpegData)
-// 				{
-// 					fread(jpegData, jpegDataBytes, 1, jpegFile);
-// 					jpegBytes = jpegDataBytes;
-// 				}
-// 
-// 				fclose(jpegFile);
-// 			}
-// 
-// 			break;
-// 		}
-// 	}
-// 	mtx.unlock();
-// 
-// 	return ERR_OK;
-// }
-
 int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
 {
 	const std::string cfgFile{ (boost::format("%s\\model\\face.cfg") % configFilePath).str() };
@@ -129,42 +96,41 @@ void CVAlgoFace::arithmeticWorkerProcess()
 			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
-			for (int i = 0; i != feedback.vecShowInfo.size(); ++i)
+			if (face.PostProcessFunc(feedback))
 			{
-				DWORD postProcStart = GetTickCount64();
-				if (face.PostProcessFunc(feedback))
+				for (int j = 0; j != feedback.vecFaceResult.size(); ++j)
 				{
-					for (int j = 0; j != feedback.vecFaceResult.size(); ++j)
+					FaceInfo faceInfo;
+					faceInfo.type = AlarmType::ALARM_TYPE_FACE;
+					faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
+					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
+
+					mtx.lock();
+					boost::unordered_map<int, const std::string>::iterator it{
+						registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId) };
+					if (registerFaceImageGroup.end() != it)
 					{
-						FaceInfo faceInfo;
-						faceInfo.type = AlarmType::ALARM_TYPE_FACE;
-						faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
-						faceInfo.faceID = feedback.vecFaceResult[j].matchId;
-
-						mtx.lock();
-						boost::unordered_map<int, const std::string>::iterator it{ 
-							registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId) };
-						if (registerFaceImageGroup.end() != it)
+						FILE* fd{ NULL };
+						fopen_s(&fd, it->second.c_str(), "rb+");
+						if (fd)
 						{
-							FILE* fd{ NULL };
-							fopen_s(&fd, it->second.c_str(), "rb+");
-							if (fd)
+							faceInfo.imageBytes = _filelength(_fileno(fd));
+							faceInfo.imageData = new(std::nothrow) char[faceInfo.imageBytes];
+							if (faceInfo.imageData)
 							{
-								faceInfo.imageBytes = _filelength(_fileno(fd));
-								faceInfo.imageData = new(std::nothrow) char[faceInfo.imageBytes];
-								if (faceInfo.imageData)
-								{
-									fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
-								}
-								fclose(fd);
+								fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
 							}
+							fclose(fd);
 						}
-						mtx.unlock();
 
-						faceInfos.push_back(faceInfo);
-//						boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
 					}
+					mtx.unlock();
+
+					faceInfos.push_back(faceInfo);
+					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
 				}
+
+				feedback.vecFaceResult.clear();
 			}
 
 			if (capturefaceInfoHandler && 0 < faceInfos.size())
@@ -178,8 +144,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				}
 			}
 
-			feedback.vecShowInfo.clear();
-			feedback.mapMemory.clear();
+			 feedback.vecShowInfo.clear();
 		}
 		else
 		{

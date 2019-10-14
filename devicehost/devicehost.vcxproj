@@ -361,6 +361,7 @@
     <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h" />
     <ClInclude Include="..\include\Camera\Camera.h" />
     <ClInclude Include="..\include\DataStruct\FIFOQueue.h" />
+    <ClInclude Include="..\include\DataStruct\UnorderedMap.h" />
     <ClInclude Include="..\include\Device\Device.h" />
     <ClInclude Include="..\include\Device\EnableDeviceConfig.h" />
     <ClInclude Include="..\include\Device\EnableDeviceLoginAndLogout.h" />
@@ -381,7 +382,10 @@
     <ClInclude Include="..\include\MediaEncoder\FFmpegEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\JPEG\YUV420PToJPEGEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
+    <ClInclude Include="..\include\MediaFilter\MediaFilter.h" />
     <ClInclude Include="..\include\MediaFrame\MediaFrame.h" />
+    <ClInclude Include="..\include\MediaGraph\MediaGraph.h" />
+    <ClInclude Include="..\include\MediaPin\MediaPin.h" />
     <ClInclude Include="..\include\MessageQueue\MQConnector.h" />
     <ClInclude Include="..\include\MessageQueue\MQContext.h" />
     <ClInclude Include="..\include\MessageQueue\MQListener.h" />

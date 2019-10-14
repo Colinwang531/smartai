@@ -363,7 +363,7 @@ int queryFacePicture(const long long uuid, char*& imageData, int& imageBytes)
 			{
 				std::vector<std::string> faceImageFileNameSegment;
 				boost::split(faceImageFileNameSegment, faceImageFileName, boost::is_any_of("_"));
-				const int currentUUID{ atoi(faceImageFileNameSegment[1].c_str()) };
+				const long long currentUUID{ atoll(faceImageFileNameSegment[1].c_str()) };
 
 				if (uuid == currentUUID)
 				{

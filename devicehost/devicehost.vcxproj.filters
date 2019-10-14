@@ -193,6 +193,15 @@
     <Filter Include="Source Files\Encoder\JPEG">
       <UniqueIdentifier>{227d19fc-5361-4404-b94f-cef2a14584ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graph">
+      <UniqueIdentifier>{1b01e44b-4fe5-4296-b1f1-573d5c3556da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter">
+      <UniqueIdentifier>{5d21f0bf-441b-454b-9d2e-8064ddfa53ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin">
+      <UniqueIdentifier>{3c9c7c4d-e075-49a0-96ed-11637fc20dcb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -1351,6 +1360,18 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaConverter\BGR24ToYUV420PConverter.h">
       <Filter>Header Files\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\MediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\MediaFilter.h">
+      <Filter>Header Files\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaPin\MediaPin.h">
+      <Filter>Header Files\Pin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\UnorderedMap.h">
+      <Filter>Header Files\DataStruct</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
