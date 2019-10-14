@@ -368,7 +368,8 @@ int queryFacePicture(const long long uuid, char*& imageData, int& imageBytes)
 				if (uuid == currentUUID)
 				{
 					FILE* fd{ NULL };
-					fopen_s(&fd, faceImageFileName.c_str(), "rb+");
+					const std::string faceImageFullPath{ (boost::format("%s\\Face\\%s") % executePath % faceImageFileName).str() };
+					fopen_s(&fd, faceImageFullPath.c_str(), "rb+");
 
 					if (fd)
 					{

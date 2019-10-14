@@ -303,13 +303,16 @@
     <ClCompile Include="..\source\MediaConverter\MediaConverter.cpp" />
     <ClCompile Include="..\source\MediaConverter\YV12ToYUV420PConverter.cpp" />
     <ClCompile Include="..\source\MediaConverter\YUV420PToBGR24Converter.cpp" />
+    <ClCompile Include="..\source\MediaData\MediaData.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\SDK\HikvisionSDKDecoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\FFmpegEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\JPEG\YUV420PToJPEGEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
+    <ClCompile Include="..\source\MediaFilter\MediaFilter.cpp" />
     <ClCompile Include="..\source\MediaFrame\MediaFrame.cpp" />
+    <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQConnector.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQContext.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQListener.cpp" />
@@ -376,6 +379,7 @@
     <ClInclude Include="..\include\MediaConverter\MediaConverter.h" />
     <ClInclude Include="..\include\MediaConverter\YV12ToYUV420PConverter.h" />
     <ClInclude Include="..\include\MediaConverter\YUV420PToBGR24Converter.h" />
+    <ClInclude Include="..\include\MediaData\MediaData.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\SDK\HikvisionSDKDecoder.h" />

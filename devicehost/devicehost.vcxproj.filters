@@ -202,6 +202,18 @@
     <Filter Include="Header Files\Pin">
       <UniqueIdentifier>{3c9c7c4d-e075-49a0-96ed-11637fc20dcb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Media">
+      <UniqueIdentifier>{10e3ac4d-4549-44fd-b3c9-29b2dcedf650}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Media">
+      <UniqueIdentifier>{f1b93cf4-698b-4c55-b247-f522f8e2426c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph">
+      <UniqueIdentifier>{75e17b43-54c8-40e6-9423-5f6bdcbd99b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter">
+      <UniqueIdentifier>{96826ea7-a61d-4521-a982-4fd0f5acc175}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -734,6 +746,15 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaConverter\BGR24ToYUV420PConverter.cpp">
       <Filter>Source Files\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaData\MediaData.cpp">
+      <Filter>Source Files\Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\MediaFilter.cpp">
+      <Filter>Source Files\Filter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1372,6 +1393,9 @@
     </ClInclude>
     <ClInclude Include="..\include\DataStruct\UnorderedMap.h">
       <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaData\MediaData.h">
+      <Filter>Header Files\Media</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

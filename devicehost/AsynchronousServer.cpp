@@ -274,7 +274,7 @@ int AsynchronousServer::queryFaceInfos(
 		if (jpegImageData)
 		{
 			int jpegImageBytes{ 0 };
-			const int queryFaceResult{ queryFacePicture(*uuid, jpegImageData, jpegImageBytes) };
+			queryFacePicture(*uuid, jpegImageData, jpegImageBytes);
 
 			if (0 < jpegImageBytes)
 			{

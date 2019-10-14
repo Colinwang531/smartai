@@ -15,17 +15,6 @@
 
 #include "predef.h"
 
-NS_BEGIN(media, 1)
-
-class MediaData
-{
-public:
-	MediaData(void) {}
-	~MediaData(void) {}
-};//class MediaData
-
-NS_END
-
 NS_BEGIN(frame, 1)
 
 typedef enum class tagMediaImageType_t

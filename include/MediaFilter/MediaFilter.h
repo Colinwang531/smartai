@@ -13,7 +13,13 @@
 #ifndef MEDIA_FILTER_H
 #define MEDIA_FILTER_H
 
-#include "predef.h"
+#include "boost/shared_ptr.hpp"
+#include "MediaPin/MediaPin.h"
+using MediaPinPtr = boost::shared_ptr<NS(pin, 1)::MediaPin>;
+#include "DataStruct/UnorderedMap.h"
+using MediaPinGroup = NS(datastruct, 1)::UnorderedMap<const std::string, MediaPinPtr>;
+#include "MediaData/MediaData.h"
+using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(filter, 1)
 
@@ -24,13 +30,15 @@ public:
 	virtual ~MediaFilter(void);
 
 public:
-	virtual int initialize(
-		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) = 0;
-	virtual void deinitialize(void) = 0;
-	virtual int encode(
-		const unsigned char* imageData = NULL, const unsigned long long imageBytes = 0,
-		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) = 0;
-	virtual void data(unsigned char*& outputData, unsigned long long& outputBytes) = 0;
+	virtual int addPin(
+		const std::string pinID, MediaPinPtr pinPtr);
+	virtual int removePin(const std::string pinID);
+	virtual int inputData(MediaDataPtr dataPtr) = 0;
+	virtual bool isSourceFilter(void) const;
+	virtual bool isTargetFilter(void) const;
+
+protected:
+	MediaPinGroup mediaPinGroup;
 };//class MediaFilter
 
 NS_END

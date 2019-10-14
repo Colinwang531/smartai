@@ -41,7 +41,7 @@ public:
 		mtx.lock();
 		if (capacity > queue.size())
 		{
-			queue.insert(k, v);
+			queue.insert(std::make_pair(k, v));
 			status = true;
 		}
 		mtx.unlock();
@@ -54,7 +54,7 @@ public:
 		bool status{ false };
 
 		mtx.lock();
-		boost::unordered_map<Key, Value>::iterator it{ queue.find(k) };
+		typename boost::unordered_map<Key, Value>::iterator it{ queue.find(k) };
 		if (queue.end() != it)
 		{
 			queue.erase(it);
@@ -70,14 +70,14 @@ public:
 		Value v;
 
 		mtx.lock();
-		boost::unordered_map<Key, Value>::iterator it{ queue.find(k) };
+		typename boost::unordered_map<Key, Value>::iterator it{ queue.find(k) };
 		if (queue.end() != it)
 		{
 			v = it->second;
 		}
 		mtx.unlock();
 
-		return status;
+		return v;
 	}
 
 	unsigned long long size(void)
@@ -96,7 +96,7 @@ public:
 		return capacity;
 	}
 
-	void swap(std::vector<T>& out)
+	void swap(boost::unordered_map<Key, Value>& out)
 	{
 		mtx.lock();
 		out.swap(queue);
