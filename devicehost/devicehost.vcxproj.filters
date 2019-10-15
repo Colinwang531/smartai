@@ -214,6 +214,9 @@
     <Filter Include="Source Files\Filter">
       <UniqueIdentifier>{96826ea7-a61d-4521-a982-4fd0f5acc175}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Pin">
+      <UniqueIdentifier>{67fcc9c0-14d5-4f55-aa07-1ec986b8be91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -755,6 +758,21 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\MediaFilter.cpp">
       <Filter>Source Files\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\SourceMediaFilter.cpp">
+      <Filter>Source Files\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\TargetMediaFilter.cpp">
+      <Filter>Source Files\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp">
+      <Filter>Source Files\Pin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaPin\MediaPin.cpp">
+      <Filter>Source Files\Pin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp">
+      <Filter>Source Files\Pin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1396,6 +1414,18 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaData\MediaData.h">
       <Filter>Header Files\Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\SourceMediaFilter.h">
+      <Filter>Header Files\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\TargetMediaFilter.h">
+      <Filter>Header Files\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaPin\InputMediaPin.h">
+      <Filter>Header Files\Pin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaPin\OutputMediaPin.h">
+      <Filter>Header Files\Pin</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

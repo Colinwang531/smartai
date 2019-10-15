@@ -4,31 +4,29 @@
 //		Author :						王科威
 //		E-mail :						wangkw531@icloud.com
 //		Date :							2019-10-13
-//		Description:					多媒体针脚抽象基类
+//		Description:					多媒体输出针脚类
 //
 //		History:						Author									Date														Description
 //											王科威									2019-10-13										创建
 //
 
-#ifndef MEDIA_PIN_H
-#define MEDIA_PIN_H
+#ifndef OUTPUT_MEDIA_PIN_H
+#define OUTPUT_MEDIA_PIN_H
 
-#include "predef.h"
+#include "MediaPin.h"
 
 NS_BEGIN(pin, 1)
 
-class MediaPin
+class OutputMediaPin : public MediaPin
 {
 public:
-	MediaPin(void);
-	virtual ~MediaPin(void);
+	OutputMediaPin(void);
+	virtual ~OutputMediaPin(void);
 
 public:
-	virtual int inputData(MediaDataPtr dataPtr) = 0;
-	virtual bool isInputPin(void) const;
 	virtual bool isOutputPin(void) const;
-};//class MediaPin
+};//class OutputMediaPin
 
 NS_END
 
-#endif//MEDIA_PIN_H
+#endif//OUTPUT_MEDIA_PIN_H

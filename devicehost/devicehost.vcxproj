@@ -311,8 +311,13 @@
     <ClCompile Include="..\source\MediaEncoder\JPEG\YUV420PToJPEGEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
     <ClCompile Include="..\source\MediaFilter\MediaFilter.cpp" />
+    <ClCompile Include="..\source\MediaFilter\SourceMediaFilter.cpp" />
+    <ClCompile Include="..\source\MediaFilter\TargetMediaFilter.cpp" />
     <ClCompile Include="..\source\MediaFrame\MediaFrame.cpp" />
     <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp" />
+    <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp" />
+    <ClCompile Include="..\source\MediaPin\MediaPin.cpp" />
+    <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQConnector.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQContext.cpp" />
     <ClCompile Include="..\source\MessageQueue\MQListener.cpp" />
@@ -387,9 +392,13 @@
     <ClInclude Include="..\include\MediaEncoder\JPEG\YUV420PToJPEGEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
     <ClInclude Include="..\include\MediaFilter\MediaFilter.h" />
+    <ClInclude Include="..\include\MediaFilter\SourceMediaFilter.h" />
+    <ClInclude Include="..\include\MediaFilter\TargetMediaFilter.h" />
     <ClInclude Include="..\include\MediaFrame\MediaFrame.h" />
     <ClInclude Include="..\include\MediaGraph\MediaGraph.h" />
+    <ClInclude Include="..\include\MediaPin\InputMediaPin.h" />
     <ClInclude Include="..\include\MediaPin\MediaPin.h" />
+    <ClInclude Include="..\include\MediaPin\OutputMediaPin.h" />
     <ClInclude Include="..\include\MessageQueue\MQConnector.h" />
     <ClInclude Include="..\include\MessageQueue\MQContext.h" />
     <ClInclude Include="..\include\MessageQueue\MQListener.h" />
