@@ -74,6 +74,7 @@ int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */,
 
 	if (status)
 	{
+		BGR24ImageQueue.setCapacity(1);
 		loadAndRegisterFacePicture(configFilePath);
 	}
 
@@ -95,6 +96,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 //			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
 			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
+
 
 			if (face.PostProcessFunc(feedback))
 			{
@@ -127,7 +129,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 					mtx.unlock();
 
 					faceInfos.push_back(faceInfo);
-					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
+//					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
 				}
 
 				feedback.vecFaceResult.clear();

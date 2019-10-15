@@ -55,7 +55,7 @@ void CVAlgoFight::arithmeticWorkerProcess()
 // 				{
 					int validNumber{ 0 };
 					float maxConfidence{ 0.0f };
-					int nSaveId{ -1 };
+					int nSaveId{ (int)(it->second.vecSaveMat.size() -1) };
 
 					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
 					{
@@ -65,11 +65,11 @@ void CVAlgoFight::arithmeticWorkerProcess()
 							++validNumber;
 						}
 
-						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
-						{
-							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
-							nSaveId = i;
-						}
+// 						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
+// 						{
+// 							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
+// 							nSaveId = i;
+// 						}
 					}
 
 					if (0 < validNumber && -1 < nSaveId)
@@ -87,6 +87,10 @@ void CVAlgoFight::arithmeticWorkerProcess()
 							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
 						it = feedback.mapMemory.erase(it);
+					}
+					else
+					{
+						++it;
 					}
 
 					if (0 < alarmInfos.size() && captureAlarmInfoHandler)

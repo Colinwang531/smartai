@@ -13,7 +13,9 @@
 #ifndef MEDIA_PIN_H
 #define MEDIA_PIN_H
 
-#include "predef.h"
+#include "boost/shared_ptr.hpp"
+#include "MediaData/MediaData.h"
+using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(pin, 1)
 
@@ -24,7 +26,8 @@ public:
 	virtual ~MediaPin(void);
 
 public:
-	virtual int inputData(MediaDataPtr dataPtr) = 0;
+	virtual int connectInputPin(boost::shared_ptr<MediaPin> inputPinPtr);
+	virtual int inputData(MediaDataPtr dataPtr);
 	virtual bool isInputPin(void) const;
 	virtual bool isOutputPin(void) const;
 };//class MediaPin

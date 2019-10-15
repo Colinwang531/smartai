@@ -52,20 +52,21 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 			{
 				if (1 == it->second.nCatch)
 				{
+					int nSaveId{ (int)(it->second.vecSaveMat.size() - 1) };
 					it->second.nCatch = 2;
 
 					AlarmInfo alarmInfo;
 					alarmInfo.type = AlarmType::ALARM_TYPE_SLEEP;
-					alarmInfo.x = it->second.vecSaveMat[0].rRect.x;
-					alarmInfo.y = it->second.vecSaveMat[0].rRect.y;
-					alarmInfo.w = it->second.vecSaveMat[0].rRect.width;
-					alarmInfo.h = it->second.vecSaveMat[0].rRect.height;
-					alarmInfo.status = it->second.vecSaveMat[0].nLabel;
+					alarmInfo.x = it->second.vecSaveMat[nSaveId].rRect.x;
+					alarmInfo.y = it->second.vecSaveMat[nSaveId].rRect.y;
+					alarmInfo.w = it->second.vecSaveMat[nSaveId].rRect.width;
+					alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
+					alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 					alarmInfos.push_back(alarmInfo);
 
 					bgr24ImagePtr->setOriginImage(
-						(const unsigned char*)(it->second.vecSaveMat[0].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
-					boost::checked_array_delete(it->second.vecSaveMat[0].pUcharImage);
+						(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+					boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
 					it = feedback.mapMemory.erase(it);
 				}
 				else
@@ -83,15 +84,6 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
 					}
 				}
-
-// 				if (it->second.bDone)
-// 				{
-// 					it = feedback.mapMemory.erase(it);
-// 				}
-// 				else
-// 				{
-// 					++it;
-// 				}
 			}
 		}
 		else

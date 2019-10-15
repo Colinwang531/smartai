@@ -53,7 +53,7 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 // 				{
 					int nonePhoneNumber{ 0 }, havePhoneNumber{ 0 };
 					float maxConfidence{ 0.0f };
-					int nSaveId{ -1 };
+					int nSaveId{ (int)(it->second.vecSaveMat.size() -1) };
 
 					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
 					{
@@ -66,11 +66,11 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 							nonePhoneNumber++;
 						}
 
-						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
-						{
-							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
-							nSaveId = i;
-						}
+// 						if (it->second.vecSaveMat[i].detectConfidence > maxConfidence)
+// 						{
+// 							maxConfidence = it->second.vecSaveMat[i].detectConfidence;
+// 							nSaveId = i;
+// 						}
 					}
 
 					if (havePhoneNumber > nonePhoneNumber && -1 < nSaveId)

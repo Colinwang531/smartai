@@ -22,10 +22,10 @@ int CVAlgo::initialize(
 	parameters.detectThreshold = detectThreshold;
 	parameters.trackThreshold = trackThreshold;
 	parameters.savePath = (char*)configFilePath;
+	BGR24ImageQueue.setCapacity(12);
 
 	if (initializeWithParameter(configFilePath, &parameters))
 	{
-		BGR24ImageQueue.setCapacity(12);
 		//Each arithmetic run on different thread of CPU.
 		HANDLE threadHandle = (HANDLE)CreateThread(NULL, 0, &arithmeticProcessThread, this, 0, NULL);
  		if (threadHandle)
@@ -59,10 +59,10 @@ int CVAlgo::tryInputMediaImage(MediaImagePtr image)
 			BGR24ImageQueue.insert(image);
 			status = ERR_OK;
 
-// 			if (BGR24ImageQueue.total() == BGR24ImageQueue.size())
-// 			{
-// 				arithmeticProcessing = true;
-// 			}
+			if (BGR24ImageQueue.total() == BGR24ImageQueue.size())
+			{
+				arithmeticProcessing = true;
+			}
 		}
 		else
 		{
@@ -79,19 +79,18 @@ DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
 
 	while (cvalgo && !cvalgo->stopped)
 	{
-		cvalgo->arithmeticWorkerProcess();
+		if (cvalgo->arithmeticProcessing)
+		{
+			cvalgo->arithmeticWorkerProcess();
+			cvalgo->arithmeticProcessing = false;
+		}
+		else
+		{
+			Sleep(1);
+		}
 
-// 		if (cvalgo->arithmeticProcessing)
-// 		{
-// 			cvalgo->arithmeticWorkerProcess();
-// 			cvalgo->arithmeticProcessing = false;
-// 		}
-// 		else
-// 		{
-// 			Sleep(1);
-// 		}
-
-		Sleep(1);
+//		cvalgo->arithmeticWorkerProcess();
+//		Sleep(1);
 	}
 
 	if (cvalgo)

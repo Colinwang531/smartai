@@ -9,14 +9,44 @@ MediaFilter::MediaFilter()
 MediaFilter::~MediaFilter()
 {}
 
-int MediaFilter::addPin(const std::string filterID, MediaPinPtr pinPtr)
+MediaPinPtr MediaFilter::queryPin(const std::string pinID)
 {
-	return filterID.empty() || !pinPtr ? ERR_INVALID_PARAM : mediaPinGroup.insert(filterID, pinPtr);
+	MediaPinPtr pinPtr;
+
+	mtx.lock();
+	if (!pinID.empty())
+	{
+		MediaPinGroup::iterator it{ mediaPinGroup.find(pinID) };
+		if (mediaPinGroup.end() != it)
+		{
+			pinPtr = it->second;
+		}
+	}
+	mtx.unlock();
+
+	return pinPtr;
 }
 
-int MediaFilter::removePin(const std::string pinID)
+int MediaFilter::inputData(MediaDataPtr dataPtr)
 {
-	return pinID.empty() ? ERR_INVALID_PARAM : mediaPinGroup.remove(pinID);
+	int status{ dataPtr ? ERR_OK : ERR_INVALID_PARAM };
+
+	if (ERR_OK == status && !isTargetFilter())
+	{
+		mtx.lock();
+		for (MediaPinGroup::iterator it = mediaPinGroup.begin();
+			it != mediaPinGroup.end();
+			++it)
+		{
+			if (it->second->isOutputPin())
+			{
+				it->second->inputData(dataPtr);
+			}
+		}
+		mtx.unlock();
+	}
+
+	return status;
 }
 
 bool MediaFilter::isSourceFilter() const

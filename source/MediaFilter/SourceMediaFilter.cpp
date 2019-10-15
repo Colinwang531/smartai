@@ -1,3 +1,4 @@
+#include "error.h"
 #include "MediaFilter/SourceMediaFilter.h"
 
 NS_BEGIN(filter, 1)
