@@ -18,7 +18,7 @@ int destroyNVRDevice(const std::string address);
 int createNewDigitCamera(
 	const std::string NVRAddress, const unsigned long long cameraIndex = 0, const unsigned int abilities = 0);
 int destroyDigitCamera(
-	const std::string NVRAddress, const unsigned long long cameraIndex = 0);
+	const std::string NVRAddress, const unsigned long long cameraIndex = 0, const unsigned int abilities = 0);
 MediaImagePtr captureDigitCameraLivePicture(
 	const std::string NVRAddress, const unsigned long long cameraIndex = 0);
 int setAutoCheckSailOrPort(const int autoCheck = 1);

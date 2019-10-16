@@ -200,7 +200,7 @@ int createNewDigitCamera(
 }
 
 int destroyDigitCamera(
-	const std::string NVRAddress, const unsigned long long cameraIndex/* = 0*/)
+	const std::string NVRAddress, const unsigned long long cameraIndex/* = 0*/, const unsigned int abilities/* = 0*/)
 {
 	int status{ ERR_NOT_FOUND };
 	NVRDeviceGroup::const_iterator cit = NVRDevices.find(NVRAddress);
@@ -213,6 +213,19 @@ int destroyDigitCamera(
 
 		if (livestreams.end() != it)
 		{
+			boost::shared_ptr<DigitCameraLivestream> livestreamPtr{
+				boost::dynamic_pointer_cast<DigitCameraLivestream>(it->second) };
+			if (livestreamPtr)
+			{
+				livestreamPtr->setArithmeticAbilities(abilities);
+				status = ERR_OK;
+				LOG(INFO) << "Set live stream [ " << livestreamID << " ] arithmetic abilities (" << abilities << " ).";
+			}
+			else
+			{
+				status = ERR_BAD_OPERATE;
+			}
+
 			status = it->second->closeStream();
 			livestreams.erase(it);
 			LOG(INFO) << "Remove live stream [ " << livestreamID << " ].";

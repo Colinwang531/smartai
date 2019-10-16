@@ -117,11 +117,14 @@ int DigitCameraLivestream::closeStream()
 			jpegPictureEncoderPtr->deinitialize();
 		}
 
-		helmetArithmeticPtr.reset();
-		phoneArithmeticPtr.reset();
-		sleepArithmeticPtr.reset();
-		fightArithmeticPtr.reset();
-		faceArithmeticPtr.reset();
+		while (1)
+		{
+			MediaImagePtr imagePtr{ h264LivestreamQueue.remove() };
+			if (!imagePtr)
+			{
+				break;
+			}
+		}
 	}
 
 	return status;

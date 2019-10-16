@@ -97,6 +97,15 @@ DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
 // 		Sleep(1);
 	}
 
+	while (cvalgo)
+	{
+		MediaImagePtr bgr24ImagePtr{ cvalgo->BGR24ImageQueue.remove() };
+		if (!bgr24ImagePtr)
+		{
+			break;
+		}
+	}
+
 	if (cvalgo)
 	{
 		cvalgo->condition.notify_one();
