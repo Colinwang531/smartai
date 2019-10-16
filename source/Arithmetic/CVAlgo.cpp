@@ -44,9 +44,12 @@ int CVAlgo::initialize(
 
 void CVAlgo::deinitialize(void)
 {
-	stopped = true;
-	boost::unique_lock<boost::mutex> lock{ mtx };
-	condition.wait_for(lock, boost::chrono::seconds(3));
+	if (!stopped)
+	{
+		stopped = true;
+		boost::unique_lock<boost::mutex> lock{ mtx };
+		condition.wait_for(lock, boost::chrono::seconds(3));
+	}
 }
 
 int CVAlgo::tryInputMediaImage(MediaImagePtr image)

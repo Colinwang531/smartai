@@ -159,6 +159,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	{
 		if (helmetArithmeticPtr)
 		{
+			helmetArithmeticPtr->deinitialize();
 			helmetArithmeticPtr.reset();
 		}
 	}
@@ -188,6 +189,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	{
 		if (phoneArithmeticPtr)
 		{
+			phoneArithmeticPtr->deinitialize();
 			phoneArithmeticPtr.reset();
 		}
 	}
@@ -217,6 +219,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	{
 		if (sleepArithmeticPtr)
 		{
+			sleepArithmeticPtr->deinitialize();
 			sleepArithmeticPtr.reset();
 		}
 	}
@@ -246,6 +249,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	{
 		if (fightArithmeticPtr)
 		{
+			fightArithmeticPtr->deinitialize();
 			fightArithmeticPtr.reset();
 		}
 	}
@@ -275,6 +279,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	{
 		if (faceArithmeticPtr)
 		{
+			faceArithmeticPtr->deinitialize();
 			faceArithmeticPtr.reset();
 		}
 	}
