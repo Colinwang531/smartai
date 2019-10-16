@@ -105,7 +105,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 					FaceInfo faceInfo;
 					faceInfo.type = AlarmType::ALARM_TYPE_FACE;
 					faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
-					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
+//					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
 
 					mtx.lock();
 					boost::unordered_map<int, const std::string>::iterator it{
@@ -123,13 +123,16 @@ void CVAlgoFace::arithmeticWorkerProcess()
 								fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
 							}
 							fclose(fd);
+							std::vector<std::string> faceImageFileNameSegment;
+							boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
+							faceInfo.faceID = atoll(faceImageFileNameSegment[1].c_str());
 						}
 
 					}
 					mtx.unlock();
 
 					faceInfos.push_back(faceInfo);
-//					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
+					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
 				}
 
 				feedback.vecFaceResult.clear();
