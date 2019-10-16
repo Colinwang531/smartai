@@ -33,7 +33,7 @@ int CVAlgoPhone::initializeWithParameter(const char* configFilePath /* = NULL */
 
 void CVAlgoPhone::arithmeticWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
+//	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{

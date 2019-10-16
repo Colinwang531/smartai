@@ -33,7 +33,7 @@ int CVAlgoFight::initializeWithParameter(const char* configFilePath /* = NULL */
 
 void CVAlgoFight::arithmeticWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
+//	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{

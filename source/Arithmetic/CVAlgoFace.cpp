@@ -83,7 +83,7 @@ int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */,
 
 void CVAlgoFace::arithmeticWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
+//	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{

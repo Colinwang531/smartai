@@ -18,6 +18,7 @@
 #include "boost/function.hpp"
 #include "boost/shared_ptr.hpp"
 #include "boost/thread/condition.hpp"
+#include "boost/winapi/time.hpp"
 #include "MediaFrame/MediaFrame.h"
 using MediaImage = NS(frame, 1)::MediaImage;
 #include "DataStruct/FIFOQueue.h"
@@ -94,6 +95,8 @@ protected:
 	//Guarantee work thread exited safely. 
 	boost::mutex mtx;
 	boost::condition condition;
+
+	boost::winapi::ULONGLONG_ lastKnownTickTime;
 };//class CVAlgo
 
 NS_END

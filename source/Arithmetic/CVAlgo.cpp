@@ -8,7 +8,8 @@ NS_BEGIN(algo, 1)
 
 CVAlgo::CVAlgo(
 	CaptureAlarmInfoHandler alarmHandler /* = NULL */, CaptureFaceInfoHandler faceHandler /* = NULL */)
-	: captureAlarmInfoHandler{ alarmHandler }, capturefaceInfoHandler{ faceHandler }, arithmeticProcessing{ false }, stopped{ false }
+	: captureAlarmInfoHandler{ alarmHandler }, capturefaceInfoHandler{ faceHandler }, arithmeticProcessing{ false }, stopped{ false },
+	lastKnownTickTime{ 0 }
 {}
 
 CVAlgo::~CVAlgo()
@@ -89,8 +90,8 @@ DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
 			Sleep(1);
 		}
 
-//		cvalgo->arithmeticWorkerProcess();
-//		Sleep(1);
+// 		cvalgo->arithmeticWorkerProcess();
+// 		Sleep(1);
 	}
 
 	if (cvalgo)

@@ -33,7 +33,7 @@ int CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL *
 
 void CVAlgoHelmet::arithmeticWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
+//	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 //	DWORD threadID{ GetCurrentThreadId() };
 
 	while (1)

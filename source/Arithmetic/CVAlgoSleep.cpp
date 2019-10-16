@@ -1,5 +1,4 @@
 #include "boost/format.hpp"
-#include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
 #include "error.h"
 #include "Arithmetic/CVAlgoSleep.h"
@@ -34,7 +33,7 @@ int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */
 
 void CVAlgoSleep::arithmeticWorkerProcess()
 {
-	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
+//	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
 
 	while (1)
 	{
