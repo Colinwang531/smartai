@@ -1,13 +1,10 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2019, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2019-10-13
-//		Description:					多媒体流程图抽象基类
-//
-//		History:						Author									Date														Description
-//											王科威									2019-10-13										创建
+// Abstract base class of graph.
 //
 
 #ifndef MEDIA_GRAPH_H
