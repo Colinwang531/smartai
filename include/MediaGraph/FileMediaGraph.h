@@ -10,7 +10,7 @@
 #ifndef FILE_MEDIA_GRAPH_H
 #define FILE_MEDIA_GRAPH_H
 
-#include "MediaGraph/File/EnableMediaPlayControl.h"
+#include "MediaGraph/File/MediaPlayController.h"
 #include "MediaGraph.h"
 
 NS_BEGIN(graph, 1)

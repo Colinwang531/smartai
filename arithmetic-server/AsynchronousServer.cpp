@@ -15,7 +15,7 @@ using WorkerModel = NS(model, 1)::WorkerModel;
 #include "Arithmetic/CVAlgoFace.h"
 using CVAlgo = NS(algo, 1)::CVAlgo;
 using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
-#include "devicehost.h"
+#include "ArithmeticServer.h"
 #include "AsynchronousServer.h"
 
 AsynchronousServer::AsynchronousServer(const unsigned short port /* = 60532 */)

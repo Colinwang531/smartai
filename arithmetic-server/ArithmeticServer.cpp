@@ -39,7 +39,13 @@ using NVRDeviceGroup = boost::unordered_map<const std::string, NVRDevicePtr>;
 #include "DigitCameraLivestream.h"
 using AVStreamPtr = boost::shared_ptr<NS(stream, 1)::AVStream>;
 using AVStreamGroup = boost::unordered_map<const std::string, AVStreamPtr>;
-#include "devicehost.h"
+#include "ArithmeticServer.h"
+
+typedef enum class tagWorkMode_t
+{
+	WORK_MODE_MASTER = 0,
+	WORK_MODE_SLAVE
+}WorkMode;
 
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
@@ -53,6 +59,23 @@ int autoCheckSailOrPort = 1;//0 : manual, 1 : auto
 int largestRegisterFaceID = 0;
 NVRDeviceGroup NVRDevices;
 AVStreamGroup livestreams;
+
+int getThreadAffinityMask(void)
+{
+	static int affinityMask{ 1 };
+	int currentAffinityMask{ affinityMask };
+
+	affinityMask <<= 1;
+	if (!affinityMask)
+	{
+		affinityMask = 1;
+		currentAffinityMask = affinityMask;
+	}
+
+	LOG(WARNING) << "Current affinity mask = " << currentAffinityMask;
+
+	return currentAffinityMask;
+}
 
 int createNewNVRDevice(
 	const std::string address, const unsigned short port, 

@@ -22,8 +22,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{94D7ED34-A168-48C7-A588-9442942A2946}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>devicehost</RootNamespace>
+    <RootNamespace>ArithmeticServer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ArithmeticServer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -340,7 +341,7 @@
     <ClCompile Include="..\tinyxml2-master\tinyxml2.cpp" />
     <ClCompile Include="AlarmMessage.cpp" />
     <ClCompile Include="AsynchronousServer.cpp" />
-    <ClCompile Include="devicehost.cpp" />
+    <ClCompile Include="ArithmeticServer.cpp" />
     <ClCompile Include="DigitCameraLivestream.cpp" />
     <ClCompile Include="Hikvision7xxxNVR.cpp" />
   </ItemGroup>
@@ -564,7 +565,7 @@
     <ClInclude Include="..\libzmq-master\src\zmq_draft.h" />
     <ClInclude Include="AlarmMessage.h" />
     <ClInclude Include="AsynchronousServer.h" />
-    <ClInclude Include="devicehost.h" />
+    <ClInclude Include="ArithmeticServer.h" />
     <ClInclude Include="DigitCameraLivestream.h" />
     <ClInclude Include="Hikvision7xxxNVR.h" />
   </ItemGroup>

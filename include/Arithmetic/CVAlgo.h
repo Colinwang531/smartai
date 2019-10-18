@@ -68,7 +68,8 @@ public:
 
 public:
 	virtual int initialize(
-		const char* configFilePath = NULL, const float detectThreshold = 0.0f, const float trackThreshold = 0.0f);
+		const char* configFilePath = NULL, const int affinityMask = 1, 
+		const float detectThreshold = 0.0f, const float trackThreshold = 0.0f);
 	virtual void deinitialize(void);
 	int tryInputMediaImage(MediaImagePtr image);
 

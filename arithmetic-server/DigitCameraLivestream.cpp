@@ -37,6 +37,7 @@ using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 
 extern int sailingStatus;//0 : sail, 1 : port
 extern int autoCheckSwitch;//0 : manual, 1 : auto
+extern int getThreadAffinityMask(void);
 
 DigitCameraLivestream::DigitCameraLivestream(
 	boost::shared_ptr<MQModel> publisher, const std::string NVRIp,
@@ -78,7 +79,8 @@ int DigitCameraLivestream::openStream()
 			HANDLE handle{ CreateThread(NULL, 0, &DigitCameraLivestream::frameDecodeProcessThread, this, 0, &threadID) };
 			if (handle)
 			{
-				SetThreadPriority(handle, THREAD_PRIORITY_HIGHEST);
+// 				SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL/*THREAD_PRIORITY_HIGHEST*/);
+// 				SetThreadAffinityMask(handle, getThreadAffinityMask());
 			}
 		}
 	}
@@ -146,7 +148,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (helmet)
 			{
-				if (helmet->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f))
+				if (helmet->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
 				{
 					helmetArithmeticPtr.swap(helmet);
 					LOG(INFO) << "Initialize HELMET arithmetic Successfully.";
@@ -176,7 +178,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (phone)
 			{
-				if (phone->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f))
+				if (phone->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
 				{
 					phoneArithmeticPtr.swap(phone);
 					LOG(INFO) << "Initialize PHONE arithmetic Successfully.";
@@ -206,7 +208,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (sleep)
 			{
-				if (sleep->initialize(exePath.c_str(), 0.65f, 0.15f))
+				if (sleep->initialize(exePath.c_str(), getThreadAffinityMask(), 0.65f, 0.15f))
 				{
 					sleepArithmeticPtr.swap(sleep);
 					LOG(INFO) << "Initialize SLEEP arithmetic Successfully.";
@@ -236,7 +238,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (fight)
 			{
-				if (fight->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f))
+				if (fight->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
 				{
 					fightArithmeticPtr.swap(fight);
 					LOG(INFO) << "Initialize FIGHT arithmetic Successfully.";
@@ -266,7 +268,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::faceInfoProcessHandler, this, _1, _2)) };
 			if (face)
 			{
-				if (face->initialize(exePath.c_str(), /*0.25f*/0.95f, 0.10f))
+				if (face->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
 				{
 					faceArithmeticPtr.swap(face);
 					LOG(INFO) << "Initialize FACE arithmetic Successfully.";
@@ -345,7 +347,6 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 
 			if (bgr24ImagePtr)
 			{
-// 				bgr24ImagePtr->setOriginImage(yuv420pImageData, imageWidth * imageHeight * 3 / 2);
  				bgr24ImagePtr->setImage(bgr24ImageData, imageWidth * imageHeight * 3);
 
 				if (helmetArithmeticPtr)
@@ -392,6 +393,10 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 			{
 				livestream->videoStreamDecoderPtr->decode(h264ImagePtr->getImage(), (int)h264ImagePtr->getImageBytes());
 			}
+// 			else
+// 			{
+// 				Sleep(1);
+// 			}
 		}
 	}
 

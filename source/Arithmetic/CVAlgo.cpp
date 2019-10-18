@@ -5,6 +5,7 @@
 NS_BEGIN(algo, 1)
 
 //DWORD CVAlgo::enableAlgorithmCount = 0;
+extern DWORD threadAffinityMask;
 
 CVAlgo::CVAlgo(
 	CaptureAlarmInfoHandler alarmHandler /* = NULL */, CaptureFaceInfoHandler faceHandler /* = NULL */)
@@ -16,7 +17,8 @@ CVAlgo::~CVAlgo()
 {}
 
 int CVAlgo::initialize(
-	const char* configFilePath /* = NULL */, const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */)
+	const char* configFilePath /* = NULL */, const int affinityMask /* = 1 */, 
+	const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */)
 {
 	int status{ ERR_BAD_OPERATE };
 	StruInitParams parameters{};
@@ -28,12 +30,11 @@ int CVAlgo::initialize(
 	if (initializeWithParameter(configFilePath, &parameters))
 	{
 		//Each arithmetic run on different thread of CPU.
-		HANDLE threadHandle = (HANDLE)CreateThread(NULL, 0, &arithmeticProcessThread, this, 0, NULL);
- 		if (threadHandle)
+		HANDLE handle = (HANDLE)CreateThread(NULL, 0, &arithmeticProcessThread, this, 0, NULL);
+ 		if (handle)
  		{
- 			SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
-//  			SetThreadAffinityMask(threadHandle, (DWORD)(1 << enableAlgorithmCount));
-//  			enableAlgorithmCount++;
+ 			SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
+			SetThreadAffinityMask(handle, affinityMask);
  		}
 
 		status = ERR_OK;

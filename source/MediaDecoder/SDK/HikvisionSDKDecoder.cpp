@@ -32,11 +32,10 @@ int HikvisionSDKDecoder::decode(
 		if (PlayM4_GetPort(&decoderID) && -1 < decoderID)
 		{
 			PlayM4_SetStreamOpenMode(decoderID, STREAME_REALTIME);
-			PlayM4_OpenStream(decoderID, const_cast<BYTE*>(frameData), frameBytes, 3145728);
 			PlayM4_SetDecCallBackExMend(decoderID, &HikvisionSDKDecoder::decodeFrameInfoCallback, NULL, 0, this);
+			PlayM4_OpenStream(decoderID, const_cast<BYTE*>(frameData), frameBytes, 1048576);
 			//HARD_DECODE_ENGINE / SOFT_DECODE_ENGINE
-			PlayM4_SetDecodeEngineEx(decoderID, SOFT_DECODE_ENGINE);
-			//				PlayM4_SetDecodeFrameType(decoderID, 5);
+			PlayM4_SetDecodeEngineEx(decoderID, HARD_DECODE_ENGINE);
 			status = PlayM4_Play(decoderID, NULL) ? ERR_OK : ERR_BAD_OPERATE;
 		}
 		else
