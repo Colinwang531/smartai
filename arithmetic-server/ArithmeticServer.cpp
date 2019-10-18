@@ -59,6 +59,7 @@ int autoCheckSailOrPort = 1;//0 : manual, 1 : auto
 int largestRegisterFaceID = 0;
 NVRDeviceGroup NVRDevices;
 AVStreamGroup livestreams;
+WorkMode serverWorkMode{ WorkMode::WORK_MODE_MASTER };
 
 int getThreadAffinityMask(void)
 {

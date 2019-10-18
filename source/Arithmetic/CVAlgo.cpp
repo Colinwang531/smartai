@@ -5,7 +5,7 @@
 NS_BEGIN(algo, 1)
 
 //DWORD CVAlgo::enableAlgorithmCount = 0;
-extern DWORD threadAffinityMask;
+//extern DWORD threadAffinityMask;
 
 CVAlgo::CVAlgo(
 	CaptureAlarmInfoHandler alarmHandler /* = NULL */, CaptureFaceInfoHandler faceHandler /* = NULL */)
@@ -34,7 +34,7 @@ int CVAlgo::initialize(
  		if (handle)
  		{
  			SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
-			SetThreadAffinityMask(handle, affinityMask);
+//			SetThreadAffinityMask(handle, affinityMask);
  		}
 
 		status = ERR_OK;
