@@ -332,6 +332,8 @@
     <ClCompile Include="..\source\MessageQueue\MQTransfer.cpp" />
     <ClCompile Include="..\source\MQModel\MQModel.cpp" />
     <ClCompile Include="..\source\MQModel\Publisher\PublisherModel.cpp" />
+    <ClCompile Include="..\source\MQModel\Requester\RequesterModel.cpp" />
+    <ClCompile Include="..\source\MQModel\Responser\ResponserModel.cpp" />
     <ClCompile Include="..\source\MQModel\Transfer\TransferModel.cpp" />
     <ClCompile Include="..\source\MQModel\Worker\WorkerModel.cpp" />
     <ClCompile Include="..\source\Stream\AVStream.cpp" />
@@ -418,6 +420,8 @@
     <ClInclude Include="..\include\MessageQueue\MQTransfer.h" />
     <ClInclude Include="..\include\MQModel\MQModel.h" />
     <ClInclude Include="..\include\MQModel\Publisher\PublisherModel.h" />
+    <ClInclude Include="..\include\MQModel\Requester\RequesterModel.h" />
+    <ClInclude Include="..\include\MQModel\Responser\ResponserModel.h" />
     <ClInclude Include="..\include\MQModel\Transfer\TransferModel.h" />
     <ClInclude Include="..\include\MQModel\Worker\WorkerModel.h" />
     <ClInclude Include="..\include\predef.h" />

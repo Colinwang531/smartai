@@ -15,6 +15,10 @@ public:
 	AsynchronousServer(const unsigned short port = 60532);
 	~AsynchronousServer(void);
 
+public:
+	void setClockUTCTime(const long long utc = 0);
+	void setSailOrPort(const int status = 0);
+
 protected:
 	int initializeModel(MQContext& ctx) override;
 	int deinitializeModel(MQContext& ctx) override;
@@ -29,6 +33,7 @@ private:
 		const char* NVRIp = NULL, const long long sequenceNo = 0, 
 		const char* response = NULL, const int responseBytes = 0);
 	int setCamera(
+		int& flag,
 		const long long seqenceNo = 0, 
 		const char* request = NULL, const int requestBytes = 0, 
 		const char* response = NULL, const int responseBytes = 0);
@@ -57,6 +62,7 @@ private:
 		const int replyBytes = 0, const long long sequenceNo = 0,
 		const char* response = NULL, const int responseBytes = 0);
 	int captureCameraPicture(
+		int& flag,
 		const long long sequenceNo = 0,
 		const char* request = NULL, const int requestBytes = 0,
 		const char* response = NULL, const int responseBytes = 0);

@@ -12,11 +12,19 @@
 #include "error.h"
 #include "MQModel/Worker/WorkerModel.h"
 using WorkerModel = NS(model, 1)::WorkerModel;
+#include "MQModel/Requester/RequesterModel.h"
+using RequesterModel = NS(model, 1)::RequesterModel;
+#include "MQModel/Responser/ResponserModel.h"
+using ResponserModel = NS(model, 1)::ResponserModel;
 #include "Arithmetic/CVAlgoFace.h"
 using CVAlgo = NS(algo, 1)::CVAlgo;
 using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 #include "ArithmeticServer.h"
 #include "AsynchronousServer.h"
+
+extern long long clockUTCTime;
+extern int sailingStatus;
+extern enum class tagWorkMode_t serverWorkMode;
 
 AsynchronousServer::AsynchronousServer(const unsigned short port /* = 60532 */)
 	: TransferModel(port)
@@ -25,22 +33,85 @@ AsynchronousServer::AsynchronousServer(const unsigned short port /* = 60532 */)
 AsynchronousServer::~AsynchronousServer()
 {}
 
+void AsynchronousServer::setClockUTCTime(const long long utc /*= 0*/)
+{
+	const std::size_t modelCount{ workerModels.size() };
+	if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+	{
+		boost::shared_ptr<RequesterModel> requesterModelPtr{
+			boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+		if (requesterModelPtr)
+		{
+			char request[24]{ 0 };
+			*((long long*)request) = 0;
+			*((int*)(request + 8)) = 0xff01ff01;
+			*((int*)(request + 12)) = 8;
+			*((long long*)(request + 16)) = utc;
+			std::string resp;
+			requesterModelPtr->send(request, 24, resp);
+		}
+	}
+}
+
+void AsynchronousServer::setSailOrPort(const int status /* = 0 */)
+{
+	const std::size_t modelCount{ workerModels.size() };
+	if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+	{
+		boost::shared_ptr<RequesterModel> requesterModelPtr{
+			boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+		if (requesterModelPtr)
+		{
+			char request[20]{ 0 };
+			*((long long*)request) = 0;
+			*((int*)(request + 8)) = 0xff02ff02;
+			*((int*)(request + 12)) = 4;
+			*((int*)(request + 16)) = status;
+			std::string resp;
+			requesterModelPtr->send(request, 20, resp);
+		}
+	}
+}
+
 int AsynchronousServer::initializeModel(MQContext& ctx)
 {
-	int status{ TransferModel::initializeModel(ctx) };
+	int status{ ERR_BAD_OPERATE };
 
-	if (ERR_OK == status)
+	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
 	{
-		for (int i = 0; i != WORKER_THREAD_NUMBER; ++i)
+		status = TransferModel::initializeModel(ctx);
+		if (ERR_OK == status)
 		{
-			boost::shared_ptr<MQModel> workerModelPtr{
-				boost::make_shared<WorkerModel>(
-					"inproc://WorkerProcess", 
-					boost::bind(&AsynchronousServer::getRequestMessageNotifyHandler, this, _1, _2, _3, _4)) };
-			if (workerModelPtr && ERR_OK == workerModelPtr->start(ctx))
+			for (int i = 0; i != WORKER_THREAD_NUMBER; ++i)
 			{
-				workerModels.push_back(workerModelPtr);
+				boost::shared_ptr<MQModel> workerModelPtr{
+					boost::make_shared<WorkerModel>(
+						"inproc://WorkerProcess",
+						boost::bind(&AsynchronousServer::getRequestMessageNotifyHandler, this, _1, _2, _3, _4)) };
+				if (workerModelPtr && ERR_OK == workerModelPtr->start(ctx))
+				{
+					workerModels.push_back(workerModelPtr);
+				}
 			}
+
+			boost::shared_ptr<MQModel> requesterModelPtr{ 
+				boost::make_shared<RequesterModel>(routerListenPort + 10) };
+			if (requesterModelPtr && requesterModelPtr->start(ctx))
+			{
+				workerModels.push_back(requesterModelPtr);
+			}
+		}
+	}
+	else if (WorkMode::WORK_MODE_SLAVE == serverWorkMode)
+	{
+		boost::shared_ptr<MQModel> responserModelPtr{
+				boost::make_shared<ResponserModel>(
+					routerListenPort + 10,
+					boost::bind(&AsynchronousServer::getRequestMessageNotifyHandler, this, _1, _2, _3, _4)) };
+		if (responserModelPtr && responserModelPtr->start(ctx))
+		{
+			workerModels.push_back(responserModelPtr);
+			status = ERR_OK;
 		}
 	}
 
@@ -49,12 +120,19 @@ int AsynchronousServer::initializeModel(MQContext& ctx)
 
 int AsynchronousServer::deinitializeModel(MQContext& ctx)
 {
+	int status{ ERR_OK };
+
 	for (std::vector<MQModelPtr>::iterator it = workerModels.begin(); it != workerModels.end(); ++it)
 	{
 		(*it)->stop(ctx);
 	}
 
-	return TransferModel::deinitializeModel(ctx);
+	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
+	{
+		status = TransferModel::deinitializeModel(ctx);
+	}
+
+	return status;
 }
 
 int AsynchronousServer::setNVR(
@@ -151,6 +229,7 @@ int AsynchronousServer::replySetNVR(
 }
 
 int AsynchronousServer::setCamera(
+	int& flag,
 	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */, 
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
@@ -163,17 +242,21 @@ int AsynchronousServer::setCamera(
 
 	if (0 < *arithmeticAbilities)
 	{
-		result = createNewDigitCamera(ipaddr, *cameraIndex, *arithmeticAbilities);
+		flag = createNewDigitCamera(ipaddr, *cameraIndex, *arithmeticAbilities);
 	}
 	else
 	{
 		result = destroyDigitCamera(ipaddr, *cameraIndex);
+		if (ERR_OK != result)
+		{
+			flag = 0xffff;
+		}
 	}
 
 	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 4;
 	*((int*)(response + 12)) = 4;
-	*((int*)(response + 16)) = result;
+	*((int*)(response + 16)) = 1/*result*/;
 
 	return responseDataUsedBytes;
 }
@@ -331,6 +414,7 @@ int AsynchronousServer::replyQueryFace(
 }
 
 int AsynchronousServer::captureCameraPicture(
+	int& flag,
 	const long long sequenceNo /* = 0 */,
 	const char* request /* = NULL */, const int requestBytes /* = 0 */,
 	const char* response /* = NULL */, const int responseBytes /* = 0 */)
@@ -353,6 +437,11 @@ int AsynchronousServer::captureCameraPicture(
 		*((int*)(response + 24)) = captureImageBytes;
 		memcpy_s((char*)(response + 28), captureImageBytes, captureImagePtr->getImage(), captureImageBytes);
 		pos = 28 + captureImageBytes;
+
+		if (!captureImageBytes)
+		{
+			flag = 0xffff;
+		}
 	}
 
 	return pos;
@@ -372,18 +461,70 @@ int AsynchronousServer::getRequestMessageNotifyHandler(
 		if (1 == *command)
 		{
 			responseDataUsedBytes = setNVR(*sequence, request + 16, *packlen, response, responseBytes);
+
+			const std::size_t modelCount{ workerModels.size() };
+			if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+			{
+				boost::shared_ptr<RequesterModel> requesterModelPtr{
+					boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+				if (requesterModelPtr)
+				{
+					std::string resp;
+					requesterModelPtr->send(request, requestBytes, resp);
+				}
+			}
 		}
 		else if (3 == *command)
 		{
-			responseDataUsedBytes = setCamera(*sequence, request + 16, *packlen, response, responseBytes);
+			int flag{ 0 };
+			responseDataUsedBytes = setCamera(flag, *sequence, request + 16, *packlen, response, responseBytes);
+
+			if (0xffff == flag)
+			{
+				const std::size_t modelCount{ workerModels.size() };
+				if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+				{
+					boost::shared_ptr<RequesterModel> requesterModelPtr{
+						boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+					if (requesterModelPtr)
+					{
+						std::string resp;
+						requesterModelPtr->send(request, requestBytes, resp);
+					}
+				}
+			}
 		}
 		else if (5 == *command)
 		{
 			responseDataUsedBytes = setAutoCheck(*sequence, request + 16, *packlen, response, responseBytes);
+
+			const std::size_t modelCount{ workerModels.size() };
+			if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+			{
+				boost::shared_ptr<RequesterModel> requesterModelPtr{
+					boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+				if (requesterModelPtr)
+				{
+					std::string resp;
+					requesterModelPtr->send(request, requestBytes, resp);
+				}
+			}
 		}
 		else if (7 == *command)
 		{
 			responseDataUsedBytes = setSailingStatus(*sequence, request + 16, *packlen, response, responseBytes);
+
+			const std::size_t modelCount{ workerModels.size() };
+			if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+			{
+				boost::shared_ptr<RequesterModel> requesterModelPtr{
+					boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+				if (requesterModelPtr)
+				{
+					std::string resp;
+					requesterModelPtr->send(request, requestBytes, resp);
+				}
+			}
 		}
 		else if (9 == *command)
 		{
@@ -392,6 +533,18 @@ int AsynchronousServer::getRequestMessageNotifyHandler(
 		else if (12 == *command)
 		{
 			responseDataUsedBytes = registerFace(*sequence, request + 16, *packlen, response, responseBytes);
+
+			const std::size_t modelCount{ workerModels.size() };
+			if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+			{
+				boost::shared_ptr<RequesterModel> requesterModelPtr{
+					boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+				if (requesterModelPtr)
+				{
+					std::string resp;
+					requesterModelPtr->send(request, requestBytes, resp);
+				}
+			}
 		}
 		else if (14 == *command)
 		{
@@ -399,7 +552,41 @@ int AsynchronousServer::getRequestMessageNotifyHandler(
 		}
 		else if (19 == *command)
 		{
-			responseDataUsedBytes = captureCameraPicture(*sequence, request + 16, *packlen, response, responseBytes);
+			int flag{ 0 };
+			responseDataUsedBytes = captureCameraPicture(
+				flag, *sequence, request + 16, *packlen, response, responseBytes);
+
+			if (0xffff == flag)
+			{
+				const std::size_t modelCount{ workerModels.size() };
+				if (WorkMode::WORK_MODE_MASTER == serverWorkMode && 0 < modelCount)
+				{
+					boost::shared_ptr<RequesterModel> requesterModelPtr{
+						boost::dynamic_pointer_cast<RequesterModel>(workerModels[modelCount - 1]) };
+					if (requesterModelPtr)
+					{
+						std::string resp;
+						requesterModelPtr->send(request, requestBytes, resp);
+						const std::size_t respLen{ resp.length() };
+
+						if (!resp.empty() && 0 < respLen)
+						{
+							memcpy_s((char*)response, respLen, resp.c_str(), respLen);
+							responseDataUsedBytes = (int)respLen;
+						}
+					}
+				}
+			}
+		}
+		else if (0xff01ff01 == *command)
+		{
+			long long* utcTime{ (long long*)(request + 16) };
+			clockUTCTime = *utcTime;
+		}
+		else if (0xff02ff02 == *command)
+		{
+			int* status{ (int*)(request + 16) };
+			sailingStatus = *status;
 		}
 	}
 

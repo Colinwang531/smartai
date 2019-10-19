@@ -10,6 +10,12 @@ using Camera = NS(device, 1)::Camera;
 using MediaImage = NS(frame, 1)::MediaImage;
 using MediaImagePtr = boost::shared_ptr<MediaImage>;
 
+typedef enum class tagWorkMode_t
+{
+	WORK_MODE_MASTER = 0,
+	WORK_MODE_SLAVE
+}WorkMode;
+
 int createNewNVRDevice(
 	const std::string address, const unsigned short port,
 	const std::string name, const std::string password,
@@ -24,6 +30,7 @@ MediaImagePtr captureDigitCameraLivePicture(
 int setAutoCheckSailOrPort(const int autoCheck = 1);
 int setSailingStatus(const int status = 0);
 int getSailingStatus(void);
+void setClockUTCTime(const long long utc = 0);
 int createNewFacePicture(
 	const char* imageData = NULL, const int imageBytes = 0, const char* name = NULL, const long long uuid = 0);
 int queryFacePicture(const long long uuid, char*& imageData, int& imageBytes);

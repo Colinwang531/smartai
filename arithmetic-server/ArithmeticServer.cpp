@@ -41,12 +41,6 @@ using AVStreamPtr = boost::shared_ptr<NS(stream, 1)::AVStream>;
 using AVStreamGroup = boost::unordered_map<const std::string, AVStreamPtr>;
 #include "ArithmeticServer.h"
 
-typedef enum class tagWorkMode_t
-{
-	WORK_MODE_MASTER = 0,
-	WORK_MODE_SLAVE
-}WorkMode;
-
 boost::shared_ptr<MQModel> publisherModelPtr;
 boost::shared_ptr<MQModel> routerModelPtr;
 boost::mutex publishMtx;
@@ -63,6 +57,7 @@ WorkMode serverWorkMode{ WorkMode::WORK_MODE_MASTER };
 
 int getThreadAffinityMask(void)
 {
+	return 0;
 	static int affinityMask{ 1 };
 	int currentAffinityMask{ affinityMask };
 
@@ -161,6 +156,15 @@ int destroyNVRDevice(const std::string address)
 int createNewDigitCamera(
 	const std::string NVRAddress, const unsigned long long cameraIndex/* = 0*/, const unsigned int abilities/* = 0*/)
 {
+	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
+	{
+		static int seqNo{ 0 };
+		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
+		{
+			return 0xffff;
+		}
+	}
+
 	int status{ ERR_NOT_FOUND };
 	NVRDeviceGroup::const_iterator cit = NVRDevices.find(NVRAddress);
 
@@ -339,6 +343,11 @@ int getSailingStatus(void)
 	return sailingStatus;
 }
 
+void setClockUTCTime(const long long utc /*= 0*/)
+{
+	clockUTCTime = utc;
+}
+
 int createNewFacePicture(
 	const char* imageData /*= NULL*/, const int imageBytes /*= 0*/, const char* name /*= NULL*/, const long long uuid /*= 0*/)
 {
@@ -438,6 +447,13 @@ static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int data
 			if (7 == clockDatas.size())
 			{
 				clockUTCTime = atoll(clockDatas[1].c_str());
+
+				boost::shared_ptr<AsynchronousServer> asyncServerPtr{
+					boost::dynamic_pointer_cast<AsynchronousServer>(routerModelPtr) };
+				if (asyncServerPtr)
+				{
+					asyncServerPtr->setClockUTCTime(clockUTCTime);
+				}
 			}
 
 			clockAsyncData.clear();
@@ -459,6 +475,13 @@ static void AISStatusUpdateNotifyHandler(const char* data = NULL, const int data
 			if (14 == aisDatas.size() && 1 == sailingStatus)
 			{
 				sailingStatus = atoi(aisDatas[2].c_str());
+
+				boost::shared_ptr<AsynchronousServer> asyncServerPtr{
+					boost::dynamic_pointer_cast<AsynchronousServer>(routerModelPtr) };
+				if (asyncServerPtr)
+				{
+					asyncServerPtr->setSailOrPort(sailingStatus);
+				}
 			}
 
 			aisAsyncData.clear();
@@ -504,19 +527,24 @@ static bool initSerialPort()
 
 static DWORD WINAPI notifyStartingProcessThread(void* ctx = NULL)
 {
-	while (1)
+	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
 	{
-		char startingNotify[16]{ 0 };
-		int* messageID{ (int*)(startingNotify + 8) };
-		*messageID = 21;
-		boost::shared_ptr<PublisherModel> publisherModel{
-			boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
-		publishMtx.lock();
-		publisherModel->send(startingNotify, 16);
-		publishMtx.unlock();
+		while (1)
+		{
+			char startingNotify[16]{ 0 };
+			int* messageID{ (int*)(startingNotify + 8) };
+			*messageID = 21;
+			boost::shared_ptr<PublisherModel> publisherModel{
+				boost::dynamic_pointer_cast<PublisherModel>(publisherModelPtr) };
+			publishMtx.lock();
+			publisherModel->send(startingNotify, 16);
+			publishMtx.unlock();
 
-		Sleep(10000);
+			Sleep(10000);
+		}
 	}
+
+	return 0;
 }
 
 int main(int argc, char* argv[])
@@ -532,21 +560,31 @@ int main(int argc, char* argv[])
 #endif
 	);
 
-	initSerialPort();
 	MQContext ctx;
-
 	try
 	{
 		PTREE rootNode;
 		boost::property_tree::ini_parser::read_ini("config.ini", rootNode);
 
-		int publisherPortNumber{ rootNode.get_child("Publisher").get<int>("Port") }, 
-			routerPortNumber{ rootNode.get_child("Router").get<int>("Port") }, 
+		const int workModeValue{ rootNode.get_child("Mode").get<int>("Type") };
+		if (1 == workModeValue)
+		{
+			serverWorkMode = WorkMode::WORK_MODE_SLAVE;
+		}
+		else
+		{
+			serverWorkMode = WorkMode::WORK_MODE_MASTER;
+			initSerialPort();
+		}
+
+		const int publisherPortNumber{ rootNode.get_child("Publisher").get<int>("Port") },
+			routerPortNumber{ rootNode.get_child("Router").get<int>("Port") },
 			cpuCoreNumber{ CPU().getCPUCoreNumber() };
 		ctx.initialize(cpuCoreNumber);
 		boost::shared_ptr<MQModel> publisherPtr{ 
 			boost::make_shared<PublisherModel>(publisherPortNumber) };
-		boost::shared_ptr<MQModel> routerPtr{ boost::make_shared<AsynchronousServer>(routerPortNumber) };
+		boost::shared_ptr<MQModel> routerPtr{ 
+			boost::make_shared<AsynchronousServer>(routerPortNumber) };
 
 		if (publisherPtr && routerPtr)
 		{
@@ -555,9 +593,10 @@ int main(int argc, char* argv[])
 
 			if (ERR_OK == publisherModelPtr->start(ctx) && ERR_OK == routerModelPtr->start(ctx))
 			{
-				LOG(INFO) << "Start publisher port number " << publisherPortNumber << 
-					" and router port number " << routerPortNumber << 
-					" and CPU core number " << cpuCoreNumber << ".";
+				LOG(INFO) << "Start publisher port number " << publisherPortNumber <<
+					", router port number " << routerPortNumber <<
+					", CPU core number " << cpuCoreNumber <<
+					", work mode " << (int)serverWorkMode << ".";
 			}
 		}
 		else
@@ -565,8 +604,12 @@ int main(int argc, char* argv[])
 			LOG(ERROR) << "Failed to create publisher and router service.";
 		}
 
-		DWORD threadID{ 0 };
-		CreateThread(NULL, 0, &notifyStartingProcessThread, NULL, 0, &threadID);
+		if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
+		{
+			DWORD threadID{ 0 };
+			CreateThread(NULL, 0, &notifyStartingProcessThread, NULL, 0, &threadID);
+		}
+		
 		getchar();
 
 		if (publisherModelPtr)

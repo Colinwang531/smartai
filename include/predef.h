@@ -30,7 +30,7 @@
 
 static const unsigned short minPortNumber = 5000;
 static const unsigned short maxPortNumber = 65535;
-static const unsigned int maxTransportMTUBytes = 65530;
+static const unsigned int maxTransportMTUBytes = 1024 * 1024/*65530*/;
 
 typedef struct tagBGR24Frame_t
 {
