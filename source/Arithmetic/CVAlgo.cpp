@@ -23,7 +23,7 @@ int CVAlgo::initialize(
 {
 	int status{ ERR_BAD_OPERATE };
 	StruInitParams parameters{};
-	parameters.gpu_id = gpu;
+//	parameters.gpu_id = gpu;
 	parameters.detectThreshold = detectThreshold;
 	parameters.trackThreshold = trackThreshold;
 	parameters.savePath = (char*)configFilePath;

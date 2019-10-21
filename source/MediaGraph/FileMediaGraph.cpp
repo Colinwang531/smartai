@@ -24,17 +24,17 @@ int FileMediaGraph::pausePlay()
 	return ERR_OK;
 }
 
-int FileMediaGraph::fastPlay(const unsigned short speed /* = 1 */)
+int FileMediaGraph::fastPlay(const short speed /* = 1 */)
 {
 	return checkSpeedValue(speed);
 }
 
-int FileMediaGraph::slowPlay(const unsigned short speed /* = 1 */)
+int FileMediaGraph::slowPlay(const short speed /* = 1 */)
 {
 	return checkSpeedValue(speed);
 }
 
-int FileMediaGraph::checkSpeedValue(const unsigned short speed /* = 1 */)
+int FileMediaGraph::checkSpeedValue(const short speed /* = 1 */)
 {
 	return 1 == speed || 2 == speed || 4 == speed || 8 == speed || 16 == speed ?
 		ERR_OK : ERR_INVALID_PARAM;
