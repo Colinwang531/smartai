@@ -9,27 +9,27 @@ FileMediaGraph::FileMediaGraph() : MediaGraph()
 FileMediaGraph::~FileMediaGraph()
 {}
 
-int FileMediaGraph::play()
+int FileMediaGraph::startPlay()
 {
 	return ERR_OK;
 }
 
-int FileMediaGraph::stop()
+int FileMediaGraph::stopPlay()
 {
 	return ERR_OK;
 }
 
-int FileMediaGraph::pause()
+int FileMediaGraph::pausePlay()
 {
 	return ERR_OK;
 }
 
-int FileMediaGraph::fast(const unsigned short speed /* = 1 */)
+int FileMediaGraph::fastPlay(const unsigned short speed /* = 1 */)
 {
 	return checkSpeedValue(speed);
 }
 
-int FileMediaGraph::slow(const unsigned short speed /* = 1 */)
+int FileMediaGraph::slowPlay(const unsigned short speed /* = 1 */)
 {
 	return checkSpeedValue(speed);
 }

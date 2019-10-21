@@ -18,10 +18,12 @@ CVAlgo::~CVAlgo()
 
 int CVAlgo::initialize(
 	const char* configFilePath /* = NULL */, const int affinityMask /* = 1 */, 
-	const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */)
+	const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */, 
+	const int gpu /* = 0 */)
 {
 	int status{ ERR_BAD_OPERATE };
 	StruInitParams parameters{};
+	parameters.gpu_id = gpu;
 	parameters.detectThreshold = detectThreshold;
 	parameters.trackThreshold = trackThreshold;
 	parameters.savePath = (char*)configFilePath;

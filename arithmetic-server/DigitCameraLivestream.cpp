@@ -33,11 +33,13 @@ using CVAlgoFight = NS(algo, 1)::CVAlgoFight;
 #include "Arithmetic/CVAlgoFace.h"
 using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
 #include "AlarmMessage.h"
+#include "ArithmeticServer.h"
 #include "DigitCameraLivestream.h"
 
 extern int sailingStatus;//0 : sail, 1 : port
 extern int autoCheckSwitch;//0 : manual, 1 : auto
 extern int getThreadAffinityMask(void);
+extern enum class tagWorkMode_t serverWorkMode;
 
 DigitCameraLivestream::DigitCameraLivestream(
 	boost::shared_ptr<MQModel> publisher, const std::string NVRIp,
@@ -135,6 +137,10 @@ int DigitCameraLivestream::closeStream()
 
 void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities /* = 0 */)
 {
+	if (0 == (int)serverWorkMode)
+	{
+		return;
+	}
 	arithmeticAbilities = abilities;
 	const std::string exePath{
 		boost::filesystem::initial_path<boost::filesystem::path>().string() };
@@ -148,10 +154,10 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (helmet)
 			{
-				if (helmet->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
+				if (helmet->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
 				{
 					helmetArithmeticPtr.swap(helmet);
-					LOG(INFO) << "Initialize HELMET arithmetic Successfully.";
+					LOG(INFO) << "Initialize HELMET arithmetic Successfully, GPU = [ " << (int)serverWorkMode << " ].";
 				}
 				else
 				{
@@ -178,15 +184,15 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (phone)
 			{
-				if (phone->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
-				{
-					phoneArithmeticPtr.swap(phone);
-					LOG(INFO) << "Initialize PHONE arithmetic Successfully.";
-				}
-				else
-				{
-					LOG(WARNING) << "Initialize PHONE arithmetic Failed.";
-				}
+// 				if (phone->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+// 				{
+// 					phoneArithmeticPtr.swap(phone);
+// 					LOG(INFO) << "Initialize PHONE arithmetic Successfully.";
+// 				}
+// 				else
+// 				{
+// 					LOG(WARNING) << "Initialize PHONE arithmetic Failed.";
+// 				}
 			}
 		}
 	}
@@ -208,15 +214,15 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (sleep)
 			{
-				if (sleep->initialize(exePath.c_str(), getThreadAffinityMask(), 0.65f, 0.15f))
-				{
-					sleepArithmeticPtr.swap(sleep);
-					LOG(INFO) << "Initialize SLEEP arithmetic Successfully.";
-				}
-				else
-				{
-					LOG(WARNING) << "Initialize SLEEP arithmetic Failed.";
-				}
+// 				if (sleep->initialize(exePath.c_str(), getThreadAffinityMask(), 0.65f, 0.15f, (int)serverWorkMode))
+// 				{
+// 					sleepArithmeticPtr.swap(sleep);
+// 					LOG(INFO) << "Initialize SLEEP arithmetic Successfully.";
+// 				}
+// 				else
+// 				{
+// 					LOG(WARNING) << "Initialize SLEEP arithmetic Failed.";
+// 				}
 			}
 		}
 	}
@@ -238,15 +244,15 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (fight)
 			{
-				if (fight->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
-				{
-					fightArithmeticPtr.swap(fight);
-					LOG(INFO) << "Initialize FIGHT arithmetic Successfully.";
-				}
-				else
-				{
-					LOG(WARNING) << "Initialize FIGHT arithmetic Failed.";
-				}
+// 				if (fight->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+// 				{
+// 					fightArithmeticPtr.swap(fight);
+// 					LOG(INFO) << "Initialize FIGHT arithmetic Successfully.";
+// 				}
+// 				else
+// 				{
+// 					LOG(WARNING) << "Initialize FIGHT arithmetic Failed.";
+// 				}
 			}
 		}
 	}
@@ -268,15 +274,15 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 					boost::bind(&DigitCameraLivestream::faceInfoProcessHandler, this, _1, _2)) };
 			if (face)
 			{
-				if (face->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f))
-				{
-					faceArithmeticPtr.swap(face);
-					LOG(INFO) << "Initialize FACE arithmetic Successfully.";
-				}
-				else
-				{
-					LOG(WARNING) << "Initialize FACE arithmetic Failed.";
-				}
+// 				if (face->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+// 				{
+// 					faceArithmeticPtr.swap(face);
+// 					LOG(INFO) << "Initialize FACE arithmetic Successfully.";
+// 				}
+// 				else
+// 				{
+// 					LOG(WARNING) << "Initialize FACE arithmetic Failed.";
+// 				}
 			}
 		}
 	}
@@ -393,10 +399,10 @@ DWORD DigitCameraLivestream::frameDecodeProcessThread(void* ctx /* = NULL */)
 			{
 				livestream->videoStreamDecoderPtr->decode(h264ImagePtr->getImage(), (int)h264ImagePtr->getImageBytes());
 			}
-// 			else
-// 			{
-// 				Sleep(1);
-// 			}
+			else
+			{
+				Sleep(1);
+			}
 		}
 	}
 

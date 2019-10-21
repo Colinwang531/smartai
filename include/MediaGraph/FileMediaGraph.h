@@ -25,11 +25,11 @@ public:
 protected:
 	virtual int openFile(void) = 0;
 	virtual int closeFile(void) = 0;
-	int play(void) override;
-	int stop(void) override;
-	int pause(void) override;
-	int fast(const unsigned short speed = 1) override;
-	int slow(const unsigned short speed = 1) override;
+	int startPlay(void) override;
+	int stopPlay(void) override;
+	int pausePlay(void) override;
+	int fastPlay(const unsigned short speed = 1) override;
+	int slowPlay(const unsigned short speed = 1) override;
 
 private:
 	int checkSpeedValue(const unsigned short speed = 1);

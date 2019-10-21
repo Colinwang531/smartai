@@ -8,6 +8,7 @@ using namespace std;
 
 typedef struct _StruInitParams
 {
+	int   gpu_id;             // 启用gpu id:0 默认当前第一块gpu,1为第二块gpu
 	int   sleepTime;          // 睡觉检测用，以秒为单位  
 	float detectThreshold;    // 检测阈值  值越小越灵敏，越大误捡率越少
 	float trackThreshold;     // 跟踪阈值 值越小，跟踪越久但可能出现误跟踪
@@ -17,13 +18,14 @@ typedef struct _StruInitParams
 	char* savePath;           // 处理结果保存目录
 	_StruInitParams()
 	{
+		gpu_id = 0;
 		sleepTime = 10;
 		detectThreshold = 0.2f;
 		trackThreshold = 0.3f;
 		matchThreshold = 0.6f;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = NULL;// "D:/SavePath/";
+		savePath = nullptr;// "D:/SavePath/";
 	}
 }StruInitParams;
 

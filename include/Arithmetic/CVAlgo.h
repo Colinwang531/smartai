@@ -69,12 +69,14 @@ public:
 public:
 	virtual int initialize(
 		const char* configFilePath = NULL, const int affinityMask = 1, 
-		const float detectThreshold = 0.0f, const float trackThreshold = 0.0f);
+		const float detectThreshold = 0.0f, const float trackThreshold = 0.0f,
+		const int gpu = 0);
 	virtual void deinitialize(void);
 	int tryInputMediaImage(MediaImagePtr image);
 
 protected:
-	virtual int initializeWithParameter(const char* configFilePath = NULL, void* parameter = NULL) = 0;
+	virtual int initializeWithParameter(
+		const char* configFilePath = NULL, void* parameter = NULL) = 0;
 	virtual void arithmeticWorkerProcess(void) = 0;
 
 private:
