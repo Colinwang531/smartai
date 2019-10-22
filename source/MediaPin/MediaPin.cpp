@@ -3,30 +3,20 @@
 
 NS_BEGIN(pin, 1)
 
-MediaPin::MediaPin()
+MediaPin::MediaPin(const MediaPinMode mode /* = MediaPinMode::MEDIA_PIN_INPUT */) : mediaPinMode{ mode }
 {}
 
 MediaPin::~MediaPin()
 {}
 
-int MediaPin::connectInputPin(boost::shared_ptr<MediaPin> inputPinPtr)
+int MediaPin::connectPin(MediaPinRef inputPinRef)
 {
-	return inputPinPtr ? ERR_OK : ERR_INVALID_PARAM;
+	return ERR_NOT_SUPPORT;
 }
 
 int MediaPin::inputData(MediaDataPtr dataPtr)
 {
 	return dataPtr ? ERR_OK : ERR_INVALID_PARAM;
-}
-
-bool MediaPin::isInputPin() const
-{
-	return false;
-}
-
-bool MediaPin::isOutputPin() const
-{
-	return false;
 }
 
 NS_END

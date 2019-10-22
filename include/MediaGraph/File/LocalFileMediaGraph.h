@@ -19,6 +19,10 @@ class LocalFileMediaGraph : public FileMediaGraph
 public:
 	LocalFileMediaGraph(void);
 	virtual ~LocalFileMediaGraph(void);
+
+protected:
+	int openFile(const char* filePath = NULL) override;
+	int closeFile(void) override;
 };//class LocalFileMediaGraph
 
 NS_END

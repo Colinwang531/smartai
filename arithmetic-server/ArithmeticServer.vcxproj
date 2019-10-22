@@ -377,6 +377,7 @@
     <ClInclude Include="..\include\Camera\Camera.h" />
     <ClInclude Include="..\include\DataStruct\FIFOQueue.h" />
     <ClInclude Include="..\include\DataStruct\UnorderedMap.h" />
+    <ClInclude Include="..\include\DataStruct\Vector.h" />
     <ClInclude Include="..\include\Device\Device.h" />
     <ClInclude Include="..\include\Device\EnableDeviceConfig.h" />
     <ClInclude Include="..\include\Device\EnableDeviceLoginAndLogout.h" />
@@ -424,6 +425,7 @@
     <ClInclude Include="..\include\MQModel\Responser\ResponserModel.h" />
     <ClInclude Include="..\include\MQModel\Transfer\TransferModel.h" />
     <ClInclude Include="..\include\MQModel\Worker\WorkerModel.h" />
+    <ClInclude Include="..\include\Mutex\RWLock.h" />
     <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="..\include\Stream\AVStream.h" />
     <ClInclude Include="..\include\Stream\EnablePictureCapture.h" />

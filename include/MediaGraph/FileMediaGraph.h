@@ -23,16 +23,16 @@ public:
 	virtual ~FileMediaGraph(void);
 
 protected:
-	virtual int openFile(void) = 0;
+	virtual int openFile(const char* filePath = NULL);
 	virtual int closeFile(void) = 0;
 	int startPlay(void) override;
 	int stopPlay(void) override;
 	int pausePlay(void) override;
-	int fastPlay(const unsigned short speed = 1) override;
-	int slowPlay(const unsigned short speed = 1) override;
+	int fastPlay(const short speed = 1) override;
+	int slowPlay(const short speed = 1) override;
 
 private:
-	int checkSpeedValue(const unsigned short speed = 1);
+	int checkSpeedValue(const short speed = 1);
 };//class FileMediaGraph
 
 NS_END

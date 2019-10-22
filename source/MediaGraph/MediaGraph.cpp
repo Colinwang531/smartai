@@ -9,14 +9,33 @@ MediaGraph::MediaGraph()
 MediaGraph::~MediaGraph()
 {}
 
+MediaFilterRef MediaGraph::queryFilterByID(const std::string filterID)
+{
+	return mediaFilterGroup.at(filterID);
+}
+
 int MediaGraph::addFilter(const std::string filterID, MediaFilterPtr filterPtr)
 {
-	return filterID.empty() || !filterPtr ? ERR_INVALID_PARAM : mediaFilterGroup.insert(filterID, filterPtr);
+	int status{ !filterID.empty() && filterPtr ? ERR_OK : ERR_INVALID_PARAM };
+
+	if (ERR_OK == status)
+	{
+		mediaFilterGroup.insert(filterID, filterPtr);
+	}
+
+	return status;
 }
 
 int MediaGraph::removeFilter(const std::string filterID)
 {
-	return filterID.empty() ? ERR_INVALID_PARAM : mediaFilterGroup.remove(filterID);
+	int status{ filterID.empty() ? ERR_INVALID_PARAM : ERR_OK };
+
+	if (ERR_OK == status)
+	{
+		mediaFilterGroup.remove(filterID);
+	}
+
+	return status;
 }
 
 NS_END

@@ -241,6 +241,9 @@
     <Filter Include="Source Files\MQModel\Responser">
       <UniqueIdentifier>{2fca9f01-72e8-41a1-b976-07fa6e79da46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Mutex">
+      <UniqueIdentifier>{8ee8e78b-3f62-4c69-9a90-f11313658ff0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -1489,6 +1492,12 @@
     </ClInclude>
     <ClInclude Include="..\include\MQModel\Responser\ResponserModel.h">
       <Filter>Header Files\MQModel\Responser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Mutex\RWLock.h">
+      <Filter>Header Files\Mutex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\Vector.h">
+      <Filter>Header Files\DataStruct</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

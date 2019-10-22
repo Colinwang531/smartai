@@ -1,115 +1,78 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2019, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2019-10-13
-//		Description :				HASH映射表类
-//
-//		History:						Author										Date													Description
-//											王科威										2019-10-13									创建
+// Unordered map template.
 //
 
 #ifndef UNORDERED_MAP_H
 #define UNORDERED_MAP_H
 
-#include "boost/thread/mutex.hpp"
+#include <vector>
 #include "boost/unordered_map.hpp"
-#include "predef.h"
-
-NS_BEGIN(datastruct, 1)
+#include "Mutex/RWLock.h"
 
 template <class Key, class Value>
 class UnorderedMap
 {
 public:
-	UnorderedMap(void) : capacity{ 0xFFFF }
-	{}
-	~UnorderedMap(void)
-	{}
+	UnorderedMap(void) {}
+	virtual ~UnorderedMap(void)
+	{
+		clear();
+	}
 
 public:
-	void setCapacity(const unsigned long long number = 0xFFFF) 
+	void insert(Key k, Value v)
 	{
-		capacity = number;
+		WriteLock wl{ mtx };
+		umap.insert(std::make_pair(k, v));
 	}
 
-	bool insert(Key k, Value v)
+	void remove(Key k)
 	{
-		bool status{ false };
+		WriteLock wl{ mtx };
+		typename boost::unordered_map<Key, Value>::const_iterator it{ umap.find(k) };
 
-		mtx.lock();
-		if (capacity > queue.size())
+		if (umap.end() != it)
 		{
-			queue.insert(std::make_pair(k, v));
-			status = true;
+			umap.erase(it);
 		}
-		mtx.unlock();
-
-		return status;
 	}
 
-	bool remove(Key k)
+	void clear(void)
 	{
-		bool status{ false };
-
-		mtx.lock();
-		typename boost::unordered_map<Key, Value>::iterator it{ queue.find(k) };
-		if (queue.end() != it)
-		{
-			queue.erase(it);
-			status = true;
-		}
-		mtx.unlock();
-
-		return status;
+		WriteLock wl{ mtx };
+		umap.clear();
 	}
 	
-	Value find(Key k)
+	const Value& at(Key k)
 	{
-		Value v;
-
-		mtx.lock();
-		typename boost::unordered_map<Key, Value>::iterator it{ queue.find(k) };
-		if (queue.end() != it)
-		{
-			v = it->second;
-		}
-		mtx.unlock();
-
-		return v;
+		ReadLock rl{ mtx };
+		return umap.at(k);
 	}
 
 	unsigned long long size(void)
 	{
-		unsigned long long elementNumber{ 0 };
-
-		mtx.lock();
-		elementNumber = queue.size();
-		mtx.unlock();
-
-		return elementNumber;
+		ReadLock rl{ mtx };
+		return umap.size();
 	}
 
-	inline unsigned long long total(void) const
+	void values(std::vector<Value>& data)
 	{
-		return capacity;
-	}
-
-	void swap(boost::unordered_map<Key, Value>& out)
-	{
-		mtx.lock();
-		out.swap(queue);
-		mtx.unlock();
+		WriteLock wl{ mtx };
+		for (typename boost::unordered_map<Key, Value>::const_iterator it = umap.cbegin(); it != umap.cend(); ++it)
+		{
+			data.push_back(it->second);
+		}
 	}
 
 private:
-	unsigned long long capacity;
-	boost::unordered_map<Key, Value> queue;
-	boost::mutex mtx;
-};//class FIFOQueue
-
-NS_END
+	boost::unordered_map<Key, Value> umap;
+	SharedMutex mtx;
+};//class UnorderedMap
 
 #endif//UNORDERED_MAP_H
 

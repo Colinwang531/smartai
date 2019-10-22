@@ -3,60 +3,60 @@
 
 NS_BEGIN(filter, 1)
 
-MediaFilter::MediaFilter()
+MediaFilter::MediaFilter(const MediaFilterMode mode /* = MediaFilterMode::MEDIA_FILTER_MEDIUM */) : mediaFilterMode{ mode }
 {}
 
 MediaFilter::~MediaFilter()
 {}
 
-MediaPinPtr MediaFilter::queryPin(const std::string pinID)
+const MediaPinRef& MediaFilter::queryPinByID(const std::string pinID)
 {
-	MediaPinPtr pinPtr;
+	return mediaPinGroup.at(pinID);
+}
 
-	mtx.lock();
-	if (!pinID.empty())
+int MediaFilter::addPin(const std::string pinID, MediaPinPtr pinPtr)
+{
+	int status{ !pinID.empty() && pinPtr ? ERR_OK : ERR_INVALID_PARAM };
+
+	if (ERR_OK == status)
 	{
-		MediaPinGroup::iterator it{ mediaPinGroup.find(pinID) };
-		if (mediaPinGroup.end() != it)
-		{
-			pinPtr = it->second;
-		}
+		mediaPinGroup.insert(pinID, pinPtr);
 	}
-	mtx.unlock();
 
-	return pinPtr;
+	return status;
+}
+
+int MediaFilter::removePin(const std::string pinID)
+{
+	int status{ pinID.empty() ? ERR_INVALID_PARAM : ERR_OK };
+
+	if (ERR_OK == status)
+	{
+		mediaPinGroup.remove(pinID);
+	}
+
+	return status;
 }
 
 int MediaFilter::inputData(MediaDataPtr dataPtr)
 {
 	int status{ dataPtr ? ERR_OK : ERR_INVALID_PARAM };
 
-	if (ERR_OK == status && !isTargetFilter())
+	if (ERR_OK == status)
 	{
-		mtx.lock();
-		for (MediaPinGroup::iterator it = mediaPinGroup.begin();
-			it != mediaPinGroup.end();
-			++it)
+		std::vector<MediaPinPtr> outputPinPtrs;
+		mediaPinGroup.values(outputPinPtrs);
+
+		for (int i = 0; i != outputPinPtrs.size(); ++i)
 		{
-			if (it->second->isOutputPin())
+			if (NS(pin, 1)::MediaPinMode::MEDIA_PIN_OUTPUT == outputPinPtrs[i]->getMode())
 			{
-				it->second->inputData(dataPtr);
+				outputPinPtrs[i]->inputData(dataPtr);
 			}
 		}
-		mtx.unlock();
 	}
 
 	return status;
-}
-
-bool MediaFilter::isSourceFilter() const
-{
-	return false;
-}
-
-bool MediaFilter::isTargetFilter() const
-{
-	return false;
 }
 
 NS_END
