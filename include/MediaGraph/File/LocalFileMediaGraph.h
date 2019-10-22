@@ -21,7 +21,7 @@ public:
 	virtual ~LocalFileMediaGraph(void);
 
 protected:
-	int openFile(const char* filePath = NULL) override;
+	int openFile(const std::string filePath) override;
 	int closeFile(void) override;
 };//class LocalFileMediaGraph
 

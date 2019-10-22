@@ -22,14 +22,18 @@ public:
 	FileMediaGraph(void);
 	virtual ~FileMediaGraph(void);
 
+public:
+	int startMediaGraph(const std::string filePath) override;
+	int stopMediaGraph(void) override;
+
 protected:
-	virtual int openFile(const char* filePath = NULL);
+	virtual int openFile(const std::string filePath) = 0;
 	virtual int closeFile(void) = 0;
 	int startPlay(void) override;
 	int stopPlay(void) override;
 	int pausePlay(void) override;
 	int fastPlay(const short speed = 1) override;
-	int slowPlay(const short speed = 1) override;
+	int slowPlay(const short speed = -1) override;
 
 private:
 	int checkSpeedValue(const short speed = 1);

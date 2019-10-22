@@ -27,6 +27,8 @@ public:
 	virtual ~MediaGraph(void);
 
 public:
+	virtual int startMediaGraph(const std::string) = 0;
+	virtual int stopMediaGraph(void) = 0;
 	virtual MediaFilterRef queryFilterByID(const std::string filterID);
 	//Add a new filter that was created by user.
 	virtual int addFilter(const std::string filterID, MediaFilterPtr filterPtr);
