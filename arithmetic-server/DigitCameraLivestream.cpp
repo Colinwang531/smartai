@@ -145,6 +145,8 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 	const std::string exePath{
 		boost::filesystem::initial_path<boost::filesystem::path>().string() };
 
+	printf("Set arithmetic %d abilities %d.\r\n", streamIndex, abilities);
+
 	if (arithmeticAbilities & 0x01)
 	{
 		if (!helmetArithmeticPtr)

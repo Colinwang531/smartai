@@ -435,8 +435,10 @@ int queryFacePicture(const long long uuid, char*& imageData, int& imageBytes)
 	return 0;
 }
 
+/*
 static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
 {
+	printf("********* data = %s.\r\n", data);
 	if ('$' == *data)
 	{
 		if (!clockAsyncData.empty())
@@ -447,6 +449,47 @@ static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int data
 			if (7 == clockDatas.size())
 			{
 				clockUTCTime = atoll(clockDatas[1].c_str());
+				printf("********* clockUTCTime = %lld.\r\n", clockUTCTime);
+
+				
+				boost::shared_ptr<AsynchronousServer> asyncServerPtr{
+					boost::dynamic_pointer_cast<AsynchronousServer>(routerModelPtr) };
+				if (asyncServerPtr)
+				{
+					asyncServerPtr->setClockUTCTime(clockUTCTime);
+				}
+				
+			}
+
+			clockAsyncData.clear();
+		}
+	}
+
+	clockAsyncData.append(data, dataBytes);
+}
+*/
+
+static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int dataBytes = 0)
+{
+	if ('$' == *data)
+	{
+		if (!clockAsyncData.empty())
+		{
+			std::vector<std::string> clockDatas;
+			boost::split(clockDatas, clockAsyncData, boost::is_any_of(","));
+
+			if (!clockDatas[0].compare("$ZQZDA"))
+			{
+				boost::posix_time::ptime pt(
+					boost::gregorian::date(atoi(clockDatas[4].c_str()), atoi(clockDatas[3].c_str()), atoi(clockDatas[2].c_str())), boost::posix_time::seconds(atoi(clockDatas[1].c_str())));
+				boost::posix_time::time_duration offset(
+					boost::posix_time::second_clock::local_time() - boost::posix_time::second_clock::universal_time());
+				boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
+				boost::posix_time::ptime putc = pt - offset;
+				boost::posix_time::time_duration diff(putc - epoch);
+				clockUTCTime = diff.total_seconds();
+//				printf("********* clockUTCTime = %lld.\r\n", clockUTCTime);
+				clockAsyncData.clear();
 
 				boost::shared_ptr<AsynchronousServer> asyncServerPtr{
 					boost::dynamic_pointer_cast<AsynchronousServer>(routerModelPtr) };
@@ -455,8 +498,6 @@ static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int data
 					asyncServerPtr->setClockUTCTime(clockUTCTime);
 				}
 			}
-
-			clockAsyncData.clear();
 		}
 	}
 
@@ -502,7 +543,7 @@ static bool initSerialPort()
 
 //		for (int i = 0; i != 16; i++)
 		{
-			if (!clockStatus && ERR_OK == comPortController[0]->initPort(6, CBR_4800))
+			if (!clockStatus && ERR_OK == comPortController[0]->initPort(5, CBR_4800))
 			{
 				clockStatus = true;
 				LOG(INFO) << "Open clock port access at COM" << 6;

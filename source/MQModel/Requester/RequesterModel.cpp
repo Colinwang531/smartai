@@ -55,7 +55,7 @@ int RequesterModel::send(const char* data, const int dataBytes, std::string& res
 		if (ERR_OK == status)
 		{
 			zmq_pollitem_t pollitems[] = { { requester, NULL, ZMQ_POLLIN, NULL } };
-			zmq_poll(pollitems, 1, 3000);
+			zmq_poll(pollitems, 1, 30000);
 			if (pollitems[0].revents & ZMQ_POLLIN)
 			{
 				status = MQReceiver().receive(requester, resp);
