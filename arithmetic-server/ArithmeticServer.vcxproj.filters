@@ -804,9 +804,6 @@
     <ClCompile Include="..\source\MediaGraph\StreamMediaGraph.cpp">
       <Filter>Source Files\Graph</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\File\LocalFileMediaGraph.cpp">
-      <Filter>Source Files\Graph\File</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MediaGraph\Stream\LivestreamMediaGraph.cpp">
       <Filter>Source Files\Graph\Stream</Filter>
     </ClCompile>
@@ -818,6 +815,9 @@
     </ClCompile>
     <ClCompile Include="..\source\MQModel\Responser\ResponserModel.cpp">
       <Filter>Source Files\MQModel\Responser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\File\FFmpegFileMediaGraph.cpp">
+      <Filter>Source Files\Graph\File</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1475,9 +1475,6 @@
     <ClInclude Include="..\include\MediaGraph\StreamMediaGraph.h">
       <Filter>Header Files\Graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\File\LocalFileMediaGraph.h">
-      <Filter>Header Files\Graph\File</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaGraph\Stream\LivestreamMediaGraph.h">
       <Filter>Header Files\Graph\Stream</Filter>
     </ClInclude>
@@ -1498,6 +1495,9 @@
     </ClInclude>
     <ClInclude Include="..\include\DataStruct\Vector.h">
       <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\File\FFmpegFileMediaGraph.h">
+      <Filter>Header Files\Graph\File</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
