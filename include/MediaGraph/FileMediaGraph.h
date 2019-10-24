@@ -4,7 +4,7 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Local and network file media data base class of graph.
+// Base class of file graph.
 //
 
 #ifndef FILE_MEDIA_GRAPH_H
@@ -29,6 +29,7 @@ public:
 protected:
 	virtual int openFile(const std::string filePath) = 0;
 	virtual int closeFile(void) = 0;
+	virtual int buildGraph(void) = 0;
 	int startPlay(void) override;
 	int stopPlay(void) override;
 	int pausePlay(void) override;
