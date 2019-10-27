@@ -240,7 +240,7 @@ int AsynchronousServer::setCamera(
 	int* arithmeticAbilities{ (int*)(request + 8 + *NVRIpLen) };
 	int result{ 0 }, responseDataUsedBytes{ 20 };
 
-	printf("SetCamera %d abilities %d.\r\n", *cameraIndex, *arithmeticAbilities);
+	//printf("SetCamera %d abilities %d.\r\n", *cameraIndex, *arithmeticAbilities);
 	if (0 < *arithmeticAbilities)
 	{
 		flag = createNewDigitCamera(ipaddr, *cameraIndex, *arithmeticAbilities);
@@ -289,7 +289,7 @@ int AsynchronousServer::setSailingStatus(
 	*((long long*)response) = sequenceNo;
 	*((int*)(response + 8)) = 8;
 	*((int*)(response + 12)) = 4;
-	*((int*)(response + 16)) = 1;
+	*((int*)(response + 16)) = setSailOrPortStatus(*sailingStatus);
 
 	return responseDataUsedBytes;
 }

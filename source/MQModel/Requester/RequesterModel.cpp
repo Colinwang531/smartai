@@ -21,7 +21,7 @@ RequesterModel::~RequesterModel()
 int RequesterModel::initializeModel(MQContext& ctx)
 {
 	int status{ ERR_BAD_ALLOC };
-	requester = ctx.socket(NS(mq, 1)::MQSocketType::MQ_SOCKET_REQ);
+	requester = ctx.socket(NS(mq, 1)::MQSocketType::MQ_SOCKET_DEALER);
 
 	if (requester)
 	{
@@ -52,19 +52,19 @@ int RequesterModel::send(const char* data, const int dataBytes, std::string& res
 	{
 		status = requester ? MQSender().send(data, dataBytes, requester) : ERR_BAD_OPERATE;
 
-		if (ERR_OK == status)
-		{
-			zmq_pollitem_t pollitems[] = { { requester, NULL, ZMQ_POLLIN, NULL } };
-			zmq_poll(pollitems, 1, 30000);
-			if (pollitems[0].revents & ZMQ_POLLIN)
-			{
-				status = MQReceiver().receive(requester, resp);
-			}
-			else
-			{
-				status = ERR_BAD_OPERATE;
-			}
-		}
+		//if (ERR_OK == status)
+		//{
+		//	zmq_pollitem_t pollitems[] = { { requester, NULL, ZMQ_POLLIN, NULL } };
+		//	zmq_poll(pollitems, 1, 30000);
+		//	if (pollitems[0].revents & ZMQ_POLLIN)
+		//	{
+		//		status = MQReceiver().receive(requester, resp);
+		//	}
+		//	else
+		//	{
+		//		status = ERR_BAD_OPERATE;
+		//	}
+		//}
 	}
 
 	return status;

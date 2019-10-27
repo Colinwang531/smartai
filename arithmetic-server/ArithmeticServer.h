@@ -28,9 +28,10 @@ int destroyDigitCamera(
 MediaImagePtr captureDigitCameraLivePicture(
 	const std::string NVRAddress, const unsigned long long cameraIndex = 0);
 int setAutoCheckSailOrPort(const int autoCheck = 1);
-int setSailingStatus(const int status = 0);
+int setSailOrPortStatus(const int status = 0);
 int getSailingStatus(void);
 void setClockUTCTime(const long long utc = 0);
+int loadAndRegisterFacePicture(void);
 int createNewFacePicture(
 	const char* imageData = NULL, const int imageBytes = 0, const char* name = NULL, const long long uuid = 0);
 int queryFacePicture(const long long uuid, char*& imageData, int& imageBytes);

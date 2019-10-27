@@ -62,6 +62,7 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 					alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
 					alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 					alarmInfos.push_back(alarmInfo);
+					printf("=====  MainProcFunc run time = %lld.\r\n", it->second.vecSaveMat[nSaveId].catchTime);
 
 					bgr24ImagePtr->setOriginImage(
 						(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);

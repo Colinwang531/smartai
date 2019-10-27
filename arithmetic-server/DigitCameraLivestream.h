@@ -28,7 +28,7 @@ public:
 public:
 	int openStream(void) override;
 	int closeStream(void) override;
-	void setArithmeticAbilities(const unsigned int abilities = 0);
+	void setArithmeticAbilities(const unsigned int abilities = 0, void* parameter = NULL);
 	int addFacePicture(const char* filePath = NULL, const int faceID = 0);
 
 protected:

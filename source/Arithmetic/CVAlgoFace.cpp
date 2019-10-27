@@ -10,7 +10,7 @@
 NS_BEGIN(algo, 1)
 
 CVAlgoFace::CVAlgoFace(CaptureFaceInfoHandler handler /* = NULL */)
-	: CVAlgo(NULL, handler), largestRegisterFaceID{ 0 }
+	: CVAlgo(NULL, handler)//, largestRegisterFaceID{ 0 }
 {
 	InitializeCriticalSection(&criticalSection);
 }
@@ -30,9 +30,7 @@ int CVAlgoFace::addFacePicture(const char* filePath /* = NULL */, const int face
 
 		if (ERR_OK == status)
 		{
-			mtx.lock();
 			registerFaceImageGroup.insert(std::make_pair(faceID, filePath));
-			mtx.unlock();
 		}
 	}
 
@@ -56,7 +54,6 @@ int CVAlgoFace::removeFacePicture(const long long uuid /* = -1 */)
 // 			std::remove(faceImagePath.c_str());
 // 			break;
 // 		}
-// 	}
 // 	mtx.unlock();
 
 	return status;
@@ -69,13 +66,13 @@ int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */,
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->matchThreshold = 0.52f;
+	initParames->matchThreshold = 0.68f;
 	int status{ face.InitModel(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, &criticalSection) };
 
 	if (status)
 	{
 		BGR24ImageQueue.setCapacity(1);
-		loadAndRegisterFacePicture(configFilePath);
+//		loadAndRegisterFacePicture(configFilePath);
 	}
 
 	return status;
@@ -158,42 +155,42 @@ void CVAlgoFace::arithmeticWorkerProcess()
 	}
 }
 
-int CVAlgoFace::loadAndRegisterFacePicture(const char* directoryFilePath /* = NULL */)
-{
-	boost::filesystem::path recursiveDirPath((boost::format("%s\\Face") % directoryFilePath).str());
-	boost::filesystem::recursive_directory_iterator endIter;
-
-	for (boost::filesystem::recursive_directory_iterator it(recursiveDirPath); it != endIter; ++it)
-	{
-		if (!boost::filesystem::is_directory(*it))
-		{
-			const std::string faceImageFileName{ it->path().filename().string() };
-
-			if (!faceImageFileName.empty())
-			{
-				std::vector<std::string> faceImageFileNameSegment;
-				boost::split(faceImageFileNameSegment, faceImageFileName, boost::is_any_of("_"));
-				const int currentRegisterFaceID{ atoi(faceImageFileNameSegment[0].c_str()) };
-				registerFaceImageGroup.insert(std::make_pair(currentRegisterFaceID, it->path().string()));
-
-				//Keep largestRegisterFaceID value is the newest to use for next time.
-				if (currentRegisterFaceID > largestRegisterFaceID)
-				{
-					largestRegisterFaceID = currentRegisterFaceID;
-				}
-
-				const std::string jpegFileFullPath{ (boost::format("%s\\face\\%s") % directoryFilePath % faceImageFileName).str() };
-				if (face.RegisterFace(const_cast<char*>(jpegFileFullPath.c_str()), currentRegisterFaceID))
-				{
-					mtx.lock();
-					registerFaceImageGroup.insert(std::make_pair(currentRegisterFaceID, jpegFileFullPath.c_str()));
-					mtx.unlock();
-				}
-			}
-		}
-	}
-
-	return ERR_OK;
-}
+//int CVAlgoFace::loadAndRegisterFacePicture(const char* directoryFilePath /* = NULL */)
+//{
+//	boost::filesystem::path recursiveDirPath((boost::format("%s\\Face") % directoryFilePath).str());
+//	boost::filesystem::recursive_directory_iterator endIter;
+//
+//	for (boost::filesystem::recursive_directory_iterator it(recursiveDirPath); it != endIter; ++it)
+//	{
+//		if (!boost::filesystem::is_directory(*it))
+//		{
+//			const std::string faceImageFileName{ it->path().filename().string() };
+//
+//			if (!faceImageFileName.empty())
+//			{
+//				std::vector<std::string> faceImageFileNameSegment;
+//				boost::split(faceImageFileNameSegment, faceImageFileName, boost::is_any_of("_"));
+//				const int currentRegisterFaceID{ atoi(faceImageFileNameSegment[0].c_str()) };
+//				registerFaceImageGroup.insert(std::make_pair(currentRegisterFaceID, it->path().string()));
+//
+//				//Keep largestRegisterFaceID value is the newest to use for next time.
+//				if (currentRegisterFaceID > largestRegisterFaceID)
+//				{
+//					largestRegisterFaceID = currentRegisterFaceID;
+//				}
+//
+//				const std::string jpegFileFullPath{ (boost::format("%s\\face\\%s") % directoryFilePath % faceImageFileName).str() };
+//				if (face.RegisterFace(const_cast<char*>(jpegFileFullPath.c_str()), currentRegisterFaceID))
+//				{
+//					mtx.lock();
+//					registerFaceImageGroup.insert(std::make_pair(currentRegisterFaceID, jpegFileFullPath.c_str()));
+//					mtx.unlock();
+//				}
+//			}
+//		}
+//	}
+//
+//	return ERR_OK;
+//}
 
 NS_END

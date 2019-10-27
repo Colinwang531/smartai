@@ -36,14 +36,13 @@ protected:
 	void arithmeticWorkerProcess(void) override;
 
 private:
-	int loadAndRegisterFacePicture(const char* directoryFilePath = NULL);
+//	int loadAndRegisterFacePicture(const char* directoryFilePath = NULL);
 
 private:
 	CFaceAlgorithmClass face;
 	CRITICAL_SECTION criticalSection;
-	int largestRegisterFaceID;
+//	int largestRegisterFaceID;
 	boost::unordered_map<int, const std::string> registerFaceImageGroup;
-	boost::mutex mtx;
 };//class CVAlgoHelmet
 
 NS_END

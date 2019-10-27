@@ -3,6 +3,7 @@
 
 #include <process.h>
 #include <io.h>
+#include <vector>
 #include "boost/algorithm/string.hpp"
 #include "boost/bind.hpp"
 #include "boost/checked_delete.hpp"
@@ -54,6 +55,7 @@ int largestRegisterFaceID = 0;
 NVRDeviceGroup NVRDevices;
 AVStreamGroup livestreams;
 WorkMode serverWorkMode{ WorkMode::WORK_MODE_MASTER };
+std::vector<std::string> faceImageFileGroup;
 
 int getThreadAffinityMask(void)
 {
@@ -188,7 +190,7 @@ int createNewDigitCamera(
 					boost::dynamic_pointer_cast<DigitCameraLivestream>(livestreamPtr) };
 				if (digitCameraLivestreamPtr)
 				{
-					digitCameraLivestreamPtr->setArithmeticAbilities(abilities);
+					digitCameraLivestreamPtr->setArithmeticAbilities(abilities, (void*)&faceImageFileGroup);
 				}
 
 				status = livestreamPtr->openStream();
@@ -330,7 +332,7 @@ int setAutoCheckSailOrPort(const int autoCheck/* = 1*/)
 	return ERR_OK;
 }
 
-int setSailingStatus(const int status/* = 0*/)
+int setSailOrPortStatus(const int status/* = 0*/)
 {
 	sailingStatus = status;
 	LOG(INFO) << "Set sailing status flag (0 : sailing, 1 : porting) " << sailingStatus;
@@ -346,6 +348,40 @@ int getSailingStatus(void)
 void setClockUTCTime(const long long utc /*= 0*/)
 {
 	clockUTCTime = utc;
+}
+
+int loadAndRegisterFacePicture()
+{
+	const std::string executePath{
+				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	boost::filesystem::path recursiveDirPath((boost::format("%s\\Face") % executePath).str());
+	boost::filesystem::recursive_directory_iterator endIter;
+
+	for (boost::filesystem::recursive_directory_iterator it(recursiveDirPath); it != endIter; ++it)
+	{
+		if (!boost::filesystem::is_directory(*it))
+		{
+			const std::string faceImageFileName{ it->path().filename().string() };
+
+			if (!faceImageFileName.empty())
+			{
+				std::vector<std::string> faceImageFileNameSegment;
+				boost::split(faceImageFileNameSegment, faceImageFileName, boost::is_any_of("_"));
+				const int currentRegisterFaceID{ atoi(faceImageFileNameSegment[0].c_str()) };
+
+				//Keep largestRegisterFaceID value is the newest to use for next time.
+				if (currentRegisterFaceID > largestRegisterFaceID)
+				{
+					largestRegisterFaceID = currentRegisterFaceID;
+				}
+
+				const std::string jpegFileFullPath{ (boost::format("%s\\face\\%s") % executePath % faceImageFileName).str() };
+				faceImageFileGroup.push_back(jpegFileFullPath);
+			}
+		}
+	}
+
+	return ERR_OK;
 }
 
 int createNewFacePicture(
@@ -366,6 +402,7 @@ int createNewFacePicture(
 		{
 			fwrite(imageData, imageBytes, 1, fd);
 			fclose(fd);
+			faceImageFileGroup.push_back(jpegFileName);
 			LOG(INFO) << "Save face picture [ " << jpegFileName << " ].";
 
 			for (AVStreamGroup::iterator it = livestreams.begin(); it != livestreams.end(); ++it)
@@ -480,15 +517,20 @@ static void clockTimeUpdateNotifyHandler(const char* data = NULL, const int data
 
 			if (!clockDatas[0].compare("$ZQZDA"))
 			{
+				const std::string hour{ clockDatas[1].substr(0, 2) }, min{ clockDatas[1].substr(2, 2) }, sec{ clockDatas[1].substr(4, 2) };
+				const int zone{ atoi(clockDatas[5].c_str()) };
+				const int totalsec{ (atoi(hour.c_str()) + abs(zone)) * 3600 + atoi(min.c_str()) * 60 + atoi(sec.c_str()) };
+
 				boost::posix_time::ptime pt(
-					boost::gregorian::date(atoi(clockDatas[4].c_str()), atoi(clockDatas[3].c_str()), atoi(clockDatas[2].c_str())), boost::posix_time::seconds(atoi(clockDatas[1].c_str())));
-				boost::posix_time::time_duration offset(
-					boost::posix_time::second_clock::local_time() - boost::posix_time::second_clock::universal_time());
+					boost::gregorian::date(atoi(clockDatas[4].c_str()), atoi(clockDatas[3].c_str()), atoi(clockDatas[2].c_str())), 
+					boost::posix_time::seconds(totalsec));
+				//boost::posix_time::time_duration offset(
+				//	boost::posix_time::second_clock::local_time() - boost::posix_time::second_clock::universal_time());
 				boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
-				boost::posix_time::ptime putc = pt - offset;
-				boost::posix_time::time_duration diff(putc - epoch);
-				clockUTCTime = diff.total_seconds();
-//				printf("********* clockUTCTime = %lld.\r\n", clockUTCTime);
+				//boost::posix_time::ptime putc = pt - offset;
+				boost::posix_time::time_duration diff(/*putc*/pt - epoch);
+				clockUTCTime = diff.total_milliseconds();
+//		printf("********* clockUTCTime = %lld.\r\n", clockUTCTime);
 				clockAsyncData.clear();
 
 				boost::shared_ptr<AsynchronousServer> asyncServerPtr{
@@ -590,6 +632,8 @@ static DWORD WINAPI notifyStartingProcessThread(void* ctx = NULL)
 
 int main(int argc, char* argv[])
 {
+//	initSerialPort();
+//	getchar();
 	FLAGS_stderrthreshold = GLOG_INFO;
 	FLAGS_colorlogtostderr = 1;
 	google::InitGoogleLogging(argv[0]);
@@ -601,6 +645,7 @@ int main(int argc, char* argv[])
 #endif
 	);
 
+	loadAndRegisterFacePicture();
 	MQContext ctx;
 	try
 	{

@@ -2,6 +2,7 @@
 #include "boost/filesystem/path.hpp"
 #include "boost/filesystem/operations.hpp"
 #include "boost/make_shared.hpp"
+#include "boost/algorithm/string.hpp"
 #ifdef _WINDOWS
 #include "glog/log_severity.h"
 #include "glog/logging.h"
@@ -135,17 +136,13 @@ int DigitCameraLivestream::closeStream()
 }
 
 
-void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities /* = 0 */)
+void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities/* = 0*/, void* parameter/* = NULL*/)
 {
-// 	if (0 == (int)serverWorkMode)
-// 	{
-// 		return;
-// 	}
 	arithmeticAbilities = abilities;
 	const std::string exePath{
 		boost::filesystem::initial_path<boost::filesystem::path>().string() };
 
-	printf("Set arithmetic %d abilities %d.\r\n", streamIndex, abilities);
+	//printf("Set arithmetic %d abilities %d.\r\n", streamIndex, abilities);
 
 	if (arithmeticAbilities & 0x01)
 	{
@@ -278,6 +275,18 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities 
 			{
 				if (face->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
 				{
+					std::vector<std::string>* faceImages{ reinterpret_cast<std::vector<std::string>*>(parameter) };
+					boost::shared_ptr<CVAlgoFace> algoFacePtr{ boost::dynamic_pointer_cast<CVAlgoFace>(face) };
+
+					for (std::vector<std::string>::iterator it = faceImages->begin(); it != faceImages->end(); ++it)
+					{
+						const int pos{ (const int)(*it).rfind("\\") };
+						const std::string fileName{ (*it).substr(pos + 1, (*it).length()) };
+						std::vector<std::string> faceImageFileNameSegment;
+						boost::split(faceImageFileNameSegment, fileName, boost::is_any_of("_"));
+						algoFacePtr->addFacePicture((*it).c_str(), atoi(faceImageFileNameSegment[0].c_str()));
+					}
+
 					faceArithmeticPtr.swap(face);
 					LOG(INFO) << "Initialize FACE arithmetic Successfully, GPU = [ " << (int)serverWorkMode << " ].";
 				}
