@@ -22,9 +22,6 @@ class TargetMediaFilter : public MediaFilter
 public:
 	TargetMediaFilter(void);
 	virtual ~TargetMediaFilter(void);
-
-public:
-	bool isTargetFilter(void) const override;
 };//class TargetMediaFilter
 
 NS_END

@@ -22,9 +22,6 @@ class SourceMediaFilter : public MediaFilter
 public:
 	SourceMediaFilter(void);
 	virtual ~SourceMediaFilter(void);
-
-public:
-	bool isSourceFilter(void) const override;
 };//class SourceMediaFilter
 
 NS_END

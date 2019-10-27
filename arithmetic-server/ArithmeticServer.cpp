@@ -630,10 +630,18 @@ static DWORD WINAPI notifyStartingProcessThread(void* ctx = NULL)
 	return 0;
 }
 
+#include "MediaGraph/File/FFmpegFileMediaGraph.h"
+
+void TestFFmpegFileMediaGraph(void)
+{
+	NS(graph, 1)::MediaGraph* ffmpegFileMediaGraph = new NS(graph, 1)::FFmpegFileMediaGraph;
+	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\Avengers\\Avengers.mp4");
+//	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv");
+//	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4");
+}
+
 int main(int argc, char* argv[])
 {
-//	initSerialPort();
-//	getchar();
 	FLAGS_stderrthreshold = GLOG_INFO;
 	FLAGS_colorlogtostderr = 1;
 	google::InitGoogleLogging(argv[0]);

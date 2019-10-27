@@ -1,13 +1,10 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2018, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2017-11-29
-//		Description:
-//
-//		History:						Author										Date													Description
-//											王科威										2017-11-29									创建
+// Global definitions.
 //
 
 #ifndef PREDEF_H
@@ -30,6 +27,7 @@
 
 static const unsigned short minPortNumber = 5000;
 static const unsigned short maxPortNumber = 65535;
+// WARNING : REQ <-> REP mode is not compatible for splitting package of data.
 static const unsigned int maxTransportMTUBytes = 1024 * 1024/*65530*/;
 
 typedef struct tagBGR24Frame_t

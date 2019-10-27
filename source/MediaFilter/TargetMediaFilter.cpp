@@ -2,15 +2,10 @@
 
 NS_BEGIN(filter, 1)
 
-TargetMediaFilter::TargetMediaFilter() : MediaFilter()
+TargetMediaFilter::TargetMediaFilter() : MediaFilter(MediaFilterMode::MEDIA_FILTER_TARGET)
 {}
 
 TargetMediaFilter::~TargetMediaFilter()
 {}
-
-bool TargetMediaFilter::isTargetFilter() const
-{
-	return false;
-}
 
 NS_END

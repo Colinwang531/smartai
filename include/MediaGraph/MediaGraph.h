@@ -10,11 +10,11 @@
 #ifndef MEDIA_GRAPH_H
 #define MEDIA_GRAPH_H
 
-#include "boost/shared_ptr.hpp"
 #include "MediaFilter/MediaFilter.h"
 using MediaFilterPtr = boost::shared_ptr<NS(filter, 1)::MediaFilter>;
+using MediaFilterRef = boost::weak_ptr<NS(filter, 1)::MediaFilter>;
 #include "DataStruct/UnorderedMap.h"
-using MediaFilterGroup = NS(datastruct, 1)::UnorderedMap<const std::string, MediaFilterPtr>;
+using MediaFilterGroup = UnorderedMap<const std::string, MediaFilterPtr>;
 #include "MediaData/MediaData.h"
 using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
@@ -27,10 +27,12 @@ public:
 	virtual ~MediaGraph(void);
 
 public:
-	virtual int addFilter(
-		const std::string filterID, MediaFilterPtr filterPtr);
+	virtual int startMediaGraph(const std::string) = 0;
+	virtual int stopMediaGraph(void) = 0;
+	virtual MediaFilterRef queryFilterByID(const std::string filterID);
+	//Add a new filter that was created by user.
+	virtual int addFilter(const std::string filterID, MediaFilterPtr filterPtr);
 	virtual int removeFilter(const std::string filterID);
-	virtual int inputData(MediaDataPtr dataPtr) = 0;
 
 protected:
 	MediaFilterGroup mediaFilterGroup;

@@ -4,7 +4,7 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Local and network file media data base class of graph.
+// Base class of file graph.
 //
 
 #ifndef FILE_MEDIA_GRAPH_H
@@ -22,17 +22,22 @@ public:
 	FileMediaGraph(void);
 	virtual ~FileMediaGraph(void);
 
+public:
+	int startMediaGraph(const std::string filePath) override;
+	int stopMediaGraph(void) override;
+
 protected:
-	virtual int openFile(void) = 0;
+	virtual int openFile(const std::string filePath) = 0;
 	virtual int closeFile(void) = 0;
+	virtual int buildGraph(void) = 0;
 	int startPlay(void) override;
 	int stopPlay(void) override;
 	int pausePlay(void) override;
 	int fastPlay(const short speed = 1) override;
-	int slowPlay(const short speed = 1) override;
+	int slowPlay(const short speed = -1) override;
 
 private:
-	int checkSpeedValue(const short speed = 1);
+	int checkSpeedValue(const short speed = 0);
 };//class FileMediaGraph
 
 NS_END

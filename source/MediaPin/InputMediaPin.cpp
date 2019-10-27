@@ -3,17 +3,12 @@
 
 NS_BEGIN(pin, 1)
 
-InputMediaPin::InputMediaPin(MediaFilterPtr filterPtr) 
-	: MediaPin(), mediaFilterPtr{ filterPtr }
+InputMediaPin::InputMediaPin(MediaFilterRef filterRef)
+	: MediaPin(MediaPinMode::MEDIA_PIN_INPUT), parentMediaFilterRef{ filterRef }
 {}
 
 InputMediaPin::~InputMediaPin()
 {}
-
-int InputMediaPin::connectInputPin(boost::shared_ptr<MediaPin> inputPinPtr)
-{
-	return ERR_NOT_SUPPORT;
-}
 
 int InputMediaPin::inputData(MediaDataPtr dataPtr)
 {
@@ -21,15 +16,11 @@ int InputMediaPin::inputData(MediaDataPtr dataPtr)
 
 	if (ERR_OK == status)
 	{
-		status = mediaFilterPtr ? mediaFilterPtr->inputData(dataPtr) : ERR_BAD_OPERATE;
+		status = parentMediaFilterRef.expired() ? 
+			ERR_BAD_OPERATE : parentMediaFilterRef.lock()->inputData(dataPtr);
 	}
 
 	return status;
-}
-
-bool InputMediaPin::isInputPin() const
-{
-	return true;
 }
 
 NS_END

@@ -1,35 +1,47 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2019, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2019-10-13
-//		Description:					多媒体针脚抽象基类
-//
-//		History:						Author									Date														Description
-//											王科威									2019-10-13										创建
+// Abstract base class of pin.
 //
 
 #ifndef MEDIA_PIN_H
 #define MEDIA_PIN_H
 
 #include "boost/shared_ptr.hpp"
+#include "boost/weak_ptr.hpp"
 #include "MediaData/MediaData.h"
 using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(pin, 1)
 
+typedef enum class tagMediaPinMode_t
+{
+	MEDIA_PIN_INPUT = 0,
+	MEDIA_PIN_OUTPUT
+}MediaPinMode;
+
 class MediaPin
 {
+protected:
+	using MediaPinRef = boost::weak_ptr<MediaPin>;
+
 public:
-	MediaPin(void);
+	MediaPin(const MediaPinMode mode = MediaPinMode::MEDIA_PIN_INPUT);
 	virtual ~MediaPin(void);
 
 public:
-	virtual int connectInputPin(boost::shared_ptr<MediaPin> inputPinPtr);
+	virtual int connectPin(MediaPinRef inputPinRef);
 	virtual int inputData(MediaDataPtr dataPtr);
-	virtual bool isInputPin(void) const;
-	virtual bool isOutputPin(void) const;
+	inline const MediaPinMode getMode(void) const
+	{
+		return mediaPinMode;
+	}
+
+private:
+	const MediaPinMode mediaPinMode;
 };//class MediaPin
 
 NS_END
