@@ -20,8 +20,7 @@ int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->sleepTime = 180;
-
+	initParames->sleepTime = 10;
 	if (initParames)
 	{
 		status = sleep.InitAlgoriParam(
@@ -47,8 +46,10 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
+//			printf("_____Total mapMemory size = %d.\r\n", (int)feedback.mapMemory.size());
 			for (Iterator it = feedback.mapMemory.begin(); it != feedback.mapMemory.end();)
 			{
+//				printf("_____Item ncath = %d.", it->second.nCatch);
 				if (1 == it->second.nCatch)
 				{
 					int nSaveId{ (int)(it->second.vecSaveMat.size() - 1) };
@@ -62,16 +63,25 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 					alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
 					alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 					alarmInfos.push_back(alarmInfo);
-					printf("=====  MainProcFunc run time = %lld.\r\n", it->second.vecSaveMat[nSaveId].catchTime);
+//					printf("=====  vecShowInfo.detectCOnfidence = %f.\r\n", feedback.vecShowInfo);
 
 					bgr24ImagePtr->setOriginImage(
 						(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 					boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
+//					it = feedback.mapMemory.erase(it);
+				}
+				//else
+				//{
+				//	++it;
+				//}
+
+				if(it->second.bDone)
+				{
 					it = feedback.mapMemory.erase(it);
 				}
 				else
 				{
-					++it;
+					it++;
 				}
 
 				if (0 < alarmInfos.size() && captureAlarmInfoHandler)

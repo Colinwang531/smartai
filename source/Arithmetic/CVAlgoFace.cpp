@@ -66,12 +66,12 @@ int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */,
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->matchThreshold = 0.68f;
+	initParames->matchThreshold = 0.50f;
 	int status{ face.InitModel(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, &criticalSection) };
 
 	if (status)
 	{
-		BGR24ImageQueue.setCapacity(1);
+		BGR24ImageQueue.setCapacity(4);
 //		loadAndRegisterFacePicture(configFilePath);
 	}
 
@@ -137,13 +137,14 @@ void CVAlgoFace::arithmeticWorkerProcess()
 
 			if (capturefaceInfoHandler && 0 < faceInfos.size())
 			{
-				boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+				capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
+				//boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-				if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
-				{
-					lastKnownTickTime = currentTickTime;
-					capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
-				}
+				//if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+				//{
+				//	lastKnownTickTime = currentTickTime;
+				//	capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
+				//}
 			}
 
 			 feedback.vecShowInfo.clear();

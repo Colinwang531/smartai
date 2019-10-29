@@ -342,8 +342,8 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 		return;
 	}
 
-	//If not sailing, do nothing.
-	if (1 == sailingStatus || (1 != (++livestreamFrameNumber % 3)))
+	const unsigned int phoneFlag{ (arithmeticAbilities >> 1) & 0x01 }, sleepFlag{ (arithmeticAbilities >> 2) & 0x01 };
+	if ((1 == sailingStatus && (0 < phoneFlag || 0 < sleepFlag)) || (1 != (++livestreamFrameNumber % 3)))
 	{
 		return;
 	}

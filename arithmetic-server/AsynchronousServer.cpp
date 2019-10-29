@@ -354,7 +354,7 @@ int AsynchronousServer::queryFaceInfos(
 		const std::string fileName(request + pos, *namelen);
 		pos += *namelen;
 
-		char* jpegImageData = new(std::nothrow) char[512 * 1024];
+		char* jpegImageData = new(std::nothrow) char[3 * 1024 * 1024];
 		if (jpegImageData)
 		{
 			int jpegImageBytes{ 0 };
