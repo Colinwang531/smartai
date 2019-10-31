@@ -153,7 +153,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities/
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (helmet)
 			{
-				if (helmet->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+				if (helmet->initialize(exePath.c_str(), getThreadAffinityMask(), 0.20f, 0.15f, (int)serverWorkMode))
 				{
 					helmetArithmeticPtr.swap(helmet);
 					LOG(INFO) << "Initialize HELMET arithmetic Successfully, GPU = [ " << (int)serverWorkMode << " ].";
@@ -183,7 +183,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities/
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (phone)
 			{
-				if (phone->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+				if (phone->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.80f, 0.20f, (int)serverWorkMode))
 				{
 					phoneArithmeticPtr.swap(phone);
 					LOG(INFO) << "Initialize PHONE arithmetic Successfully, GPU = [ " << (int)serverWorkMode << " ].";
@@ -243,7 +243,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities/
 					boost::bind(&DigitCameraLivestream::alarmInfoProcessHandler, this, _1, _2)) };
 			if (fight)
 			{
-				if (fight->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+				if (fight->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.99f, 0.10f, (int)serverWorkMode))
 				{
 					fightArithmeticPtr.swap(fight);
 					LOG(INFO) << "Initialize FIGHT arithmetic Successfully, GPU = [ " << (int)serverWorkMode << " ].";
@@ -273,7 +273,7 @@ void DigitCameraLivestream::setArithmeticAbilities(const unsigned int abilities/
 					boost::bind(&DigitCameraLivestream::faceInfoProcessHandler, this, _1, _2)) };
 			if (face)
 			{
-				if (face->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.95f, 0.10f, (int)serverWorkMode))
+				if (face->initialize(exePath.c_str(), getThreadAffinityMask(), /*0.25f*/0.20f, 0.15f, (int)serverWorkMode))
 				{
 					std::vector<std::string>* faceImages{ reinterpret_cast<std::vector<std::string>*>(parameter) };
 					boost::shared_ptr<CVAlgoFace> algoFacePtr{ boost::dynamic_pointer_cast<CVAlgoFace>(face) };

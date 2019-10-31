@@ -20,7 +20,7 @@ int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->sleepTime = 10;
+	initParames->sleepTime = 60;
 	if (initParames)
 	{
 		status = sleep.InitAlgoriParam(

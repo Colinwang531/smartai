@@ -72,7 +72,7 @@ _START_GOOGLE_NAMESPACE_
 
 // A wrapper for abort() to make it callable in ? :.
 static int AssertFail() {
-  abort();
+//  abort();
   return 0;  // Should not reach.
 }
 

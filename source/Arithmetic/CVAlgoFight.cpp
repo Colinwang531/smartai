@@ -60,7 +60,7 @@ void CVAlgoFight::arithmeticWorkerProcess()
 					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
 					{
 //						printf("=====  detectConfidence = %f.\r\n", it->second.vecSaveMat[i].detectConfidence);
-						if (0.90f < it->second.vecSaveMat[i].detectConfidence)
+						if (0.997f < it->second.vecSaveMat[i].detectConfidence)
 						{
 							++validNumber;
 						}
