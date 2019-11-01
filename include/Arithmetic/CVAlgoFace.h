@@ -43,6 +43,7 @@ private:
 	CRITICAL_SECTION criticalSection;
 //	int largestRegisterFaceID;
 	boost::unordered_map<int, const std::string> registerFaceImageGroup;
+	const char* savePath = "d:\\SavePath\\";
 };//class CVAlgoHelmet
 
 NS_END

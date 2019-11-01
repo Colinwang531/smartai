@@ -157,7 +157,7 @@ static void DumpStackTraceAndExit() {
 #endif  // HAVE_SIGACTION
   }
 
-  abort();
+//  abort();
 }
 
 _END_GOOGLE_NAMESPACE_

@@ -1568,7 +1568,7 @@ __declspec(noreturn)
 static void logging_fail() ATTRIBUTE_NORETURN;
 
 static void logging_fail() {
-  abort();
+//  abort();
 }
 
 typedef void (*logging_fail_func_t)() ATTRIBUTE_NORETURN;
