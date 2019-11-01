@@ -25,6 +25,9 @@ public:
 public:
 	int startMediaGraph(const std::string filePath) override;
 	int stopMediaGraph(void) override;
+	virtual int getTotalTime(
+		long long& hour, long long& minute, long long& second) = 0;
+	virtual int getBitrate(long long& bitrate) = 0;
 
 protected:
 	virtual int openFile(const std::string filePath) = 0;
@@ -37,7 +40,7 @@ protected:
 	int slowPlay(const short speed = -1) override;
 
 private:
-	int checkSpeedValue(const short speed = 1);
+	int checkSpeedValue(const short speed = 0);
 };//class FileMediaGraph
 
 NS_END

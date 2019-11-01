@@ -22,7 +22,7 @@ ResponserModel::~ResponserModel()
 int ResponserModel::initializeModel(MQContext& ctx)
 {
 	int status{ ERR_OK };
-	responser = ctx.socket(NS(mq, 1)::MQSocketType::MQ_SOCKET_REP);
+	responser = ctx.socket(NS(mq, 1)::MQSocketType::MQ_SOCKET_DEALER);
 
 	if (responser)
 	{
@@ -50,7 +50,6 @@ int ResponserModel::deinitializeModel(MQContext& ctx)
 
 void ResponserModel::process()
 {
-	const std::string respMsg{ "Slave" };
 	zmq_pollitem_t pollitems[] = { { responser, NULL, ZMQ_POLLIN, NULL } };
 
 	while (!stopped)
@@ -63,13 +62,13 @@ void ResponserModel::process()
 
 			if (ERR_OK == status && !msg.empty()) 
 			{
-				MQSender().send(respMsg.c_str(), (int)respMsg.length(), responser);
-
 				const int responseDataBytes{ 3 * 1024 * 1024 };
 				char* responseData{ new(std::nothrow) char[responseDataBytes] };
 				if (responseData && getRequestMessageNotifyHandler)
 				{
-					getRequestMessageNotifyHandler(msg.c_str(), static_cast<const int>(msg.length()), responseData, responseDataBytes);
+					int respBytes{
+						getRequestMessageNotifyHandler(msg.c_str(), static_cast<const int>(msg.length()), responseData, responseDataBytes) };
+//					MQSender().send(responseData, respBytes, responser);
 				}
 				boost::checked_array_delete(responseData);
 			}

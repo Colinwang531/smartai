@@ -10,6 +10,10 @@
 #ifndef FFMPEG_FILE_MEDIA_GRAPH_H
 #define FFMPEG_FILE_MEDIA_GRAPH_H
 
+extern "C"
+{
+#include "libavformat/avformat.h"
+}
 #include "MediaGraph/FileMediaGraph.h"
 
 NS_BEGIN(graph, 1)
@@ -24,6 +28,12 @@ protected:
 	int openFile(const std::string filePath) override;
 	int closeFile(void) override;
 	int buildGraph(void) override;
+	int getTotalTime(
+		long long& hour, long long& minute, long long& second) override;
+	int getBitrate(long long& bitrate) override;
+
+private:
+	AVFormatContext* avFormatContext;
 };//class FFmpegFileMediaGraph
 
 NS_END

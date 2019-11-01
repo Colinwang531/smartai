@@ -1,37 +1,38 @@
 extern "C"
 {
-#include "libavformat/avformat.h"
 #include "libavutil/pixdesc.h"
 }
 #include "error.h"
+#include "MediaFilter/Demuxer/DemuxerFilter.h"
+using DemuxerFilterPtr = NS(filter, 1)::DemuxerFilter;
 #include "MediaGraph/File/FFmpegFileMediaGraph.h"
 
 NS_BEGIN(graph, 1)
 
-static int64_t get_bit_rate(AVCodecContext* ctx)
-{
-	int64_t bit_rate;
-	int bits_per_sample;
+// static int64_t get_bit_rate(AVCodecContext* ctx)
+// {
+// 	int64_t bit_rate;
+// 	int bits_per_sample;
+// 
+// 	switch (ctx->codec_type) {
+// 	case AVMEDIA_TYPE_VIDEO:
+// 	case AVMEDIA_TYPE_DATA:
+// 	case AVMEDIA_TYPE_SUBTITLE:
+// 	case AVMEDIA_TYPE_ATTACHMENT:
+// 		bit_rate = ctx->bit_rate;
+// 		break;
+// 	case AVMEDIA_TYPE_AUDIO:
+// 		bits_per_sample = av_get_bits_per_sample(ctx->codec_id);
+// 		bit_rate = bits_per_sample ? ctx->sample_rate * (int64_t)ctx->channels * bits_per_sample : ctx->bit_rate;
+// 		break;
+// 	default:
+// 		bit_rate = 0;
+// 		break;
+// 	}
+// 	return bit_rate;
+// }
 
-	switch (ctx->codec_type) {
-	case AVMEDIA_TYPE_VIDEO:
-	case AVMEDIA_TYPE_DATA:
-	case AVMEDIA_TYPE_SUBTITLE:
-	case AVMEDIA_TYPE_ATTACHMENT:
-		bit_rate = ctx->bit_rate;
-		break;
-	case AVMEDIA_TYPE_AUDIO:
-		bits_per_sample = av_get_bits_per_sample(ctx->codec_id);
-		bit_rate = bits_per_sample ? ctx->sample_rate * (int64_t)ctx->channels * bits_per_sample : ctx->bit_rate;
-		break;
-	default:
-		bit_rate = 0;
-		break;
-	}
-	return bit_rate;
-}
-
-FFmpegFileMediaGraph::FFmpegFileMediaGraph() : FileMediaGraph()
+FFmpegFileMediaGraph::FFmpegFileMediaGraph() : FileMediaGraph(), avFormatContext{ NULL }
 {}
 
 FFmpegFileMediaGraph::~FFmpegFileMediaGraph()
@@ -40,72 +41,58 @@ FFmpegFileMediaGraph::~FFmpegFileMediaGraph()
 int FFmpegFileMediaGraph::openFile(const std::string filePath)
 {
 	int status{ filePath.empty() ? ERR_INVALID_PARAM : ERR_OK };
-	AVFormatContext* avFormatCtx{ NULL };
-	AVInputFormat avInputFormat{ 0 };
 
 	if (ERR_OK == status)
 	{
-// 		if (!avformat_open_input(&avFormatCtx, filePath.c_str(), NULL, NULL))
-// 		{
-// 			if (0 <= avformat_find_stream_info(avFormatCtx, NULL))
-// 			{
-// 			}
-// 			else
-// 			{
-// 				status = ERR_FILE_READ_FAILED;
-// 			}
-// 		}
-// 		else
-// 		{
-// 			status = ERR_FILE_OPEN_FAILED;
-// 		}
-
-		int ret;
-		unsigned int i;
-		AVFormatContext* fmt_ctx = NULL;
-
-		if ((ret = avformat_open_input(&fmt_ctx, filePath.c_str(), NULL, NULL)) < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot open input file!\n");
-			return ret;
+		if (!avformat_open_input(&avFormatContext, filePath.c_str(), NULL, NULL))
+		{
+			status = (0 <= avformat_find_stream_info(avFormatContext, NULL) ? ERR_OK : ERR_STREAM_TYPE_UNKNOWN);
 		}
-		if (fmt_ctx->iformat->name)
-			av_log(NULL, AV_LOG_INFO, " Input Format:%s \n", fmt_ctx->iformat->name);
-		if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0) {
-			av_log(NULL, AV_LOG_ERROR, "Cannot find stream information!\n");
-			return ret;
-		}
-		if (fmt_ctx->duration != AV_NOPTS_VALUE) {
-			int hours, mins, secs, us;
-			int64_t duration = fmt_ctx->duration + (fmt_ctx->duration <= INT64_MAX - 5000 ? 5000 : 0);
-			secs = duration / AV_TIME_BASE;
-			us = duration % AV_TIME_BASE;
-			mins = secs / 60;
-			secs %= 60;
-			hours = mins / 60;
-			mins %= 60;
-			av_log(NULL, AV_LOG_INFO, "  Duration: %02d:%02d:%02d.%02d", hours, mins, secs,
-				(100 * us) / AV_TIME_BASE);
-		}
-
-		if (fmt_ctx->start_time != AV_NOPTS_VALUE) {
-			int secs, us;
-			av_log(NULL, AV_LOG_INFO, ", start: ");
-			secs = llabs(fmt_ctx->start_time / AV_TIME_BASE);
-			us = llabs(fmt_ctx->start_time % AV_TIME_BASE);
-			av_log(NULL, AV_LOG_INFO, "%s%d.%06d", fmt_ctx->start_time >= 0 ? "" : "-", secs,
-				(int)av_rescale(us, 1000000, AV_TIME_BASE));
-		}
-
-		av_log(NULL, AV_LOG_INFO, ", bitrate: ");
-		if (fmt_ctx->bit_rate)
-			av_log(NULL, AV_LOG_INFO, "%d kb/s", (int64_t)fmt_ctx->bit_rate / 1000);
 		else
-			av_log(NULL, AV_LOG_INFO, "N/A");
-		av_log(NULL, AV_LOG_INFO, "\n");
+		{
+			status = ERR_FILE_OPEN_FAILED;
+		}
 
+// 		if (fmt_ctx->start_time != AV_NOPTS_VALUE) {
+// 			int secs, us;
+// 			av_log(NULL, AV_LOG_INFO, ", start: ");
+// 			secs = llabs(fmt_ctx->start_time / AV_TIME_BASE);
+// 			us = llabs(fmt_ctx->start_time % AV_TIME_BASE);
+// 			av_log(NULL, AV_LOG_INFO, "%s%d.%06d", fmt_ctx->start_time >= 0 ? "" : "-", secs,
+// 				(int)av_rescale(us, 1000000, AV_TIME_BASE));
+// 		}
+	}
 
-		for (i = 0; i < fmt_ctx->nb_streams; i++) {
-			AVStream* stream = fmt_ctx->streams[i];
+	return status;
+}
+
+int FFmpegFileMediaGraph::closeFile()
+{
+	int status{ ERR_BAD_OPERATE };
+
+	if (avFormatContext)
+	{
+		avformat_close_input(&avFormatContext);
+		status = ERR_OK;
+	}
+
+	return status;
+}
+
+int FFmpegFileMediaGraph::buildGraph()
+{
+	int status{ ERR_BAD_OPERATE };
+
+	if (avFormatContext)
+	{
+		if (1 < avFormatContext->nb_streams)
+		{
+			MediaFilterPtr demuxerFilterPtr{boost::make_shared<>}
+		}
+
+		for (int i = 0; i != avFormatContext->nb_streams; i++) 
+		{
+			AVStream* stream = avFormatContext->streams[i];
 			AVCodec* dec = avcodec_find_decoder(stream->codecpar->codec_id);
 			AVCodecContext* codec_ctx;
 			if (!dec) {
@@ -117,7 +104,7 @@ int FFmpegFileMediaGraph::openFile(const std::string filePath)
 				av_log(NULL, AV_LOG_ERROR, "Failed to allocate the decoder context for stream #%u\n", i);
 				return AVERROR(ENOMEM);
 			}
-			ret = avcodec_parameters_to_context(codec_ctx, stream->codecpar);
+			int ret = avcodec_parameters_to_context(codec_ctx, stream->codecpar);
 			if (ret < 0) {
 				av_log(NULL, AV_LOG_ERROR, "Failed to copy decoder parameters to input decoder context "
 					"for stream #%u\n", i);
@@ -200,20 +187,43 @@ int FFmpegFileMediaGraph::openFile(const std::string filePath)
 				avcodec_close(codec_ctx);
 			}
 		}
-		avformat_close_input(&fmt_ctx);
 	}
-
+	
 	return status;
 }
 
-int FFmpegFileMediaGraph::closeFile()
+int FFmpegFileMediaGraph::getTotalTime(
+	long long& hour, long long& minute, long long& second)
 {
-	return ERR_OK;
+	int status{ ERR_BAD_OPERATE };
+
+	if (avFormatContext && AV_NOPTS_VALUE != avFormatContext->duration)
+	{
+		const long long duration{ 
+			avFormatContext->duration + (avFormatContext->duration <= INT64_MAX - 5000 ? 5000 : 0) };
+		second = duration / AV_TIME_BASE;
+//		us = duration % AV_TIME_BASE;
+		minute = second / 60;
+		second %= 60;
+		hour = minute / 60;
+		minute %= 60;
+		status = ERR_OK;
+	}
+
+	return 0;
 }
 
-int FFmpegFileMediaGraph::buildGraph()
+int FFmpegFileMediaGraph::getBitrate(long long& bitrate)
 {
-	return ERR_OK;
+	int status{ ERR_BAD_OPERATE };
+
+	if (avFormatContext)
+	{
+		bitrate = avFormatContext->bit_rate;
+		status = ERR_OK;
+	}
+
+	return status;
 }
 
 NS_END

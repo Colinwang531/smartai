@@ -244,6 +244,12 @@
     <Filter Include="Header Files\Mutex">
       <UniqueIdentifier>{8ee8e78b-3f62-4c69-9a90-f11313658ff0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Filter\Demuxer">
+      <UniqueIdentifier>{5e7445b4-c358-4330-b7f7-5f83448b18f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Demuxer">
+      <UniqueIdentifier>{53b2661c-26a5-4900-83ec-06cf71cd24cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -818,6 +824,9 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaGraph\File\FFmpegFileMediaGraph.cpp">
       <Filter>Source Files\Graph\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Demuxer\DemuxerFilter.cpp">
+      <Filter>Source Files\Filter\Demuxer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1498,6 +1507,9 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaGraph\File\FFmpegFileMediaGraph.h">
       <Filter>Header Files\Graph\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Demuxer\DemuxerFilter.h">
+      <Filter>Header Files\Filter\Demuxer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
