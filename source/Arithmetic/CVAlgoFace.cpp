@@ -66,7 +66,7 @@ int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */,
 	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->matchThreshold = 0.68f;
+	initParames->matchThreshold = 0.52f;
 	int status{ face.InitModel(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, &criticalSection) };
 
 	if (status)

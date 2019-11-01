@@ -10,10 +10,6 @@
 #ifndef FFMPEG_FILE_MEDIA_GRAPH_H
 #define FFMPEG_FILE_MEDIA_GRAPH_H
 
-extern "C"
-{
-#include "libavformat/avformat.h"
-}
 #include "MediaGraph/FileMediaGraph.h"
 
 NS_BEGIN(graph, 1)
@@ -33,7 +29,8 @@ protected:
 	int getBitrate(long long& bitrate) override;
 
 private:
-	AVFormatContext* avFormatContext;
+	//AVFormatContext instance.
+	void* avFormatContext;
 };//class FFmpegFileMediaGraph
 
 NS_END

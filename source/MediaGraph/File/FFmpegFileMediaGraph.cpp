@@ -1,10 +1,12 @@
 extern "C"
 {
+#include "libavformat/avformat.h"
 #include "libavutil/pixdesc.h"
 }
+#include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaFilter/Demuxer/DemuxerFilter.h"
-using DemuxerFilterPtr = NS(filter, 1)::DemuxerFilter;
+using DemuxerFilter = NS(filter, 1)::DemuxerFilter;
 #include "MediaGraph/File/FFmpegFileMediaGraph.h"
 
 NS_BEGIN(graph, 1)
@@ -87,7 +89,8 @@ int FFmpegFileMediaGraph::buildGraph()
 	{
 		if (1 < avFormatContext->nb_streams)
 		{
-			MediaFilterPtr demuxerFilterPtr{boost::make_shared<>}
+			MediaFilterPtr demuxerFilterPtr{ boost::make_shared<DemuxerFilter>() };
+
 		}
 
 		for (int i = 0; i != avFormatContext->nb_streams; i++) 

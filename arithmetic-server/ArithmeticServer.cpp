@@ -555,9 +555,9 @@ static void AISStatusUpdateNotifyHandler(const char* data = NULL, const int data
 			std::vector<std::string> aisDatas;
 			boost::split(aisDatas, aisAsyncData, boost::is_any_of(","));
 
-			if (14 == aisDatas.size() && 1 == sailingStatus)
+			if (!aisDatas[0].compare("$AMVDS"))
 			{
-				sailingStatus = atoi(aisDatas[2].c_str());
+				sailingStatus = atoi(aisDatas[10].c_str());
 
 				boost::shared_ptr<AsynchronousServer> asyncServerPtr{
 					boost::dynamic_pointer_cast<AsynchronousServer>(routerModelPtr) };
@@ -583,19 +583,19 @@ static bool initSerialPort()
 		comPortController[0] = new ComPort(boost::bind(&clockTimeUpdateNotifyHandler, _1, _2));
 		comPortController[1] = new ComPort(boost::bind(&AISStatusUpdateNotifyHandler, _1, _2));
 
-//		for (int i = 0; i != 16; i++)
+		for (int i = 3; i != 16; i++)
 		{
-			if (!clockStatus && ERR_OK == comPortController[0]->initPort(5, CBR_4800))
+			if (!clockStatus && ERR_OK == comPortController[0]->initPort(i, CBR_4800))
 			{
 				clockStatus = true;
-				LOG(INFO) << "Open clock port access at COM" << 6;
-//				continue;
+				LOG(INFO) << "Open clock port access at COM" << i;
+				continue;
 			}
 
-			if (!aisStatus && ERR_OK == comPortController[1]->initPort(7, CBR_38400))
+			if (!aisStatus && ERR_OK == comPortController[1]->initPort(i, CBR_38400))
 			{
 				aisStatus = true;
-				LOG(INFO) << "Open AIS port access at COM" << 7;
+				LOG(INFO) << "Open AIS port access at COM" << i;
 			}
 		}
 	}
