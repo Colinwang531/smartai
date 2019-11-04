@@ -250,6 +250,18 @@
     <Filter Include="Source Files\Filter\Demuxer">
       <UniqueIdentifier>{53b2661c-26a5-4900-83ec-06cf71cd24cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Demuxer">
+      <UniqueIdentifier>{1c5ec0c5-0fdb-49e7-9992-e7164b94b06f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Demuxer\FFmpeg">
+      <UniqueIdentifier>{f94308f4-f0c6-481b-ad16-bfffc5bc22b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demuxer">
+      <UniqueIdentifier>{6b6c5246-5b89-461a-a511-ae97fd52f9c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demuxer\FFmpeg">
+      <UniqueIdentifier>{be89bb66-9648-4086-ae89-debcc619af30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -825,7 +837,13 @@
     <ClCompile Include="..\source\MediaGraph\File\FFmpegFileMediaGraph.cpp">
       <Filter>Source Files\Graph\File</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaFilter\Demuxer\DemuxerFilter.cpp">
+    <ClCompile Include="..\source\MediaDemuxer\MediaDemuxer.cpp">
+      <Filter>Source Files\Demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegFileMediaDemuxer.cpp">
+      <Filter>Source Files\Demuxer\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Demuxer\AVDemuxerFilter.cpp">
       <Filter>Source Files\Filter\Demuxer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1508,7 +1526,13 @@
     <ClInclude Include="..\include\MediaGraph\File\FFmpegFileMediaGraph.h">
       <Filter>Header Files\Graph\File</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaFilter\Demuxer\DemuxerFilter.h">
+    <ClInclude Include="..\include\MediaDemuxer\MediaDemuxer.h">
+      <Filter>Header Files\Demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegFileMediaDemuxer.h">
+      <Filter>Header Files\Demuxer\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Demuxer\AVDemuxerFilter.h">
       <Filter>Header Files\Filter\Demuxer</Filter>
     </ClInclude>
   </ItemGroup>

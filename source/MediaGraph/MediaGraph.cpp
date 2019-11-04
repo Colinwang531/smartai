@@ -9,24 +9,24 @@ MediaGraph::MediaGraph()
 MediaGraph::~MediaGraph()
 {}
 
-MediaFilterRef MediaGraph::queryFilterByID(const std::string filterID)
+MediaFilterRef MediaGraph::queryMediaFilterByID(const std::string filterID)
 {
 	return mediaFilterGroup.at(filterID);
 }
 
-int MediaGraph::addFilter(const std::string filterID, MediaFilterPtr filterPtr)
+int MediaGraph::addMediaFilter(const std::string filterID, MediaFilterPtr mediaFilter)
 {
-	int status{ !filterID.empty() && filterPtr ? ERR_OK : ERR_INVALID_PARAM };
+	int status{ !filterID.empty() && mediaFilter ? ERR_OK : ERR_INVALID_PARAM };
 
 	if (ERR_OK == status)
 	{
-		mediaFilterGroup.insert(filterID, filterPtr);
+		mediaFilterGroup.insert(filterID, mediaFilter);
 	}
 
 	return status;
 }
 
-int MediaGraph::removeFilter(const std::string filterID)
+int MediaGraph::removeMediaFilter(const std::string filterID)
 {
 	int status{ filterID.empty() ? ERR_INVALID_PARAM : ERR_OK };
 

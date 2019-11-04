@@ -10,7 +10,6 @@
 #ifndef MEDIA_FILTER_H
 #define MEDIA_FILTER_H
 
-#include "boost/enable_shared_from_this.hpp"
 #include "MediaPin/MediaPin.h"
 using MediaPinPtr = boost::shared_ptr<NS(pin, 1)::MediaPin>;
 using MediaPinRef = boost::weak_ptr<NS(pin, 1)::MediaPin>;
@@ -21,25 +20,23 @@ NS_BEGIN(filter, 1)
 
 typedef enum class tagMediaFilterMode_t
 {
-	MEDIA_FILTER_SOURCE = 0,
-	MEDIA_FILTER_MEDIUM,
-	MEDIA_FILTER_TARGET
+	MEDIA_FILTER_MODE_SOURCE = 0,
+	MEDIA_FILTER_MODE_MEDIUM,
+	MEDIA_FILTER_MODE_TARGET
 }MediaFilterMode;
 
 BOOST_STATIC_CONSTANT(std::string, MediaDemuxerFilterID = "MediaDemuxerFilterID");
 
-class MediaFilter : protected boost::enable_shared_from_this<MediaFilter>
+class MediaFilter
 {
 public:
-	MediaFilter(const MediaFilterMode mode = MediaFilterMode::MEDIA_FILTER_MEDIUM);
+	MediaFilter(const MediaFilterMode mode = MediaFilterMode::MEDIA_FILTER_MODE_MEDIUM);
 	virtual ~MediaFilter(void);
 
 public: 
-	virtual const MediaPinRef& queryPinByID(const std::string pinID);
-	virtual int addPin(const std::string pinID, MediaPinPtr pinPtr);
-	virtual int removePin(const std::string pinID);
-	virtual int inputData(MediaDataPtr dataPtr);
-	inline const MediaFilterMode getMode(void) const
+	virtual MediaPinRef queryMediaPinByID(const std::string pinID);
+	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+	inline const MediaFilterMode getMediaFilterMode(void) const
 	{
 		return mediaFilterMode;
 	}

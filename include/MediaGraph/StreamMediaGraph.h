@@ -20,10 +20,6 @@ public:
 	StreamMediaGraph(void);
 	virtual ~StreamMediaGraph(void);
 
-public:
-	int startMediaGraph(const std::string streamUrl) override;
-	int stopMediaGraph(void) override;
-
 protected:
 	virtual int openStream(const std::string streamUrl) = 0;
 	virtual int closeStream(void) = 0;

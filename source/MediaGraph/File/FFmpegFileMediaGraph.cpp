@@ -1,8 +1,3 @@
-extern "C"
-{
-#include "libavformat/avformat.h"
-#include "libavutil/pixdesc.h"
-}
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaFilter/Demuxer/DemuxerFilter.h"
@@ -38,109 +33,72 @@ NS_BEGIN(graph, 1)
 // 	return bit_rate;
 // }
 
-FFmpegFileMediaGraph::FFmpegFileMediaGraph() : FileMediaGraph(), avFormatContext{ NULL }
+FFmpegFileMediaGraph::FFmpegFileMediaGraph() : FileMediaGraph()
 {}
 
 FFmpegFileMediaGraph::~FFmpegFileMediaGraph()
 {}
 
-int FFmpegFileMediaGraph::openFile(const std::string filePath)
+int FFmpegFileMediaGraph::inputMediaData(MediaDataPtr mediaData)
 {
-	int status{ filePath.empty() ? ERR_INVALID_PARAM : ERR_OK };
+	int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
 
 	if (ERR_OK == status)
 	{
-		if (!avformat_open_input((AVFormatContext**)&avFormatContext, filePath.c_str(), NULL, NULL))
-		{
-			status = (0 <= avformat_find_stream_info((AVFormatContext*)avFormatContext, NULL) ? ERR_OK : ERR_STREAM_TYPE_UNKNOWN);
-		}
-		else
-		{
-			status = ERR_FILE_OPEN_FAILED;
-		}
+		MediaFilterRef demuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::MediaDemuxerFilterID) };
+		// Media filter instance does not exist if expired() return true.
+		status = demuxerFilterPtr.expired() ?
+			createNewDemuxerFilter(mediaData) : demuxerFilterPtr.lock()->inputMediaData(mediaData);
 	}
 
 	return status;
 }
 
-int FFmpegFileMediaGraph::closeFile()
+unsigned long long FFmpegFileMediaGraph::getTotalSeconds()
 {
-	int status{ ERR_BAD_OPERATE };
+//	int status{ ERR_BAD_OPERATE };
 
-	if (avFormatContext)
-	{
-		avformat_close_input((AVFormatContext**)&avFormatContext);
-		status = ERR_OK;
-	}
-
-	return status;
-}
-
-int FFmpegFileMediaGraph::buildGraph()
-{
-	int status{ ERR_BAD_OPERATE };
-
-	if (avFormatContext)
-	{
-		// Demuxer filter should be created if more than one stream type stored in the file.
-		if (1 < ((AVFormatContext*)avFormatContext)->nb_streams)
-		{
-			buildDemuxerFilter();
-		}
-
-		buildDecoderFilter();
-		status = ERR_OK;
-	}
-	
-	return status;
-}
-
-int FFmpegFileMediaGraph::getTotalTime(
-	long long& hour, long long& minute, long long& second)
-{
-	int status{ ERR_BAD_OPERATE };
-
-	if (avFormatContext && AV_NOPTS_VALUE != ((AVFormatContext*)avFormatContext)->duration)
-	{
-		const long long duration{ 
-			((AVFormatContext*)avFormatContext)->duration + (((AVFormatContext*)avFormatContext)->duration <= INT64_MAX - 5000 ? 5000 : 0) };
-		second = duration / AV_TIME_BASE;
-//		us = duration % AV_TIME_BASE;
-		minute = second / 60;
-		second %= 60;
-		hour = minute / 60;
-		minute %= 60;
-		status = ERR_OK;
-	}
+// 	if (avFormatContext && AV_NOPTS_VALUE != ((AVFormatContext*)avFormatContext)->duration)
+// 	{
+// 		const long long duration{ 
+// 			((AVFormatContext*)avFormatContext)->duration + (((AVFormatContext*)avFormatContext)->duration <= INT64_MAX - 5000 ? 5000 : 0) };
+// 		second = duration / AV_TIME_BASE;
+// //		us = duration % AV_TIME_BASE;
+// 		minute = second / 60;
+// 		second %= 60;
+// 		hour = minute / 60;
+// 		minute %= 60;
+// 		status = ERR_OK;
+// 	}
 
 	return 0;
 }
 
-int FFmpegFileMediaGraph::getBitrate(long long& bitrate)
+unsigned long long FFmpegFileMediaGraph::getBitrate()
 {
-	int status{ ERR_BAD_OPERATE };
+// 	int status{ ERR_BAD_OPERATE };
+// 
+// 	if (avFormatContext)
+// 	{
+// 		bitrate = ((AVFormatContext*)avFormatContext)->bit_rate;
+// 		status = ERR_OK;
+// 	}
 
-	if (avFormatContext)
+	return 0;
+}
+
+int FFmpegFileMediaGraph::createNewDemuxerFilter(MediaDataPtr mediaData)
+{
+	int status{ ERR_BAD_ALLOC };
+	MediaFilterPtr demuxerFilterPtr{ boost::make_shared<DemuxerFilter>() };
+
+	if (demuxerFilterPtr)
 	{
-		bitrate = ((AVFormatContext*)avFormatContext)->bit_rate;
-		status = ERR_OK;
+		status = demuxerFilterPtr->inputMediaData(mediaData);
+		mediaFilterGroup.insert(NS(filter, 1)::MediaDemuxerFilterID, demuxerFilterPtr);
 	}
 
 	return status;
-}
-
-void FFmpegFileMediaGraph::buildDemuxerFilter()
-{
-	MediaFilterPtr demuxerFilterPtr{ boost::make_shared<DemuxerFilter>() };
-	MediaPinPtr videoStreamOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
-	MediaPinPtr audioStreamOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
-
-	if (demuxerFilterPtr && videoStreamOutputPinPtr && audioStreamOutputPinPtr)
-	{
-		demuxerFilterPtr->addPin(NS(pin, 1)::VideoStreamOutputPinID, videoStreamOutputPinPtr);
-		demuxerFilterPtr->addPin(NS(pin, 1)::AudioStreamOutputPinID, audioStreamOutputPinPtr);
-		mediaFilterGroup.insert(NS(filter, 1)::MediaDemuxerFilterID, demuxerFilterPtr);
-	}
 }
 
 void FFmpegFileMediaGraph::buildDecoderFilter()

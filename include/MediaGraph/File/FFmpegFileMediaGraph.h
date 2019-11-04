@@ -21,20 +21,13 @@ public:
 	virtual ~FFmpegFileMediaGraph(void);
 
 protected:
-	int openFile(const std::string filePath) override;
-	int closeFile(void) override;
-	int buildGraph(void) override;
-	int getTotalTime(
-		long long& hour, long long& minute, long long& second) override;
-	int getBitrate(long long& bitrate) override;
+	int inputMediaData(MediaDataPtr mediaData) override;
+	unsigned long long getTotalSeconds(void) override;
+	unsigned long long getBitrate(void) override;
 
 private:
-	void buildDemuxerFilter(void);
+	int createNewDemuxerFilter(MediaDataPtr mediaData);
 	void buildDecoderFilter(void);
-
-private:
-	//AVFormatContext instance.
-	void* avFormatContext;
 };//class FFmpegFileMediaGraph
 
 NS_END

@@ -10,6 +10,7 @@
 #ifndef MEDIA_GRAPH_H
 #define MEDIA_GRAPH_H
 
+#include "boost/noncopyable.hpp"
 #include "MediaFilter/MediaFilter.h"
 using MediaFilterPtr = boost::shared_ptr<NS(filter, 1)::MediaFilter>;
 using MediaFilterRef = boost::weak_ptr<NS(filter, 1)::MediaFilter>;
@@ -20,19 +21,21 @@ using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(graph, 1)
 
-class MediaGraph
+class MediaGraph : private boost::noncopyable
 {
 public:
 	MediaGraph(void);
 	virtual ~MediaGraph(void);
 
 public:
-	virtual int startMediaGraph(const std::string) = 0;
-	virtual int stopMediaGraph(void) = 0;
-	virtual MediaFilterRef queryFilterByID(const std::string filterID);
-	//Add a new filter that was created by user.
-	virtual int addFilter(const std::string filterID, MediaFilterPtr filterPtr);
-	virtual int removeFilter(const std::string filterID);
+	virtual MediaFilterRef queryMediaFilterByID(const std::string filterID);
+	//Modify filter that created by user in the graph.
+	virtual int addMediaFilter(const std::string filterID, MediaFilterPtr mediaFilter);
+	virtual int removeMediaFilter(const std::string filterID);
+	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+
+protected:
+	virtual int buildMediaGraphByMediaStreams(void) = 0;
 
 protected:
 	MediaFilterGroup mediaFilterGroup;

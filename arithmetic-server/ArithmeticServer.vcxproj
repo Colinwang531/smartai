@@ -308,10 +308,12 @@
     <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\MediaMixerDecoder.cpp" />
     <ClCompile Include="..\source\MediaDecoder\SDK\HikvisionSDKDecoder.cpp" />
+    <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegFileMediaDemuxer.cpp" />
+    <ClCompile Include="..\source\MediaDemuxer\MediaDemuxer.cpp" />
     <ClCompile Include="..\source\MediaEncoder\FFmpegEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\JPEG\YUV420PToJPEGEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
-    <ClCompile Include="..\source\MediaFilter\Demuxer\DemuxerFilter.cpp" />
+    <ClCompile Include="..\source\MediaFilter\Demuxer\AVDemuxerFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\MediaFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\SourceMediaFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\TargetMediaFilter.cpp" />
@@ -397,10 +399,12 @@
     <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\MediaMixerDecoder.h" />
     <ClInclude Include="..\include\MediaDecoder\SDK\HikvisionSDKDecoder.h" />
+    <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegFileMediaDemuxer.h" />
+    <ClInclude Include="..\include\MediaDemuxer\MediaDemuxer.h" />
     <ClInclude Include="..\include\MediaEncoder\FFmpegEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\JPEG\YUV420PToJPEGEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
-    <ClInclude Include="..\include\MediaFilter\Demuxer\DemuxerFilter.h" />
+    <ClInclude Include="..\include\MediaFilter\Demuxer\AVDemuxerFilter.h" />
     <ClInclude Include="..\include\MediaFilter\MediaFilter.h" />
     <ClInclude Include="..\include\MediaFilter\SourceMediaFilter.h" />
     <ClInclude Include="..\include\MediaFilter\TargetMediaFilter.h" />
