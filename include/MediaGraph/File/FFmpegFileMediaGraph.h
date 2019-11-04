@@ -29,6 +29,10 @@ protected:
 	int getBitrate(long long& bitrate) override;
 
 private:
+	void buildDemuxerFilter(void);
+	void buildDecoderFilter(void);
+
+private:
 	//AVFormatContext instance.
 	void* avFormatContext;
 };//class FFmpegFileMediaGraph

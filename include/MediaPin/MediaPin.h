@@ -23,6 +23,9 @@ typedef enum class tagMediaPinMode_t
 	MEDIA_PIN_OUTPUT
 }MediaPinMode;
 
+BOOST_STATIC_CONSTANT(std::string, VideoStreamOutputPinID = "VideoStreamOutputPinID");
+BOOST_STATIC_CONSTANT(std::string, AudioStreamOutputPinID = "AudioStreamOutputPinID");
+
 class MediaPin
 {
 protected:

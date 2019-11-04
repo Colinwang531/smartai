@@ -1,7 +1,7 @@
 #ifndef __FIGHTMODEL_H
 #define __FIGHTMODEL_H
 
-#include "DefGlobalVar.h"
+#include "../include/DefGlobalVar.h"
 #include <vector>
 
 using namespace std;
@@ -16,8 +16,6 @@ public:
 	CFightAlgorithmClass();
 	virtual ~CFightAlgorithmClass();
 
-	//清空特征
-//	virtual bool clear_oldvec();
 	// 初始化算法
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
@@ -26,9 +24,9 @@ public:
 
 	// 算法后处理
 	virtual bool PostProcessFunc(FeedBackFight &objFeed);
-	CFightAlgorithmClass *m_pTreat;
+
 private:
-	
+	CFightAlgorithmClass *m_pTreat;
 };
 
 

@@ -1,7 +1,7 @@
 #ifndef __SLEEPMODEL_H
 #define __SLEEPMODEL_H
 
-#include "DefGlobalVar.h"
+#include "../include/DefGlobalVar.h"
 #include <vector>
 
 using namespace std;
@@ -25,7 +25,7 @@ public:
 	// 算法后处理
 	virtual bool PostProcessFunc(FeedBackSleep &objFeed);
 
-public:
+private:
 	CSleepAlgorithmClass *m_pTreat;
 };
 

@@ -1,7 +1,7 @@
 #ifndef __PHONEMODEL_H
 #define __PHONEMODEL_H
 
-#include "DefGlobalVar.h"
+#include "../include/DefGlobalVar.h"
 #include <vector>
 
 using namespace std;

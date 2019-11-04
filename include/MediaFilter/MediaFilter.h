@@ -26,6 +26,8 @@ typedef enum class tagMediaFilterMode_t
 	MEDIA_FILTER_TARGET
 }MediaFilterMode;
 
+BOOST_STATIC_CONSTANT(std::string, MediaDemuxerFilterID = "MediaDemuxerFilterID");
+
 class MediaFilter : protected boost::enable_shared_from_this<MediaFilter>
 {
 public:
