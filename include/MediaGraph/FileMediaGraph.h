@@ -23,8 +23,8 @@ public:
 	virtual ~FileMediaGraph(void);
 
 public:
-	virtual unsigned long long getTotalSeconds(void) = 0;
-	virtual unsigned long long getBitrate(void) = 0;
+	virtual const long long getTotalSeconds(void) = 0;
+	virtual const long long getBitrate(void) = 0;
 
 protected:
 	int startPlay(void) override;

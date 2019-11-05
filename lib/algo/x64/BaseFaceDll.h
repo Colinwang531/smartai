@@ -1,7 +1,7 @@
 #ifndef __FACEMODEL_H
 #define __FACEMODEL_H
 
-#include "../include/DefGlobalVar.h"
+#include "DefGlobalVar.h"
 #include <vector>
 
 using namespace std;

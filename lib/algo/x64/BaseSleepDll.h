@@ -1,7 +1,7 @@
 #ifndef __SLEEPMODEL_H
 #define __SLEEPMODEL_H
 
-#include "../include/DefGlobalVar.h"
+#include "DefGlobalVar.h"
 #include <vector>
 
 using namespace std;

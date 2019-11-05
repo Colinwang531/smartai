@@ -17,7 +17,7 @@ int InputMediaPin::inputData(MediaDataPtr dataPtr)
 	if (ERR_OK == status)
 	{
 		status = parentMediaFilterRef.expired() ? 
-			ERR_BAD_OPERATE : parentMediaFilterRef.lock()->inputData(dataPtr);
+			ERR_BAD_OPERATE : parentMediaFilterRef.lock()->inputMediaData(dataPtr);
 	}
 
 	return status;

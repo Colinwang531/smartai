@@ -20,12 +20,12 @@ typedef struct _StruInitParams
 	{
 		gpu_id = 0;
 		sleepTime = 10;
-		detectThreshold = 0.2;
-		trackThreshold = 0.3;
-		matchThreshold = 0.6;
+		detectThreshold = 0.2f;
+		trackThreshold = 0.3f;
+		matchThreshold = 0.6f;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = "D:/SavePath/";
+		savePath = nullptr;// "D:/SavePath/";
 	}
 }StruInitParams;
 

@@ -25,7 +25,10 @@ typedef enum class tagMediaFilterMode_t
 	MEDIA_FILTER_MODE_TARGET
 }MediaFilterMode;
 
-BOOST_STATIC_CONSTANT(std::string, MediaDemuxerFilterID = "MediaDemuxerFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaH2645DecoderFilterID = "AVMediaH2645DecoderFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaAACDecoderFilterID = "AVMediaAACDecoderFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaG722DecoderFilterID = "AVMediaG722DecoderFilterID");
 
 class MediaFilter
 {

@@ -1,5 +1,6 @@
 extern "C"
 {
+#include "libavformat/avformat.h"
 #include "libavutil/pixdesc.h"
 }
 #include "error.h"
@@ -16,6 +17,30 @@ FFmpegFileMediaDemuxer::~FFmpegFileMediaDemuxer(void)
 	{
 		avformat_close_input((AVFormatContext**)&avFormatContext);
 	}
+}
+
+const long long FFmpegFileMediaDemuxer::getTotalSeconds(void) const
+{
+	long long fileTotalSeconds{ 0 };
+
+	if (avFormatContext && AV_NOPTS_VALUE != ((AVFormatContext*)avFormatContext)->duration)
+	{
+		fileTotalSeconds = ((AVFormatContext*)avFormatContext)->duration + (((AVFormatContext*)avFormatContext)->duration <= INT64_MAX - 5000 ? 5000 : 0);
+	}
+
+	return fileTotalSeconds;
+}
+
+const long long FFmpegFileMediaDemuxer::getBitrate(void) const
+{
+	long long fileBitrate{ 0 };
+
+	if (avFormatContext)
+	{
+		fileBitrate = ((AVFormatContext*)avFormatContext)->bit_rate;
+	}
+
+	return fileBitrate;
 }
 
 int FFmpegFileMediaDemuxer::inputMediaData(MediaDataPtr mediaData)
@@ -35,7 +60,55 @@ int FFmpegFileMediaDemuxer::inputMediaData(MediaDataPtr mediaData)
 		}
 	}
 
-	return 0;
+	return status;
+}
+
+const MediaStreamType FFmpegFileMediaDemuxer::getVideoStreamType() const 
+{
+	MediaStreamType mediaStreamType{ MediaStreamType::MEDIA_STREAM_TYPE_NONE };
+
+	for (int i = 0; i != ((AVFormatContext*)avFormatContext)->nb_streams; i++)
+	{
+		if (AVMEDIA_TYPE_VIDEO == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_type)
+		{
+			if (AV_CODEC_ID_H264 == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
+			{
+				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_H264;
+			}
+			else if (AV_CODEC_ID_H265 == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
+			{
+				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_H265;
+			}
+
+			break;
+		}
+	}
+
+	return mediaStreamType;
+}
+
+const MediaStreamType FFmpegFileMediaDemuxer::getAudioStreamType() const
+{
+	MediaStreamType mediaStreamType{ MediaStreamType::MEDIA_STREAM_TYPE_NONE };
+
+	for (int i = 0; i != ((AVFormatContext*)avFormatContext)->nb_streams; i++)
+	{
+		if (AVMEDIA_TYPE_AUDIO == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_type)
+		{
+			if (AV_CODEC_ID_AAC == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
+			{
+				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_AAC;
+			}
+			else if (AV_CODEC_ID_ADPCM_G722 == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
+			{
+				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_G722;
+			}
+
+			break;
+		}
+	}
+
+	return mediaStreamType;
 }
 
 NS_END

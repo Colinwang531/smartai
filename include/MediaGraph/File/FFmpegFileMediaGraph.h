@@ -11,6 +11,8 @@
 #define FFMPEG_FILE_MEDIA_GRAPH_H
 
 #include "MediaGraph/FileMediaGraph.h"
+#include "MediaDemuxer/MediaDemuxer.h"
+using MediaStreamType = NS(demuxer, 1)::MediaStreamType;
 
 NS_BEGIN(graph, 1)
 
@@ -22,12 +24,14 @@ public:
 
 protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
-	unsigned long long getTotalSeconds(void) override;
-	unsigned long long getBitrate(void) override;
+	const long long getTotalSeconds(void) override;
+	const long long getBitrate(void) override;
 
 private:
 	int createNewDemuxerFilter(MediaDataPtr mediaData);
-	void buildDecoderFilter(void);
+	int createNewDecoderFilter(
+		const MediaStreamType videoType = MediaStreamType::MEDIA_STREAM_TYPE_NONE,
+		const MediaStreamType audioType = MediaStreamType::MEDIA_STREAM_TYPE_NONE);
 };//class FFmpegFileMediaGraph
 
 NS_END

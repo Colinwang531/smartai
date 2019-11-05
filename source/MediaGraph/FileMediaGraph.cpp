@@ -9,23 +9,6 @@ FileMediaGraph::FileMediaGraph() : MediaGraph()
 FileMediaGraph::~FileMediaGraph()
 {}
 
-int FileMediaGraph::startMediaGraph(const std::string filePath)
-{
-	int status{ filePath.empty() ? ERR_INVALID_PARAM : openFile(filePath) };
-
-	if (ERR_OK == status)
-	{
-		status = buildGraph();
-	}
-
-	return status;
-}
-
-int FileMediaGraph::stopMediaGraph()
-{
-	return ERR_OK;
-}
-
 int FileMediaGraph::startPlay()
 {
 	return ERR_OK;

@@ -1,7 +1,7 @@
 #ifndef __FIGHTMODEL_H
 #define __FIGHTMODEL_H
 
-#include "../include/DefGlobalVar.h"
+#include "DefGlobalVar.h"
 #include <vector>
 
 using namespace std;

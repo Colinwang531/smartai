@@ -262,6 +262,18 @@
     <Filter Include="Source Files\Demuxer\FFmpeg">
       <UniqueIdentifier>{be89bb66-9648-4086-ae89-debcc619af30}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Filter\Decoder">
+      <UniqueIdentifier>{a01a0169-2845-464f-ae17-c28848a7fd11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Decoder">
+      <UniqueIdentifier>{9e068679-2849-4a02-8be2-50dbd7479950}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Decoder\FFmpeg">
+      <UniqueIdentifier>{691ca48b-a708-49d1-b9fb-6160373ec372}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoder\FFmpeg">
+      <UniqueIdentifier>{0388173f-0a37-4234-86cb-97adc5c1b4eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -845,6 +857,12 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Demuxer\AVDemuxerFilter.cpp">
       <Filter>Source Files\Filter\Demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Decoder\AVDecoderFilter.cpp">
+      <Filter>Source Files\Filter\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegVideoDecoder.cpp">
+      <Filter>Source Files\Decoder\FFmpeg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1534,6 +1552,12 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaFilter\Demuxer\AVDemuxerFilter.h">
       <Filter>Header Files\Filter\Demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Decoder\AVDecoderFilter.h">
+      <Filter>Header Files\Filter\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegVideoDecoder.h">
+      <Filter>Header Files\Decoder\FFmpeg</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

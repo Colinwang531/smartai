@@ -1,13 +1,10 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2017, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2017-12-11
-//		Description:					多媒体解码器抽象基类
-//
-//		History:						Author									Date														Description
-//											王科威									2017-12-11										创建
+// Base class of video and audio decoder.
 //
 
 #ifndef MEDIA_DECODER_H
@@ -17,6 +14,13 @@
 
 NS_BEGIN(decoder, 1)
 
+typedef enum class tagMediaDecodeType_t
+{
+	MEDIA_DECODE_TYPE_H2645 = 0,
+	MEDIA_DECODE_TYPE_AAC,
+	MEDIA_DECODE_TYPE_G722
+}MediaDecodeType;
+
 class MediaDecoder
 {
 public:
@@ -24,6 +28,7 @@ public:
 	virtual ~MediaDecoder(void);
 
 public:
+	// @ Deprecated
 	virtual int decode(
 		const unsigned char* frameData = NULL, const int frameBytes = 0) = 0;
 };//class MediaDecoder

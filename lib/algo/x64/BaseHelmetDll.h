@@ -1,7 +1,7 @@
 #ifndef __HELMETMODEL_H
 #define __HELMETMODEL_H
 
-#include "../include/DefGlobalVar.h"
+#include "DefGlobalVar.h"
 #include <vector>
 
 using namespace std;

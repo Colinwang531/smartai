@@ -13,6 +13,7 @@
 #include "MediaFilter/SourceMediaFilter.h"
 #include "MediaDemuxer/MediaDemuxer.h"
 using MediaDemuxerPtr = boost::shared_ptr<NS(demuxer, 1)::MediaDemuxer>;
+using MediaStreamType = NS(demuxer, 1)::MediaStreamType;
 
 NS_BEGIN(filter, 1)
 
@@ -21,6 +22,12 @@ class AVDemuxerFilter : public SourceMediaFilter
 public:
 	AVDemuxerFilter(void);
 	virtual ~AVDemuxerFilter(void);
+
+public:
+	const long long getTotalSeconds(void) const;
+	const long long getBitrate(void) const;
+	const MediaStreamType getVideoStreamType(void) const;
+	const MediaStreamType getAudioStreamType(void) const;
 
 protected:
 	int inputMediaData(MediaDataPtr mediaData) override;

@@ -12,6 +12,44 @@ AVDemuxerFilter::AVDemuxerFilter() : SourceMediaFilter()
 AVDemuxerFilter::~AVDemuxerFilter()
 {}
 
+const long long AVDemuxerFilter::getTotalSeconds() const
+{
+	long long fileTotalSeconds{ 0 };
+	boost::shared_ptr<NS(demuxer, 1)::FFmpegFileMediaDemuxer> ffmpegDemuxerPtr{
+		boost::dynamic_pointer_cast<NS(demuxer, 1)::FFmpegFileMediaDemuxer>(mediaDemuxerPtr) };
+
+	if (ffmpegDemuxerPtr)
+	{
+		fileTotalSeconds = ffmpegDemuxerPtr->getTotalSeconds();
+	}
+
+	return fileTotalSeconds;
+}
+
+const long long AVDemuxerFilter::getBitrate() const
+{
+	long long fileBitrate{ 0 };
+	boost::shared_ptr<NS(demuxer, 1)::FFmpegFileMediaDemuxer> ffmpegDemuxerPtr{
+		boost::dynamic_pointer_cast<NS(demuxer, 1)::FFmpegFileMediaDemuxer>(mediaDemuxerPtr) };
+
+	if (ffmpegDemuxerPtr)
+	{
+		fileBitrate = ffmpegDemuxerPtr->getBitrate();
+	}
+
+	return fileBitrate;
+}
+
+const MediaStreamType AVDemuxerFilter::getVideoStreamType(void) const
+{
+	return MediaStreamType();
+}
+
+const MediaStreamType AVDemuxerFilter::getAudioStreamType(void) const
+{
+	return MediaStreamType();
+}
+
 int AVDemuxerFilter::inputMediaData(MediaDataPtr mediaData)
 {
 	int status{ mediaDemuxerPtr ? ERR_EXISTED : ERR_OK };
