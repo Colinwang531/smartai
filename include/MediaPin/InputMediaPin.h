@@ -4,7 +4,7 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Base class of inputing pin.
+// Base class of pin for inputing.
 //
 
 #ifndef INPUT_MEDIA_PIN_H

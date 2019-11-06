@@ -10,6 +10,7 @@
 #ifndef MEDIA_FILTER_H
 #define MEDIA_FILTER_H
 
+#include "boost/enable_shared_from_this.hpp"
 #include "MediaPin/MediaPin.h"
 using MediaPinPtr = boost::shared_ptr<NS(pin, 1)::MediaPin>;
 using MediaPinRef = boost::weak_ptr<NS(pin, 1)::MediaPin>;
@@ -30,7 +31,8 @@ BOOST_STATIC_CONSTANT(std::string, AVMediaH2645DecoderFilterID = "AVMediaH2645De
 BOOST_STATIC_CONSTANT(std::string, AVMediaAACDecoderFilterID = "AVMediaAACDecoderFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaG722DecoderFilterID = "AVMediaG722DecoderFilterID");
 
-class MediaFilter
+class MediaFilter 
+	: public boost::enable_shared_from_this<MediaFilter>
 {
 public:
 	MediaFilter(const MediaFilterMode mode = MediaFilterMode::MEDIA_FILTER_MODE_MEDIUM);
@@ -43,6 +45,10 @@ public:
 	{
 		return mediaFilterMode;
 	}
+
+protected:
+	int createNewInputPin(const std::string pinID);
+	int createNewOutputPin(const std::string pinID);
 
 protected:
 	MediaPinGroup mediaPinGroup;

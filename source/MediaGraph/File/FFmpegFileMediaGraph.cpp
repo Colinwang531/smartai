@@ -26,8 +26,7 @@ int FFmpegFileMediaGraph::inputMediaData(MediaDataPtr mediaData)
 	{
 		MediaFilterRef demuxerFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
 		// Media filter instance does not exist if expired() return true.
-		status = demuxerFilterRef.expired() ?
-			createNewDemuxerFilter(mediaData) : ERR_EXISTED/*demuxerFilterRef.lock()->inputMediaData(mediaData)*/;
+		status = demuxerFilterRef.expired() ? createNewDemuxerFilter(mediaData) : ERR_EXISTED;
 
 		if (ERR_OK == status)
 		{
@@ -35,9 +34,9 @@ int FFmpegFileMediaGraph::inputMediaData(MediaDataPtr mediaData)
 				boost::dynamic_pointer_cast<AVDemuxerFilter>(demuxerFilterRef.lock()) };
 			if (demuxerFilterPtr)
 			{
-				// Create decoder filter according to media stream number.
-				status = createNewDecoderFilter(
-					demuxerFilterPtr->getVideoStreamType(), demuxerFilterPtr->getAudioStreamType());
+				// Create decoder filters for decoding video and audio according to media stream type.
+				createNewVideoDecoderFilter(demuxerFilterPtr->getVideoStreamType());
+				createNewAudioDecoderFilter(demuxerFilterPtr->getAudioStreamType());
 			}
 		}
 	}
@@ -95,12 +94,10 @@ int FFmpegFileMediaGraph::createNewDemuxerFilter(MediaDataPtr mediaData)
 	return status;
 }
 
-int FFmpegFileMediaGraph::createNewDecoderFilter(
-	const MediaStreamType videoType /* = MediaStreamType::MEDIA_STREAM_TYPE_NONE */, 
-	const MediaStreamType audioType /* = MediaStreamType::MEDIA_STREAM_TYPE_NONE */)
+int FFmpegFileMediaGraph::createNewVideoDecoderFilter(
+	const MediaStreamType videoType /* = MediaStreamType::MEDIA_STREAM_TYPE_NONE */)
 {
 	int status{ ERR_NOT_SUPPORT };
-	std::string filterID{ NS(filter, 1)::AVMediaH2645DecoderFilterID };
 	MediaFilterPtr decoderFilterPtr{ boost::make_shared<AVDecoderFilter>() };
 
 	if (decoderFilterPtr)
@@ -111,11 +108,31 @@ int FFmpegFileMediaGraph::createNewDecoderFilter(
 		if (MediaStreamType::MEDIA_STREAM_TYPE_H264 == videoType || MediaStreamType::MEDIA_STREAM_TYPE_H265 == videoType)
 		{
 			status = decoderPtr->createNewMediaDecoder(MediaDecodeType::MEDIA_DECODE_TYPE_H2645);
+			if (ERR_OK == status)
+			{
+				mediaFilterGroup.insert(NS(filter, 1)::AVMediaH2645DecoderFilterID, decoderFilterPtr);
+			}
 		}
+	}
+
+	return status;
+}
+
+int FFmpegFileMediaGraph::createNewAudioDecoderFilter(
+	const MediaStreamType audioType /* = MediaStreamType::MEDIA_STREAM_TYPE_NONE */)
+{
+	int status{ ERR_NOT_SUPPORT };
+	std::string filterID{ NS(filter, 1)::AVMediaAACDecoderFilterID };
+	MediaFilterPtr decoderFilterPtr{ boost::make_shared<AVDecoderFilter>() };
+
+	if (decoderFilterPtr)
+	{
+		boost::shared_ptr<AVDecoderFilter> decoderPtr{
+			boost::dynamic_pointer_cast<AVDecoderFilter>(decoderFilterPtr) };
+
 		if (MediaStreamType::MEDIA_STREAM_TYPE_AAC == audioType)
 		{
 			status = decoderPtr->createNewMediaDecoder(MediaDecodeType::MEDIA_DECODE_TYPE_AAC);
-			filterID = NS(filter, 1)::AVMediaAACDecoderFilterID;
 		}
 		if (MediaStreamType::MEDIA_STREAM_TYPE_G722 == audioType)
 		{

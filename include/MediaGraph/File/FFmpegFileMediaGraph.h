@@ -29,8 +29,9 @@ protected:
 
 private:
 	int createNewDemuxerFilter(MediaDataPtr mediaData);
-	int createNewDecoderFilter(
-		const MediaStreamType videoType = MediaStreamType::MEDIA_STREAM_TYPE_NONE,
+	int createNewVideoDecoderFilter(
+		const MediaStreamType videoType = MediaStreamType::MEDIA_STREAM_TYPE_NONE);
+	int createNewAudioDecoderFilter(
 		const MediaStreamType audioType = MediaStreamType::MEDIA_STREAM_TYPE_NONE);
 };//class FFmpegFileMediaGraph
 

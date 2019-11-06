@@ -1,7 +1,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaDemuxer/FFmpeg/FFmpegFileMediaDemuxer.h"
-#include "MediaPin/OutputMediaPin.h"
+#include "MediaDecoder/FFmpeg/FFmpegVideoDecoder.h"
+using FFmpegVideoDecoder = NS(decoder, 1)::FFmpegVideoDecoder;
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 
 NS_BEGIN(filter, 1)
@@ -15,24 +15,28 @@ AVDecoderFilter::~AVDecoderFilter()
 int AVDecoderFilter::createNewMediaDecoder(
 	const MediaDecodeType decodeType /* = MediaDecodeType::MEDIA_DECODE_TYPE_H2645 */)
 {
-	int status{ ERR_BAD_ALLOC };
-	NS(media, 1)::MediaDataType mediaDataType{ mediaData->getMediaDataType() };
+	int status{ ERR_OK };
 
-	if (NS(media, 1)::MediaDataType::MEDIA_DATA_TYPE_FILE_PATH == mediaDataType)
+	if (MediaDecodeType::MEDIA_DECODE_TYPE_H2645 == decodeType)
 	{
-		MediaDemuxerPtr demuxerPtr{ boost::make_shared<NS(demuxer, 1)::FFmpegFileMediaDemuxer>() };
-		if (demuxerPtr)
+		MediaDecoderPtr decoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
+		if (decoderPtr)
 		{
-			mediaDemuxerPtr.swap(demuxerPtr);
-			status = mediaDemuxerPtr->inputMediaData(mediaData);
+			mediaDecoderPtr.swap(decoderPtr);
 		}
+	}
+	else if (MediaDecodeType::MEDIA_DECODE_TYPE_AAC == decodeType)
+	{
+	}
+	else if (MediaDecodeType::MEDIA_DECODE_TYPE_G722 == decodeType)
+	{
 	}
 	else
 	{
-		status = ERR_BAD_OPERATE;
+		status = ERR_NOT_SUPPORT;
 	}
 
-	return status;
+	return ERR_OK == status ? createNewInputAndOutputPin() : status;
 }
 
 int AVDecoderFilter::inputMediaData(MediaDataPtr mediaData)
@@ -53,17 +57,24 @@ int AVDecoderFilter::inputMediaData(MediaDataPtr mediaData)
 	return status;
 }
 
-int AVDecoderFilter::createNewInputAndOutputPin()
+int AVDecoderFilter::createNewInputAndOutputPin(
+	const MediaDecodeType decodeType /* = MediaDecodeType::MEDIA_DECODE_TYPE_H2645 */)
 {
-	int status{ ERR_BAD_ALLOC };
-	MediaPinPtr videoOutputPinPtr{ boost::make_shared<NS(pin, 1)::OutputMediaPin>() };
-	MediaPinPtr audioOutputPinPtr{ boost::make_shared<NS(pin, 1)::OutputMediaPin>() };
+	int status{ ERR_OK };
 
-	if (videoOutputPinPtr && audioOutputPinPtr)
+	if (MediaDecodeType::MEDIA_DECODE_TYPE_H2645 == decodeType)
 	{
-		mediaPinGroup.insert(NS(pin, 1)::VideoStreamOutputPinID, videoOutputPinPtr);
-		mediaPinGroup.insert(NS(pin, 1)::AudioStreamOutputPinID, audioOutputPinPtr);
-		status = ERR_OK;
+		createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
+		createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
+	} 
+	else if (MediaDecodeType::MEDIA_DECODE_TYPE_AAC == decodeType || MediaDecodeType::MEDIA_DECODE_TYPE_G722 == decodeType)
+	{
+		createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
+		createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
+	}
+	else
+	{
+		status = ERR_NOT_SUPPORT;
 	}
 
 	return status;

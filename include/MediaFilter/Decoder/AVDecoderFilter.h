@@ -31,7 +31,8 @@ protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	int createNewInputAndOutputPin(void);
+	int createNewInputAndOutputPin(
+		const MediaDecodeType decodeType = MediaDecodeType::MEDIA_DECODE_TYPE_H2645);
 
 protected:
 	MediaDecoderPtr mediaDecoderPtr;
