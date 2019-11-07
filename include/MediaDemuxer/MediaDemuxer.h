@@ -4,25 +4,17 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Base class of video and audio demuxer.
+// Base class of AV demuxer.
 //
 
 #ifndef MEDIA_DEMUXER_H
 #define MEDIA_DEMUXER_H
 
-#include "MediaData/MediaData.h"
-using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
+#include <string>
+#include "boost/thread/condition.hpp"
+#include "predef.h"
 
 NS_BEGIN(demuxer, 1)
-
-typedef enum class tagMediaStreamType_t
-{
-	MEDIA_STREAM_TYPE_NONE = 0,
-	MEDIA_STREAM_TYPE_H264,
-	MEDIA_STREAM_TYPE_H265,
-	MEDIA_STREAM_TYPE_AAC,
-	MEDIA_STREAM_TYPE_G722
-}MediaStreamType;
 
 class MediaDemuxer
 {
@@ -31,10 +23,23 @@ public:
 	virtual ~MediaDemuxer(void);
 
 public:
-	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+	virtual int openStream(const std::string streamUrl);
+	virtual int closeStream(void);
+	int runPullStreamDataThread(void);
 	//Suppose only one type of video/audio stream in media file.
-	virtual const MediaStreamType getVideoStreamType(void) const;
-	virtual const MediaStreamType getAudioStreamType(void) const;
+	virtual const MediaStreamID getVideoStreamID(void) const = 0;
+	virtual const MediaStreamID getAudioStreamID(void) const = 0;
+
+protected:
+	virtual void pullStreamDataProcess(void) = 0;
+
+private:
+	void pullStreamDataWorkerThread(void);
+
+private:
+	bool stopped;
+	boost::mutex mtx;
+	boost::condition condition;
 };//class MediaDemuxer
 
 NS_END

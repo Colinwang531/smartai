@@ -13,11 +13,8 @@
 #include "boost/noncopyable.hpp"
 #include "MediaFilter/MediaFilter.h"
 using MediaFilterPtr = boost::shared_ptr<NS(filter, 1)::MediaFilter>;
-using MediaFilterRef = boost::weak_ptr<NS(filter, 1)::MediaFilter>;
 #include "DataStruct/UnorderedMap.h"
 using MediaFilterGroup = UnorderedMap<const std::string, MediaFilterPtr>;
-#include "MediaData/MediaData.h"
-using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(graph, 1)
 
@@ -28,16 +25,17 @@ public:
 	virtual ~MediaGraph(void);
 
 public:
-	virtual MediaFilterRef queryMediaFilterByID(const std::string filterID);
+	// The parameter is URL string for opening stream.
+	virtual int openMediaGraph(const std::string streamUrl) = 0;
+	virtual int closeMediaGraph(void) = 0;
+	virtual MediaFilterPtr queryMediaFilterByID(const std::string filterID);
+
+protected:
 	//Modify filter that created by user in the graph.
 	virtual int addMediaFilter(const std::string filterID, MediaFilterPtr mediaFilter);
 	virtual int removeMediaFilter(const std::string filterID);
-	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
 
-protected:
-	virtual int buildMediaGraphByMediaStreams(void) = 0;
-
-protected:
+private:
 	MediaFilterGroup mediaFilterGroup;
 };//class MediaGraph
 

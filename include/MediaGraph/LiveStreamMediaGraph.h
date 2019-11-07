@@ -4,22 +4,22 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Live stream media data base class of graph.
+// Base class of graph for live stream.
 //
 
 #ifndef LIVE_STREAM_MEDIA_GRAPH_H
 #define LIVE_STREAM_MEDIA_GRAPH_H
 
-#include "MediaGraph/StreamMediaGraph.h"
+#include "MediaGraph.h"
 
 NS_BEGIN(graph, 1)
 
-class LivestreamMediaGraph : public StreamMediaGraph
+class LiveStreamMediaGraph : public MediaGraph
 {
 public:
-	LivestreamMediaGraph(void);
-	virtual ~LivestreamMediaGraph(void);
-};//class LivestreamMediaGraph
+	LiveStreamMediaGraph(void);
+	virtual ~LiveStreamMediaGraph(void);
+};//class LiveStreamMediaGraph
 
 NS_END
 

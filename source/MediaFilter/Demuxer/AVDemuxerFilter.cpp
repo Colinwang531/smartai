@@ -1,7 +1,9 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaDemuxer/FFmpeg/FFmpegFileMediaDemuxer.h"
+#include "MediaDemuxer/FFmpeg/FFmpegAVMediaDemuxer.h"
+using FFmpegAVMediaDemuxer = NS(demuxer, 1)::FFmpegAVMediaDemuxer;
 #include "MediaPin/OutputMediaPin.h"
+using OutputMediaPin = NS(pin, 1)::OutputMediaPin;
 #include "MediaFilter/Demuxer/AVDemuxerFilter.h"
 
 NS_BEGIN(filter, 1)
@@ -15,12 +17,12 @@ AVDemuxerFilter::~AVDemuxerFilter()
 const long long AVDemuxerFilter::getTotalSeconds() const
 {
 	long long fileTotalSeconds{ 0 };
-	boost::shared_ptr<NS(demuxer, 1)::FFmpegFileMediaDemuxer> ffmpegDemuxerPtr{
-		boost::dynamic_pointer_cast<NS(demuxer, 1)::FFmpegFileMediaDemuxer>(mediaDemuxerPtr) };
+	boost::shared_ptr<FFmpegAVMediaDemuxer> ffmpegAVMediaDemuxerPtr{
+		boost::dynamic_pointer_cast<FFmpegAVMediaDemuxer>(mediaDemuxerPtr) };
 
-	if (ffmpegDemuxerPtr)
+	if (ffmpegAVMediaDemuxerPtr)
 	{
-		fileTotalSeconds = ffmpegDemuxerPtr->getTotalSeconds();
+		fileTotalSeconds = ffmpegAVMediaDemuxerPtr->getTotalSeconds();
 	}
 
 	return fileTotalSeconds;
@@ -29,72 +31,64 @@ const long long AVDemuxerFilter::getTotalSeconds() const
 const long long AVDemuxerFilter::getBitrate() const
 {
 	long long fileBitrate{ 0 };
-	boost::shared_ptr<NS(demuxer, 1)::FFmpegFileMediaDemuxer> ffmpegDemuxerPtr{
-		boost::dynamic_pointer_cast<NS(demuxer, 1)::FFmpegFileMediaDemuxer>(mediaDemuxerPtr) };
+	boost::shared_ptr<FFmpegAVMediaDemuxer> ffmpegAVMediaDemuxerPtr{
+		boost::dynamic_pointer_cast<FFmpegAVMediaDemuxer>(mediaDemuxerPtr) };
 
-	if (ffmpegDemuxerPtr)
+	if (ffmpegAVMediaDemuxerPtr)
 	{
-		fileBitrate = ffmpegDemuxerPtr->getBitrate();
+		fileBitrate = ffmpegAVMediaDemuxerPtr->getBitrate();
 	}
 
 	return fileBitrate;
 }
 
-const MediaStreamType AVDemuxerFilter::getVideoStreamType(void) const
+const MediaStreamID AVDemuxerFilter::getVideoStreamID(void) const
 {
-	return MediaStreamType();
-}
+	MediaStreamID streamID{ MediaStreamID::MEDIA_STREAM_ID_NONE };
+	boost::shared_ptr<FFmpegAVMediaDemuxer> ffmpegAVMediaDemuxerPtr{
+		boost::dynamic_pointer_cast<FFmpegAVMediaDemuxer>(mediaDemuxerPtr) };
 
-const MediaStreamType AVDemuxerFilter::getAudioStreamType(void) const
-{
-	return MediaStreamType();
-}
-
-int AVDemuxerFilter::inputMediaData(MediaDataPtr mediaData)
-{
-	int status{ mediaDemuxerPtr ? ERR_EXISTED : ERR_OK };
-
-	if (ERR_OK == status)
+	if (ffmpegAVMediaDemuxerPtr)
 	{
-		// if current media data is the first one, create demuxer and output pins instances once.
-		status = createNewMediaDemuxer(mediaData);
-
-		if (ERR_OK == status)
-		{
-			status = createNewOutputPin();
-		}
+		streamID = ffmpegAVMediaDemuxerPtr->getVideoStreamID();
 	}
 
-	return status;
+	return streamID;
 }
 
-int AVDemuxerFilter::createNewMediaDemuxer(MediaDataPtr mediaData)
+const MediaStreamID AVDemuxerFilter::getAudioStreamID(void) const
+{
+	MediaStreamID streamID{ MediaStreamID::MEDIA_STREAM_ID_NONE };
+	boost::shared_ptr<FFmpegAVMediaDemuxer> ffmpegAVMediaDemuxerPtr{
+		boost::dynamic_pointer_cast<FFmpegAVMediaDemuxer>(mediaDemuxerPtr) };
+
+	if (ffmpegAVMediaDemuxerPtr)
+	{
+		streamID = ffmpegAVMediaDemuxerPtr->getAudioStreamID();
+	}
+
+	return streamID;
+}
+
+int AVDemuxerFilter::createNewMediaDemuxer(const std::string streamUrl)
 {
 	int status{ ERR_BAD_ALLOC };
-	NS(media, 1)::MediaDataType mediaDataType{ mediaData->getMediaDataType() };
-
-	if (NS(media, 1)::MediaDataType::MEDIA_DATA_TYPE_FILE_PATH == mediaDataType)
+	
+	MediaDemuxerPtr ffmpegAVMediaDemuxerPtr{ boost::make_shared<FFmpegAVMediaDemuxer>() };
+	if (ffmpegAVMediaDemuxerPtr)
 	{
-		MediaDemuxerPtr demuxerPtr{ boost::make_shared<NS(demuxer, 1)::FFmpegFileMediaDemuxer>() };
-		if (demuxerPtr)
-		{
-			mediaDemuxerPtr.swap(demuxerPtr);
-			status = mediaDemuxerPtr->inputMediaData(mediaData);
-		}
-	}
-	else
-	{
-		status = ERR_BAD_OPERATE;
+		mediaDemuxerPtr.swap(ffmpegAVMediaDemuxerPtr);
+		status = mediaDemuxerPtr->openStream(streamUrl);
 	}
 
-	return status;
+	return ERR_OK == status ? createNewOutputPin() : status;
 }
 
 int AVDemuxerFilter::createNewOutputPin()
 {
 	int status{ ERR_BAD_ALLOC };
-	MediaPinPtr videoOutputPinPtr{ boost::make_shared<NS(pin, 1)::OutputMediaPin>() };
-	MediaPinPtr audioOutputPinPtr{ boost::make_shared<NS(pin, 1)::OutputMediaPin>() };
+	MediaPinPtr videoOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
+	MediaPinPtr audioOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
 
 	if (videoOutputPinPtr && audioOutputPinPtr)
 	{

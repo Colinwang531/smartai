@@ -13,11 +13,11 @@ AVDecoderFilter::~AVDecoderFilter()
 {}
 
 int AVDecoderFilter::createNewMediaDecoder(
-	const MediaDecodeType decodeType /* = MediaDecodeType::MEDIA_DECODE_TYPE_H2645 */)
+	const MediaStreamID streamID /* = MediaStreamID::MEDIA_STREAM_ID_NONE */)
 {
 	int status{ ERR_OK };
 
-	if (MediaDecodeType::MEDIA_DECODE_TYPE_H2645 == decodeType)
+	if (MediaStreamID::MEDIA_STREAM_ID_H264 == streamID || MediaStreamID::MEDIA_STREAM_ID_H265 == streamID)
 	{
 		MediaDecoderPtr decoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
 		if (decoderPtr)
@@ -25,10 +25,10 @@ int AVDecoderFilter::createNewMediaDecoder(
 			mediaDecoderPtr.swap(decoderPtr);
 		}
 	}
-	else if (MediaDecodeType::MEDIA_DECODE_TYPE_AAC == decodeType)
+	else if (MediaStreamID::MEDIA_STREAM_ID_AAC == streamID)
 	{
 	}
-	else if (MediaDecodeType::MEDIA_DECODE_TYPE_G722 == decodeType)
+	else if (MediaStreamID::MEDIA_STREAM_ID_G722 == streamID)
 	{
 	}
 	else
@@ -36,7 +36,7 @@ int AVDecoderFilter::createNewMediaDecoder(
 		status = ERR_NOT_SUPPORT;
 	}
 
-	return ERR_OK == status ? createNewInputAndOutputPin() : status;
+	return ERR_OK == status ? createNewInputAndOutputPin(streamID) : status;
 }
 
 int AVDecoderFilter::inputMediaData(MediaDataPtr mediaData)
@@ -58,16 +58,16 @@ int AVDecoderFilter::inputMediaData(MediaDataPtr mediaData)
 }
 
 int AVDecoderFilter::createNewInputAndOutputPin(
-	const MediaDecodeType decodeType /* = MediaDecodeType::MEDIA_DECODE_TYPE_H2645 */)
+	const MediaStreamID streamID /* = MediaStreamID::MEDIA_STREAM_ID_NONE */)
 {
 	int status{ ERR_OK };
 
-	if (MediaDecodeType::MEDIA_DECODE_TYPE_H2645 == decodeType)
+	if (MediaStreamID::MEDIA_STREAM_ID_H264 == streamID || MediaStreamID::MEDIA_STREAM_ID_H265 == streamID)
 	{
 		createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
 		createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
 	} 
-	else if (MediaDecodeType::MEDIA_DECODE_TYPE_AAC == decodeType || MediaDecodeType::MEDIA_DECODE_TYPE_G722 == decodeType)
+	else if (MediaStreamID::MEDIA_STREAM_ID_AAC == streamID || MediaStreamID::MEDIA_STREAM_ID_G722 == streamID)
 	{
 		createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
 		createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);

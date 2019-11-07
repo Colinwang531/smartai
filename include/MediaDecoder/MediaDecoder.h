@@ -14,13 +14,6 @@
 
 NS_BEGIN(decoder, 1)
 
-typedef enum class tagMediaDecodeType_t
-{
-	MEDIA_DECODE_TYPE_H2645 = 0,
-	MEDIA_DECODE_TYPE_AAC,
-	MEDIA_DECODE_TYPE_G722
-}MediaDecodeType;
-
 class MediaDecoder
 {
 public:

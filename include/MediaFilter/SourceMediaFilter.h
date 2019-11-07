@@ -22,6 +22,9 @@ class SourceMediaFilter : public MediaFilter
 public:
 	SourceMediaFilter(void);
 	virtual ~SourceMediaFilter(void);
+
+protected:
+	int inputMediaData(MediaDataPtr mediaData) override;
 };//class SourceMediaFilter
 
 NS_END

@@ -40,4 +40,13 @@ typedef struct tagBGR24Frame_t
 	char* NVRIp;
 }BGR24Frame;
 
+typedef enum class tagMediaStreamID_t
+{
+	MEDIA_STREAM_ID_NONE = 0,
+	MEDIA_STREAM_ID_H264,
+	MEDIA_STREAM_ID_H265,
+	MEDIA_STREAM_ID_AAC,
+	MEDIA_STREAM_ID_G722
+}MediaStreamID;
+
 #endif//PREDEF_H

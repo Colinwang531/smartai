@@ -4,22 +4,19 @@ extern "C"
 #include "libavutil/pixdesc.h"
 }
 #include "error.h"
-#include "MediaDemuxer/FFmpeg/FFmpegFileMediaDemuxer.h"
+#include "MediaDemuxer/FFmpeg/FFmpegAVMediaDemuxer.h"
 
 NS_BEGIN(demuxer, 1)
 
-FFmpegFileMediaDemuxer::FFmpegFileMediaDemuxer() : MediaDemuxer(), avFormatContext{ NULL }
+FFmpegAVMediaDemuxer::FFmpegAVMediaDemuxer() : MediaDemuxer(), avFormatContext{ NULL }
 {}
 
-FFmpegFileMediaDemuxer::~FFmpegFileMediaDemuxer(void)
+FFmpegAVMediaDemuxer::~FFmpegAVMediaDemuxer(void)
 {
-	if (avFormatContext)
-	{
-		avformat_close_input((AVFormatContext**)&avFormatContext);
-	}
+	closeStream();
 }
 
-const long long FFmpegFileMediaDemuxer::getTotalSeconds(void) const
+const long long FFmpegAVMediaDemuxer::getTotalSeconds(void) const
 {
 	long long fileTotalSeconds{ 0 };
 
@@ -31,7 +28,7 @@ const long long FFmpegFileMediaDemuxer::getTotalSeconds(void) const
 	return fileTotalSeconds;
 }
 
-const long long FFmpegFileMediaDemuxer::getBitrate(void) const
+const long long FFmpegAVMediaDemuxer::getBitrate(void) const
 {
 	long long fileBitrate{ 0 };
 
@@ -43,14 +40,13 @@ const long long FFmpegFileMediaDemuxer::getBitrate(void) const
 	return fileBitrate;
 }
 
-int FFmpegFileMediaDemuxer::inputMediaData(MediaDataPtr mediaData)
+int FFmpegAVMediaDemuxer::openStream(const std::string streamUrl)
 {
-	int status{ ERR_OK };
-	boost::weak_ptr<char[]> filePathRef{ mediaData->getMediaDataBuffer() };
+	int status{ streamUrl.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
-	if (!filePathRef.expired())
+	if (ERR_OK == status)
 	{
-		if (!avformat_open_input((AVFormatContext**)&avFormatContext, filePathRef.lock().get(), NULL, NULL))
+		if (!avformat_open_input((AVFormatContext**)&avFormatContext, streamUrl.c_str(), NULL, NULL))
 		{
 			status = (0 <= avformat_find_stream_info((AVFormatContext*)avFormatContext, NULL) ? ERR_OK : ERR_STREAM_TYPE_UNKNOWN);
 		}
@@ -60,12 +56,25 @@ int FFmpegFileMediaDemuxer::inputMediaData(MediaDataPtr mediaData)
 		}
 	}
 
+	return ERR_OK == status ? MediaDemuxer::openStream(streamUrl) : status;
+}
+
+int FFmpegAVMediaDemuxer::closeStream()
+{
+	int status{ MediaDemuxer::closeStream() };
+
+	if (avFormatContext)
+	{
+		avformat_close_input((AVFormatContext**)&avFormatContext);
+		status = ERR_OK;
+	}
+
 	return status;
 }
 
-const MediaStreamType FFmpegFileMediaDemuxer::getVideoStreamType() const 
+const MediaStreamID FFmpegAVMediaDemuxer::getVideoStreamID() const 
 {
-	MediaStreamType mediaStreamType{ MediaStreamType::MEDIA_STREAM_TYPE_NONE };
+	MediaStreamID streamID{ MediaStreamID::MEDIA_STREAM_ID_NONE };
 
 	for (int i = 0; i != ((AVFormatContext*)avFormatContext)->nb_streams; i++)
 	{
@@ -73,23 +82,23 @@ const MediaStreamType FFmpegFileMediaDemuxer::getVideoStreamType() const
 		{
 			if (AV_CODEC_ID_H264 == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
 			{
-				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_H264;
+				streamID = MediaStreamID::MEDIA_STREAM_ID_H264;
 			}
 			else if (AV_CODEC_ID_H265 == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
 			{
-				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_H265;
+				streamID = MediaStreamID::MEDIA_STREAM_ID_H265;
 			}
 
 			break;
 		}
 	}
 
-	return mediaStreamType;
+	return streamID;
 }
 
-const MediaStreamType FFmpegFileMediaDemuxer::getAudioStreamType() const
+const MediaStreamID FFmpegAVMediaDemuxer::getAudioStreamID() const
 {
-	MediaStreamType mediaStreamType{ MediaStreamType::MEDIA_STREAM_TYPE_NONE };
+	MediaStreamID streamID{ MediaStreamID::MEDIA_STREAM_ID_NONE };
 
 	for (int i = 0; i != ((AVFormatContext*)avFormatContext)->nb_streams; i++)
 	{
@@ -97,18 +106,22 @@ const MediaStreamType FFmpegFileMediaDemuxer::getAudioStreamType() const
 		{
 			if (AV_CODEC_ID_AAC == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
 			{
-				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_AAC;
+				streamID = MediaStreamID::MEDIA_STREAM_ID_AAC;
 			}
 			else if (AV_CODEC_ID_ADPCM_G722 == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_id)
 			{
-				mediaStreamType = MediaStreamType::MEDIA_STREAM_TYPE_G722;
+				streamID = MediaStreamID::MEDIA_STREAM_ID_G722;
 			}
 
 			break;
 		}
 	}
 
-	return mediaStreamType;
+	return streamID;
+}
+
+void FFmpegAVMediaDemuxer::pullStreamDataProcess(void)
+{
 }
 
 NS_END

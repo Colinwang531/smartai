@@ -630,7 +630,20 @@ static DWORD WINAPI notifyStartingProcessThread(void* ctx = NULL)
 	return 0;
 }
 
-#include "MediaGraph/File/FFmpegFileMediaGraph.h"
+#include "MediaGraph/FFmpeg/FFmpegPlaybackStreamMediaGraph.h"
+#include "boost/thread.hpp"
+bool stopped{ false };
+
+void TestThread(int x)
+{
+	while (!stopped)
+	{
+		printf("Worker thread is running at %d...\r\n", x);
+		Sleep(1000);
+	}
+
+	printf("Exit at %d.\r\n", x);
+}
 
 void TestFFmpegFileMediaGraph(void)
 {
@@ -644,11 +657,20 @@ void TestFFmpegFileMediaGraph(void)
 // 	printf("Total stream bitrate %d (kb/s).\r\n", bitrate);
 //	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv");
 //	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4");
+
+	int x = 1, y = 2;
+	boost::thread_group tg;
+	boost::thread* t{ tg.create_thread(boost::bind(&TestThread, x)) };
+
+	boost::thread tt(boost::bind(&TestThread, y));
+	tt.detach();
 }
 
 int main(int argc, char* argv[])
 {
 	TestFFmpegFileMediaGraph();
+	getchar();
+	stopped = true;
 	getchar();
 	return 0;
 	FLAGS_stderrthreshold = GLOG_INFO;

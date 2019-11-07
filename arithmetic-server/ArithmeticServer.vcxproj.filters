@@ -217,18 +217,6 @@
     <Filter Include="Source Files\Pin">
       <UniqueIdentifier>{67fcc9c0-14d5-4f55-aa07-1ec986b8be91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Graph\File">
-      <UniqueIdentifier>{b12e5b28-832d-4af0-95b0-ea7c28fa9e3f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Graph\Stream">
-      <UniqueIdentifier>{bd9c6c9c-262d-46d3-b2fb-b0a1e7e1aa1e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graph\File">
-      <UniqueIdentifier>{4e8835ee-c3ab-47a6-ab38-b2fd89f81007}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graph\Stream">
-      <UniqueIdentifier>{f6f5332c-a008-489f-9e3c-2a7d9d83238b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\MQModel\Requester">
       <UniqueIdentifier>{0b6d2eb6-4969-4ef2-9bea-f2f1648b65d4}</UniqueIdentifier>
     </Filter>
@@ -273,6 +261,12 @@
     </Filter>
     <Filter Include="Source Files\Decoder\FFmpeg">
       <UniqueIdentifier>{0388173f-0a37-4234-86cb-97adc5c1b4eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graph\FFmpeg">
+      <UniqueIdentifier>{434169d9-192e-4e3d-95e1-ad187d0fe519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph\FFmpeg">
+      <UniqueIdentifier>{92051be0-6268-490e-9d90-fe1b3dde35ec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -828,15 +822,6 @@
     <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp">
       <Filter>Source Files\Pin</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\FileMediaGraph.cpp">
-      <Filter>Source Files\Graph</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\StreamMediaGraph.cpp">
-      <Filter>Source Files\Graph</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\Stream\LivestreamMediaGraph.cpp">
-      <Filter>Source Files\Graph\Stream</Filter>
-    </ClCompile>
     <ClCompile Include="ArithmeticServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -846,14 +831,8 @@
     <ClCompile Include="..\source\MQModel\Responser\ResponserModel.cpp">
       <Filter>Source Files\MQModel\Responser</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\File\FFmpegFileMediaGraph.cpp">
-      <Filter>Source Files\Graph\File</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MediaDemuxer\MediaDemuxer.cpp">
       <Filter>Source Files\Demuxer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegFileMediaDemuxer.cpp">
-      <Filter>Source Files\Demuxer\FFmpeg</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Demuxer\AVDemuxerFilter.cpp">
       <Filter>Source Files\Filter\Demuxer</Filter>
@@ -863,6 +842,18 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegVideoDecoder.cpp">
       <Filter>Source Files\Decoder\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\LiveStreamMediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\PlaybackStreamMediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp">
+      <Filter>Source Files\Demuxer\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.cpp">
+      <Filter>Source Files\Graph\FFmpeg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1514,18 +1505,6 @@
     <ClInclude Include="..\include\MediaPin\OutputMediaPin.h">
       <Filter>Header Files\Pin</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\FileMediaGraph.h">
-      <Filter>Header Files\Graph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\StreamMediaGraph.h">
-      <Filter>Header Files\Graph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\Stream\LivestreamMediaGraph.h">
-      <Filter>Header Files\Graph\Stream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\File\MediaPlayController.h">
-      <Filter>Header Files\Graph\File</Filter>
-    </ClInclude>
     <ClInclude Include="ArithmeticServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1541,14 +1520,8 @@
     <ClInclude Include="..\include\DataStruct\Vector.h">
       <Filter>Header Files\DataStruct</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\File\FFmpegFileMediaGraph.h">
-      <Filter>Header Files\Graph\File</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaDemuxer\MediaDemuxer.h">
       <Filter>Header Files\Demuxer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegFileMediaDemuxer.h">
-      <Filter>Header Files\Demuxer\FFmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MediaFilter\Demuxer\AVDemuxerFilter.h">
       <Filter>Header Files\Filter\Demuxer</Filter>
@@ -1558,6 +1531,18 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegVideoDecoder.h">
       <Filter>Header Files\Decoder\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\LiveStreamMediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\PlaybackStreamMediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.h">
+      <Filter>Header Files\Demuxer\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.h">
+      <Filter>Header Files\Graph\FFmpeg</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

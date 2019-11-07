@@ -13,7 +13,6 @@
 #include "MediaFilter/MediaFilter.h"
 #include "MediaDecoder/MediaDecoder.h"
 using MediaDecoderPtr = boost::shared_ptr<NS(decoder, 1)::MediaDecoder>;
-using MediaDecodeType = NS(decoder, 1)::MediaDecodeType;
 
 NS_BEGIN(filter, 1)
 
@@ -25,14 +24,14 @@ public:
 
 public:
 	int createNewMediaDecoder(
-		const MediaDecodeType decodeType = MediaDecodeType::MEDIA_DECODE_TYPE_H2645);
+		const MediaStreamID streamID = MediaStreamID::MEDIA_STREAM_ID_NONE);
 
 protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
 	int createNewInputAndOutputPin(
-		const MediaDecodeType decodeType = MediaDecodeType::MEDIA_DECODE_TYPE_H2645);
+		const MediaStreamID streamID = MediaStreamID::MEDIA_STREAM_ID_NONE);
 
 protected:
 	MediaDecoderPtr mediaDecoderPtr;
