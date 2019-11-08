@@ -20,12 +20,14 @@ int FFmpegPlaybackStreamMediaGraph::openMediaGraph(const std::string streamUrl)
 	{
 		// Demuxer
 		createNewMediaDemuxer(streamUrl);
+		// Controller
 		// Decoder.
-		createNewVideoDecoderFilter(demuxerFilterPtr->getVideoStreamID());
-		createNewAudioDecoderFilter(demuxerFilterPtr->getAudioStreamID());
-
+		createNewVideoDecoderFilter();
+		createNewAudioDecoderFilter();
+		// Renderer
+		// Grabber
 		// Start running thread to read stream data.
-
+		runPullStreamDataThread();
 	}
 
 	return status;
@@ -50,6 +52,21 @@ int FFmpegPlaybackStreamMediaGraph::createNewMediaDemuxer(const std::string stre
 		{
 			addMediaFilter(NS(filter, 1)::AVMediaDemuxerFilterID, avdemuxerFilterPtr);
 		}
+	}
+
+	return status;
+}
+
+int FFmpegPlaybackStreamMediaGraph::runPullStreamDataThread(void)
+{
+	int status{ ERR_NOT_SUPPORT };
+	MediaFilterPtr demuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
+	
+	if (demuxerFilterPtr)
+	{
+		boost::shared_ptr<AVDemuxerFilter> avdemuxerFilterPtr{
+			boost::dynamic_pointer_cast<AVDemuxerFilter>(demuxerFilterPtr) };
+		status = avdemuxerFilterPtr->runPullStreamDataThread();
 	}
 
 	return status;

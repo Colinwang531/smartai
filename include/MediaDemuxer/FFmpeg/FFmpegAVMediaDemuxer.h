@@ -30,9 +30,13 @@ public:
 
 protected:
 	void pullStreamDataProcess(void) override;
+	void getVideoAndAudioMediaIndex(void);
 
 private:
 	void* avFormatContext;
+	void* avPacket;
+	int videoMediaIndex;
+	int audioMediaIndex;
 };//class FFmpegAVMediaDemuxer
 
 NS_END

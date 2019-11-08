@@ -8,7 +8,8 @@ extern "C"
 
 NS_BEGIN(demuxer, 1)
 
-FFmpegAVMediaDemuxer::FFmpegAVMediaDemuxer() : MediaDemuxer(), avFormatContext{ NULL }
+FFmpegAVMediaDemuxer::FFmpegAVMediaDemuxer()
+	: MediaDemuxer(), avFormatContext{ NULL }, avPacket{ NULL }, videoMediaIndex{ -1 }, audioMediaIndex{ -1 }
 {}
 
 FFmpegAVMediaDemuxer::~FFmpegAVMediaDemuxer(void)
@@ -49,6 +50,12 @@ int FFmpegAVMediaDemuxer::openStream(const std::string streamUrl)
 		if (!avformat_open_input((AVFormatContext**)&avFormatContext, streamUrl.c_str(), NULL, NULL))
 		{
 			status = (0 <= avformat_find_stream_info((AVFormatContext*)avFormatContext, NULL) ? ERR_OK : ERR_STREAM_TYPE_UNKNOWN);
+			if (ERR_OK == status)
+			{
+				getVideoAndAudioMediaIndex();
+				avPacket = av_malloc(sizeof(AVPacket));
+				status = avPacket ? ERR_OK : ERR_BAD_ALLOC;
+			}
 		}
 		else
 		{
@@ -66,6 +73,7 @@ int FFmpegAVMediaDemuxer::closeStream()
 	if (avFormatContext)
 	{
 		avformat_close_input((AVFormatContext**)&avFormatContext);
+		av_free(avPacket);
 		status = ERR_OK;
 	}
 
@@ -122,6 +130,37 @@ const MediaStreamID FFmpegAVMediaDemuxer::getAudioStreamID() const
 
 void FFmpegAVMediaDemuxer::pullStreamDataProcess(void)
 {
+	AVFormatContext* ctx{ reinterpret_cast<AVFormatContext*>(avFormatContext) };
+	AVPacket* pkt{ reinterpret_cast<AVPacket*>(avPacket) };
+
+	while (ctx && avPacket && 0 <= av_read_frame(ctx, pkt))
+	{
+		if (pkt->stream_index == videoMediaIndex)
+		{
+			printf("*****	Read VIDEO stream %d bytes.\r\n", pkt->size);
+		} 
+		else if (pkt->stream_index == audioMediaIndex)
+		{
+			printf("#####	Read AUDIO stream %d bytes.\r\n", pkt->size);
+		}
+
+		av_packet_unref(pkt);
+	}
+}
+
+void FFmpegAVMediaDemuxer::getVideoAndAudioMediaIndex(void)
+{
+	for (int i = 0; i != ((AVFormatContext*)avFormatContext)->nb_streams; i++)
+	{
+		if (AVMEDIA_TYPE_VIDEO == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_type)
+		{
+			videoMediaIndex = i;
+		}
+		else if (AVMEDIA_TYPE_AUDIO == ((AVFormatContext*)avFormatContext)->streams[i]->codecpar->codec_type)
+		{
+			audioMediaIndex = i;
+		}
+	}
 }
 
 NS_END

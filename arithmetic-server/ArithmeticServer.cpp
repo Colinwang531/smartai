@@ -631,24 +631,11 @@ static DWORD WINAPI notifyStartingProcessThread(void* ctx = NULL)
 }
 
 #include "MediaGraph/FFmpeg/FFmpegPlaybackStreamMediaGraph.h"
-#include "boost/thread.hpp"
-bool stopped{ false };
-
-void TestThread(int x)
-{
-	while (!stopped)
-	{
-		printf("Worker thread is running at %d...\r\n", x);
-		Sleep(1000);
-	}
-
-	printf("Exit at %d.\r\n", x);
-}
 
 void TestFFmpegFileMediaGraph(void)
 {
-// 	NS(graph, 1)::MediaGraph* ffmpegFileMediaGraph = new NS(graph, 1)::FFmpegFileMediaGraph;
-// 	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\Avengers\\Avengers.mp4");
+	NS(graph, 1)::MediaGraph* ffmpegPlaybackStreamMediaGraph = new NS(graph, 1)::FFmpegPlaybackStreamMediaGraph;
+//	ffmpegPlaybackStreamMediaGraph->openMediaGraph("D:\\Download\\Avengers\\Avengers.mp4");
 // 	long long hour{ 0 }, min{ 0 }, sec{ 0 };
 // 	((NS(graph, 1)::FileMediaGraph*)ffmpegFileMediaGraph)->getTotalTime(hour, min, sec);
 // 	printf("File total time %02d:%02d:%02d.\r\n", hour, min, sec);
@@ -656,23 +643,15 @@ void TestFFmpegFileMediaGraph(void)
 // 	((NS(graph, 1)::FileMediaGraph*)ffmpegFileMediaGraph)->getBitrate(bitrate);
 // 	printf("Total stream bitrate %d (kb/s).\r\n", bitrate);
 //	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv");
-//	ffmpegFileMediaGraph->startMediaGraph("D:\\Download\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4");
-
-	int x = 1, y = 2;
-	boost::thread_group tg;
-	boost::thread* t{ tg.create_thread(boost::bind(&TestThread, x)) };
-
-	boost::thread tt(boost::bind(&TestThread, y));
-	tt.detach();
+	ffmpegPlaybackStreamMediaGraph->openMediaGraph("D:\\Download\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4");
 }
 
 int main(int argc, char* argv[])
 {
 	TestFFmpegFileMediaGraph();
 	getchar();
-	stopped = true;
-	getchar();
 	return 0;
+
 	FLAGS_stderrthreshold = GLOG_INFO;
 	FLAGS_colorlogtostderr = 1;
 	google::InitGoogleLogging(argv[0]);

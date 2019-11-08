@@ -1,5 +1,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
+#include "MediaFilter/Demuxer/AVDemuxerFilter.h"
+using AVDemuxerFilter = NS(filter, 1)::AVDemuxerFilter;
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 using AVDecoderFilter = NS(filter, 1)::AVDecoderFilter;
 #include "MediaGraph/PlaybackStreamMediaGraph.h"
@@ -15,14 +17,16 @@ PlaybackStreamMediaGraph::~PlaybackStreamMediaGraph()
 int PlaybackStreamMediaGraph::createNewVideoDecoderFilter()
 {
 	int status{ ERR_NOT_SUPPORT };
-	MediaFilterPtr avdemuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
-
+	MediaFilterPtr demuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
 	MediaFilterPtr videoDecoderFilterPtr{ boost::make_shared<AVDecoderFilter>() };
 
-	if (videoDecoderFilterPtr)
+	if (demuxerFilterPtr && videoDecoderFilterPtr)
 	{
 		boost::shared_ptr<AVDecoderFilter> avdecoderFilterPtr{
 			boost::dynamic_pointer_cast<AVDecoderFilter>(videoDecoderFilterPtr) };
+		boost::shared_ptr<AVDemuxerFilter> avdemuxerFilterPtr{ 
+			boost::dynamic_pointer_cast<AVDemuxerFilter>(demuxerFilterPtr) };
+		const MediaStreamID streamID{ avdemuxerFilterPtr->getVideoStreamID() };
 
 		if (MediaStreamID::MEDIA_STREAM_ID_H264 == streamID || MediaStreamID::MEDIA_STREAM_ID_H265 == streamID)
 		{
@@ -41,12 +45,16 @@ int PlaybackStreamMediaGraph::createNewAudioDecoderFilter()
 {
 	int status{ ERR_NOT_SUPPORT };
 	std::string filterID{ NS(filter, 1)::AVMediaAACDecoderFilterID };
+	MediaFilterPtr demuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
 	MediaFilterPtr audioDecoderFilterPtr{ boost::make_shared<AVDecoderFilter>() };
 
-	if (audioDecoderFilterPtr)
+	if (audioDecoderFilterPtr && demuxerFilterPtr)
 	{
 		boost::shared_ptr<AVDecoderFilter> avdecoderFilterPtr{
 			boost::dynamic_pointer_cast<AVDecoderFilter>(audioDecoderFilterPtr) };
+		boost::shared_ptr<AVDemuxerFilter> avdemuxerFilterPtr{
+			boost::dynamic_pointer_cast<AVDemuxerFilter>(demuxerFilterPtr) };
+		const MediaStreamID streamID{ avdemuxerFilterPtr->getAudioStreamID() };
 
 		if (MediaStreamID::MEDIA_STREAM_ID_AAC == streamID)
 		{

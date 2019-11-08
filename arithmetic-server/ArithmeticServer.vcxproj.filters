@@ -1545,4 +1545,7 @@
       <Filter>Header Files\Graph\FFmpeg</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
 </Project>

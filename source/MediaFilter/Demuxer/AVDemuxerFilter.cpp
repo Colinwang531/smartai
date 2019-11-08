@@ -84,6 +84,11 @@ int AVDemuxerFilter::createNewMediaDemuxer(const std::string streamUrl)
 	return ERR_OK == status ? createNewOutputPin() : status;
 }
 
+int AVDemuxerFilter::runPullStreamDataThread(void)
+{
+	return mediaDemuxerPtr ? mediaDemuxerPtr->runPullStreamDataThread() : ERR_BAD_OPERATE;
+}
+
 int AVDemuxerFilter::createNewOutputPin()
 {
 	int status{ ERR_BAD_ALLOC };

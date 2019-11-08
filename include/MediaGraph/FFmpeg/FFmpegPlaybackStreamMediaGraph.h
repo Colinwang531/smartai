@@ -26,6 +26,7 @@ protected:
 
 private:
 	int createNewMediaDemuxer(const std::string streamUrl);
+	int runPullStreamDataThread(void);
 };//class FFmpegPlaybackStreamMediaGraph
 
 NS_END

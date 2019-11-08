@@ -24,6 +24,7 @@ public:
 
 public:
 	int createNewMediaDemuxer(const std::string streamUrl);
+	int runPullStreamDataThread(void);
 	const long long getTotalSeconds(void) const;
 	const long long getBitrate(void) const;
 	const MediaStreamID getVideoStreamID(void) const;
