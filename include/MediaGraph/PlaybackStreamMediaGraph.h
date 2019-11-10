@@ -23,20 +23,8 @@ public:
 protected:
 	int createNewVideoDecoderFilter(void);
 	int createNewAudioDecoderFilter(void);
-
-// public:
-// 	virtual const long long getTotalSeconds(void) = 0;
-// 	virtual const long long getBitrate(void) = 0;
-// 
-// protected:
-// 	int startPlay(void) override;
-// 	int stopPlay(void) override;
-// 	int pausePlay(void) override;
-// 	int fastPlay(const short speed = 1) override;
-// 	int slowPlay(const short speed = -1) override;
-// 
-// private:
-// 	int checkSpeedValue(const short speed = 0);
+	int createNewVideoRendererFilter(void* hwnd = NULL);
+	int createNewAudioRendererFilter(void);
 };//class PlaybackStreamMediaGraph
 
 NS_END

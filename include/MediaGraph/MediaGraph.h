@@ -25,8 +25,9 @@ public:
 	virtual ~MediaGraph(void);
 
 public:
-	// The parameter is URL string for opening stream.
-	virtual int openMediaGraph(const std::string streamUrl) = 0;
+	// @streamUrl : URL for opening media.
+	// @hwnd : Window handle for displaying video.
+	virtual int openMediaGraph(const std::string streamUrl, void* hwnd = NULL) = 0;
 	virtual int closeMediaGraph(void) = 0;
 	virtual MediaFilterPtr queryMediaFilterByID(const std::string filterID);
 

@@ -268,6 +268,30 @@
     <Filter Include="Source Files\Graph\FFmpeg">
       <UniqueIdentifier>{92051be0-6268-490e-9d90-fe1b3dde35ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Filter\Controller">
+      <UniqueIdentifier>{feb1350e-a1f1-416d-8373-55a2c2c525ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Controller">
+      <UniqueIdentifier>{2585ddc8-6e61-43dd-bacb-9558bd23b140}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer">
+      <UniqueIdentifier>{23ca83e7-10fb-4dcf-b90e-0bbee94de67d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer\D3D">
+      <UniqueIdentifier>{85d54ad8-1ee7-4752-ac7e-e319cda440d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{e2623d93-bbef-4274-abfa-fcddaf0819aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\D3D">
+      <UniqueIdentifier>{4b10cfb8-45bb-4cff-911e-4fb9df4250e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Renderer">
+      <UniqueIdentifier>{e05f0f3f-dc46-48ba-8b27-331632646a79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Renderer">
+      <UniqueIdentifier>{fe34ab7c-a7c4-4b58-ba8c-354875d1b253}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -854,6 +878,18 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.cpp">
       <Filter>Source Files\Graph\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Controller\AVPlayControllerFilter.cpp">
+      <Filter>Source Files\Filter\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaRenderer\MediaRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaRenderer\D3D\VideoD3DRenderer.cpp">
+      <Filter>Source Files\Renderer\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Renderer\AVRendererFilter.cpp">
+      <Filter>Source Files\Filter\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1543,6 +1579,18 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.h">
       <Filter>Header Files\Graph\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Controller\AVPlayControllerFilter.h">
+      <Filter>Header Files\Filter\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaRenderer\MediaRenderer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaRenderer\D3D\VideoD3DRenderer.h">
+      <Filter>Header Files\Renderer\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Renderer\AVRendererFilter.h">
+      <Filter>Header Files\Filter\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

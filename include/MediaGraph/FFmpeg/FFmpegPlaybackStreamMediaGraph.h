@@ -21,11 +21,12 @@ public:
 	virtual ~FFmpegPlaybackStreamMediaGraph(void);
 
 protected:
-	int openMediaGraph(const std::string streamUrl) override;
+	int openMediaGraph(const std::string streamUrl, void* hwnd = NULL) override;
 	int closeMediaGraph(void) override;
 
 private:
 	int createNewMediaDemuxer(const std::string streamUrl);
+	int createNewMediaController(void);
 	int runPullStreamDataThread(void);
 };//class FFmpegPlaybackStreamMediaGraph
 

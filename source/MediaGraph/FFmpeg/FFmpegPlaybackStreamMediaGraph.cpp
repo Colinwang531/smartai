@@ -2,6 +2,8 @@
 #include "error.h"
 #include "MediaFilter/Demuxer/AVDemuxerFilter.h"
 using AVDemuxerFilter = NS(filter, 1)::AVDemuxerFilter;
+#include "MediaFilter/Controller/AVPlayControllerFilter.h"
+using AVPlayControllerFilter = NS(filter, 1)::AVPlayControllerFilter;
 #include "MediaGraph/FFmpeg/FFmpegPlaybackStreamMediaGraph.h"
 
 NS_BEGIN(graph, 1)
@@ -12,7 +14,7 @@ FFmpegPlaybackStreamMediaGraph::FFmpegPlaybackStreamMediaGraph() : PlaybackStrea
 FFmpegPlaybackStreamMediaGraph::~FFmpegPlaybackStreamMediaGraph()
 {}
 
-int FFmpegPlaybackStreamMediaGraph::openMediaGraph(const std::string streamUrl)
+int FFmpegPlaybackStreamMediaGraph::openMediaGraph(const std::string streamUrl, void* hwnd /* = NULL */)
 {
 	int status{ !streamUrl.empty() ? ERR_OK : ERR_INVALID_PARAM };
 
@@ -21,10 +23,13 @@ int FFmpegPlaybackStreamMediaGraph::openMediaGraph(const std::string streamUrl)
 		// Demuxer
 		createNewMediaDemuxer(streamUrl);
 		// Controller
+		createNewMediaController();
 		// Decoder.
 		createNewVideoDecoderFilter();
 		createNewAudioDecoderFilter();
 		// Renderer
+		createNewVideoRendererFilter(hwnd);
+		createNewAudioRendererFilter();
 		// Grabber
 		// Start running thread to read stream data.
 		runPullStreamDataThread();
@@ -51,6 +56,25 @@ int FFmpegPlaybackStreamMediaGraph::createNewMediaDemuxer(const std::string stre
 		if (ERR_OK == status)
 		{
 			addMediaFilter(NS(filter, 1)::AVMediaDemuxerFilterID, avdemuxerFilterPtr);
+		}
+	}
+
+	return status;
+}
+
+int FFmpegPlaybackStreamMediaGraph::createNewMediaController(void)
+{
+	int status{ ERR_BAD_ALLOC };
+	MediaFilterPtr avPlayControllerFilterPtr{ boost::make_shared<AVPlayControllerFilter>() };
+	boost::shared_ptr<AVPlayControllerFilter> avplaycontrollerFilterPtr{
+			boost::dynamic_pointer_cast<AVPlayControllerFilter>(avPlayControllerFilterPtr) };
+
+	if (avplaycontrollerFilterPtr)
+	{
+		status = avplaycontrollerFilterPtr->createNewMediaController();
+		if (ERR_OK == status)
+		{
+			addMediaFilter(NS(filter, 1)::AVMediaControllerFilterID, avPlayControllerFilterPtr);
 		}
 	}
 
