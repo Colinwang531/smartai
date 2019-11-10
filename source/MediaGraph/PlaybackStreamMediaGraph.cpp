@@ -4,6 +4,8 @@
 using AVDemuxerFilter = NS(filter, 1)::AVDemuxerFilter;
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 using AVDecoderFilter = NS(filter, 1)::AVDecoderFilter;
+#include "MediaFilter/Renderer/AVRendererFilter.h"
+using AVRendererFilter = NS(filter, 1)::AVRendererFilter;
 #include "MediaGraph/PlaybackStreamMediaGraph.h"
 
 NS_BEGIN(graph, 1)
@@ -75,36 +77,59 @@ int PlaybackStreamMediaGraph::createNewAudioDecoderFilter()
 	return status;
 }
 
-// int FileMediaGraph::startPlay()
-// {
-// 	return ERR_OK;
-// }
-// 
-// int FileMediaGraph::stopPlay()
-// {
-// 	return ERR_OK;
-// }
-// 
-// int FileMediaGraph::pausePlay()
-// {
-// 	return ERR_OK;
-// }
-// 
-// int FileMediaGraph::fastPlay(const short speed /* = 1 */)
-// {
-// 	return checkSpeedValue(speed);
-// }
-// 
-// int FileMediaGraph::slowPlay(const short speed /* = -1 */)
-// {
-// 	return checkSpeedValue(speed);
-// }
-// 
-// int FileMediaGraph::checkSpeedValue(const short speed /* = 1 */)
-// {
-// 	return 1 == speed || 2 == speed || 4 == speed || 8 == speed || 16 == speed ||
-// 		-1 == speed || -2 == speed || -4 == speed || -8 == speed || -16 == speed ?
-// 		ERR_OK : ERR_INVALID_PARAM;
-// }
+int PlaybackStreamMediaGraph::createNewVideoRendererFilter(void* hwnd /* = NULL */)
+{
+	int status{ hwnd ? ERR_OK : ERR_NOT_SUPPORT };
+	MediaFilterPtr demuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
+	MediaFilterPtr videoRendererFilterPtr{ boost::make_shared<AVRendererFilter>() };
+
+	if (ERR_OK == status && demuxerFilterPtr && videoRendererFilterPtr)
+	{
+		boost::shared_ptr<AVRendererFilter> avrendererFilterPtr{
+			boost::dynamic_pointer_cast<AVRendererFilter>(videoRendererFilterPtr) };
+		boost::shared_ptr<AVDemuxerFilter> avdemuxerFilterPtr{
+			boost::dynamic_pointer_cast<AVDemuxerFilter>(demuxerFilterPtr) };
+		const MediaStreamID streamID{ avdemuxerFilterPtr->getVideoStreamID() };
+
+		if (MediaStreamID::MEDIA_STREAM_ID_NONE != streamID)
+		{
+			status = avrendererFilterPtr->createNewMediaRenderer(hwnd);
+			if (ERR_OK == status)
+			{
+				status = addMediaFilter(NS(filter, 1)::AVMediaVideoRendererFilterID, avrendererFilterPtr);
+			}
+		}
+	}
+
+	return status;
+}
+
+int PlaybackStreamMediaGraph::createNewAudioRendererFilter(void)
+{
+	int status{ ERR_NOT_SUPPORT };
+	std::string filterID{ NS(filter, 1)::AVMediaAACDecoderFilterID };
+	MediaFilterPtr demuxerFilterPtr{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
+	MediaFilterPtr audioRendererFilterPtr{ boost::make_shared<AVRendererFilter>() };
+
+	if (audioRendererFilterPtr && demuxerFilterPtr)
+	{
+		boost::shared_ptr<AVRendererFilter> avrendererFilterPtr{
+			boost::dynamic_pointer_cast<AVRendererFilter>(audioRendererFilterPtr) };
+		boost::shared_ptr<AVDemuxerFilter> avdemuxerFilterPtr{
+			boost::dynamic_pointer_cast<AVDemuxerFilter>(demuxerFilterPtr) };
+		const MediaStreamID streamID{ avdemuxerFilterPtr->getAudioStreamID() };
+
+		if (MediaStreamID::MEDIA_STREAM_ID_NONE != streamID)
+		{
+			status = avrendererFilterPtr->createNewMediaRenderer();
+			if (ERR_OK == status)
+			{
+				status = addMediaFilter(NS(filter, 1)::AVMediaAudioRendererFilterID, avrendererFilterPtr);
+			}
+		}
+	}
+
+	return status;
+}
 
 NS_END

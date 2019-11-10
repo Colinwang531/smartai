@@ -27,9 +27,12 @@ typedef enum class tagMediaFilterMode_t
 }MediaFilterMode;
 
 BOOST_STATIC_CONSTANT(std::string, AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaControllerFilterID = "AVMediaControllerFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaH2645DecoderFilterID = "AVMediaH2645DecoderFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaAACDecoderFilterID = "AVMediaAACDecoderFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaG722DecoderFilterID = "AVMediaG722DecoderFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaVideoRendererFilterID = "AVMediaVideoRendererFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaAudioRendererFilterID = "AVMediaAudioRendererFilterID");
 
 class MediaFilter 
 	: public boost::enable_shared_from_this<MediaFilter>
