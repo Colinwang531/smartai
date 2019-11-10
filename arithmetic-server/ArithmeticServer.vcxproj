@@ -314,6 +314,7 @@
     <ClCompile Include="..\source\MediaEncoder\FFmpegEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\JPEG\YUV420PToJPEGEncoder.cpp" />
     <ClCompile Include="..\source\MediaEncoder\MediaEncoder.cpp" />
+    <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Controller\AVPlayControllerFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Decoder\AVDecoderFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Demuxer\AVDemuxerFilter.cpp" />
@@ -410,6 +411,7 @@
     <ClInclude Include="..\include\MediaEncoder\FFmpegEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\JPEG\YUV420PToJPEGEncoder.h" />
     <ClInclude Include="..\include\MediaEncoder\MediaEncoder.h" />
+    <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Controller\AVPlayControllerFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Decoder\AVDecoderFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Demuxer\AVDemuxerFilter.h" />
