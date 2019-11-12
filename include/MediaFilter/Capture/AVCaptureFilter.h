@@ -7,32 +7,30 @@
 // Capture of video and audio for feeding data to caller.
 //
 
-#ifndef AV_PLAY_CONTROLLER_FILTER_H
-#define AV_PLAY_CONTROLLER_FILTER_H
+#ifndef AV_CAPTURE_FILTER_H
+#define AV_CAPTURE_FILTER_H
 
-#include "MediaFilter/MediaFilter.h"
+#include "boost/function.hpp"
+#include "MediaFilter/TargetMediaFilter.h"
 
 NS_BEGIN(filter, 1)
 
-class AVPlayControllerFilter : public MediaFilter
+typedef boost::function<void(MediaDataPtr)> MediaDataCaptureCallback;
+
+class AVCaptureFilter : public TargetMediaFilter
 {
 public:
-	AVPlayControllerFilter(void);
-	virtual ~AVPlayControllerFilter(void);
+	AVCaptureFilter(void);
+	virtual ~AVCaptureFilter(void);
 
 public:
-	int createNewMediaController(void);
+	int createNewMediaCapture(MediaDataCaptureCallback callback = NULL);
 	int inputMediaData(MediaDataPtr mediaData) override;
-	int startPlay(void);
-	int stopPlay(void);
-	int pausePlay(void);
-	int fastPlay(const short speed = 1);
-	int slowPlay(const short speed = -1);
 
 private:
-	int checkSpeedValue(const short speed = 0);
-};//class AVPlayControllerFilter
+	MediaDataCaptureCallback mediaDataCaptureCallback;
+};//class AVCaptureFilter
 
 NS_END
 
-#endif//AV_PLAY_CONTROLLER_FILTER_H
+#endif//AV_CAPTURE_FILTER_H

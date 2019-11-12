@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Graph">
+      <UniqueIdentifier>{86b165c9-50af-4107-a605-267d27f5a85c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter">
+      <UniqueIdentifier>{eee0e333-3f9d-453c-8bab-098e022f6eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin">
+      <UniqueIdentifier>{d94794dc-8500-4306-a18f-685fa9584577}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph">
+      <UniqueIdentifier>{7bc90707-5b3b-4ca8-a38f-eb9fc48bc931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter">
+      <UniqueIdentifier>{f470efb0-76ef-4458-8e69-1bbaf33531f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Pin">
+      <UniqueIdentifier>{74da9b22-6003-4402-9b78-7651664bec2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graph\FFmpeg">
+      <UniqueIdentifier>{7606187f-ee37-4f4b-8e18-76e695d88415}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph\FFmpeg">
+      <UniqueIdentifier>{36e0a61e-018f-4286-8814-aa033efb1007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Demuxer">
+      <UniqueIdentifier>{cd6823cc-4f61-4542-9154-8d614454e85a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Controller">
+      <UniqueIdentifier>{23aa5f42-e5b4-45e1-a599-58c97e12fd76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Decoder">
+      <UniqueIdentifier>{68014ffc-6c51-49da-a81a-bbf7341cff28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Renderer">
+      <UniqueIdentifier>{8e58e87f-702b-403a-8751-d2668e75e891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Capture">
+      <UniqueIdentifier>{27b70b00-e6a0-4a5c-b707-0c457542e4f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Demuxer">
+      <UniqueIdentifier>{1ad1ee21-9ce0-4f09-b3c7-d9aa30b7ab25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Controller">
+      <UniqueIdentifier>{bc7100c9-6bb9-4e87-9e91-b8113af7e65a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Decoder">
+      <UniqueIdentifier>{7acce6a6-c7bd-466f-8a6a-94c0796aa94c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Renderer">
+      <UniqueIdentifier>{0717ae88-7eef-4a0f-8cd8-e6dfa002bb30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Capture">
+      <UniqueIdentifier>{e89e0f11-fd1c-4413-86dd-d56d03ef4127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataStruct">
+      <UniqueIdentifier>{a63d9130-b1be-445d-b63d-c1d646a81fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Demuxer">
+      <UniqueIdentifier>{f2a47634-6236-4a3d-ba66-deb409709a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Demuxer\FFmpeg">
+      <UniqueIdentifier>{adf25cbc-1e32-4cf4-8334-69daa4933a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demuxer">
+      <UniqueIdentifier>{490506e8-9a4c-418e-a335-453d623a85a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Demuxer\FFmpeg">
+      <UniqueIdentifier>{aa170e9d-ab74-41ea-95f7-150762f53348}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Decoder">
+      <UniqueIdentifier>{eb70ca66-38b3-4402-ad8a-7d37e689576b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Decoder\FFmpeg">
+      <UniqueIdentifier>{588b8dfd-5e19-4d4e-b9d5-3da7b38cc67d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoder">
+      <UniqueIdentifier>{2d04eaca-312b-477d-86d1-dbd59a166d40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Decoder\FFmpeg">
+      <UniqueIdentifier>{1508a085-f63f-49d0-8f9b-86d73b8ba7af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer">
+      <UniqueIdentifier>{f2d55511-bb63-4331-8ff7-024aef5a3eef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Renderer\D3D">
+      <UniqueIdentifier>{8a103c8e-3f1c-451f-88ac-05019578198b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{c13d70e3-b94c-4897-9a2d-d443450c2d40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\D3D">
+      <UniqueIdentifier>{bb45ef0f-6718-403b-bc3c-a3d5d41c52a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost">
+      <UniqueIdentifier>{1d95a528-6a5d-4f58-a6e3-26db8d071333}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\system">
+      <UniqueIdentifier>{21e62b60-0326-45e8-a841-e183830fc580}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\thread">
+      <UniqueIdentifier>{226d4c6e-bc06-466e-ac51-19e9dfa739f1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaPlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\MediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.h">
+      <Filter>Header Files\Graph\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\MediaFilter.h">
+      <Filter>Header Files\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\SourceMediaFilter.h">
+      <Filter>Header Files\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\TargetMediaFilter.h">
+      <Filter>Header Files\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Demuxer\AVDemuxerFilter.h">
+      <Filter>Header Files\Filter\Demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Controller\AVPlayControllerFilter.h">
+      <Filter>Header Files\Filter\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Decoder\AVDecoderFilter.h">
+      <Filter>Header Files\Filter\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h">
+      <Filter>Header Files\Filter\Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Renderer\AVRendererFilter.h">
+      <Filter>Header Files\Filter\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaPin\InputMediaPin.h">
+      <Filter>Header Files\Pin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaPin\MediaPin.h">
+      <Filter>Header Files\Pin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaPin\OutputMediaPin.h">
+      <Filter>Header Files\Pin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\UnorderedMap.h">
+      <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDemuxer\MediaDemuxer.h">
+      <Filter>Header Files\Demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.h">
+      <Filter>Header Files\Demuxer\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h">
+      <Filter>Header Files\Decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegVideoDecoder.h">
+      <Filter>Header Files\Decoder\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaRenderer\MediaRenderer.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaRenderer\D3D\VideoD3DRenderer.h">
+      <Filter>Header Files\Renderer\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\predef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\PlaybackMediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.cpp">
+      <Filter>Source Files\Graph\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\MediaFilter.cpp">
+      <Filter>Source Files\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\SourceMediaFilter.cpp">
+      <Filter>Source Files\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\TargetMediaFilter.cpp">
+      <Filter>Source Files\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Demuxer\AVDemuxerFilter.cpp">
+      <Filter>Source Files\Filter\Demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Controller\AVPlayControllerFilter.cpp">
+      <Filter>Source Files\Filter\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Decoder\AVDecoderFilter.cpp">
+      <Filter>Source Files\Filter\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp">
+      <Filter>Source Files\Filter\Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Renderer\AVRendererFilter.cpp">
+      <Filter>Source Files\Filter\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp">
+      <Filter>Source Files\Pin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaPin\MediaPin.cpp">
+      <Filter>Source Files\Pin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp">
+      <Filter>Source Files\Pin</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDemuxer\MediaDemuxer.cpp">
+      <Filter>Source Files\Demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp">
+      <Filter>Source Files\Demuxer\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp">
+      <Filter>Source Files\Decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegVideoDecoder.cpp">
+      <Filter>Source Files\Decoder\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaRenderer\MediaRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaRenderer\D3D\VideoD3DRenderer.cpp">
+      <Filter>Source Files\Renderer\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp">
+      <Filter>Source Files\boost\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\PlaybackMediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

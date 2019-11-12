@@ -77,8 +77,11 @@ int AVDemuxerFilter::createNewMediaDemuxer(const std::string streamUrl)
 	MediaDemuxerPtr ffmpegAVMediaDemuxerPtr{ boost::make_shared<FFmpegAVMediaDemuxer>() };
 	if (ffmpegAVMediaDemuxerPtr)
 	{
-		mediaDemuxerPtr.swap(ffmpegAVMediaDemuxerPtr);
 		status = mediaDemuxerPtr->openStream(streamUrl);
+		if (ERR_OK == status)
+		{
+			mediaDemuxerPtr.swap(ffmpegAVMediaDemuxerPtr);
+		}
 	}
 
 	return ERR_OK == status ? createNewOutputPin() : status;

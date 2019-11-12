@@ -45,9 +45,9 @@ public:
 		queue.clear();
 	}
 	
-	const T& at(const unsigned long long index = 0)
+	T at(const unsigned long long index = 0)
 	{
-		T e;
+		T e{};
 
 		ReadLock rl{ mtx };
 		if (index < queue.size())

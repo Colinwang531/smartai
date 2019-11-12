@@ -10,7 +10,7 @@
 #ifndef FFMPEG_PLAYBACK_STREAM_MEDIA_GRAPH_H
 #define FFMPEG_PLAYBACK_STREAM_MEDIA_GRAPH_H
 
-#include "MediaGraph/PlaybackStreamMediaGraph.h"
+#include "MediaGraph/PlaybackMediaGraph.h"
 
 NS_BEGIN(graph, 1)
 
@@ -21,12 +21,17 @@ public:
 	virtual ~FFmpegPlaybackStreamMediaGraph(void);
 
 protected:
-	int openMediaGraph(const std::string streamUrl, void* hwnd = NULL) override;
+	int openMediaGraph(
+		const std::string streamUrl, void* hwnd = NULL, MediaDataCaptureCallback callback = NULL) override;
 	int closeMediaGraph(void) override;
 
 private:
 	int createNewMediaDemuxer(const std::string streamUrl);
 	int createNewMediaController(void);
+	int createNewMediaCapture(MediaDataCaptureCallback callback = NULL);
+	// Set the connection between output and input pin.
+	int connectPullStreamDataChain(void);
+	int connectOutputPinToInputPin(MediaPinRef outputPin, MediaPinRef inputPin);
 	int runPullStreamDataThread(void);
 };//class FFmpegPlaybackStreamMediaGraph
 

@@ -137,11 +137,9 @@ void FFmpegAVMediaDemuxer::pullStreamDataProcess(void)
 	{
 		if (pkt->stream_index == videoMediaIndex)
 		{
-			printf("*****	Read VIDEO stream %d bytes.\r\n", pkt->size);
 		} 
 		else if (pkt->stream_index == audioMediaIndex)
 		{
-			printf("#####	Read AUDIO stream %d bytes.\r\n", pkt->size);
 		}
 
 		av_packet_unref(pkt);

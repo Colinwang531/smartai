@@ -10,9 +10,9 @@
 #ifndef MEDIA_DEMUXER_H
 #define MEDIA_DEMUXER_H
 
-#include <string>
 #include "boost/thread/condition.hpp"
-#include "predef.h"
+#include "MediaFilter/MediaFilter.h"
+using MediaFilterRef = boost::weak_ptr<NS(filter, 1)::MediaFilter>;
 
 NS_BEGIN(demuxer, 1)
 

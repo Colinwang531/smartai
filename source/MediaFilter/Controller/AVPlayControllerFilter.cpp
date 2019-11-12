@@ -1,7 +1,6 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaPin/OutputMediaPin.h"
-using OutputMediaPin = NS(pin, 1)::OutputMediaPin;
+#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Controller/AVPlayControllerFilter.h"
 
 NS_BEGIN(filter, 1)

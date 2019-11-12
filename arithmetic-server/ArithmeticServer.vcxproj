@@ -324,9 +324,9 @@
     <ClCompile Include="..\source\MediaFilter\TargetMediaFilter.cpp" />
     <ClCompile Include="..\source\MediaFrame\MediaFrame.cpp" />
     <ClCompile Include="..\source\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.cpp" />
-    <ClCompile Include="..\source\MediaGraph\PlaybackStreamMediaGraph.cpp" />
     <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp" />
     <ClCompile Include="..\source\MediaGraph\LiveStreamMediaGraph.cpp" />
+    <ClCompile Include="..\source\MediaGraph\PlaybackMediaGraph.cpp" />
     <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\MediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp" />
@@ -421,7 +421,7 @@
     <ClInclude Include="..\include\MediaFilter\TargetMediaFilter.h" />
     <ClInclude Include="..\include\MediaFrame\MediaFrame.h" />
     <ClInclude Include="..\include\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.h" />
-    <ClInclude Include="..\include\MediaGraph\PlaybackStreamMediaGraph.h" />
+    <ClInclude Include="..\include\MediaGraph\PlaybackMediaGraph.h" />
     <ClInclude Include="..\include\MediaGraph\MediaGraph.h" />
     <ClInclude Include="..\include\MediaGraph\LiveStreamMediaGraph.h" />
     <ClInclude Include="..\include\MediaPin\InputMediaPin.h" />

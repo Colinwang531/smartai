@@ -9,7 +9,7 @@ MediaGraph::MediaGraph()
 MediaGraph::~MediaGraph()
 {}
 
-MediaFilterPtr MediaGraph::queryMediaFilterByID(const std::string filterID)
+MediaFilterRef MediaGraph::queryMediaFilterByID(const std::string filterID)
 {
 	return mediaFilterGroup.at(filterID);
 }

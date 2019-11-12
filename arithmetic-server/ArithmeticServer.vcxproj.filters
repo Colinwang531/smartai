@@ -292,6 +292,12 @@
     <Filter Include="Source Files\Filter\Renderer">
       <UniqueIdentifier>{fe34ab7c-a7c4-4b58-ba8c-354875d1b253}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Filter\Capture">
+      <UniqueIdentifier>{748be891-66e8-4201-bea8-af0b4180ecfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Capture">
+      <UniqueIdentifier>{58338db3-8459-4b91-86a2-4de1a49d8d36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\Device\Device.cpp">
@@ -870,9 +876,6 @@
     <ClCompile Include="..\source\MediaGraph\LiveStreamMediaGraph.cpp">
       <Filter>Source Files\Graph</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\PlaybackStreamMediaGraph.cpp">
-      <Filter>Source Files\Graph</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp">
       <Filter>Source Files\Demuxer\FFmpeg</Filter>
     </ClCompile>
@@ -890,6 +893,12 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Renderer\AVRendererFilter.cpp">
       <Filter>Source Files\Filter\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp">
+      <Filter>Source Files\Filter\Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\PlaybackMediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1571,9 +1580,6 @@
     <ClInclude Include="..\include\MediaGraph\LiveStreamMediaGraph.h">
       <Filter>Header Files\Graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\PlaybackStreamMediaGraph.h">
-      <Filter>Header Files\Graph</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.h">
       <Filter>Header Files\Demuxer\FFmpeg</Filter>
     </ClInclude>
@@ -1591,6 +1597,12 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaFilter\Renderer\AVRendererFilter.h">
       <Filter>Header Files\Filter\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h">
+      <Filter>Header Files\Filter\Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\PlaybackMediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

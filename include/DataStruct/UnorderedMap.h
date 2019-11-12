@@ -48,10 +48,18 @@ public:
 		umap.clear();
 	}
 	
-	const Value& at(Key k)
+	Value at(Key k)
 	{
 		ReadLock rl{ mtx };
-		return umap.at(k);
+		Value ret{};
+		typename boost::unordered_map<Key, Value>::const_iterator it{ umap.find(k) };
+
+		if (umap.end() != it)
+		{
+			ret = it->second;
+		}
+
+		return ret;
 	}
 
 	unsigned long long size(void)
