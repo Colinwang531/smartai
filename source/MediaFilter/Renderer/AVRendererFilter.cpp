@@ -1,69 +1,54 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaRenderer/D3D/VideoD3DRenderer.h"
-using VideoD3DRenderer = NS(renderer, 1)::VideoD3DRenderer;
+#include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
+using VideoD3DRenderer = NS(model, 1)::VideoD3DRenderer;
+#include "MediaModel/Renderer/DXS/AudioDxSoundPlayer.h"
+using AudioDxSoundPlayer = NS(model, 1)::AudioDxSoundPlayer;
 #include "MediaFilter/Renderer/AVRendererFilter.h"
 
 NS_BEGIN(filter, 1)
 
-AVRendererFilter::AVRendererFilter() : MediaFilter()
+AVRendererFilter::AVRendererFilter(const HWND hwnd /* = NULL */)
+	: MediaFilter(), videoDisplayWnd{ hwnd }
 {}
 
 AVRendererFilter::~AVRendererFilter()
 {}
 
-int AVRendererFilter::createNewMediaRenderer(void* hwnd /* = NULL */)
+int AVRendererFilter::createNewFilter()
 {
-	int status{ ERR_OK };
-
-	if (hwnd)
+	if (videoDisplayWnd)
 	{
-		MediaRendererPtr videoRendererPtr{ boost::make_shared<VideoD3DRenderer>() };
-		if (videoRendererPtr)
+		MediaModelPtr dxVideoD3dRendererPtr{ boost::make_shared<VideoD3DRenderer>(videoDisplayWnd) };
+		if (dxVideoD3dRendererPtr)
 		{
-			videoRendererPtr->createNewMediaRenderer(hwnd);
-			mediaRendererPtr.swap(videoRendererPtr);
+			createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
+			createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
+			mediaModelPtr.swap(dxVideoD3dRendererPtr);
 		}
 	}
 	else
 	{
+		MediaModelPtr dxSoundPlayerPtr{ boost::make_shared<AudioDxSoundPlayer>() };
+		if (dxSoundPlayerPtr)
+		{
+			createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
+			createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
+			mediaModelPtr.swap(dxSoundPlayerPtr);
+		}
 	}
 
-	return ERR_OK == status ? createNewInputAndOutputPin(hwnd) : status;
+	return MediaFilter::createNewFilter();
+}
+
+int AVRendererFilter::destroyFilter()
+{
+	return ERR_OK;
 }
 
 int AVRendererFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	int status{ mediaRendererPtr ? ERR_OK : ERR_BAD_OPERATE };
-
-// 	if (ERR_OK == status)
-// 	{
-// 		// if current media data is the first one, create demuxer and output pins instances once.
-// 		status = createNewMediaDemuxer(mediaData);
-// 
-// 		if (ERR_OK == status)
-// 		{
-// 			status = createNewOutputPin();
-// 		}
-// 	}
-
-	return status;
-}
-
-int AVRendererFilter::createNewInputAndOutputPin(void* hwnd /* = NULL */)
-{
-	if (hwnd)
-	{
-		createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
-		createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
-	} 
-	else
-	{
-		createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
-		createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
-	}
-
-	return ERR_OK;
+	return mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
 }
 
 NS_END

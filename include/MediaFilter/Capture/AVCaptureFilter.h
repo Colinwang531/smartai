@@ -10,25 +10,26 @@
 #ifndef AV_CAPTURE_FILTER_H
 #define AV_CAPTURE_FILTER_H
 
-#include "boost/function.hpp"
 #include "MediaFilter/TargetMediaFilter.h"
 
 NS_BEGIN(filter, 1)
 
-typedef boost::function<void(MediaDataPtr)> MediaDataCaptureCallback;
-
 class AVCaptureFilter : public TargetMediaFilter
 {
-public:
-	AVCaptureFilter(void);
-	virtual ~AVCaptureFilter(void);
+protected:
+	typedef void (CALLBACK* AVMediaDataCaptureCallback)(const char*, const int);
 
 public:
-	int createNewMediaCapture(MediaDataCaptureCallback callback = NULL);
+	AVCaptureFilter(void* callback = NULL);
+	virtual ~AVCaptureFilter(void);
+
+protected:
+	int createNewFilter(void) override;
+	int destroyFilter(void) override;
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	MediaDataCaptureCallback mediaDataCaptureCallback;
+	AVMediaDataCaptureCallback avMediaDataCaptureCallback;
 };//class AVCaptureFilter
 
 NS_END

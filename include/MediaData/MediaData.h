@@ -11,46 +11,73 @@
 #define MEDIA_DATA_H
 
 #include "boost/shared_ptr.hpp"
-#include "boost/weak_ptr.hpp"
 #include "predef.h"
 
 NS_BEGIN(media, 1)
 
-typedef enum class tagMediaDataType_t
-{
-	MEDIA_DATA_TYPE_NONE = 0,
-	MEDIA_DATA_TYPE_FILE_PATH,
-	MEDIA_DATA_TYPE_FRAME_HEAD_INFO,
-	MEDIA_DATA_TYPE_FRAME_DATA
-}MediaDataType;
-
 class MediaData
 {
 public:
-	MediaData(const MediaDataType& type = MediaDataType::MEDIA_DATA_TYPE_NONE);
+	MediaData(
+		const MediaDataMainID mainID = MediaDataMainID::MEDIA_DATA_MAIN_ID_NONE,
+		const MediaDataSubID subID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE,
+		const MediaDataPatchID pacthID = MediaDataPatchID::MEDIA_DATA_PATCH_ID_NONE);
 	~MediaData(void);
 
 public:
-	void resetMediaDataType(const MediaDataType& type = MediaDataType::MEDIA_DATA_TYPE_NONE);
-	void resetMediaDataBuffer(void);
-	int setMediaDataBuffer(const char* dataBuffer = NULL, const unsigned long long dataBytes = 0);
-	inline boost::weak_ptr<char[]> getMediaDataBuffer(void) const
+	int setData(
+		const unsigned char* data = NULL, const unsigned long long dataBytes = 0);
+	inline void setRawData(void* data = NULL)
 	{
-		return mediaDataPtr;
+		mediaDataRaw = data;
 	}
-	inline const unsigned long long getMediaDataBytes(void) const
+	inline void* getRawData(void) const
+	{
+		return mediaDataRaw;
+	}
+	inline void setPixel(const int width = 0, const int height = 0)
+	{
+		imageWidth = width;
+		imageHeight = height;
+	}
+	inline const int getWidth(void) const 
+	{
+		return imageWidth;
+	}
+	inline const int getHeight(void) const
+	{
+		return imageHeight;
+	}
+	inline const unsigned char* getData(void) const
+	{
+		return mediaDataPtr ? mediaDataPtr.get() : NULL;
+	}
+	inline const unsigned long long getDataBytes(void) const
 	{
 		return mediaDataBytes;
 	}
-	inline const MediaDataType& getMediaDataType(void) const
+	inline const MediaDataMainID getMainID(void) const
 	{
-		return mediaDataType;
+		return mediaDataMainID;
+	}
+	inline const MediaDataSubID getSubID(void) const
+	{
+		return mediaDataSubID;
+	}
+	inline const MediaDataPatchID getPatchID(void) const
+	{
+		return mediaDataPatchID;
 	}
 
 private:
-	MediaDataType mediaDataType;
-	boost::shared_ptr<char[]> mediaDataPtr;
+	const MediaDataMainID mediaDataMainID;
+	const MediaDataSubID mediaDataSubID;
+	const MediaDataPatchID mediaDataPatchID;
+	boost::shared_ptr<unsigned char[]> mediaDataPtr;
 	unsigned long long mediaDataBytes;
+	int imageHeight;
+	int imageWidth;
+	void* mediaDataRaw;
 };//class MediaData
 
 NS_END

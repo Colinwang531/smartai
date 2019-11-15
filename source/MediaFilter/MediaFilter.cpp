@@ -1,3 +1,4 @@
+#include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaPin/InputMediaPin.h"
@@ -8,7 +9,7 @@ using OutputMediaPin = NS(pin, 1)::OutputMediaPin;
 
 NS_BEGIN(filter, 1)
 
-MediaFilter::MediaFilter(const MediaFilterMode mode /* = MediaFilterMode::MEDIA_FILTER_MEDIUM */) : mediaFilterMode{ mode }
+MediaFilter::MediaFilter()
 {}
 
 MediaFilter::~MediaFilter()
@@ -19,18 +20,22 @@ MediaFilter::~MediaFilter()
 	mediaPinGroup.clear();
 }
 
-MediaPinRef MediaFilter::queryMediaPinByID(const std::string pinID)
+int MediaFilter::createNewFilter(void)
 {
-	return mediaPinGroup.at(pinID);
+	if (mediaModelPtr)
+	{
+		mediaModelPtr->setPostMediaDataCallback(
+			boost::bind(&MediaFilter::postMediaDataCallback, boost::enable_shared_from_this<MediaFilter>::shared_from_this(), _1));
+	}
+
+	return ERR_OK;
 }
 
 int MediaFilter::createNewInputPin(const std::string pinID)
 {
 	int status{ pinID.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
-	if (ERR_OK == status && 
-		(MediaFilterMode::MEDIA_FILTER_MODE_MEDIUM == mediaFilterMode || 
-			MediaFilterMode::MEDIA_FILTER_MODE_TARGET == mediaFilterMode))
+	if (ERR_OK == status && !isSourceFilter())
 	{
 		MediaPinPtr inputPinPtr{ 
 			boost::make_shared<InputMediaPin>(boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
@@ -47,14 +52,45 @@ int MediaFilter::createNewOutputPin(const std::string pinID)
 {
 	int status{ pinID.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
-	if (ERR_OK == status &&
-		(MediaFilterMode::MEDIA_FILTER_MODE_MEDIUM == mediaFilterMode ||
-			MediaFilterMode::MEDIA_FILTER_MODE_SOURCE == mediaFilterMode))
+	if (ERR_OK == status && !isTargetFilter())
 	{
 		MediaPinPtr outputPinPtr{ boost::make_shared<OutputMediaPin>() };
 		if (outputPinPtr)
 		{
 			mediaPinGroup.insert(pinID, outputPinPtr);
+		}
+	}
+
+	return status;
+}
+
+int MediaFilter::postMediaDataCallback(MediaDataPtr mediaData)
+{
+	int status{ mediaData && !isTargetFilter() ? ERR_OK : ERR_INVALID_PARAM };
+
+	if (ERR_OK == status)
+	{
+		const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
+
+		if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
+		{
+			MediaPinRef mediaPinRef{ queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
+			if (!mediaPinRef.expired())
+			{
+				status = mediaPinRef.lock()->inputData(mediaData);
+			}
+		}
+		else if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
+		{
+			MediaPinRef mediaPinRef{ queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
+			if (!mediaPinRef.expired())
+			{
+				status = mediaPinRef.lock()->inputData(mediaData);
+			}
+		}
+		else
+		{
+			status = ERR_NOT_SUPPORT;
 		}
 	}
 

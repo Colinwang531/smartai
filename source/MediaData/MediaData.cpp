@@ -1,48 +1,47 @@
 #include "error.h"
-#include "boost/checked_delete.hpp"
 #include "boost/make_shared.hpp"
 #include "MediaData/MediaData.h"
 
 NS_BEGIN(media, 1)
 
-MediaData::MediaData(const MediaDataType& type /* = MediaDataType::MEDIA_DATA_TYPE_NONE */)
-	: mediaDataType(type), mediaDataPtr{ NULL }, mediaDataBytes{ 0 }
+MediaData::MediaData(
+	const MediaDataMainID mainID /* = MediaDataMainID::MEDIA_DATA_MAIN_ID_NONE */,
+	const MediaDataSubID subID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */,
+	const MediaDataPatchID pacthID /* = MediaDataPatchID::MEDIA_DATA_PATCH_ID_NONE */)
+	: mediaDataMainID(mainID), mediaDataSubID{ subID }, mediaDataPatchID{ pacthID }, mediaDataBytes{ 0 }, mediaDataRaw{ NULL }
 {}
 
 MediaData::~MediaData()
 {}
 
-void MediaData::resetMediaDataType(const MediaDataType& type /* = MediaDataType::MEDIA_DATA_TYPE_NONE */)
+int MediaData::setData(const unsigned char* data /* = NULL */, const unsigned long long dataBytes /* = 0 */)
 {
-	mediaDataType = type;
-}
-
-void MediaData::resetMediaDataBuffer()
-{
-	mediaDataPtr.reset();
-	mediaDataBytes = 0;
-}
-
-int MediaData::setMediaDataBuffer(const char* dataBuffer /* = NULL */, const unsigned long long dataBytes /* = 0 */)
-{
-	int status{ ERR_INVALID_PARAM };
+	int status{ data && 0 < dataBytes ? ERR_OK : ERR_INVALID_PARAM };
 	
-	if (dataBuffer && 0 < dataBytes)
+	if (ERR_OK == status && !mediaDataPtr)
 	{
-		resetMediaDataBuffer();
-		mediaDataPtr = boost::make_shared<char[]>(dataBytes, 0);
+		mediaDataBytes = dataBytes;
+		mediaDataPtr = boost::make_shared<unsigned char[]>(dataBytes, 0);
+
 		if (mediaDataPtr)
 		{
 #ifdef _WINDOWS
-			memcpy_s(mediaDataPtr.get(), mediaDataBytes, dataBuffer, dataBytes);
+			memcpy_s(mediaDataPtr.get(), mediaDataBytes, data, dataBytes);
 #else
-			memcpy(mediaDataPtr.get(), dataBuffer, dataBytes);
+			memcpy(mediaDataPtr.get(), data, dataBytes);
 #endif//WINDOWS
 		}
-		mediaDataBytes = dataBytes;
+		else
+		{
+			status = ERR_BAD_ALLOC;
+		}
+	}
+	else
+	{
+		status = ERR_BAD_OPERATE;
 	}
 
-	return mediaDataPtr && 0 < mediaDataBytes ? ERR_OK : ERR_BAD_ALLOC;
+	return status;
 }
 
 NS_END

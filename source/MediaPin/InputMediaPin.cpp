@@ -4,7 +4,7 @@
 NS_BEGIN(pin, 1)
 
 InputMediaPin::InputMediaPin(MediaFilterRef filterRef)
-	: MediaPin(MediaPinMode::MEDIA_PIN_INPUT), parentMediaFilterRef{ filterRef }
+	: MediaPin(), parentMediaFilterRef{ filterRef }
 {}
 
 InputMediaPin::~InputMediaPin()

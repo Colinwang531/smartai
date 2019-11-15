@@ -1,11 +1,11 @@
-#include "MediaEncoder/MediaEncoder.h"
+#include "MediaModel/MediaModel.h"
 
-NS_BEGIN(encoder, 1)
+NS_BEGIN(model, 1)
 
-MediaEncoder::MediaEncoder()
+MediaModel::MediaModel()
 {}
 
-MediaEncoder::~MediaEncoder()
+MediaModel::~MediaModel()
 {}
 
 NS_END

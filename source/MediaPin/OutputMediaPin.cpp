@@ -3,7 +3,7 @@
 
 NS_BEGIN(pin, 1)
 
-OutputMediaPin::OutputMediaPin() : MediaPin(MediaPinMode::MEDIA_PIN_OUTPUT)
+OutputMediaPin::OutputMediaPin() : MediaPin()
 {}
 
 OutputMediaPin::~OutputMediaPin()

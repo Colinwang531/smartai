@@ -1,83 +1,60 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaDecoder/FFmpeg/FFmpegVideoDecoder.h"
-using FFmpegVideoDecoder = NS(decoder, 1)::FFmpegVideoDecoder;
+#include "MediaModel/Decoder/FFmpeg/FFmpegVideoDecoder.h"
+using FFmpegVideoDecoder = NS(model, 1)::FFmpegVideoDecoder;
+#include "MediaModel/Decoder/FFmpeg/FFmpegAudioDecoder.h"
+using FFmpegAudioDecoder = NS(model, 1)::FFmpegAudioDecoder;
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 
 NS_BEGIN(filter, 1)
 
-AVDecoderFilter::AVDecoderFilter() : MediaFilter()
+AVDecoderFilter::AVDecoderFilter(const MediaDataSubID subID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */)
+	: MediaFilter(), mediaDataSubID{ subID }
 {}
 
 AVDecoderFilter::~AVDecoderFilter()
 {}
 
-int AVDecoderFilter::createNewMediaDecoder(
-	const MediaStreamID streamID /* = MediaStreamID::MEDIA_STREAM_ID_NONE */)
+int AVDecoderFilter::createNewFilter()
 {
-	int status{ ERR_OK };
-
-	if (MediaStreamID::MEDIA_STREAM_ID_H264 == streamID || MediaStreamID::MEDIA_STREAM_ID_H265 == streamID)
+	if (MediaDataSubID::MEDIA_DATA_SUB_ID_H264 == mediaDataSubID || MediaDataSubID::MEDIA_DATA_SUB_ID_H265 == mediaDataSubID)
 	{
-		MediaDecoderPtr decoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
-		if (decoderPtr)
+		MediaModelPtr ffmpegVideoDecoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
+		if (ffmpegVideoDecoderPtr)
 		{
-			mediaDecoderPtr.swap(decoderPtr);
+			createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
+			createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
+			mediaModelPtr.swap(ffmpegVideoDecoderPtr);
 		}
 	}
-	else if (MediaStreamID::MEDIA_STREAM_ID_AAC == streamID)
+	else if (MediaDataSubID::MEDIA_DATA_SUB_ID_AAC == mediaDataSubID)
 	{
+		MediaModelPtr ffmpegAudioDecoderPtr{ boost::make_shared<FFmpegAudioDecoder>() };
+		if (ffmpegAudioDecoderPtr)
+		{
+			createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
+			createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
+			mediaModelPtr.swap(ffmpegAudioDecoderPtr);
+		}
 	}
-	else if (MediaStreamID::MEDIA_STREAM_ID_G722 == streamID)
+	else if (MediaDataSubID::MEDIA_DATA_SUB_ID_G722 == mediaDataSubID)
 	{
 	}
 	else
 	{
-		status = ERR_NOT_SUPPORT;
 	}
 
-	return ERR_OK == status ? createNewInputAndOutputPin(streamID) : status;
+	return MediaFilter::createNewFilter();
+}
+
+int AVDecoderFilter::destroyFilter()
+{
+	return ERR_OK;
 }
 
 int AVDecoderFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	int status{ mediaDecoderPtr ? ERR_OK : ERR_BAD_OPERATE };
-
-// 	if (ERR_OK == status)
-// 	{
-// 		// if current media data is the first one, create demuxer and output pins instances once.
-// 		status = createNewMediaDemuxer(mediaData);
-// 
-// 		if (ERR_OK == status)
-// 		{
-// 			status = createNewOutputPin();
-// 		}
-// 	}
-
-	return status;
-}
-
-int AVDecoderFilter::createNewInputAndOutputPin(
-	const MediaStreamID streamID /* = MediaStreamID::MEDIA_STREAM_ID_NONE */)
-{
-	int status{ ERR_OK };
-
-	if (MediaStreamID::MEDIA_STREAM_ID_H264 == streamID || MediaStreamID::MEDIA_STREAM_ID_H265 == streamID)
-	{
-		createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
-		createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
-	} 
-	else if (MediaStreamID::MEDIA_STREAM_ID_AAC == streamID || MediaStreamID::MEDIA_STREAM_ID_G722 == streamID)
-	{
-		createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
-		createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
-	}
-	else
-	{
-		status = ERR_NOT_SUPPORT;
-	}
-
-	return status;
+	return mediaData ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
 }
 
 NS_END

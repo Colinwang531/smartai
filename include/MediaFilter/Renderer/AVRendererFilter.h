@@ -10,29 +10,26 @@
 #ifndef AV_RENDERER_FILTER_H
 #define AV_RENDERER_FILTER_H
 
+#include <windows.h>
 #include "MediaFilter/MediaFilter.h"
-#include "MediaRenderer/MediaRenderer.h"
-using MediaRendererPtr = boost::shared_ptr<NS(renderer, 1)::MediaRenderer>;
 
 NS_BEGIN(filter, 1)
 
 class AVRendererFilter : public MediaFilter
 {
 public:
-	AVRendererFilter(void);
-	virtual ~AVRendererFilter(void);
-
-public:
 	// If NULL == hwnd, audio filter is created.
 	// If NULL != hwnd, video filter is created.
-	int createNewMediaRenderer(void* hwnd = NULL);
+	AVRendererFilter(const HWND hwnd = NULL);
+	virtual ~AVRendererFilter(void);
+
+protected:
+	int createNewFilter(void) override;
+	int destroyFilter(void) override;
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	int createNewInputAndOutputPin(void* hwnd = NULL);
-
-protected:
-	MediaRendererPtr mediaRendererPtr;
+	const HWND videoDisplayWnd;
 };//class AVRendererFilter
 
 NS_END

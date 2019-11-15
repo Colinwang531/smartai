@@ -5,16 +5,20 @@
 
 NS_BEGIN(filter, 1)
 
-AVCaptureFilter::AVCaptureFilter() : TargetMediaFilter(), mediaDataCaptureCallback{ NULL }
+AVCaptureFilter::AVCaptureFilter(void* callback /* = NULL */)
+	: TargetMediaFilter(), avMediaDataCaptureCallback{ reinterpret_cast<AVMediaDataCaptureCallback>(callback) }
 {}
 
 AVCaptureFilter::~AVCaptureFilter()
 {}
 
-int AVCaptureFilter::createNewMediaCapture(MediaDataCaptureCallback callback /* = NULL */)
+int AVCaptureFilter::createNewFilter()
 {
-	createNewInputPin(NS(pin, 1)::MediaStreamInputPinID);
-	mediaDataCaptureCallback = callback;
+	return createNewInputPin(NS(pin, 1)::MediaStreamInputPinID);
+}
+
+int AVCaptureFilter::destroyFilter()
+{
 	return ERR_OK;
 }
 

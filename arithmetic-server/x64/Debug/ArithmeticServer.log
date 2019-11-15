@@ -1,0 +1,11 @@
+﻿  CVAlgo.cpp
+  Camera.cpp
+  Device.cpp
+  HikvisionDevice.cpp
+  HikvisionNVR.cpp
+  Cpu.cpp
+  MQModel.cpp
+  PublisherModel.cpp
+  RequesterModel.cpp
+  ResponserModel.cpp
+  TransferModel.cpp

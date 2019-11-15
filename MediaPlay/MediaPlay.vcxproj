@@ -92,14 +92,14 @@
       <PreprocessorDefinitions>_DEBUG;MEDIAPLAY_EXPORTS;_WINDOWS;_USRDLL;BOOST_ALL_NO_LIB;MEDIA_PLAY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)lib\ffmpeg_4_2_1;$(SolutionDir)lib\D3D;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\ffmpeg-4.1.4\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\ffmpeg_4_2_1;$(SolutionDir)lib\D3D;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -161,10 +161,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\DataStruct\UnorderedMap.h" />
     <ClInclude Include="..\include\error.h" />
-    <ClInclude Include="..\include\MediaDecoder\FFmpeg\FFmpegVideoDecoder.h" />
-    <ClInclude Include="..\include\MediaDecoder\MediaDecoder.h" />
-    <ClInclude Include="..\include\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.h" />
-    <ClInclude Include="..\include\MediaDemuxer\MediaDemuxer.h" />
+    <ClInclude Include="..\include\MediaData\MediaData.h" />
     <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Controller\AVPlayControllerFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Decoder\AVDecoderFilter.h" />
@@ -173,14 +170,27 @@
     <ClInclude Include="..\include\MediaFilter\Renderer\AVRendererFilter.h" />
     <ClInclude Include="..\include\MediaFilter\SourceMediaFilter.h" />
     <ClInclude Include="..\include\MediaFilter\TargetMediaFilter.h" />
-    <ClInclude Include="..\include\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.h" />
+    <ClInclude Include="..\include\MediaGraph\File\LocalFilePlaybackMediaGraph.h" />
     <ClInclude Include="..\include\MediaGraph\MediaGraph.h" />
     <ClInclude Include="..\include\MediaGraph\PlaybackMediaGraph.h" />
+    <ClInclude Include="..\include\MediaModel\Decoder\FFmpeg\FFmpegAudioDecoder.h" />
+    <ClInclude Include="..\include\MediaModel\Decoder\FFmpeg\FFmpegVideoDecoder.h" />
+    <ClInclude Include="..\include\MediaModel\Decoder\MediaDecoder.h" />
+    <ClInclude Include="..\include\MediaModel\Demuxer\FFmpeg\FFmpegAVMediaDemuxer.h" />
+    <ClInclude Include="..\include\MediaModel\Demuxer\MediaDemuxer.h" />
+    <ClInclude Include="..\include\MediaModel\MediaModel.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3D.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DDevice.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DFont.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DPixelShader.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DTexture.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DVertexBuffer.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\VideoD3DRenderer.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\DXS\AudioDxSoundPlayer.h" />
+    <ClInclude Include="..\include\MediaModel\Renderer\MediaRenderer.h" />
     <ClInclude Include="..\include\MediaPin\InputMediaPin.h" />
     <ClInclude Include="..\include\MediaPin\MediaPin.h" />
     <ClInclude Include="..\include\MediaPin\OutputMediaPin.h" />
-    <ClInclude Include="..\include\MediaRenderer\D3D\VideoD3DRenderer.h" />
-    <ClInclude Include="..\include\MediaRenderer\MediaRenderer.h" />
     <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MediaPlay.h" />
@@ -192,10 +202,7 @@
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp" />
-    <ClCompile Include="..\source\MediaDecoder\FFmpeg\FFmpegVideoDecoder.cpp" />
-    <ClCompile Include="..\source\MediaDecoder\MediaDecoder.cpp" />
-    <ClCompile Include="..\source\MediaDemuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp" />
-    <ClCompile Include="..\source\MediaDemuxer\MediaDemuxer.cpp" />
+    <ClCompile Include="..\source\MediaData\MediaData.cpp" />
     <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Controller\AVPlayControllerFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Decoder\AVDecoderFilter.cpp" />
@@ -204,14 +211,27 @@
     <ClCompile Include="..\source\MediaFilter\Renderer\AVRendererFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\SourceMediaFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\TargetMediaFilter.cpp" />
-    <ClCompile Include="..\source\MediaGraph\FFmpeg\FFmpegPlaybackStreamMediaGraph.cpp" />
+    <ClCompile Include="..\source\MediaGraph\File\LocalFilePlaybackMediaGraph.cpp" />
     <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp" />
     <ClCompile Include="..\source\MediaGraph\PlaybackMediaGraph.cpp" />
+    <ClCompile Include="..\source\MediaModel\Decoder\FFmpeg\FFmpegAudioDecoder.cpp" />
+    <ClCompile Include="..\source\MediaModel\Decoder\FFmpeg\FFmpegVideoDecoder.cpp" />
+    <ClCompile Include="..\source\MediaModel\Decoder\MediaDecoder.cpp" />
+    <ClCompile Include="..\source\MediaModel\Demuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp" />
+    <ClCompile Include="..\source\MediaModel\Demuxer\MediaDemuxer.cpp" />
+    <ClCompile Include="..\source\MediaModel\MediaModel.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3D.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DDevice.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DFont.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DPixelShader.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DTexture.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DVertexBuffer.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\VideoD3DRenderer.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\DXS\AudioDxSoundPlayer.cpp" />
+    <ClCompile Include="..\source\MediaModel\Renderer\MediaRenderer.cpp" />
     <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\MediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp" />
-    <ClCompile Include="..\source\MediaRenderer\D3D\VideoD3DRenderer.cpp" />
-    <ClCompile Include="..\source\MediaRenderer\MediaRenderer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MediaPlay.cpp" />
     <ClCompile Include="pch.cpp">

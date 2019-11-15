@@ -17,12 +17,6 @@ using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(pin, 1)
 
-typedef enum class tagMediaPinMode_t
-{
-	MEDIA_PIN_INPUT = 0,
-	MEDIA_PIN_OUTPUT
-}MediaPinMode;
-
 BOOST_STATIC_CONSTANT(std::string, MediaStreamInputPinID = "MediaStreamInputPinID");
 BOOST_STATIC_CONSTANT(std::string, VideoStreamInputPinID = "VideoStreamInputPinID");
 BOOST_STATIC_CONSTANT(std::string, AudioStreamInputPinID = "AudioStreamInputPinID");
@@ -31,25 +25,25 @@ BOOST_STATIC_CONSTANT(std::string, AudioStreamOutputPinID = "AudioStreamOutputPi
 
 class MediaPin
 {
-protected:
-	using MediaPinRef = boost::weak_ptr<MediaPin>;
-
 public:
-	MediaPin(const MediaPinMode mode = MediaPinMode::MEDIA_PIN_INPUT);
+	MediaPin(void);
 	virtual ~MediaPin(void);
 
 public:
-	virtual int connectPin(MediaPinRef inputPinRef);
+	virtual int connectPin(boost::weak_ptr<MediaPin> inputPinRef);
 	virtual int inputData(MediaDataPtr dataPtr);
-	inline const MediaPinMode getMode(void) const
+	virtual bool isInputPin(void) const
 	{
-		return mediaPinMode;
+		return false;
 	}
-
-private:
-	const MediaPinMode mediaPinMode;
+	virtual bool isOutputPin(void) const
+	{
+		return false;
+	}
 };//class MediaPin
 
 NS_END
+
+using MediaPinRef = boost::weak_ptr<NS(pin, 1)::MediaPin>;
 
 #endif//MEDIA_PIN_H

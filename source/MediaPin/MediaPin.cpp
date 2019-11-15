@@ -3,13 +3,13 @@
 
 NS_BEGIN(pin, 1)
 
-MediaPin::MediaPin(const MediaPinMode mode /* = MediaPinMode::MEDIA_PIN_INPUT */) : mediaPinMode{ mode }
+MediaPin::MediaPin()
 {}
 
 MediaPin::~MediaPin()
 {}
 
-int MediaPin::connectPin(MediaPinRef inputPinRef)
+int MediaPin::connectPin(boost::weak_ptr<MediaPin> inputPinRef)
 {
 	return ERR_NOT_SUPPORT;
 }

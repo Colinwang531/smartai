@@ -1,38 +1,47 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2019, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2019-10-04
-//		Description:					多媒体编码器抽象基类
-//
-//		History:						Author									Date														Description
-//											王科威									2019-10-04										创建
+// Abstract base class of filter model.
 //
 
-#ifndef MEDIA_ENCODER_H
-#define MEDIA_ENCODER_H
+#ifndef MEDIA_MODEL_H
+#define MEDIA_MODEL_H
 
-#include "predef.h"
+#include "boost/shared_ptr.hpp"
+#include "boost/function.hpp"
+#include "MediaData/MediaData.h"
+using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
-NS_BEGIN(encoder, 1)
+NS_BEGIN(model, 1)
 
-class MediaEncoder
+typedef boost::function<int(const MediaDataSubID, const MediaDataSubID)> NotifiyMediaDataSubIDCallback;
+typedef boost::function<int(MediaDataPtr)> PostMediaDataCallback;
+
+class MediaModel
 {
 public:
-	MediaEncoder(void);
-	virtual ~MediaEncoder(void);
+	MediaModel(void);
+	virtual ~MediaModel(void);
 
 public:
-	virtual int initialize(
-		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) = 0;
-	virtual void deinitialize(void) = 0;
-	virtual int encode(
-		const unsigned char* imageData = NULL, const unsigned long long imageBytes = 0,
-		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) = 0;
-	virtual void data(unsigned char*& outputData, unsigned long long& outputBytes) = 0;
-};//class MediaEncoder
+	inline void setPostMediaDataCallback(PostMediaDataCallback callback = NULL)
+	{
+		postMediaDataCallback = callback;
+	}
+	inline void setNotifyMediaStreamIDCallback(NotifiyMediaDataSubIDCallback callback = NULL)
+	{
+		notifyMediaDataSubIDCallback = callback;
+	}
+	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+
+protected:
+	PostMediaDataCallback postMediaDataCallback;
+	NotifiyMediaDataSubIDCallback notifyMediaDataSubIDCallback;
+};//class MediaModel
 
 NS_END
 
-#endif//MEDIA_ENCODER_H
+#endif//MEDIA_MODEL_H

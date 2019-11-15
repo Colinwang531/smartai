@@ -11,30 +11,23 @@
 #define AV_DECODER_FILTER_H
 
 #include "MediaFilter/MediaFilter.h"
-#include "MediaDecoder/MediaDecoder.h"
-using MediaDecoderPtr = boost::shared_ptr<NS(decoder, 1)::MediaDecoder>;
 
 NS_BEGIN(filter, 1)
 
 class AVDecoderFilter : public MediaFilter
 {
 public:
-	AVDecoderFilter(void);
+	AVDecoderFilter(
+		const MediaDataSubID subID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE);
 	virtual ~AVDecoderFilter(void);
 
-public:
-	int createNewMediaDecoder(
-		const MediaStreamID streamID = MediaStreamID::MEDIA_STREAM_ID_NONE);
-
 protected:
+	int createNewFilter(void) override;
+	int destroyFilter(void) override;
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	int createNewInputAndOutputPin(
-		const MediaStreamID streamID = MediaStreamID::MEDIA_STREAM_ID_NONE);
-
-protected:
-	MediaDecoderPtr mediaDecoderPtr;
+	const MediaDataSubID mediaDataSubID;
 };//class AVDecoderFilter
 
 NS_END

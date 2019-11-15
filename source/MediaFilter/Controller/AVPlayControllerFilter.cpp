@@ -11,18 +11,23 @@ AVPlayControllerFilter::AVPlayControllerFilter() : MediaFilter()
 AVPlayControllerFilter::~AVPlayControllerFilter()
 {}
 
-int AVPlayControllerFilter::createNewMediaController(void)
+int AVPlayControllerFilter::createNewFilter(void)
 {
 	createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
 	createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
-	createNewInputPin(NS(pin, 1)::VideoStreamOutputPinID);
-	createNewInputPin(NS(pin, 1)::AudioStreamOutputPinID);
+	createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
+	createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
+	return MediaFilter::createNewFilter();
+}
+
+int AVPlayControllerFilter::destroyFilter()
+{
 	return ERR_OK;
 }
 
 int AVPlayControllerFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	return 0;
+	return postMediaDataCallback(mediaData);
 }
 
 int AVPlayControllerFilter::startPlay()

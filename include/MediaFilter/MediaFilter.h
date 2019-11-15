@@ -13,18 +13,13 @@
 #include "boost/enable_shared_from_this.hpp"
 #include "MediaPin/MediaPin.h"
 using MediaPinPtr = boost::shared_ptr<NS(pin, 1)::MediaPin>;
-using MediaPinRef = boost::weak_ptr<NS(pin, 1)::MediaPin>;
+#include "MediaModel/MediaModel.h"
+using MediaModelPtr = boost::shared_ptr<NS(model, 1)::MediaModel>;
+using MediaModelRef = boost::weak_ptr<NS(model, 1)::MediaModel>;
 #include "DataStruct/UnorderedMap.h"
 using MediaPinGroup = UnorderedMap<const std::string, MediaPinPtr>;
 
 NS_BEGIN(filter, 1)
-
-typedef enum class tagMediaFilterMode_t
-{
-	MEDIA_FILTER_MODE_SOURCE = 0,
-	MEDIA_FILTER_MODE_MEDIUM,
-	MEDIA_FILTER_MODE_TARGET
-}MediaFilterMode;
 
 BOOST_STATIC_CONSTANT(std::string, AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaControllerFilterID = "AVMediaControllerFilterID");
@@ -38,26 +33,39 @@ class MediaFilter
 	: public boost::enable_shared_from_this<MediaFilter>
 {
 public:
-	MediaFilter(const MediaFilterMode mode = MediaFilterMode::MEDIA_FILTER_MODE_MEDIUM);
+	MediaFilter(void);
 	virtual ~MediaFilter(void);
 
 public: 
-	virtual MediaPinRef queryMediaPinByID(const std::string pinID);
-	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
-	inline const MediaFilterMode getMediaFilterMode(void) const
+	virtual int createNewFilter(void);
+	virtual int destroyFilter(void) = 0;
+	inline MediaPinRef queryMediaPinByID(const std::string pinID)
 	{
-		return mediaFilterMode;
+		return mediaPinGroup.at(pinID);
+	}
+	inline MediaModelRef getMediaModel(void) const
+	{
+		return mediaModelPtr;
+	}
+	// Receive media data package from pin instance.
+	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+	virtual bool isSourceFilter(void) const
+	{
+		return false;
+	}
+	virtual bool isTargetFilter(void) const
+	{
+		return false;
 	}
 
 protected:
 	int createNewInputPin(const std::string pinID);
 	int createNewOutputPin(const std::string pinID);
+	virtual int postMediaDataCallback(MediaDataPtr mediaData);
 
 protected:
 	MediaPinGroup mediaPinGroup;
-
-private:
-	const MediaFilterMode mediaFilterMode;
+	MediaModelPtr mediaModelPtr;
 };//class MediaFilter
 
 NS_END

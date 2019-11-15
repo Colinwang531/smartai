@@ -10,7 +10,6 @@
 #ifndef MEDIA_GRAPH_H
 #define MEDIA_GRAPH_H
 
-#include "boost/function.hpp"
 #include "boost/noncopyable.hpp"
 #include "MediaFilter/MediaFilter.h"
 using MediaFilterPtr = boost::shared_ptr<NS(filter, 1)::MediaFilter>;
@@ -20,8 +19,6 @@ using MediaFilterGroup = UnorderedMap<const std::string, MediaFilterPtr>;
 
 NS_BEGIN(graph, 1)
 
-typedef boost::function<void(MediaDataPtr)> MediaDataCaptureCallback;
-
 class MediaGraph : private boost::noncopyable
 {
 public:
@@ -29,20 +26,18 @@ public:
 	virtual ~MediaGraph(void);
 
 public:
-	// @streamUrl : URL for opening media.
-	// @hwnd : Window handle for displaying video.
-	// @callback : Callback function handle for feeding video and audio stream data to caller.
-	virtual int openMediaGraph(
-		const std::string streamUrl, void* hwnd = NULL, MediaDataCaptureCallback callback = NULL) = 0;
-	virtual int closeMediaGraph(void) = 0;
+	virtual int createNewGraph(void* hwnd = NULL, void* callback = NULL) = 0;
+	virtual int destroyGraph(void) = 0;
 	virtual MediaFilterRef queryMediaFilterByID(const std::string filterID);
 
 protected:
 	int addMediaFilter(const std::string filterID, MediaFilterPtr mediaFilter);
 	int removeMediaFilter(const std::string filterID);
 
-private:
+protected:
 	MediaFilterGroup mediaFilterGroup;
+	void* displayHwnd;
+	void* userCallback;
 };//class MediaGraph
 
 NS_END
