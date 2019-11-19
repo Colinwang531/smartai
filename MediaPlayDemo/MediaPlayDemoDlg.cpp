@@ -103,8 +103,10 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-//	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
-	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", /*GetDlgItem(IDC_STATIC1)*/this->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
+	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
+	MEDIAPLAY_StartLivestreamPlay("admin", "eaton12345", "192.168.30.230", 80, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

@@ -35,6 +35,14 @@ public:
 	{
 		return mediaDataRaw;
 	}
+	inline void setUserData(void* data = NULL)
+	{
+		userData = data;
+	}
+	inline void* getUserData(void) const
+	{
+		return userData;
+	}
 	inline void setPixel(const int width = 0, const int height = 0)
 	{
 		imageWidth = width;
@@ -50,7 +58,8 @@ public:
 	}
 	inline const unsigned char* getData(void) const
 	{
-		return mediaDataPtr ? mediaDataPtr.get() : NULL;
+//		return mediaDataPtr ? mediaDataPtr.get() : NULL;
+		return mediaData;
 	}
 	inline const unsigned long long getDataBytes(void) const
 	{
@@ -73,11 +82,13 @@ private:
 	const MediaDataMainID mediaDataMainID;
 	const MediaDataSubID mediaDataSubID;
 	const MediaDataPatchID mediaDataPatchID;
-	boost::shared_ptr<unsigned char[]> mediaDataPtr;
+//	boost::shared_ptr<unsigned char[]> mediaDataPtr;
+	unsigned char* mediaData;
 	unsigned long long mediaDataBytes;
 	int imageHeight;
 	int imageWidth;
 	void* mediaDataRaw;
+	void* userData;
 };//class MediaData
 
 NS_END

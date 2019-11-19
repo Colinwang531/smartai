@@ -8,8 +8,8 @@ using AudioDxSoundPlayer = NS(model, 1)::AudioDxSoundPlayer;
 
 NS_BEGIN(filter, 1)
 
-AVRendererFilter::AVRendererFilter(const HWND hwnd /* = NULL */)
-	: MediaFilter(), videoDisplayWnd{ hwnd }
+AVRendererFilter::AVRendererFilter(const AVRendererType type /* = AVRendererType::AV_RENDERER_TYPE_NONE */)
+	: MediaFilter(), rendererType{ type }
 {}
 
 AVRendererFilter::~AVRendererFilter()
@@ -17,28 +17,36 @@ AVRendererFilter::~AVRendererFilter()
 
 int AVRendererFilter::createNewFilter()
 {
-	if (videoDisplayWnd)
+	int status{ ERR_BAD_ALLOC };
+
+	if (AVRendererType::AV_RENDERER_TYPE_VIDEO == rendererType)
 	{
-		MediaModelPtr dxVideoD3dRendererPtr{ boost::make_shared<VideoD3DRenderer>(videoDisplayWnd) };
-		if (dxVideoD3dRendererPtr)
+		if (ERR_OK == createNewInputPin(NS(pin, 1)::VideoStreamInputPinID) &&
+			ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID))
 		{
-			createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
-			createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
-			mediaModelPtr.swap(dxVideoD3dRendererPtr);
+			MediaModelPtr dxVideoD3dRendererPtr{ boost::make_shared<VideoD3DRenderer>() };
+			if (dxVideoD3dRendererPtr)
+			{
+				mediaModelPtr.swap(dxVideoD3dRendererPtr);
+				status = ERR_OK;
+			}
 		}
 	}
-	else
+	else if (AVRendererType::AV_RENDERER_TYPE_AUDIO == rendererType)
 	{
-		MediaModelPtr dxSoundPlayerPtr{ boost::make_shared<AudioDxSoundPlayer>() };
-		if (dxSoundPlayerPtr)
+		if (ERR_OK == createNewInputPin(NS(pin, 1)::AudioStreamInputPinID) &&
+			ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
 		{
-			createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
-			createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
-			mediaModelPtr.swap(dxSoundPlayerPtr);
+			MediaModelPtr dxSoundPlayerPtr{ boost::make_shared<AudioDxSoundPlayer>() };
+			if (dxSoundPlayerPtr)
+			{
+				mediaModelPtr.swap(dxSoundPlayerPtr);
+				status = ERR_OK;
+			}
 		}
 	}
 
-	return MediaFilter::createNewFilter();
+	return ERR_OK == status ? MediaFilter::createNewFilter() : status;
 }
 
 int AVRendererFilter::destroyFilter()
@@ -48,7 +56,7 @@ int AVRendererFilter::destroyFilter()
 
 int AVRendererFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	return mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
+	return mediaData && mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
 }
 
 NS_END

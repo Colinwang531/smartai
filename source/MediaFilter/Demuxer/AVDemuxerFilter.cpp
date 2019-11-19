@@ -15,15 +15,18 @@ AVDemuxerFilter::~AVDemuxerFilter()
 
 int AVDemuxerFilter::createNewFilter(void)
 {
+	int status{ ERR_BAD_ALLOC };
 	MediaModelPtr ffmpegAVMediaDemuxerPtr{ boost::make_shared<FFmpegAVMediaDemuxer>() };
-	if (ffmpegAVMediaDemuxerPtr)
+
+	if (ffmpegAVMediaDemuxerPtr &&
+		ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID) &&
+		ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
 	{
-		createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
-		createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
 		mediaModelPtr.swap(ffmpegAVMediaDemuxerPtr);
+		status = MediaFilter::createNewFilter();
 	}
 	
-	return MediaFilter::createNewFilter();
+	return status;
 }
 
 int AVDemuxerFilter::destroyFilter(void)

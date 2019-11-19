@@ -24,8 +24,8 @@ int MediaFilter::createNewFilter(void)
 {
 	if (mediaModelPtr)
 	{
-		mediaModelPtr->setPostMediaDataCallback(
-			boost::bind(&MediaFilter::postMediaDataCallback, boost::enable_shared_from_this<MediaFilter>::shared_from_this(), _1));
+		mediaModelPtr->setPostInputMediaDataCallback(
+			boost::bind(&MediaFilter::postInputMediaData, boost::enable_shared_from_this<MediaFilter>::shared_from_this(), _1));
 	}
 
 	return ERR_OK;
@@ -64,7 +64,7 @@ int MediaFilter::createNewOutputPin(const std::string pinID)
 	return status;
 }
 
-int MediaFilter::postMediaDataCallback(MediaDataPtr mediaData)
+int MediaFilter::postInputMediaData(MediaDataPtr mediaData)
 {
 	int status{ mediaData && !isTargetFilter() ? ERR_OK : ERR_INVALID_PARAM };
 

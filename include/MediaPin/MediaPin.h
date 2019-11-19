@@ -17,7 +17,6 @@ using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(pin, 1)
 
-BOOST_STATIC_CONSTANT(std::string, MediaStreamInputPinID = "MediaStreamInputPinID");
 BOOST_STATIC_CONSTANT(std::string, VideoStreamInputPinID = "VideoStreamInputPinID");
 BOOST_STATIC_CONSTANT(std::string, AudioStreamInputPinID = "AudioStreamInputPinID");
 BOOST_STATIC_CONSTANT(std::string, VideoStreamOutputPinID = "VideoStreamOutputPinID");

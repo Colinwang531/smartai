@@ -17,7 +17,6 @@ int MediaDemuxer::openStream(const std::string streamUrl)
 	if (ERR_OK == status)
 	{
 		stopped = false;
-		notifyMediaDataSubIDCallback(getVideoStreamID(), getAudioStreamID());
 		// Start reading data.
 		status = runPullStreamDataThread();
 	}

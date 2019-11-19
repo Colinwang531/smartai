@@ -21,24 +21,22 @@ public:
 	virtual ~PlaybackMediaGraph(void);
 
 protected:
-	int createNewGraph(void* hwnd = NULL, void* callback = NULL) override;
+	int createNewGraph(void) override;
 	int destroyGraph(void) override;
+	int linkMediaGraph(void) override;
 
 protected:
-	virtual int createNewVideoDecoderFilter(
-		const MediaDataSubID videoSubID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE);
-	virtual int createNewAudioDecoderFilter(
-		const MediaDataSubID audioSubID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE);
+	// Decoder and renderer filters were created by user.
+	virtual int createNewVideoDecoderFilter(void);
+	virtual int createNewAudioDecoderFilter(void);
 	virtual int createNewVideoRendererFilter(void);
 	virtual int createNewAudioRendererFilter(void);
 
 private:
-	int createNewDemuxerFilter(void);
-	int createNewControllerFilter(void);
-	int createNewCaptureFilter(void* callback = NULL);
-	int notifyMediaDataSubIDCallback(
-		const MediaDataSubID videoSubID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE,
-		const MediaDataSubID audioSubID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE);
+	// Demuxer, controller and callback data capture filters were created by creator.
+	virtual int createNewDemuxerFilter(void);
+	virtual int createNewControllerFilter(void);
+	virtual int createNewDataCaptureFilter(void);
 };//class PlaybackMediaGraph
 
 NS_END

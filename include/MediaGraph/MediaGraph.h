@@ -26,8 +26,9 @@ public:
 	virtual ~MediaGraph(void);
 
 public:
-	virtual int createNewGraph(void* hwnd = NULL, void* callback = NULL) = 0;
+	virtual int createNewGraph(void) = 0;
 	virtual int destroyGraph(void) = 0;
+	virtual int linkMediaGraph(void) = 0;
 	virtual MediaFilterRef queryMediaFilterByID(const std::string filterID);
 
 protected:
@@ -36,8 +37,6 @@ protected:
 
 protected:
 	MediaFilterGroup mediaFilterGroup;
-	void* displayHwnd;
-	void* userCallback;
 };//class MediaGraph
 
 NS_END

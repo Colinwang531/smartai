@@ -10,6 +10,10 @@
 #ifndef FFMPEG_VIDEO_DECODER_H
 #define FFMPEG_VIDEO_DECODER_H
 
+extern "C"
+{
+#include "libavcodec/avcodec.h"
+}
 #include "MediaModel/Decoder/MediaDecoder.h"
 
 NS_BEGIN(model, 1)
@@ -31,13 +35,14 @@ private:
 	int decodeMediaData(MediaDataPtr mediaData);
 
 private:
-	void* avcodecContext;
-	void* avcodecPacket;
-	void* avcodecInputFrame;
-	void* avcodecOutputFrame;
-	void* swsContext;
-	unsigned char* outputFrameData;
-	int outputFrameDataBytes;
+	AVCodecContext* codecctx;
+	AVBufferRef* hwdevicectx;
+// 	void* avcodecPacket;
+// 	void* avcodecInputFrame;
+// 	void* avcodecOutputFrame;
+// 	void* swsContext;
+// 	unsigned char* outputFrameData;
+// 	int outputFrameDataBytes;
 };//class FFmpegVideoDecoder
 
 NS_END

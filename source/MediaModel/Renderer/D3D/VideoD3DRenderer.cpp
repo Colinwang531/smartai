@@ -4,8 +4,7 @@
 
 NS_BEGIN(model, 1)
 
-VideoD3DRenderer::VideoD3DRenderer(const HWND hwnd /* = NULL */)
-	: MediaRenderer(), videoDisplayWnd{ hwnd }
+VideoD3DRenderer::VideoD3DRenderer() : MediaRenderer(), videoDisplayWnd{ NULL }
 {}
 
 VideoD3DRenderer::~VideoD3DRenderer()

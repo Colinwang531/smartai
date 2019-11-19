@@ -19,9 +19,6 @@ class TargetMediaFilter : public MediaFilter
 public:
 	TargetMediaFilter(void);
 	virtual ~TargetMediaFilter(void);
-
-protected:
-	int postMediaDataCallback(MediaDataPtr mediaData) override;
 };//class TargetMediaFilter
 
 NS_END

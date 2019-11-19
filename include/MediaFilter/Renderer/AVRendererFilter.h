@@ -10,17 +10,22 @@
 #ifndef AV_RENDERER_FILTER_H
 #define AV_RENDERER_FILTER_H
 
-#include <windows.h>
 #include "MediaFilter/MediaFilter.h"
 
 NS_BEGIN(filter, 1)
 
+typedef enum class tagAVRendererType_t
+{
+	AV_RENDERER_TYPE_NONE = 0,
+	AV_RENDERER_TYPE_VIDEO,
+	AV_RENDERER_TYPE_AUDIO
+}AVRendererType;
+
 class AVRendererFilter : public MediaFilter
 {
 public:
-	// If NULL == hwnd, audio filter is created.
-	// If NULL != hwnd, video filter is created.
-	AVRendererFilter(const HWND hwnd = NULL);
+	AVRendererFilter(
+		const AVRendererType type = AVRendererType::AV_RENDERER_TYPE_NONE);
 	virtual ~AVRendererFilter(void);
 
 protected:
@@ -29,7 +34,7 @@ protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	const HWND videoDisplayWnd;
+	const AVRendererType rendererType;
 };//class AVRendererFilter
 
 NS_END

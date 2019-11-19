@@ -139,6 +139,24 @@
     <Filter Include="Source Files\Model\Renderer\D3D\Direct3d">
       <UniqueIdentifier>{442e2401-70a3-4b38-b392-cb9ab09ba45c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Model\Accessor">
+      <UniqueIdentifier>{810cf62b-e8fb-4410-9f4f-d4504436ee08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Accessor">
+      <UniqueIdentifier>{24ff1688-4cb5-46e5-90fc-63e9227abb99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Accessor\SDK">
+      <UniqueIdentifier>{345c0ed4-b592-428f-b83b-482c34feb6a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Accessor\SDK">
+      <UniqueIdentifier>{736f6600-d052-4dff-b18b-42516f86c11b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\eaton">
+      <UniqueIdentifier>{8fdead57-dbb4-4e56-869d-24a51ca44740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\filesystem">
+      <UniqueIdentifier>{7071cfde-992a-4357-8e4c-9f48f4b36ca0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -248,6 +266,24 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DVertexBuffer.h">
       <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DDisplay.h">
+      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaGraph\LivestreamMediaGraph.h">
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Capture\LivestreamCaptureFilter.h">
+      <Filter>Header Files\Filter\Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Accessor\MediaAccessor.h">
+      <Filter>Header Files\Model\Accessor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Accessor\SDK\EatonIPCMediaAccessor.h">
+      <Filter>Header Files\Model\Accessor\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp">
+      <Filter>Source Files\boost\filesystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -364,6 +400,48 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DVertexBuffer.cpp">
       <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DDisplay.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaGraph\LivestreamMediaGraph.cpp">
+      <Filter>Source Files\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Capture\LivestreamCaptureFilter.cpp">
+      <Filter>Source Files\Filter\Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Accessor\MediaAccessor.cpp">
+      <Filter>Source Files\Model\Accessor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Accessor\SDK\EatonIPCMediaAccessor.cpp">
+      <Filter>Source Files\Model\Accessor\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\lib\eaton\x64\ipcsdk_c.cpp">
+      <Filter>Source Files\eaton</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\codecvt_error_category.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\operations.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path_traits.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\portability.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\unique_path.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\utf8_codecvt_facet.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

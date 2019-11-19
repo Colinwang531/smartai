@@ -10,6 +10,10 @@
 #ifndef FFMPEG_AV_MEDIA_DEMUXER_H
 #define FFMPEG_AV_MEDIA_DEMUXER_H
 
+extern "C"
+{
+#include "libavformat/avformat.h"
+}
 #include "MediaModel/Demuxer/MediaDemuxer.h"
 
 NS_BEGIN(model, 1)
@@ -31,15 +35,12 @@ public:
 protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
 	void pullStreamDataProcess(void) override;
-	void getMediaDataParameters(void);
 
 private:
-	void* avFormatContext;
-	void* avPacket;
-	int videoMediaIndex;
-	int audioMediaIndex;
-	int imageWidth;
-	int imageHeight;
+	AVFormatContext* formatctx;
+	AVPacket packet;
+	int videoStreamIndex;
+	int audioStreamIndex;
 };//class FFmpegAVMediaDemuxer
 
 NS_END

@@ -16,20 +16,14 @@ NS_BEGIN(filter, 1)
 
 class AVCaptureFilter : public TargetMediaFilter
 {
-protected:
-	typedef void (CALLBACK* AVMediaDataCaptureCallback)(const char*, const int);
-
 public:
-	AVCaptureFilter(void* callback = NULL);
+	AVCaptureFilter(void);
 	virtual ~AVCaptureFilter(void);
 
 protected:
 	int createNewFilter(void) override;
 	int destroyFilter(void) override;
 	int inputMediaData(MediaDataPtr mediaData) override;
-
-private:
-	AVMediaDataCaptureCallback avMediaDataCaptureCallback;
 };//class AVCaptureFilter
 
 NS_END

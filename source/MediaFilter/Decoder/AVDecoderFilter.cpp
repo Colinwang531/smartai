@@ -8,8 +8,8 @@ using FFmpegAudioDecoder = NS(model, 1)::FFmpegAudioDecoder;
 
 NS_BEGIN(filter, 1)
 
-AVDecoderFilter::AVDecoderFilter(const MediaDataSubID subID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */)
-	: MediaFilter(), mediaDataSubID{ subID }
+AVDecoderFilter::AVDecoderFilter(const AVDecoderType type /* = AVDecoderType::AV_DECODER_TYPE_NONE */)
+	: MediaFilter(), decoderType{ type }
 {}
 
 AVDecoderFilter::~AVDecoderFilter()
@@ -17,34 +17,36 @@ AVDecoderFilter::~AVDecoderFilter()
 
 int AVDecoderFilter::createNewFilter()
 {
-	if (MediaDataSubID::MEDIA_DATA_SUB_ID_H264 == mediaDataSubID || MediaDataSubID::MEDIA_DATA_SUB_ID_H265 == mediaDataSubID)
+	int status{ ERR_BAD_ALLOC };
+
+	if (AVDecoderType::AV_DECODER_TYPE_VIDEO == decoderType)
 	{
-		MediaModelPtr ffmpegVideoDecoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
-		if (ffmpegVideoDecoderPtr)
+		if (ERR_OK == createNewInputPin(NS(pin, 1)::VideoStreamInputPinID) &&
+			ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID))
 		{
-			createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
-			createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
-			mediaModelPtr.swap(ffmpegVideoDecoderPtr);
+			MediaModelPtr videoDecoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
+			if (videoDecoderPtr)
+			{
+				mediaModelPtr.swap(videoDecoderPtr);
+				status = ERR_OK;
+			}
 		}
-	}
-	else if (MediaDataSubID::MEDIA_DATA_SUB_ID_AAC == mediaDataSubID)
+	} 
+	else if (AVDecoderType::AV_DECODER_TYPE_AUDIO == decoderType)
 	{
-		MediaModelPtr ffmpegAudioDecoderPtr{ boost::make_shared<FFmpegAudioDecoder>() };
-		if (ffmpegAudioDecoderPtr)
+		if (ERR_OK == createNewInputPin(NS(pin, 1)::AudioStreamInputPinID) &&
+			ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
 		{
-			createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
-			createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
-			mediaModelPtr.swap(ffmpegAudioDecoderPtr);
+			MediaModelPtr audioDecoderPtr{ boost::make_shared<FFmpegAudioDecoder>() };
+			if (audioDecoderPtr)
+			{
+				mediaModelPtr.swap(audioDecoderPtr);
+				status = ERR_OK;
+			}
 		}
-	}
-	else if (MediaDataSubID::MEDIA_DATA_SUB_ID_G722 == mediaDataSubID)
-	{
-	}
-	else
-	{
 	}
 
-	return MediaFilter::createNewFilter();
+	return ERR_OK == status ? MediaFilter::createNewFilter() : status;
 }
 
 int AVDecoderFilter::destroyFilter()
@@ -54,7 +56,7 @@ int AVDecoderFilter::destroyFilter()
 
 int AVDecoderFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	return mediaData ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
+	return mediaData && mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
 }
 
 NS_END

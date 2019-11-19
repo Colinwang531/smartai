@@ -7,20 +7,37 @@
 // Base class of graph for live stream.
 //
 
-#ifndef LIVE_STREAM_MEDIA_GRAPH_H
-#define LIVE_STREAM_MEDIA_GRAPH_H
+#ifndef LIVESTREAM_MEDIA_GRAPH_H
+#define LIVESTREAM_MEDIA_GRAPH_H
 
 #include "MediaGraph.h"
 
 NS_BEGIN(graph, 1)
 
-class LiveStreamMediaGraph : public MediaGraph
+class LivestreamMediaGraph : public MediaGraph
 {
 public:
-	LiveStreamMediaGraph(void);
-	virtual ~LiveStreamMediaGraph(void);
-};//class LiveStreamMediaGraph
+	LivestreamMediaGraph(void);
+	virtual ~LivestreamMediaGraph(void);
+
+protected:
+	int createNewGraph(void) override;
+	int destroyGraph(void) override;
+	int linkMediaGraph(void) override;
+
+protected:
+	// Decoder and renderer filters were created by user.
+	virtual int createNewVideoDecoderFilter(void);
+	virtual int createNewAudioDecoderFilter(void);
+	virtual int createNewVideoRendererFilter(void);
+	virtual int createNewAudioRendererFilter(void);
+
+private:
+	// Live stream and callback data capture filters were created by creator.
+	virtual int createNewLivestreamCaptureFilter(void);
+	virtual int createNewDataCaptureFilter(void);
+};//class LivestreamMediaGraph
 
 NS_END
 
-#endif//LIVE_STREAM_MEDIA_GRAPH_H
+#endif//LIVESTREAM_MEDIA_GRAPH_H

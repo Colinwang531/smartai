@@ -21,146 +21,101 @@ PlaybackMediaGraph::PlaybackMediaGraph() : MediaGraph()
 PlaybackMediaGraph::~PlaybackMediaGraph()
 {}
 
-int PlaybackMediaGraph::createNewGraph(void* hwnd /* = NULL */, void* callback /* = NULL */)
+int PlaybackMediaGraph::createNewGraph()
 {
-	displayHwnd = hwnd;
-	userCallback = callback;
-	// Default creating demuxer filter by framework.
-	createNewDemuxerFilter();
-	createNewControllerFilter();
-	createNewCaptureFilter(callback);
+	return ERR_OK == createNewDemuxerFilter() && 
+		ERR_OK == createNewControllerFilter() &&
+		ERR_OK == createNewVideoDecoderFilter() &&
+		ERR_OK == createNewVideoRendererFilter() &&
+		ERR_OK == createNewAudioDecoderFilter() &&
+		ERR_OK == createNewAudioRendererFilter() &&
+		ERR_OK == createNewDataCaptureFilter()
+		? linkMediaGraph() : destroyGraph();
+}
 
+int PlaybackMediaGraph::destroyGraph()
+{
 	return ERR_OK;
 }
 
-int PlaybackMediaGraph::destroyGraph(void)
+int PlaybackMediaGraph::linkMediaGraph()
 {
-	return 0;
-}
+	int status{ ERR_BAD_OPERATE };
+	MediaFilterRef demuxerFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) },
+		controllerFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaControllerFilterID) },
+		videoDecoderFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaVideoDecoderFilterID) },
+		audioDecoderFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaAudioDecoderFilterID) },
+		videoRendererFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaVideoRendererFilterID) },
+		audioRendererFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaAudioRendererFilterID) },
+		dataCaptureFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaDataCaptureFilterID) };
 
-int PlaybackMediaGraph::createNewVideoDecoderFilter(
-	const MediaDataSubID videoSubID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */)
-{
-	int status{ ERR_BAD_ALLOC };
-	MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVDecoderFilter>(videoSubID) };
-
-	if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
+	if (!demuxerFilterRef.expired() && !controllerFilterRef.expired())
 	{
-		status = addMediaFilter(NS(filter, 1)::AVMediaVideoDecoderFilterID, mediaFilterPtr);
-
-		if (ERR_OK == status)
+		// Demuxer->Controller(video)
+		MediaPinRef demuxerVideoOutputPinRef{ demuxerFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
+		MediaPinRef controllerVideoInputPinRef{ controllerFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
+		if (!demuxerVideoOutputPinRef.expired() && !controllerVideoInputPinRef.expired())
 		{
-			MediaFilterRef mediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaControllerFilterID) };
-			if (!mediaFilterRef.expired())
+			demuxerVideoOutputPinRef.lock()->connectPin(controllerVideoInputPinRef);
+		}
+
+		// Demuxer->Controller(audio)
+		MediaPinRef demuxerAudioOutputPinRef{ demuxerFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
+		MediaPinRef controllerAudioInputPinRef{ controllerFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
+		if (!demuxerAudioOutputPinRef.expired() && !controllerAudioInputPinRef.expired())
+		{
+			demuxerAudioOutputPinRef.lock()->connectPin(controllerAudioInputPinRef);
+		}
+
+		//Controller->Decoder->Renderer(video)
+		if (!videoDecoderFilterRef.expired() && !videoRendererFilterRef.expired())
+		{
+			MediaPinRef controllerVideoOutputPinRef{ controllerFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
+			MediaPinRef videoDecoderInputPinRef{ videoDecoderFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
+			MediaPinRef videoDecoderOutputPinRef{ videoDecoderFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
+			MediaPinRef videoRendererInputPinRef{ videoRendererFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
+			if (!controllerVideoOutputPinRef.expired() && !videoDecoderInputPinRef.expired() && 
+				!videoDecoderOutputPinRef.expired() && !videoRendererInputPinRef.expired())
 			{
-				MediaPinRef controllerVideoOutputPinRef{ mediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
-				MediaPinRef decoderVideoInputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
-				if (!controllerVideoOutputPinRef.expired() && !decoderVideoInputPinRef.expired())
-				{
-					controllerVideoOutputPinRef.lock()->connectPin(decoderVideoInputPinRef);
-				}
+				controllerVideoOutputPinRef.lock()->connectPin(videoDecoderInputPinRef);
+				videoDecoderOutputPinRef.lock()->connectPin(videoRendererInputPinRef);
 			}
 		}
-	}
 
-	return status;
-}
-
-int PlaybackMediaGraph::createNewAudioDecoderFilter(
-	const MediaDataSubID audioSubID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */)
-{
-	int status{ ERR_BAD_ALLOC };
-	MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVDecoderFilter>(audioSubID) };
-
-	if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
-	{
-		status = addMediaFilter(NS(filter, 1)::AVMediaAudioDecoderFilterID, mediaFilterPtr);
-
-		if (ERR_OK == status)
+		//Controller->Decoder->Renderer(audio)
+		if (!audioDecoderFilterRef.expired() && !audioRendererFilterRef.expired())
 		{
-			MediaFilterRef mediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaControllerFilterID) };
-			if (!mediaFilterRef.expired())
+			MediaPinRef controllerAudioOutputPinRef{ controllerFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
+			MediaPinRef audioDecoderInputPinRef{ audioDecoderFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
+			MediaPinRef audioDecoderOutputPinRef{ audioDecoderFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
+			MediaPinRef audioRendererInputPinRef{ audioRendererFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
+			if (!controllerAudioOutputPinRef.expired() && !audioDecoderInputPinRef.expired() &&
+				!audioDecoderOutputPinRef.expired() && !audioRendererInputPinRef.expired())
 			{
-				MediaPinRef controllerAudioOutputPinRef{ mediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
-				MediaPinRef decoderAudioInputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
-				if (!controllerAudioOutputPinRef.expired() && !decoderAudioInputPinRef.expired())
-				{
-					controllerAudioOutputPinRef.lock()->connectPin(decoderAudioInputPinRef);
-				}
+				controllerAudioOutputPinRef.lock()->connectPin(audioDecoderInputPinRef);
+				audioDecoderOutputPinRef.lock()->connectPin(audioRendererInputPinRef);
 			}
 		}
-	}
 
-	return status;
-}
-
-int PlaybackMediaGraph::createNewVideoRendererFilter()
-{
-	int status{ ERR_BAD_ALLOC };
-	MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVRendererFilter>(reinterpret_cast<HWND>(displayHwnd)) };
-
-	if (mediaFilterPtr && mediaFilterPtr->createNewFilter())
-	{
-		status = addMediaFilter(NS(filter, 1)::AVMediaVideoRendererFilterID, mediaFilterPtr);
-
-		if (ERR_OK == status)
+		if (!dataCaptureFilterRef.expired())
 		{
-			MediaFilterRef decoderMediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaVideoDecoderFilterID) };
-			MediaFilterRef captureMediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaDataCaptureFilterID) };
-
-			if (!decoderMediaFilterRef.expired() && !captureMediaFilterRef.expired())
+			// Renderer->Capture(video)
+			MediaPinRef rendererVideoOutputPinRef{ videoRendererFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
+			MediaPinRef dataCaptureInputPinRef{ dataCaptureFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
+			if (!rendererVideoOutputPinRef.expired() && !dataCaptureInputPinRef.expired())
 			{
-				MediaPinRef decoderVideoOutputPinRef{ decoderMediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
-				MediaPinRef rendererVideoInputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
-				if (!decoderVideoOutputPinRef.expired() && !rendererVideoInputPinRef.expired())
-				{
-					decoderVideoOutputPinRef.lock()->connectPin(rendererVideoInputPinRef);
-				}
+				rendererVideoOutputPinRef.lock()->connectPin(dataCaptureInputPinRef);
+			}
 
-				MediaPinRef rendererVideoOutputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
-				MediaPinRef captureMediaInputPinRef{ captureMediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::MediaStreamInputPinID) };
-				if (!rendererVideoOutputPinRef.expired() && !captureMediaInputPinRef.expired())
-				{
-					rendererVideoOutputPinRef.lock()->connectPin(captureMediaInputPinRef);
-				}
+			//Renderer->Capture(audio)
+			MediaPinRef rendererAudioOutputPinRef{ audioRendererFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
+			if (!rendererAudioOutputPinRef.expired() && !dataCaptureInputPinRef.expired())
+			{
+				rendererAudioOutputPinRef.lock()->connectPin(dataCaptureInputPinRef);
 			}
 		}
-	}
 
-	return status;
-}
-
-int PlaybackMediaGraph::createNewAudioRendererFilter(void)
-{
-	int status{ ERR_BAD_ALLOC };
-	MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVRendererFilter>() };
-
-	if (mediaFilterPtr && mediaFilterPtr->createNewFilter())
-	{
-		status = addMediaFilter(NS(filter, 1)::AVMediaAudioRendererFilterID, mediaFilterPtr);
-
-		if (ERR_OK == status)
-		{
-			MediaFilterRef decoderMediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaAudioDecoderFilterID) };
-			MediaFilterRef captureMediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaDataCaptureFilterID) };
-
-			if (!decoderMediaFilterRef.expired() && !captureMediaFilterRef.expired())
-			{
-				MediaPinRef decoderAudioOutputPinRef{ decoderMediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
-				MediaPinRef rendererAudioInputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
-				if (!decoderAudioOutputPinRef.expired() && !rendererAudioInputPinRef.expired())
-				{
-					decoderAudioOutputPinRef.lock()->connectPin(rendererAudioInputPinRef);
-				}
-
-				MediaPinRef rendererAudioOutputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
-				MediaPinRef captureMediaInputPinRef{ captureMediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::MediaStreamInputPinID) };
-				if (!rendererAudioOutputPinRef.expired() && !captureMediaInputPinRef.expired())
-				{
-					rendererAudioOutputPinRef.lock()->connectPin(captureMediaInputPinRef);
-				}
-			}
-		}
+		status = ERR_OK;
 	}
 
 	return status;
@@ -173,12 +128,6 @@ int PlaybackMediaGraph::createNewDemuxerFilter()
 
 	if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 	{
-		MediaModelRef mediaModelRef{ mediaFilterPtr->getMediaModel() };
-		if (!mediaModelRef.expired())
-		{
-			mediaModelRef.lock()->setNotifyMediaStreamIDCallback(
-				boost::bind(&PlaybackMediaGraph::notifyMediaDataSubIDCallback, this, _1, _2));
-		}
 		status = addMediaFilter(NS(filter, 1)::AVMediaDemuxerFilterID, mediaFilterPtr);
 	}
 
@@ -193,70 +142,76 @@ int PlaybackMediaGraph::createNewControllerFilter(void)
 	if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 	{
 		status = addMediaFilter(NS(filter, 1)::AVMediaControllerFilterID, mediaFilterPtr);
-
-		if (ERR_OK == status)
-		{
-			MediaFilterRef mediaFilterRef{ queryMediaFilterByID(NS(filter, 1)::AVMediaDemuxerFilterID) };
-			if (!mediaFilterRef.expired())
-			{
-				MediaPinRef demuxerVideoOutputPinRef{ mediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
-				MediaPinRef controllerVideoInputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::VideoStreamInputPinID) };
-				if (!demuxerVideoOutputPinRef.expired() && !controllerVideoInputPinRef.expired())
-				{
-					demuxerVideoOutputPinRef.lock()->connectPin(controllerVideoInputPinRef);
-				}
-
-				MediaPinRef demuxerAudioOutputPinRef{ mediaFilterRef.lock()->queryMediaPinByID(NS(pin, 1)::AudioStreamOutputPinID) };
-				MediaPinRef controllerAudioInputPinRef{ mediaFilterPtr->queryMediaPinByID(NS(pin, 1)::AudioStreamInputPinID) };
-				if (!demuxerAudioOutputPinRef.expired() && !controllerAudioInputPinRef.expired())
-				{
-					demuxerAudioOutputPinRef.lock()->connectPin(controllerAudioInputPinRef);
-				}
-			}
-		}
 	}
 
 	return status;
 }
 
-int PlaybackMediaGraph::createNewCaptureFilter(void* callback /* = NULL */)
+int PlaybackMediaGraph::createNewVideoDecoderFilter()
 {
 	int status{ ERR_BAD_ALLOC };
-	MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVCaptureFilter>(callback) };
+	MediaFilterPtr mediaFilterPtr{ 
+		boost::make_shared<AVDecoderFilter>(NS(filter, 1)::AVDecoderType::AV_DECODER_TYPE_VIDEO) };
+
+	if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
+	{
+		status = addMediaFilter(NS(filter, 1)::AVMediaVideoDecoderFilterID, mediaFilterPtr);
+	}
+
+	return status;
+}
+
+int PlaybackMediaGraph::createNewAudioDecoderFilter()
+{
+	int status{ ERR_BAD_ALLOC };
+	MediaFilterPtr mediaFilterPtr{ 
+		boost::make_shared<AVDecoderFilter>(NS(filter, 1)::AVDecoderType::AV_DECODER_TYPE_AUDIO) };
+
+	if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
+	{
+		status = addMediaFilter(NS(filter, 1)::AVMediaAudioDecoderFilterID, mediaFilterPtr);
+	}
+
+	return status;
+}
+
+int PlaybackMediaGraph::createNewVideoRendererFilter()
+{
+	int status{ ERR_BAD_ALLOC };
+	MediaFilterPtr mediaFilterPtr{ 
+		boost::make_shared<AVRendererFilter>(NS(filter, 1)::AVRendererType::AV_RENDERER_TYPE_VIDEO) };
+
+	if (mediaFilterPtr && mediaFilterPtr->createNewFilter())
+	{
+		status = addMediaFilter(NS(filter, 1)::AVMediaVideoRendererFilterID, mediaFilterPtr);
+	}
+
+	return status;
+}
+
+int PlaybackMediaGraph::createNewAudioRendererFilter(void)
+{
+	int status{ ERR_BAD_ALLOC };
+	MediaFilterPtr mediaFilterPtr{ 
+		boost::make_shared<AVRendererFilter>(NS(filter, 1)::AVRendererType::AV_RENDERER_TYPE_AUDIO) };
+
+	if (mediaFilterPtr && mediaFilterPtr->createNewFilter())
+	{
+		status = addMediaFilter(NS(filter, 1)::AVMediaAudioRendererFilterID, mediaFilterPtr);
+	}
+
+	return status;
+}
+
+int PlaybackMediaGraph::createNewDataCaptureFilter()
+{
+	int status{ ERR_BAD_ALLOC };
+	MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVCaptureFilter>() };
 
 	if (mediaFilterPtr && mediaFilterPtr->createNewFilter())
 	{
 		status = addMediaFilter(NS(filter, 1)::AVMediaDataCaptureFilterID, mediaFilterPtr);
 	}
-
-	return status;
-}
-
-int PlaybackMediaGraph::notifyMediaDataSubIDCallback(
-	const MediaDataSubID videoSubID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */, 
-	const MediaDataSubID audioSubID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */)
-{
-	int status{ ERR_NOT_SUPPORT };
-
-	if (MediaDataSubID::MEDIA_DATA_SUB_ID_H264 == videoSubID || MediaDataSubID::MEDIA_DATA_SUB_ID_H265 == videoSubID)
-	{
-		status = createNewVideoDecoderFilter(videoSubID);
-		if (ERR_OK == status)
-		{
-			status = createNewVideoRendererFilter();
-		}
-	}
-	
-	if (MediaDataSubID::MEDIA_DATA_SUB_ID_AAC == audioSubID)
-	{
-		status = createNewAudioDecoderFilter(audioSubID);
-		if (ERR_OK == status)
-		{
-			status = createNewAudioRendererFilter();
-		}
-	}
-	else if(MediaDataSubID::MEDIA_DATA_SUB_ID_G722 == audioSubID)
-	{ }
 
 	return status;
 }

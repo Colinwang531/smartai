@@ -9,6 +9,7 @@
 #define IDR_MAINFRAME                   128
 #define IDC_STATIC1                     1000
 #define IDC_STATIC2                     1001
+#define IDC_STATIC3                     1002
 
 // Next default values for new objects
 // 

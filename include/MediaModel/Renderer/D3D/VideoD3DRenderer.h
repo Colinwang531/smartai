@@ -19,8 +19,14 @@ NS_BEGIN(model, 1)
 class VideoD3DRenderer : public MediaRenderer
 {
 public:
-	VideoD3DRenderer(const HWND hwnd = NULL);
+	VideoD3DRenderer(void);
 	virtual ~VideoD3DRenderer(void);
+
+public:
+	inline void setVideoDisplayWnd(const HWND hwnd = NULL)
+	{
+		videoDisplayWnd = hwnd;
+	}
 
 protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
@@ -29,7 +35,7 @@ private:
 	int createNewMediaRenderer(MediaDataPtr mediaData);
 
 private:
-	const HWND videoDisplayWnd;
+	HWND videoDisplayWnd;
 	Direct3DPtr direct3dPtr;
 };//class VideoD3DRenderer
 

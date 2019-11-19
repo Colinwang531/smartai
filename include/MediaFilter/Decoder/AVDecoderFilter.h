@@ -14,11 +14,18 @@
 
 NS_BEGIN(filter, 1)
 
+typedef enum class tagAVDecoderType_t
+{
+	AV_DECODER_TYPE_NONE = 0,
+	AV_DECODER_TYPE_VIDEO,
+	AV_DECODER_TYPE_AUDIO
+}AVDecoderType;
+
 class AVDecoderFilter : public MediaFilter
 {
 public:
 	AVDecoderFilter(
-		const MediaDataSubID subID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE);
+		const AVDecoderType type = AVDecoderType::AV_DECODER_TYPE_NONE);
 	virtual ~AVDecoderFilter(void);
 
 protected:
@@ -27,7 +34,7 @@ protected:
 	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	const MediaDataSubID mediaDataSubID;
+	const AVDecoderType decoderType;
 };//class AVDecoderFilter
 
 NS_END

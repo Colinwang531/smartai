@@ -22,6 +22,7 @@ using MediaPinGroup = UnorderedMap<const std::string, MediaPinPtr>;
 NS_BEGIN(filter, 1)
 
 BOOST_STATIC_CONSTANT(std::string, AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaLivestreamCaptureFilterID = "AVMediaLivestreamCaptureFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaControllerFilterID = "AVMediaControllerFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaVideoDecoderFilterID = "AVMediaVideoDecoderFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaAudioDecoderFilterID = "AVMediaAudioDecoderFilterID");
@@ -61,7 +62,7 @@ public:
 protected:
 	int createNewInputPin(const std::string pinID);
 	int createNewOutputPin(const std::string pinID);
-	virtual int postMediaDataCallback(MediaDataPtr mediaData);
+	int postInputMediaData(MediaDataPtr mediaData);
 
 protected:
 	MediaPinGroup mediaPinGroup;

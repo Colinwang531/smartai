@@ -13,11 +13,17 @@ AVPlayControllerFilter::~AVPlayControllerFilter()
 
 int AVPlayControllerFilter::createNewFilter(void)
 {
-	createNewInputPin(NS(pin, 1)::VideoStreamInputPinID);
-	createNewInputPin(NS(pin, 1)::AudioStreamInputPinID);
-	createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID);
-	createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID);
-	return MediaFilter::createNewFilter();
+	int status{ ERR_BAD_ALLOC };
+
+	if (ERR_OK == createNewInputPin(NS(pin, 1)::VideoStreamInputPinID) && 
+		ERR_OK == createNewInputPin(NS(pin, 1)::AudioStreamInputPinID) &&
+		ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID) &&
+		ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
+	{
+		status = MediaFilter::createNewFilter();
+	}
+
+	return status;
 }
 
 int AVPlayControllerFilter::destroyFilter()
@@ -27,7 +33,7 @@ int AVPlayControllerFilter::destroyFilter()
 
 int AVPlayControllerFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	return postMediaDataCallback(mediaData);
+	return MediaFilter::postInputMediaData(mediaData);
 }
 
 int AVPlayControllerFilter::startPlay()
