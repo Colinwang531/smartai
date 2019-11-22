@@ -3,7 +3,8 @@
 
 NS_BEGIN(device, 1)
 
-unsigned long long Device::deviceNumber = 0;
+SharedMutex Device::mtx;
+unsigned long long Device::deviceCount = 0;
 
 Device::Device()
 {}
@@ -11,21 +12,17 @@ Device::Device()
 Device::~Device()
 {}
 
-int Device::createDevice()
+int Device::createNewDevice()
 {
-	mtx.lock();
-	++deviceNumber;
-	mtx.unlock();
-
+	WriteLock wl{ mtx };
+	++deviceCount;
 	return ERR_OK;
 }
 
 int Device::destoryDevice()
 {
-	mtx.lock();
-	--deviceNumber;
-	mtx.unlock();
-
+	WriteLock wl{ mtx };
+	--deviceCount;
 	return ERR_OK;
 }
 

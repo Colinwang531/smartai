@@ -14,11 +14,26 @@
 
 NS_BEGIN(filter, 1)
 
+typedef void (CALLBACK* PostMediaDataCallback)(const int streamID, const unsigned char* mediaData, const int dataBytes, void* userData);
+
 class TargetMediaFilter : public MediaFilter
 {
 public:
 	TargetMediaFilter(void);
 	virtual ~TargetMediaFilter(void);
+
+public:
+	inline void setMediaDataCallback(const int streamID = 0, PostMediaDataCallback callback = NULL, void* userData = NULL)
+	{
+		mediaStreamID = streamID;
+		postMediaDataCallback = callback;
+		cbUserData = userData;
+	}
+
+protected:
+	int mediaStreamID;
+	PostMediaDataCallback postMediaDataCallback;
+	void* cbUserData;
 };//class TargetMediaFilter
 
 NS_END

@@ -8,8 +8,6 @@
 #include "MediaPlayDemoDlg.h"
 #include "afxdialogex.h"
 
-#include "MediaPlay/MediaPlay.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -53,7 +51,7 @@ END_MESSAGE_MAP()
 
 
 MediaPlayDemoDlg::MediaPlayDemoDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_MEDIAPLAYDEMO_DIALOG, pParent)
+	: CDialogEx(IDD_MEDIAPLAYDEMO_DIALOG, pParent), alarmType{ AlarmType::ALARM_TYPE_NONE }
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -67,6 +65,11 @@ BEGIN_MESSAGE_MAP(MediaPlayDemoDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_REGISTER_HELMET, &MediaPlayDemoDlg::OnBnClickedRegisterHelmet)
+	ON_BN_CLICKED(IDC_REGISTER_PHONE, &MediaPlayDemoDlg::OnBnClickedRegisterPhone)
+	ON_BN_CLICKED(IDC_REGISTER_FIGHT, &MediaPlayDemoDlg::OnBnClickedRegisterFight)
+	ON_BN_CLICKED(IDC_REGISTER_SLEEP, &MediaPlayDemoDlg::OnBnClickedRegisterSleep)
+	ON_BN_CLICKED(IDC_REGISTER_FACE, &MediaPlayDemoDlg::OnBnClickedRegisterFace)
 END_MESSAGE_MAP()
 
 
@@ -105,8 +108,11 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 
 // 	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
 // 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
-	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
-	MEDIAPLAY_StartLivestreamPlay("admin", "eaton12345", "192.168.30.230", 80, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
+//	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
+	MEDIAPLAY_StartLivestreamPlay(
+		"admin", "eaton12345", "192.168.30.11", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+	MEDIAPLAY_StartLivestreamPlay(
+		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -160,3 +166,62 @@ HCURSOR MediaPlayDemoDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
+{
+	MediaPlayDemoDlg* demo{ reinterpret_cast<MediaPlayDemoDlg*>(userData) };
+	if (1 == playID && AlarmType::ALARM_TYPE_NONE != demo->alarmType)
+	{
+		MediaPlayDemoDlg* demo{ reinterpret_cast<MediaPlayDemoDlg*>(userData) };
+		ARITHMETIC_InputImageData(demo->alarmType, mediaData, dataBytes);
+	}
+}
+
+void MediaPlayDemoDlg::postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, void* userData /* = NULL */)
+{
+	char text[2048]{ 0 };
+	sprintf_s(text, 2048, "Helmet alarm x = %d, y = %d, w = %d, h = %d, label = %d.\r\n",
+		alarmInfo.x, alarmInfo.y, alarmInfo.w, alarmInfo.h, alarmInfo.status);
+	OutputDebugStringA(text);
+}
+
+
+
+void MediaPlayDemoDlg::OnBnClickedRegisterHelmet()
+{
+	// TODO: Add your control notification handler code here
+
+	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_HELMET, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+	alarmType = AlarmType::ALARM_TYPE_HELMET;
+}
+
+
+void MediaPlayDemoDlg::OnBnClickedRegisterPhone()
+{
+	// TODO: Add your control notification handler code here
+	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_PHONE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+	alarmType = AlarmType::ALARM_TYPE_PHONE;
+}
+
+
+void MediaPlayDemoDlg::OnBnClickedRegisterFight()
+{
+	// TODO: Add your control notification handler code here
+	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FIGHT, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+	alarmType = AlarmType::ALARM_TYPE_FIGHT;
+}
+
+
+void MediaPlayDemoDlg::OnBnClickedRegisterSleep()
+{
+	// TODO: Add your control notification handler code here
+	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_SLEEP, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+	alarmType = AlarmType::ALARM_TYPE_SLEEP;
+}
+
+
+void MediaPlayDemoDlg::OnBnClickedRegisterFace()
+{
+	// TODO: Add your control notification handler code here
+	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+	alarmType = AlarmType::ALARM_TYPE_FACE;
+}

@@ -4,4 +4,7 @@
     <LocalDebuggerWorkingDirectory>$(SolutionDir)bin\$(ProjectName)\$(Platform)\$(Configuration)\</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup>
+    <RESOURCE_FILE>MediaPlayDemo.rc</RESOURCE_FILE>
+  </PropertyGroup>
 </Project>

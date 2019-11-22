@@ -1,42 +1,29 @@
-#include "DefGlobalVar.h"
 #include "error.h"
 #include "Arithmetic/CVAlgo.h"
 
 NS_BEGIN(algo, 1)
 
-//DWORD CVAlgo::enableAlgorithmCount = 0;
-//extern DWORD threadAffinityMask;
+boost::thread_group CVAlgo::threadGroup;
 
-CVAlgo::CVAlgo(
-	CaptureAlarmInfoHandler alarmHandler /* = NULL */, CaptureFaceInfoHandler faceHandler /* = NULL */)
-	: captureAlarmInfoHandler{ alarmHandler }, capturefaceInfoHandler{ faceHandler }, arithmeticProcessing{ false }, stopped{ false },
-	lastKnownTickTime{ 0 }
+CVAlgo::CVAlgo() : stopped{ false }
 {}
 
 CVAlgo::~CVAlgo()
 {}
 
-int CVAlgo::initialize(
-	const char* configFilePath /* = NULL */, const int affinityMask /* = 1 */, 
-	const float detectThreshold /* = 0.0f */, const float trackThreshold /* = 0.0f */, 
-	const int gpu /* = 0 */)
+int CVAlgo::initialize()
 {
-	int status{ ERR_BAD_OPERATE };
-	StruInitParams parameters{};
-	parameters.gpu_id = gpu;
-	parameters.detectThreshold = detectThreshold;
-	parameters.trackThreshold = trackThreshold;
-	parameters.savePath = (char*)configFilePath;
-	BGR24ImageQueue.setCapacity(12);
+	int status{ initializeArithmetic() };
 
-	if (initializeWithParameter(configFilePath, &parameters))
+	if (ERR_OK == status)
 	{
+		BGR24ImageQueue.setCapacity(12);
 		//Each arithmetic run on different thread of CPU.
-		HANDLE handle = (HANDLE)CreateThread(NULL, 0, &arithmeticProcessThread, this, 0, NULL);
- 		if (handle)
+		boost::thread* threadHandle{ threadGroup.create_thread(boost::bind(&CVAlgo::arithmeticProcessThread, this)) };
+ 		if (threadHandle)
  		{
- 			SetThreadPriority(handle, THREAD_PRIORITY_TIME_CRITICAL);
-//			SetThreadAffinityMask(handle, affinityMask);
+			threadHandle->detach();
+ 			SetThreadPriority(threadHandle->native_handle(), THREAD_PRIORITY_TIME_CRITICAL);
  		}
 
 		status = ERR_OK;
@@ -55,66 +42,49 @@ void CVAlgo::deinitialize(void)
 	}
 }
 
-int CVAlgo::tryInputMediaImage(MediaImagePtr image)
+int CVAlgo::inputImageData(const unsigned char* imageData /* = NULL */, const int imageBytes /* = 0 */)
 {
-	int status{ ERR_INVALID_PARAM };
+	int status{ imageData && 0 < imageBytes ? ERR_OK : ERR_INVALID_PARAM };
 
-	if (image)
+	if (ERR_OK == status)
 	{
-		if (!arithmeticProcessing)
-		{
-			BGR24ImageQueue.insert(image);
-			status = ERR_OK;
+		MediaDataPtr mediaDataPtr{
+			boost::make_shared<MediaData>(MediaDataMainID::MEDIA_DATA_MAIN_ID_IMAGE, MediaDataSubID::MEDIA_DATA_SUB_ID_BGR24) };
 
-			if (BGR24ImageQueue.total() == BGR24ImageQueue.size())
-			{
-				arithmeticProcessing = true;
-			}
+		if (mediaDataPtr && ERR_OK == mediaDataPtr->copyData(imageData, imageBytes))
+		{
+			BGR24ImageQueue.insert(mediaDataPtr);
 		}
 		else
 		{
-			status = ERR_BAD_OPERATE;
+			status = ERR_BAD_ALLOC;
 		}
 	}
 
 	return status;
 }
 
-DWORD CVAlgo::arithmeticProcessThread(void* ctx /* = NULL */)
+void CVAlgo::getArithmeticInitParameter(StruInitParams& parameters, const AlarmType alarmType)
 {
-	CVAlgo* cvalgo{ reinterpret_cast<CVAlgo*>(ctx) };
+}
 
-	while (cvalgo && !cvalgo->stopped)
+void CVAlgo::arithmeticProcessThread()
+{
+	while (!stopped)
 	{
-		if (cvalgo->arithmeticProcessing)
-		{
-			cvalgo->arithmeticWorkerProcess();
-			cvalgo->arithmeticProcessing = false;
-		}
-		else
-		{
-			Sleep(1);
-		}
-
-// 		cvalgo->arithmeticWorkerProcess();
-// 		Sleep(1);
+		arithmeticWorkerProcess();
 	}
 
-	while (cvalgo)
+	while (1)
 	{
-		MediaImagePtr bgr24ImagePtr{ cvalgo->BGR24ImageQueue.remove() };
+		MediaDataPtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 		if (!bgr24ImagePtr)
 		{
 			break;
 		}
 	}
 
-	if (cvalgo)
-	{
-		cvalgo->condition.notify_one();
-	}
-
-	return 0;
+	condition.notify_one();
 }
 
 NS_END

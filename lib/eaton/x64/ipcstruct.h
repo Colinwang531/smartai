@@ -6,12 +6,12 @@
 
 #pragma warning(disable: 4103)
 #pragma pack(push, 1)
-#include <cstring>
+//#include "ipcdefine.h"
 
-#define MAX_USER_NAME                64   // ×î´óÓÃ»§Ãû³¤¶È(64Î»)
-#define MAX_USER_PASSWORD           64   // ×î´óÓÃ»§ÃÜÂë³¤¶È(64Î»)
-#define MAX_EXPAND_PATH              1024 // ×î´óÀ©Õ¹³¤¶È£¨1024£©
-// Handle¹ØÁª
+#define MAX_USER_NAME                64   // æœ€å¤§ç”¨æˆ·åé•¿åº¦(64ä½)
+#define MAX_USER_PASSWORD           64   // æœ€å¤§ç”¨æˆ·å¯†ç é•¿åº¦(64ä½)
+#define MAX_EXPAND_PATH              1024 // æœ€å¤§æ‰©å±•é•¿åº¦ï¼ˆ1024ï¼‰
+// Handleå…³è”
 typedef struct tagHandleParam
 {
 	unsigned long dwIpAddr;
@@ -20,83 +20,95 @@ typedef struct tagHandleParam
 	char szUserPassword[MAX_USER_PASSWORD];
 	u32 dwReserved;
 } THANDLEPARAM, *PTHANDLEPARAM;
-// ÍøÂç²ÎÊı
+// ç½‘ç»œå‚æ•°
 typedef struct tagNetParam
 {
-	unsigned long   dwIpAddr;	                                      // IPµØÖ·(ÍøÂçĞò)
-	unsigned short  wPort;		                                      // ¶Ë¿ÚºÅ(1024-65535)
+	unsigned long   dwIpAddr;	                                      // IPåœ°å€(ç½‘ç»œåº)
+	unsigned short  wPort;		                                      // ç«¯å£å·(1024-65535)
 } TNET_PARAM, *PTNET_PARAM;
 
-// ä¯ÀÀ·µ»Ø½á¹¹Ìå²ÎÊı(UDP)
+// æµè§ˆè¿”å›ç»“æ„ä½“å‚æ•°(UDP)
 typedef struct tagPlayVideoInfo
 {
-	u16	wRtcpVideoPort;	     // ·µ»ØµÄÊÓÆµrtcp¶Ë¿Ú(´©netÊ¹ÓÃ)
-	u16 wRtcpAudioPort;	     // ·µ»ØµÄÒôÆµrtcp¶Ë¿Ú(´©netÊ¹ÓÃ) 
+	u16	wRtcpVideoPort;	     // è¿”å›çš„è§†é¢‘rtcpç«¯å£(ç©¿netä½¿ç”¨)
+	u16 wRtcpAudioPort;	     // è¿”å›çš„éŸ³é¢‘rtcpç«¯å£(ç©¿netä½¿ç”¨) 
 }TPLAYVIDEOINFO, *PTPLAYVIDEOINFO;
 
 
-// ä¯ÀÀ½á¹¹Ìå²ÎÊı
+// æµè§ˆç»“æ„ä½“å‚æ•°
 typedef struct tagPlayVideoParam
 {
-	u8   byVideoSouce;		// ÊÓÆµÔ´ID
-	char szStreamType[17];	// ÇëÇóµÄÂëÁ÷ÀàĞÍ ---vedio,audio,both,ps
-	char szTransType[17];	// ´«ÊäĞ­ÒéÀàĞÍ   ---rtp_udp,rtp_tcp,rtsp_tcp,rtsp_udp
-	u8   byStreamChn;		// ÂëÁ÷Í¨µÀ
-	char szAdmin[32];		// Ç°¶Ë·µ»ØµÄÕËºÅ
-	char szPassword[32];	// Ç°¶Ë·µ»ØµÄÃÜÂë
-	u32  dwSrcIP;			// ±¾µØ½ÓÊÕIP
-	u16	 wRtspPort;			// Ç°¶Ë¼àÌı¶Ë¿Ú
-	u16  wRtpVideoPort;		// ÊÓÆµ RTP¶Ë¿Ú
-	u16  wRtcpVideoPort;	// ÊÓÆµ RTCP¶Ë¿Ú
-	u16  wRtpAudioPort;		// ÒôÆµ RTP¶Ë¿Ú
-	u16  wRtcpAudioPort;	// ÒôÆµ RTP¶Ë¿Ú
-	u16  wRtpAudioPort2;	// ÒôÆµ2 RTP¶Ë¿Ú
-	u16  wRtcpAudioPort2;	// ÒôÆµ2 RTP¶Ë¿Ú
+	u8   byVideoSouce;		// è§†é¢‘æºID
+	char szStreamType[17];	// è¯·æ±‚çš„ç æµç±»å‹ ---vedio,audio,both,ps
+	char szTransType[17];	// ä¼ è¾“åè®®ç±»å‹   ---rtp_udp,rtp_tcp,rtsp_tcp,rtsp_udp
+	u8   byStreamChn;		// ç æµé€šé“
+	char szAdmin[32];		// å‰ç«¯è¿”å›çš„è´¦å·
+	char szPassword[32];	// å‰ç«¯è¿”å›çš„å¯†ç 
+	u32  dwSrcIP;			// æœ¬åœ°æ¥æ”¶IP
+	u16	 wRtspPort;			// å‰ç«¯ç›‘å¬ç«¯å£
+	u16  wRtpVideoPort;		// è§†é¢‘ RTPç«¯å£
+	u16  wRtcpVideoPort;	// è§†é¢‘ RTCPç«¯å£
+	u16  wRtpAudioPort;		// éŸ³é¢‘ RTPç«¯å£
+	u16  wRtcpAudioPort;	// éŸ³é¢‘ RTPç«¯å£
+	u16  wRtpAudioPort2;	// éŸ³é¢‘2 RTPç«¯å£
+	u16  wRtcpAudioPort2;	// éŸ³é¢‘2 RTPç«¯å£
 	char szMediaURL[MAX_PATH];// url
-	u32	 hPlayWnd;			// ²¥·Å´°¿Ú¾ä±ú
+	u32	 hPlayWnd;			// æ’­æ”¾çª—å£å¥æŸ„
 }TPLAYVIDEOPARAM, *PTPLAYVIDEOPARAM;
 
-// ºô½Ğ×´Ì¬
+// å‘¼å«çŠ¶æ€
 typedef struct tagRTCPCallStateInfo
 {
 	bool bCallState;
 }TRTCPCALLSTATEINFO, PRTCPCALLSTATEINFO;
 
-// ×¼±¸ºô½Ğ·µ»Ø½á¹¹Ìå²ÎÊı
+// å‡†å¤‡å‘¼å«è¿”å›ç»“æ„ä½“å‚æ•°
 typedef struct tagRTCPPrepareCallInfo 
 {
 	u32	dwID;
 	u16	wRtpPort;
-	u16 wRtspPort;
+	u16 wRtcpPort;
 	char szStreamType[17];
 }TRTCPPREPARECALLINFO, *PRTCPPREPARECALLINFO;
 
-// RTSPä¯ÀÀĞÅÏ¢
+// RTSPæµè§ˆä¿¡æ¯
 typedef struct tagRTSPParam
 {
-	u8	byVideoSource;	// ÊÓÆµÔ´ID
-	u16 wVideoChanID;	// ÂëÁ÷Í¨µÀ
+	u8	byVideoSource;	// è§†é¢‘æºID
+	u16 wVideoChanID;	// ç æµé€šé“
 }TRTSPPARAM, *PRTSPPARAM;
 
-// RTSPä¯ÀÀ·µ»ØĞÅÏ¢
+// RTSP å½•åƒä¿¡æ¯
+typedef struct tagRTSPRecParam
+{
+	u8	byVideoSource;	// è§†é¢‘æºID
+	u16 wVideoChanID;	// ç æµé€šé“
+	u32 nPlayID;		// æ’­æ”¾ID
+	u32 nID;			// å½•åƒå—ID
+	char  szStartTime[32];	// å½•åƒèµ·å§‹æ—¶é—´
+	char  szEndTime[32];		// å½•åƒç»“æŸæ—¶é—´
+	char  szSeekTime[32];		// å½•åƒæ’­æ”¾æ—¶é—´
+}TRTSPRECPARAM, *PRTSPRECPARAM;
+
+// RTSPæµè§ˆè¿”å›ä¿¡æ¯
 typedef struct tagRTSPInfo
 {
 	char szurl[MAX_PATH];
 	u16	wRtspPort;	
-	bool bDoubleAudio;  // ÊÇ·ñÖ§³ÖË«ÒôÆµ
+	bool bDoubleAudio;  // æ˜¯å¦æ”¯æŒåŒéŸ³é¢‘
 }TRTSPINFO, *PRTSPINFO;
 
-// ÒôÁ¿²ÎÊı
+// éŸ³é‡å‚æ•°
 typedef struct tagRTCPVideoVolumeInfo
 {
-	bool bAudioEnable;		// ÊÇ·ñÓĞÒôÆµ
-	u8	 byVolume;			// ÒôÁ¿Öµ
+	bool bAudioEnable;		// æ˜¯å¦æœ‰éŸ³é¢‘
+	u8	 byVolume;			// éŸ³é‡å€¼
 }TRTCPVIDEOVOLUMEINFO, *PRTCPVIDEOVOLUMEINFO;
 
-//ÊÓÆµ
+//è§†é¢‘
 typedef struct tagMultiVideoModeInfo
 {
-	char szMode[17];	//µ¥ÂëÁ÷£¬Ë«ÂëÁ÷£¬ÈıÂëÁ÷£¬ËÄÂëÁ÷£¬ "1,2,3,4"
+	char szMode[17];	//å•ç æµï¼ŒåŒç æµï¼Œä¸‰ç æµï¼Œå››ç æµï¼Œ "1,2,3,4"
 }TMULTIVIDEOMODEINFO, *PTMULTIVIDEOMODEINFO;
 
 typedef struct tagMultiVideoModeParam
@@ -105,130 +117,134 @@ typedef struct tagMultiVideoModeParam
 	TMULTIVIDEOMODEINFO	tMultiVideoInfo;
 }TMUTIVIDEOMODEPARAM, *PTMULTIVIDEOMODEPARAM;
 
-// ÊÓÆµ±àÂë
+// è§†é¢‘ç¼–ç 
 typedef struct tagVideoFrameCapList
 {
-	char szFrameRateCap[64];			// ±àÂë¸ñÊ½ÄÜÁ¦
-	u8	 byMin;							// ×îĞ¡±àÂëÖ¡ÂÊ
-	u8	 byMax;							// ×î´ó±àÂëÖ¡ÂÊ
-	u8	 byDef;							// Ä¬ÈÏ±àÂëÖ¡ÂÊ
+	char szFrameRateCap[64];			// ç¼–ç æ ¼å¼èƒ½åŠ›
+	u8	 byMin;							// æœ€å°ç¼–ç å¸§ç‡
+	u8	 byMax;							// æœ€å¤§ç¼–ç å¸§ç‡
+	u8	 byDef;							// é»˜è®¤ç¼–ç å¸§ç‡
 }TVIDEOFRAMECAPLIST, *PVIDEOFRAMECAPLIST;
 
 typedef struct tagVideoCapList
 {
-	u8	 byStreamTypeCap;				// ÂëÁ÷ÀàĞÍ
-	u8	 byStreamIdCap;					// ÂëÁ÷ID
-	char szResolutionCap[128];			// ·Ö±æÂÊÀàĞÍÄÜÁ¦
-	char szEncorderComplexityCap[64];	// ±àÂë¸´ÔÓ¶ÈÄÜÁ¦
-	TVIDEOFRAMECAPLIST tVideoCapList[5]; //Ö¡ÂÊÄÜÁ¦Á´±í
+	u8	 byStreamTypeCap;				// ç æµç±»å‹
+	u8	 byStreamIdCap;					// ç æµID
+	char szResolutionCap[128];			// åˆ†è¾¨ç‡ç±»å‹èƒ½åŠ›
+	char szEncoderComplexityCap[64];	// ç¼–ç å¤æ‚åº¦èƒ½åŠ›
+	TVIDEOFRAMECAPLIST tVideoCapList[32]; //å¸§ç‡èƒ½åŠ›é“¾è¡¨
 }TVIDEOCAPLIST, *PVIDEOCAPLIST;
 
 typedef struct tagVideoEnc
 {
-	char		szResolution[17];		// µ±Ç°·Ö±æÂÊ
-	char		szDataRateType[17];		// Êı¾İ¸ñÊ½ÀàĞÍ
-	u16			wMaxDataRate;			// ÂëÂÊÉÏÏŞ(×î´ó×îĞ¡ÖµÏê¼û½Ó¿ÚµÄszAssistInfo±äÁ¿)
-	char		szQuality[17];			// opt=¡±lowest,lower,low,middle,hight,highest¡±
-	u8			byFrameRate;			// (ÄÜÁ¦Ïê¼ûtagVideoFrameCapList)
-	char		szVideoType[17];		//(¾ßÌåÄÜÁ¦Ïê¼û½Ó¿ÚµÄszAssistInfo±äÁ¿)
+	char		szResolution[17];		// å½“å‰åˆ†è¾¨ç‡
+	char		szDataRateType[17];		// æ•°æ®æ ¼å¼ç±»å‹
+	u16			wMaxDataRate;			// ç ç‡ä¸Šé™(æœ€å¤§æœ€å°å€¼è¯¦è§æ¥å£çš„szAssistInfoå˜é‡)
+	char		szQuality[17];			// opt=â€lowest,lower,low,middle,hight,highestâ€
+	u8			byFrameRate;			// (èƒ½åŠ›è¯¦è§tagVideoFrameCapList)
+	char		szVideoType[17];		//(å…·ä½“èƒ½åŠ›è¯¦è§æ¥å£çš„szAssistInfoå˜é‡)
 	char		szEncoderComplexity[17];
-	u16			wIFrameSpeed;			//iÖ¡¼ä¸ô(×î´ó×îĞ¡ÖµÏê¼û½Ó¿ÚµÄszAssistInfo±äÁ¿)
+	u16			wIFrameSpeed;			//iå¸§é—´éš”(æœ€å¤§æœ€å°å€¼è¯¦è§æ¥å£çš„szAssistInfoå˜é‡)
 }TVIDEOENC, *PTVIDEOENC;
 
 typedef struct tagVideoEncInfo
 {
-	TVIDEOCAPLIST	tVideoCapList[10];	// ×î¶à10¸ö
+	TVIDEOCAPLIST	tVideoCapList[15];	// æœ€å¤š15ä¸ª
 	TVIDEOENC		tVideoEnc;
 }TVIDEOENCINFO, *PTVIDEOENCINFO;
 
 typedef struct tagVideoEncParam
 {
 	u8	byVideoSource;
-	u8	bySreamId;		// Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈıÂëÁ÷(3),ËÄÂëÁ÷(4)
+	u8	byStreamId;		// ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),å››ç æµ(4)
+	u8  byStreamType;   // å•ç æµ(1),åŒç æµ(2),ä¸‰ç æµ(3),å››ç æµ(4)
 	TVIDEOENC	tVideoEnc;
 }TVIDEOENCPARAM, *PTVIDEOENCPARAM;
 
-// ÒôÆµ±àÂë
+// éŸ³é¢‘ç¼–ç 
 typedef struct tagAudioEncInfo
 {
-	u8	byVolume;	// ±àÂëÒôÁ¿0-100
-	bool  bAec;		// »ìÒôÂ¼Ïñ
-	char  szType[17];	// ±àÂë¸ñÊ½¡°PCMA/PCMU/ADPCM/G722/G728/G7221c/AACLC¡±
-	char  szInputMode[17];	//ÒôÆµÊäÈëÄ£Ê½¡°linein,micin¡±
-	char  szSampling[17];	//µ±Ç°²ÉÑùÂÊ
+	u8	byVolume;	// ç¼–ç éŸ³é‡0-100
+	bool  bAec;		// æ··éŸ³å½•åƒ
+	char  szType[17];	// ç¼–ç æ ¼å¼â€œPCMA/PCMU/ADPCM/G722/G728/G7221c/AACLCâ€
+	char  szInputMode[17];	//éŸ³é¢‘è¾“å…¥æ¨¡å¼â€œlinein,micinâ€
+	char  szSampling[17];	//å½“å‰é‡‡æ ·ç‡
 }TAUDIOENCINFO, *PTAUDIOENCINFO;
 
 typedef struct tagAudioEncParam
 {
 	u8	byVideoSource;
-	u8	bySreamId;		// Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈıÂëÁ÷(3),ËÄÂëÁ÷(4)
+	u8	byStreamId;		// ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),å››ç æµ(4)
 	TAUDIOENCINFO	tAudioEncInfo;
 }TAUDIOENCPARAM, *PTAUDIOENCPARAM;
 
-// ÒôÆµ½âÂë
+// éŸ³é¢‘è§£ç 
 typedef struct tagAudioDecInfo
 {
-	u8	byVolume;		// ½âÂëÒôÁ¿ 0-100
-	bool bMixerRec;		// »ìÒôÂ¼Ïñ
+	u8	byVolume;		// è§£ç éŸ³é‡ 0-100
+	bool bMixerRec;		// æ··éŸ³å½•åƒ
+	bool bModeEnable;	// éŸ³é¢‘è¾“å…¥æ˜¯å¦å¯ç”¨
+	char szTypeList[64];	//è¾“å‡ºç±»å‹åˆ—è¡¨, åªè¯»
+	char szOutputType[17];	//è¾“å‡ºç±»å‹ lineout,speaker
 }TAUDIODECINFO, *PTAUDIODECINFO;
 
 typedef struct tagAudioDecParam
 {
 	u8	byVideoSource;
-	u8	bySreamId;		// Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈıÂëÁ÷(3),ËÄÂëÁ÷(4)
+	u8	byStreamId;		// ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),å››ç æµ(4)
 	TAUDIODECINFO	tAudioDecInfo;
 }TAUDIODECPARAM, *PTAUDIODECPARAM;
 
-// Í¼ÏñÕÚ±Î
+// å›¾åƒé®è”½
 typedef struct tagShieldArea
 {
-	char szName[17];	// ÇøÓòÀàĞÍÃû×Ö Ä¿Ç°²»Ö§³Ö
-	char szColor[17];	// ÇøÓòµÄÑÕÉ«"gray,red,yellow,blue,orange,green,transparent,half-transparent,mosaic" Ä¿Ç°²»Ö§³Ö
-	char szType[17];	// Ä¿Ç°Ö§³Örect
-	u8	byPointNum;		// µãµÄ¸öÊı£¬rectÎª4¸öµã
+	char szName[17];	// åŒºåŸŸç±»å‹åå­— ç›®å‰ä¸æ”¯æŒ
+	char szColor[17];	// åŒºåŸŸçš„é¢œè‰²"gray,red,yellow,blue,orange,green,transparent,half-transparent,mosaic" ç›®å‰ä¸æ”¯æŒ
+	char szType[17];	// ç›®å‰æ”¯æŒrect
+	u8	byPointNum;		// ç‚¹çš„ä¸ªæ•°ï¼Œrectä¸º4ä¸ªç‚¹
 	u16	x[8];			// x
 	u16	y[8];			// y
 }TSHIELDAREA, *PTSHLELDAREA;
 
 typedef struct tagVideoShield
 {
-	bool bEnable;		// ÆôÓÃ
-	u16	 wVgaWidth;		// ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏÎª10000
-	u16	 wVgaHeight;	// ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏÎª10000
-	u16	 wMinWidth;		// ×îĞ¡ÇøÓò¿í¶È£¬²»¿ÉĞŞ¸Ä
-	u16	 wMinHeight;	// ×îĞ¡ÇøÓò¸ß¶È£¬²»¿ÉĞŞ¸Ä
-	char szAllColor[17];// ËùÓĞÇøÓòµÄÑÕÉ«gray,red,yellow,blue,orange,green,transparent,half-transparent,mosaic
-	u8	 byAreaNum;		// ÇøÓò¸öÊı£¬Ä¿Ç°×î¶àÖ§³Ö4¸ö
+	bool bEnable;		// å¯ç”¨
+	u16	 wVgaWidth;		// è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤ä¸º10000
+	u16	 wVgaHeight;	// è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤ä¸º10000
+	u16	 wMinWidth;		// æœ€å°åŒºåŸŸå®½åº¦ï¼Œä¸å¯ä¿®æ”¹
+	u16	 wMinHeight;	// æœ€å°åŒºåŸŸé«˜åº¦ï¼Œä¸å¯ä¿®æ”¹
+	char szAllColor[17];// æ‰€æœ‰åŒºåŸŸçš„é¢œè‰²gray,red,yellow,blue,orange,green,transparent,half-transparent,mosaic
+	u8	 byAreaNum;		// åŒºåŸŸä¸ªæ•°ï¼Œç›®å‰æœ€å¤šæ”¯æŒ4ä¸ª
 }TVIDEOSHIELD, *PTVIDEOSHIELD;
 
 typedef struct tagVideoShieldInfo
 {	
 	TVIDEOSHIELD	tVideoShield;
-	TSHIELDAREA		tShieldArea[4];		// Ä¿Ç°Ö§³Ö4¸öÇøÓò
+	TSHIELDAREA		tShieldArea[4];		// ç›®å‰æ”¯æŒ4ä¸ªåŒºåŸŸ
 }TVIDEOSHIELDINFO, *PTVIDEOSHIELDINFO;
 
 typedef struct	tagVideoShieldParam
 {
 	u8		byVideoSource;
 	TVIDEOSHIELD	tVideoShield;
-	TSHIELDAREA		tShieldArea[4];		// Ä¿Ç°Ö§³Ö4¸öÇøÓò
+	TSHIELDAREA		tShieldArea[4];		// ç›®å‰æ”¯æŒ4ä¸ªåŒºåŸŸ
 }TVIDEOSHIELDPARAM, *PVIDEOSHIELDPARAM;
 
 // ROI
 typedef struct tagVideoRoi
 {
-	bool	bEnable;	// ÆôÓÃ
-	u16		wVgaWidth;	// ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏÎª10000
-	u16		wVgaHeight;	// ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏÎª10000
-	u16		wMinWidth;	// ×îĞ¡ÇøÓò¿í¶È£¬²»¿ÉĞŞ¸Ä--1250
-	u16		wMinHeight;	// ×îĞ¡ÇøÓò¸ß¶È£¬²»¿ÉĞŞ¸Ä--1250
+	bool	bEnable;	// å¯ç”¨
+	u16		wVgaWidth;	// è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤ä¸º10000
+	u16		wVgaHeight;	// è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤ä¸º10000
+	u16		wMinWidth;	// æœ€å°åŒºåŸŸå®½åº¦ï¼Œä¸å¯ä¿®æ”¹--1250
+	u16		wMinHeight;	// æœ€å°åŒºåŸŸé«˜åº¦ï¼Œä¸å¯ä¿®æ”¹--1250
 	char	szCodeLevel[17]; // low , middle , high
 }TVIDEOROI, *PTVIDEOROI;
 
 typedef struct tagRoiArea
 {
-	char szType[17];	// Ä¿Ç°Ö§³Örect
-	u8	byPointNum;		// µãµÄ¸öÊı£¬rectÎª4¸öµã
+	char szType[17];	// ç›®å‰æ”¯æŒrect
+	u8	byPointNum;		// ç‚¹çš„ä¸ªæ•°ï¼Œrectä¸º4ä¸ªç‚¹
 	u16	x[4];			// x
 	u16	y[4];			// y
 }TROIAREA, *PTROIAREA;
@@ -236,7 +252,7 @@ typedef struct tagRoiArea
 typedef struct tagVideoRoiInfo
 {	
 	TVIDEOROI		tVideoRoi;
-	TROIAREA		tRoiArea;		// Ä¿Ç°Ö§³Ö1¸öÇøÓò
+	TROIAREA		tRoiArea;		// ç›®å‰æ”¯æŒ1ä¸ªåŒºåŸŸ
 }TVIDEOROIINFO, *PTVIDEOROIINFO;
 
 typedef struct	tagVideoRoiParam
@@ -246,22 +262,22 @@ typedef struct	tagVideoRoiParam
 	TROIAREA	tRoiArea;
 }TVIDEOROIPARAM, *PVIDEOROIPARAM;
 
-// ±àÂë²Ã¼ô
+// ç¼–ç è£å‰ª
 typedef struct tagVideoEncCut
 {
-	bool	bEnable;	// ÆôÓÃ
-	u16		wVgaWidth;	// ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏÎª10000
-	u16		wVgaHeight;	// ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏÎª10000
-	u16		wMinWidth;	// ×îĞ¡ÇøÓò¿í¶È£¬²»¿ÉĞŞ¸Ä--5500
-	u16		wMinHeight;	// ×îĞ¡ÇøÓò¸ß¶È£¬²»¿ÉĞŞ¸Ä--5500
+	bool	bEnable;	// å¯ç”¨
+	u16		wVgaWidth;	// è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤ä¸º10000
+	u16		wVgaHeight;	// è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤ä¸º10000
+	u16		wMinWidth;	// æœ€å°åŒºåŸŸå®½åº¦ï¼Œä¸å¯ä¿®æ”¹--5500
+	u16		wMinHeight;	// æœ€å°åŒºåŸŸé«˜åº¦ï¼Œä¸å¯ä¿®æ”¹--5500
 }TVIDEOENCCUT, *PTVIDEOENCCUT;
 
 typedef struct tagEncCutArea
 {
-	u16		wX;			// ×ó¶¥µãxÖµ
-	u16		wY;			// yÖµ
-	u16		wWidth;		// ¿í¶È
-	u16		wHeight;	// ¸ß¶È
+	u16		wX;			// å·¦é¡¶ç‚¹xå€¼
+	u16		wY;			// yå€¼
+	u16		wWidth;		// å®½åº¦
+	u16		wHeight;	// é«˜åº¦
 }TENCCUTAREA, *PTENCCUTAREA;
 
 typedef struct tagVideoEncCutInfo
@@ -280,48 +296,48 @@ typedef struct tagVideoEncCutParam
 // OSD
 typedef struct tagOsdStateInfo
 {
-	char szState[17];		//¡±prepare,uploading,idle¡±
-	u8	byProcess;			// ½ø¶È0-100
+	char szState[17];		//â€prepare,uploading,idleâ€
+	u8	byProcess;			// è¿›åº¦0-100
 }TOSDSTATEINFO,*PTOSDSTATEINFO;
 
 typedef struct tagOsdPrepareParam
 {
 	u8	 byVideoSource;
-	char szPicId[17];		// Í¼Æ¬ID opt=¡±osd,label,time,alarm, move,shieldalarm¡±
-	bool bIsAlarm;			// ÊÇ·ñ¸æ¾¯ÊäÈë
-	u8	 byPicSn;			// Í¼Æ¬ĞòºÅ osd, alarmin×¨ÓÃ
-	u16	 wFileLen;			// Í¼Æ¬ÎÄ¼ş³¤¶È
-	u16	 wSendLenMax;		// µ¥´Î·¢ËÍ³¤¶ÈÊı¾İ
+	char szPicId[17];		// å›¾ç‰‡ID opt=â€osd,label,time,alarm, move,shieldalarmâ€
+	bool bIsAlarm;			// æ˜¯å¦å‘Šè­¦è¾“å…¥
+	u8	 byPicSn;			// å›¾ç‰‡åºå· osd, alarminä¸“ç”¨
+	u16	 wFileLen;			// å›¾ç‰‡æ–‡ä»¶é•¿åº¦
+	u16	 wSendLenMax;		// å•æ¬¡å‘é€é•¿åº¦æ•°æ®
 }TOSDPREPAREPARAM,*PTOSDPREPAREPARAM;
 
 typedef struct tagOsdCapInfo
 {
-	char szTimeFormat[33];		// Ö§³ÖµÄÊ±¼äÏÔÊ¾¸ñÊ½¡±MM-DD-YYYY,YYYY-MM-DD,DD-MM-YYYY¡±
-	char szFontName[33];		// Ö§³ÖµÄ×ÖÌå "blcak song"
-	char szFontColor[33];		// Ö§³ÖµÄ×ÖÌåÑÕÉ«¡±black, white,red,blue¡±
-	char szFontBkColor[17];		// Ö§³ÖµÄ±³¾°ÑÕÉ« "black, white,red,blue"
-	char szOsdType[65];			// Ö§³ÖµÄ×ÖÄ»ÀàĞÍ¡±osd,lable,time,alarm,ptz,3g¡±
+	char szTimeFormat[33];		// æ”¯æŒçš„æ—¶é—´æ˜¾ç¤ºæ ¼å¼â€MM-DD-YYYY,YYYY-MM-DD,DD-MM-YYYYâ€
+	char szFontName[33];		// æ”¯æŒçš„å­—ä½“ "blcak song"
+	char szFontColor[33];		// æ”¯æŒçš„å­—ä½“é¢œè‰²â€black, white,red,blueâ€
+	char szFontBkColor[17];		// æ”¯æŒçš„èƒŒæ™¯é¢œè‰² "black, white,red,blue"
+	char szOsdType[65];			// æ”¯æŒçš„å­—å¹•ç±»å‹â€osd,lable,time,alarm,ptz,3gâ€
 }TOSDCAPINFO, *PTOSDCAPINFO;
 
 typedef struct tagOsdUploadFileParam
 {
 	u8	byVideoSource;
-	u16	wStartPos;	// ÆğÊ¼Êı¾İÎ»ÖÃ
-	u16 wDataLen;	// Êı¾İ³¤¶È
-	char* pData;	// Êı¾İ
+	u16	wStartPos;	// èµ·å§‹æ•°æ®ä½ç½®
+	u16 wDataLen;	// æ•°æ®é•¿åº¦
+	char* pData;	// æ•°æ®
 }TOSDUPLOADFILEPARAM, *PTOSDUPLOADFILEPARAM;
 
 typedef struct tagOsdList
 {
 	char	szOsdType[17];		// time,osd,alarm,label,ptz,3g
 	bool	bVisiable;
-	u8		bySn;				// osdÀàĞÍ×ÖÄ»×¨ÓÃ1-6
-	u16		wOsdX;				// ×ÓOSDµÄxÖµºÍyÖµ
+	u8		bySn;				// osdç±»å‹å­—å¹•ä¸“ç”¨1-6
+	u16		wOsdX;				// å­OSDçš„xå€¼å’Œyå€¼
 	u16		wOsdY;
-	u16		wOsdWidth;			// ×ÓOSDµÄ¸ß¶ÈºÍ¿í¶È
+	u16		wOsdWidth;			// å­OSDçš„é«˜åº¦å’Œå®½åº¦
 	u16		wOsdHeight;
 	u8      bynindex;
-	char	szContext[65];		// ×ÖÄ»ÄÚÈİ
+	char	szContext[65];		// å­—å¹•å†…å®¹
 }TOSDLIST, *PTOSDLIST;
 
 typedef struct tagOsdListInfo
@@ -329,61 +345,82 @@ typedef struct tagOsdListInfo
 	TOSDLIST	tOsdList[16];
 }TOSDLISTINFO, *PTOSDLISTINFO;
 
+typedef struct tagSmartOsd
+{
+	char szType[32]; //value: (vis_suspect_fire,vis_fire,vis_suspect_smoke,vis_smoke,the_high_temp,the_fire,warn_manual)
+	u32 dwX;
+	u32 dwY;
+	u32 dwWidth;
+	u32 dwHeight;
+}TOSDSMART,*PTOSDSMART;
+
+typedef struct tagSmartOsdInfo
+{
+	TOSDSMART tSmartOsd[24];
+}TOSDSMARTINFO,*PTOSDSMARTINFO;
+
+typedef struct tagSmartOsdParam
+{
+	u8 byVideoSource;
+	u8 bySmartOsdNum;  //æœ€å¤š24ä¸ª
+	TOSDSMART tOsdSmartList[24];
+}TOSDSMARTPARAM,*PTOSDSMARTPARAM;
+
 typedef struct tagOsdListParam
 {
 	u8		byVideoSource;
-	u8		byOsdNum;			//ÉèÖÃOSD¸öÊı
+	u8		byOsdNum;			//è®¾ç½®OSDä¸ªæ•°
 	TOSDLIST	tOsdList[16];
 }TOSDLISTPARAM, *PTOSDLISTPARAM;
 
 typedef struct tagOsdInfo
 {
-	bool	bUploadOsdPic;			// ÊÇ·ñÉÏ´«Í¼Æ¬
-	u16		wResolutionWidth;		// ·Ö±æÂÊ¿í¶È
-	u16		wResolutionHeight;		// ·Ö±æÂÊ¸ß¶È
-	char	szTimeFormat[33];		// Ê±¼ä×ÖÄ»¸ñÊ½MM-DD-YYYY,YYYY-MM-DD,DD-MM-YYYY
-	bool	bTimeSingleRow;			// ÊÇ·ñµ¥ĞĞ
-	char	szFontName[17];			// ×ÖÌå song black
-	char	szFontColor[17];		// ×ÖÌåÑÕÉ«Ä¬ÈÏ	white£¬ Ö§³Öblack, white,red,blue
-	char	szFontBkColor[17];		// ±³¾°ÑÕÉ«Ä¬ÈÏ black£¬ Ö§³Öblack, white,red,blue
-	bool	bFontTransparent;		// ×ÖÌåÍ¸Ã÷
-	bool	bFontEdge;				// ×ÖÌå´ÖÌå
-	u8		byBackGuageTop;			// ÉÏ±ß¾à£¨n¸ö×Ö·ûµÄ¸ß¶È£¬ÓÃÓÚ±ßÔµ¶ÔÆë£¬0¡«16£©
-	u8		byBackGuageBotton;		// ÏÂ±ß¾à
-	u8		byBackGuageLeft;		// ×ó±ß¾à
-	u8		byBackGuageRight;		// ÓÒ±ß¾à
+	bool	bUploadOsdPic;			// æ˜¯å¦ä¸Šä¼ å›¾ç‰‡
+	u16		wResolutionWidth;		// åˆ†è¾¨ç‡å®½åº¦
+	u16		wResolutionHeight;		// åˆ†è¾¨ç‡é«˜åº¦
+	char	szTimeFormat[33];		// æ—¶é—´å­—å¹•æ ¼å¼MM-DD-YYYY,YYYY-MM-DD,DD-MM-YYYY
+	bool	bTimeSingleRow;			// æ˜¯å¦å•è¡Œ
+	char	szFontName[17];			// å­—ä½“ song black
+	char	szFontColor[17];		// å­—ä½“é¢œè‰²é»˜è®¤	whiteï¼Œ æ”¯æŒblack, white,red,blue
+	char	szFontBkColor[17];		// èƒŒæ™¯é¢œè‰²é»˜è®¤ blackï¼Œ æ”¯æŒblack, white,red,blue
+	bool	bFontTransparent;		// å­—ä½“é€æ˜
+	bool	bFontEdge;				// å­—ä½“ç²—ä½“
+	u8		byBackGuageTop;			// ä¸Šè¾¹è·ï¼ˆnä¸ªå­—ç¬¦çš„é«˜åº¦ï¼Œç”¨äºè¾¹ç¼˜å¯¹é½ï¼Œ0ï½16ï¼‰
+	u8		byBackGuageBotton;		// ä¸‹è¾¹è·
+	u8		byBackGuageLeft;		// å·¦è¾¹è·
+	u8		byBackGuageRight;		// å³è¾¹è·
 }TOSDINFO, *PTOSDINFO;
 
 typedef struct tagOsdParam
 {
 	u8		byVideoSource;
-	char	szTimeFormat[33];		// Ê±¼ä×ÖÄ»¸ñÊ½MM-DD-YYYY,YYYY-MM-DD,DD-MM-YYYY
-	bool	bTimeSingleRow;			// ÊÇ·ñµ¥ĞĞ
-	char	szFontName[17];			// ×ÖÌå song black
-	char	szFontColor[17];		// ×ÖÌåÑÕÉ«Ä¬ÈÏ	white£¬ Ö§³Öblack, white,red,blue
-	char	szFontBkColor[17];		// ±³¾°ÑÕÉ«Ä¬ÈÏ black£¬ Ö§³Öblack, white,red,blue
-	bool	bFontTransparent;		// ×ÖÌåÍ¸Ã÷
-	bool	bFontEdge;				// ×ÖÌå´ÖÌå
-	u8		byBackGuageTop;			// ÉÏ±ß¾à£¨n¸ö×Ö·ûµÄ¸ß¶È£¬ÓÃÓÚ±ßÔµ¶ÔÆë£¬0¡«16£©
-	u8		byBackGuageBotton;		// ÏÂ±ß¾à
-	u8		byBackGuageLeft;		// ×ó±ß¾à
-	u8		byBackGuageRight;		// ÓÒ±ß¾à
+	char	szTimeFormat[33];		// æ—¶é—´å­—å¹•æ ¼å¼MM-DD-YYYY,YYYY-MM-DD,DD-MM-YYYY
+	bool	bTimeSingleRow;			// æ˜¯å¦å•è¡Œ
+	char	szFontName[17];			// å­—ä½“ song black
+	char	szFontColor[17];		// å­—ä½“é¢œè‰²é»˜è®¤	whiteï¼Œ æ”¯æŒblack, white,red,blue
+	char	szFontBkColor[17];		// èƒŒæ™¯é¢œè‰²é»˜è®¤ blackï¼Œ æ”¯æŒblack, white,red,blue
+	bool	bFontTransparent;		// å­—ä½“é€æ˜
+	bool	bFontEdge;				// å­—ä½“ç²—ä½“
+	u8		byBackGuageTop;			// ä¸Šè¾¹è·ï¼ˆnä¸ªå­—ç¬¦çš„é«˜åº¦ï¼Œç”¨äºè¾¹ç¼˜å¯¹é½ï¼Œ0ï½16ï¼‰
+	u8		byBackGuageBotton;		// ä¸‹è¾¹è·
+	u8		byBackGuageLeft;		// å·¦è¾¹è·
+	u8		byBackGuageRight;		// å³è¾¹è·
 }TOSDPARAM, *PTOSDPARAM;
 
-// Í¼Ïñ
+// å›¾åƒ
 typedef struct tagImgDefParam
 {
-	u8	byVideoSource;		// ÊÓÆµID
-	char szcolorrecov[17];	// 1.»Ö¸´È«²¿:all, 2.»Ö¸´ÑÕÉ«Öµ:color
+	u8	byVideoSource;		// è§†é¢‘ID
+	char szcolorrecov[17];	// 1.æ¢å¤å…¨éƒ¨:all, 2.æ¢å¤é¢œè‰²å€¼:color
 }TIMGDEFPARAM, *PTIMGDEFPARAM;
 
-// Í¼Ïñ--ÑÕÉ«µ÷½Ú
+// å›¾åƒ--é¢œè‰²è°ƒèŠ‚
 typedef struct tagColorInfo
 {
-	u8	byBrightnessLevel;	//ÁÁ¶È0-100
-	u8	bycContrastLevel;	//¶Ô±È¶È0-100
-	u8  bySaturationLevel;	//±¥ºÍ¶È0-100
-	u8	byHueLevel;			//Èñ¶È0-100
+	u8	byBrightnessLevel;	//äº®åº¦0-100
+	u8	bycContrastLevel;	//å¯¹æ¯”åº¦0-100
+	u8  bySaturationLevel;	//é¥±å’Œåº¦0-100
+	u8	byHueLevel;			//é”åº¦0-100
 }TCOLORINFO, *PTCOLORINFO;
 
 typedef struct tagColorParam
@@ -392,12 +429,12 @@ typedef struct tagColorParam
 	TCOLORINFO tColorInfo;
 }TCOLORPARAM, *PTCOLORPARAM;
 
-// Í¼Ïñ-¾Û½¹²ÎÊı
+// å›¾åƒ-èšç„¦å‚æ•°
 typedef struct tagFocusInfo
 {
 	char szFocusStyle[17];	//single,continu,auto,manual
-	char szFocusMin[17];	//×îĞ¡¾Û½¹¾àÀë 1m,2m
-	char szFocusMax[17];	//×î´ó¾Û½¹¾àÀë 1m,2m
+	char szFocusMin[17];	//æœ€å°èšç„¦è·ç¦» 1m,2m
+	char szFocusMax[17];	//æœ€å¤§èšç„¦è·ç¦» 1m,2m
 }TFOCUSINFO, *PTFOCUSINFO;
 
 typedef struct tagFocusParam
@@ -406,12 +443,12 @@ typedef struct tagFocusParam
 	TFOCUSINFO tFocusInfo;
 }TFOCUSPARAM, *PTFOCUSPARAM;
 
-// Í¼Ïñ-°×Æ½ºâ²ÎÊı
+// å›¾åƒ-ç™½å¹³è¡¡å‚æ•°
 typedef struct tagWhiteBlanceInfo
 {
-	char szWhiteBlaneceStyle[17]; // °×Æ½ºâÀàĞÍ
-	u8	byBlanceRed;			  // ºìÔöÒæÖµ0-100
-	u8  byBlanceBlue;			  // À¶ÔöÒæÖµ0-100
+	char szWhiteBlaneceStyle[17]; // ç™½å¹³è¡¡ç±»å‹
+	u8	byBlanceRed;			  // çº¢å¢ç›Šå€¼0-100
+	u8  byBlanceBlue;			  // è“å¢ç›Šå€¼0-100
 }TWHITEBLANCEINFO, *PTWHITEBLANCEINFO;
 
 typedef struct tagWhiteBlanceParam
@@ -420,29 +457,29 @@ typedef struct tagWhiteBlanceParam
 	TWHITEBLANCEINFO tWhiteBlanceInfo;
 }TWHITEBLANCEPARAM, *PTWHITEBLANCEPARAM;
 
-// Í¼Ïñ-ÈÕÒ¹ÇĞ»»²ÎÊı
+// å›¾åƒ-æ—¥å¤œåˆ‡æ¢å‚æ•°
 typedef struct tagIrcutFixTime
 {
 	char szstarttime[17];
 	char szendtime[17];
-	bool bEnable;		// ÆôÓÃtrue, false
+	bool bEnable;		// å¯ç”¨true, false
 }TIRCUTFIXTIME, *PTIRCUTFIXTIME;
 
 typedef struct tagIrcutWeekTime
 {
-	TIRCUTFIXTIME	tIrcutWeekdayTime[7];	// ÖÜÈÕµ½ÖÜÁù
+	TIRCUTFIXTIME	tIrcutWeekdayTime[7];	// å‘¨æ—¥åˆ°å‘¨å…­
 }TIRCUTWEEKTIME, PTIRCUTWEEKTIME;
 
 typedef struct tagIrcutFilterInfo
 {
-	char szircutfiltertype[17];		// ×ª»»ÀàĞÍ
-	char sztrigger[17];				// ´¥·¢×´Ì¬day night
-	char szdaytonightlevel[17];		// µÈ¼¶ µÍ ÖĞ ¸ß
-	char szdaytonighttime[17];		// Ê±¼ä (5-20)
+	char szircutfiltertype[17];		// è½¬æ¢ç±»å‹ day,night,auto_gain,auto_photo,time
+	char sztrigger[17];				// è§¦å‘çŠ¶æ€day night
+	char szdaytonightlevel[17];		// ç­‰çº§ ä½ ä¸­ é«˜
+	char szdaytonighttime[17];		// æ—¶é—´ (5-20)
 	u8	 byPhotoLevel;				// 0-100
-	//Ö»ÓĞÔÚszircutfiltertypeÎªtime(¶¨Ê±´¥·¢)Ê±²ÅĞèÒªÉèÖÃÒÔÏÂµÄÊ±¼ä½á¹¹Ìå
-	TIRCUTFIXTIME	tIrcutTimeAll;	// szEnable²ÎÊıtIrcutTimeAllºÍtIrcutWeekdayTime»¥³â
-	TIRCUTWEEKTIME	tIrcutTimeWeekDay;	// ÖÜÈÕµ½ÖÜÁù
+	//åªæœ‰åœ¨szircutfiltertypeä¸ºtime(å®šæ—¶è§¦å‘)æ—¶æ‰éœ€è¦è®¾ç½®ä»¥ä¸‹çš„æ—¶é—´ç»“æ„ä½“
+	TIRCUTFIXTIME	tIrcutTimeAll;	// szEnableå‚æ•°tIrcutTimeAllå’ŒtIrcutWeekdayTimeäº’æ–¥
+	TIRCUTWEEKTIME	tIrcutTimeWeekDay;	// å‘¨æ—¥åˆ°å‘¨å…­
 }TRCUTFILTERINFO, *PTIRCUTFILTERINFO;
 
 typedef struct tagIrcutFilterParam
@@ -451,12 +488,12 @@ typedef struct tagIrcutFilterParam
 	TRCUTFILTERINFO tImageIrcutFilterInfo;
 }TTRCUTFILTERPARAM, *PTIRCUTFILTERPARAM;
 
-// Í¼Ïñ--¹âÈ¦
+// å›¾åƒ--å…‰åœˆ
 typedef struct tagIrisInfo
 {
-	char szIrisMode[17];		//¹âÈ¦Ä£Ê½¡°auto, manual,dc_irisauto, dc_irismanual, p_irisauto, p_irismanual¡±
-	u8	 byIrisSize;			//¹âÈ¦´óĞ¡
-	u8	 byIrisLevel;			//¹âÈ¦µÈ¼¶
+	char szIrisMode[17];		//å…‰åœˆæ¨¡å¼â€œauto, manual,dc_irisauto, dc_irismanual, p_irisauto, p_irismanualâ€
+	u8	 byIrisSize;			//å…‰åœˆå¤§å°
+	u8	 byIrisLevel;			//å…‰åœˆç­‰çº§
 }TIRISINFO, *PTIRISINFO;
 
 typedef struct tagIrisParam
@@ -465,12 +502,12 @@ typedef struct tagIrisParam
 	TIRISINFO	tIrisInfo;
 }TIRISPARAM, *PTIRISPARAM;
 
-// Í¼Ïñ--¿ìÃÅ
+// å›¾åƒ--å¿«é—¨
 typedef struct tagShutterInfo
 {
-	char szshutermode[17]; // ¿ìÃÅÄ£Ê½
-	char szshutermin[17];  // ¿ìÃÅÏÂÏŞ
-	char szshuterlevel[17];// ÁéÃô¶È-ÊÖ¶¯
+	char szshutermode[17]; // å¿«é—¨æ¨¡å¼
+	char szshutermin[17];  // å¿«é—¨ä¸‹é™
+	char szshuterlevel[17];// çµæ•åº¦-æ‰‹åŠ¨
 }TSHUTTERINFO, *PTSHUTTERINFO;
 
 typedef struct tagShutterParam
@@ -479,12 +516,12 @@ typedef struct tagShutterParam
 	TSHUTTERINFO	tShutterInfo;
 }TSHUTTERPARAM, *PTSHUTTERPARAM;
 
-// Í¼Ïñ-- ÔöÒæ
+// å›¾åƒ-- å¢ç›Š
 typedef struct tagGainInfo
 {
-	char szgainmode[17];	// ÔöÒæÄ£Ê½
-	u8	 byGainMax;			// ÔöÒæÉÏÏŞ 0-100
-	u8	 byGainLevel;		// ÔöÒæµÈ¼¶ 0-100
+	char szgainmode[17];	// å¢ç›Šæ¨¡å¼
+	u8	 byGainMax;			// å¢ç›Šä¸Šé™ 0-100
+	u8	 byGainLevel;		// å¢ç›Šç­‰çº§ 0-100
 }TGAININFO, *PTGAININFO;
 
 typedef struct tagGainParam
@@ -493,11 +530,11 @@ typedef struct tagGainParam
 	TGAININFO tGainInfo;
 }TGAINPARAM, PTGAINPARAM;
 
-// Í¼Ïñ-- ºìÍâ
+// å›¾åƒ-- çº¢å¤–
 typedef struct tagInfraredInfo
 {
-	char szControlMode[17];	// ÆôÓÃÄ£Ê½--¹Ø±Õ£¬×Ô¶¯¿ªÆô£¬Ô¶µÆ¿ªÆô£¬ÖĞµÆ¿ªÆô£¬½üµÆ¿ªÆô£¬³¬½üµÆ¿ªÆô
-	u8	byInfraredLevel;	// ºìÍâÇ¿¶È
+	char szControlMode[17];	// å¯ç”¨æ¨¡å¼--å…³é—­ï¼Œè‡ªåŠ¨å¼€å¯ï¼Œè¿œç¯å¼€å¯ï¼Œä¸­ç¯å¼€å¯ï¼Œè¿‘ç¯å¼€å¯ï¼Œè¶…è¿‘ç¯å¼€å¯
+	u8	byInfraredLevel;	// çº¢å¤–å¼ºåº¦
 }TINFRAREDINFO, *PTINFRAREDINFO;
 
 typedef struct tagInfraredParam
@@ -506,12 +543,12 @@ typedef struct tagInfraredParam
 	TINFRAREDINFO	tInfraredInfo;
 }TINFRAREDPARAM, *PTINFRAREDPARAM;
 
-//Í¼Ïñ-- ¼¤¹â
+//å›¾åƒ-- æ¿€å…‰
 typedef struct tagLaserInfo
 {
 	char szControlMode[17];	 // open, close
-	u8	byLaserLevel;		 // ¼¤¹âÇ¿¶È
-	char szSpotMode[17];	 // ¾Û¹âÇ¿¶È Ä¬ÈÏ£¬¹â°ßĞ¡Ä£Ê½£¬¹â°ß´óÄ£Ê½£¬×Ô¶¨ÒåÄ£Ê½1£¬×Ô¶¨ÒåÄ£Ê½2
+	u8	byLaserLevel;		 // æ¿€å…‰å¼ºåº¦
+	char szSpotMode[17];	 // èšå…‰å¼ºåº¦ é»˜è®¤ï¼Œå…‰æ–‘å°æ¨¡å¼ï¼Œå…‰æ–‘å¤§æ¨¡å¼ï¼Œè‡ªå®šä¹‰æ¨¡å¼1ï¼Œè‡ªå®šä¹‰æ¨¡å¼2
 }TLASERINFO, *PTLASERINFO;
 
 typedef struct tagLaserParam
@@ -520,10 +557,10 @@ typedef struct tagLaserParam
 	TLASERINFO	tLaserInfo;
 }TLASERPARAM, *PTLASERPARAM;
 
-// Í¼Ïñ --×ßÀÈÄ£Ê½
+// å›¾åƒ --èµ°å»Šæ¨¡å¼
 typedef struct tagCorridoModeInfo
 {
-	char	szCorridoMode[17];	// ×ßÀÈÄ£Ê½close, left,right
+	char	szCorridoMode[17];	// èµ°å»Šæ¨¡å¼close, left,right
 }TCORRIDOMODEINFO, *PTCORRIDOMODEINFO;
 
 typedef struct tagCorridoModeParam
@@ -532,10 +569,10 @@ typedef struct tagCorridoModeParam
 	TCORRIDOMODEINFO	tCorridoModeInfo;
 }TCORRIDOMODEPARAM, *PTCORRIDOMODEPARAM;
 
-// Í¼Ïñ --¾µÏñÄ£Ê½
+// å›¾åƒ --é•œåƒæ¨¡å¼
 typedef struct tagImageModeInfo
 {
-	char szImageMode[17];	//¾µÏñÄ£Ê½close, left,right,topbottom
+	char szImageMode[17];	//é•œåƒæ¨¡å¼close, left,right,topbottom
 }TIMAGEMODEINFO, *PTIMAGEMODEINFO;
 
 typedef struct tagImageModeParam
@@ -544,10 +581,10 @@ typedef struct tagImageModeParam
 	TIMAGEMODEINFO	tImageModeInfo;
 }TIMAGEMODEPARAM, *PTIMAGEMODEPARAM;
 
-// Í¼Ïñ --2D½µÔë
+// å›¾åƒ --2Dé™å™ª
 typedef struct tag2DNoise
 {
-	char szNoiseReduce2DMode[17]; //2D½µÔëÄ£Ê½auto,open,close
+	char szNoiseReduce2DMode[17]; //2Dé™å™ªæ¨¡å¼auto,open,close
 	u8	 byNoiseReduce2DLevel;
 }T2DDENOISE, *PT2DDENOISE;
 
@@ -557,10 +594,10 @@ typedef struct tag2DNoiseParam
 	T2DDENOISE	tNoiseReduceInfo;
 }T2DDENOISEPARAM, *PT2DDENOISEPARAM;
 
-// Í¼Ïñ --3D½µÔë
+// å›¾åƒ --3Dé™å™ª
 typedef struct tagNoiseReduce3DInfo
 {
-	char	szNoiseReduce3DMode[17];	// 3D½µÔëÄ£Ê½auto,open,close
+	char	szNoiseReduce3DMode[17];	// 3Dé™å™ªæ¨¡å¼auto,open,close
 	u8		byNoiseReduce3DLevel;
 }T3DDENOISE, *PT3DDENOISE;
 
@@ -570,7 +607,7 @@ typedef struct	tagNoiseReduce3DParam
 	T3DDENOISE	tNoiseReduceInfo;
 }T3DDENOISEPARAM, *PT3DDENOISEPARAM;
 
-// Í¼Ïñ -- ±¾µØ»ØÏÔ
+// å›¾åƒ -- æœ¬åœ°å›æ˜¾
 typedef struct tagLocalEchoInfo
 {
 	char	szLocalEchoMode[17];	// close, pal,ntsc,line,interleave
@@ -582,7 +619,7 @@ typedef struct tagLocalEchoParam
 	TLOCALECHOINFO	tLocalEchoInfo;
 }TLOCALECHOPARAM, *PTLOCALECHOPARAM;
 
-// Í¼Ïñ -- ·ÀÉÁË¸
+// å›¾åƒ -- é˜²é—ªçƒ
 typedef struct tagPowerLineFrequencyInfo
 {
 	char szPowerLineFrequencyMode[17];	// 50hz,60hz,auto
@@ -594,26 +631,26 @@ typedef struct tagPowerLineFrequencyParam
 	TPOWERLINEFREQUENCYINFO	tPowerLineFrequencyInfo;
 }TPOWERLINEFREQUENCYPARAM, *PTPOWERLINEFREQUENCYPARAM;
 
-// Í¼Ïñ -- ¶¯Ì¬×éºÏ
-//¶¯Ì¬µ÷½ÚÇøÓò
+// å›¾åƒ -- åŠ¨æ€ç»„åˆ
+//åŠ¨æ€è°ƒèŠ‚åŒºåŸŸ
 typedef struct tagDynamicArea
 {
-	char szType[17];	// ÇøÓòÀàĞÍ£º¾ØĞÎrect
-	u8	byPointNum;		// ÇøÓòµÄ¶¥µã
-	u16	x[16];			// x×ø±ê	¶¥µã×ø±ê£¬Ë³Ê±ÕëĞ´Èë
-	u16	y[16];			// y×ø±ê
+	char szType[17];	// åŒºåŸŸç±»å‹ï¼šçŸ©å½¢rect
+	u8	byPointNum;		// åŒºåŸŸçš„é¡¶ç‚¹
+	u16	x[16];			// xåæ ‡	é¡¶ç‚¹åæ ‡ï¼Œé¡ºæ—¶é’ˆå†™å…¥
+	u16	y[16];			// yåæ ‡
 }TDYNAMICAREA, *PTDYNAMICAREA;
 
 typedef struct tagDynamicModeInfo
 {
-	char szMode[17];		// ¶¯Ì¬µ÷½ÚÄ£Ê½£¬¹Ø±Õ(close)/¿í¶¯Ì¬(wdr)/Ç¿¹âÒÖÖÆ(hlc)/±³¹â²¹³¥×Ô¶¯(autoblc)/
-							// ±³¹â²¹³¥ÊÖ¶¯(regionblc)/Í¸Îí(fogthrough)/Gamma(gamma)/smartIR(smartir)
-	u8	nLevel;				// ÁéÃô¶È
-	char szPosition[17];	// µ÷½Ú·½Î» ×Ô¶¨Òåcustom,ÉÏÏÂ×óÓÒÖĞĞÄ top,left,right,bottom,center
-	u16	wMinWidth;			// ×îĞ¡¿í¶È
-	u16 wMinHeight;			// ×îĞ¡¸ß¶È
-	u16	wVGAWidth;			// ÇøÓòµÄ¿í¶È
-	u16	wVGAHeight;			// ÇøÓòµÄ¸ß¶È
+	char szMode[17];		// åŠ¨æ€è°ƒèŠ‚æ¨¡å¼ï¼Œå…³é—­(close)/å®½åŠ¨æ€(wdr)/å¼ºå…‰æŠ‘åˆ¶(hlc)/èƒŒå…‰è¡¥å¿è‡ªåŠ¨(autoblc)/
+							// èƒŒå…‰è¡¥å¿æ‰‹åŠ¨(regionblc)/é€é›¾(fogthrough)/Gamma(gamma)/smartIR(smartir)
+	u8	nLevel;				// çµæ•åº¦
+	char szPosition[17];	// è°ƒèŠ‚æ–¹ä½ è‡ªå®šä¹‰custom,ä¸Šä¸‹å·¦å³ä¸­å¿ƒ top,left,right,bottom,center
+	u16	wMinWidth;			// æœ€å°å®½åº¦
+	u16 wMinHeight;			// æœ€å°é«˜åº¦
+	u16	wVGAWidth;			// åŒºåŸŸçš„å®½åº¦
+	u16	wVGAHeight;			// åŒºåŸŸçš„é«˜åº¦
 	TDYNAMICAREA	tDynamicArea;
 }TDYNAMICMODEINFO, *PTDYNAMICMODEINFO;
 
@@ -623,35 +660,129 @@ typedef struct tagDynamicModeParam
 	TDYNAMICMODEINFO	tDynamicModeInfo;
 }TDYNAMICMODEPARAM, *PTDYNAMICMODEPARAM;
 
-// ºìÍâ²¹¹âµÆ
+// çº¢å¤–è¡¥å…‰ç¯
 typedef struct tagFillLight
 {
-	char szMode[7];   // ²¹¹âµÆÄ£Ê½: ¹Ø±Õ(close),×Ô¶¯(auto),ÊÖ¶¯(manual)
-	u16  wBrightness; // ÁÁ¶È(0~100)
-	u16  wThreshold;  // ãĞÖµ(0~48)
+	char szMode[7];   // è¡¥å…‰ç¯æ¨¡å¼: å…³é—­(close),è‡ªåŠ¨(auto),æ‰‹åŠ¨(manual)
+	u16  wBrightness; // äº®åº¦(0~100)
+	u16  wThreshold;  // é˜ˆå€¼(0~48)
 }TDFILLLIGHT, *PTDFILLLIGHT;
 
-// ¶¯Ì¬²å¼ş×´Ì¬
+// åŠ¨æ€æ’ä»¶çŠ¶æ€
 typedef struct tagDynPlugin
 {
-	bool bEnable;   // true-¿ªÆô,false-¹Ø±Õ
+	bool bEnable;   // true-å¼€å¯,false-å…³é—­
 }TDDYNMAICPLUGIN, *PTDDYNMAICPLUGIN;
 
-// Éè±¸ĞÅÏ¢
+// è®¾å¤‡ä¿¡æ¯
 typedef struct tagDeviceInfo
 {
-	char szDevName[MAX_DEV_NAME+1];						// Éè±¸Ãû³Æ
-	char szDevType[MAX_DEV_NAME+1];						// Éè±¸ÀàĞÍ
-	char szSerial[MAX_DEV_NAME+1];						// ĞòÁĞºÅ
-	char szVerHard[MAX_DEV_NAME+1];						// Ó²¼ş°æ±¾ºÅ
-	char szVerSoft[MAX_DEV_NAME+1];						// Èí¼ş°æ±¾ºÅ
-	u8  byNumVideo;		// ÊÓÆµÔ´¸öÊı
+	char szDevName[MAX_DEV_NAME+1];						// è®¾å¤‡åç§°
+	char szDevType[MAX_DEV_NAME+1];						// è®¾å¤‡ç±»å‹
+	char szSerial[MAX_DEV_NAME+1];						// åºåˆ—å·
+	char szVerHard[MAX_DEV_NAME+1];						// ç¡¬ä»¶ç‰ˆæœ¬å·
+	char szVerSoft[MAX_DEV_NAME+1];						// è½¯ä»¶ç‰ˆæœ¬å·
+	char szSeriesName[MAX_DEV_NAME+1];					// ç³»åˆ—å·
+	u8   byNumVideo;									// è§†é¢‘æºä¸ªæ•°
+	u8   byCardNum;										// å¡ç¼–å·(MSP1000ç¼–ç å¡åœ¨æ¯ç‰ˆä¸Šçš„ç¼–å·,å‚æ•°åªè¯»)
+	u8   bySlotNum;                                     // æ§½é“å·(MSP1000ç¼–ç å¡æ¯ç‰ˆåœ¨æœºç®±ä¸Šçš„æ§½é“å·,å‚æ•°åªè¯»)
+	u8   byCaseNum;                                     // æœºç®±å·(MSP1000ç¼–ç å¡æ¯ç‰ˆæœºç®±ç¼–å·,å‚æ•°åªè¯»)
 }TDEVICEINFO,  *PTDEVICEINFO;
 
-// Ê±¼ä»ñÈ¡
+//eepromä¿¡æ¯
+typedef struct tagEepromInfo
+{
+	int	nMsgType;     // æ¶ˆæ¯ç±»å‹
+	u8	byChanID;     // é»˜è®¤0å³å¯
+	char szDevName[128];  //è®¾å¤‡åç§°
+	char szPid[128];	// pid
+	char szHid[128];     //hid
+	u32 dwHwVer;        // ç¡¬ä»¶ç‰ˆæœ¬å·
+	u32 deHwSubVer;     // ç¡¬ä»¶å­ç‰ˆæœ¬å·
+} TEEPROMINFO, *PTEEPROMINFO;   
+
+typedef struct tagUserDef
+{
+	char szTitle[64+1];
+	char szContent[128+1];
+} TUSERDEF,*PUSERDEF;
+
+typedef struct tagCheckPoint
+{
+	char szName[64+1];
+	char szDevnum[64+1];
+	TUSERDEF tUserdeflist[10];
+	u8 byUserdefNum;     //æœ€å¤š10ä¸ª
+} TCHECKPOINT,*PCHECKPOINT;
+
+//PointOsdä¿¡æ¯
+typedef struct tagCheckPointInfo
+{
+	s32 dwCurindex;
+	TCHECKPOINT tCheckpointlist[10];
+	bool bIsshowname;
+	bool bIsshowplateno;
+	bool bIsshowdevnum;
+	bool bIsshowtime;
+	bool bIsshowuserdef;
+	u8	 byCheckPointNum;	//æœ€å¤š10ä¸ª
+} TCHECKPOINTINFO,*PCHECKPOINTINFO;
+
+//PointOsdä¿¡æ¯
+typedef struct tagCheckPointParam
+{
+	u8	byVideoSource;
+	s32 dwCurindex;
+	TCHECKPOINT tCheckpointlist[10];
+	bool bIsshowname;
+	bool bIsshowplateno;
+	bool bIsshowdevnum;
+	bool bIsshowtime;
+	bool bIsshowuserdef;
+	u8	 byCheckPointNum;	//æœ€å¤š10ä¸ª
+} TCHECKPOINTPARAM,*PCHECKPOINTPARAM;
+
+
+typedef struct tagManualSnap
+{
+	s32 dwIndex;
+	bool bEnable;
+	char szSnaptype[64+1];
+	u32 dwSnapnum;
+	s32 dwSnapinterval;
+	bool bVidrecenable;
+	s32 dwVidrectime;
+	char szSavePathType[9];//opt:"local ,frontend ,pubsec"
+}TMANUALSNAP,*PMANUALSNAP;
+
+//event manual snap
+typedef struct tagManualSnapInfo
+{
+	TMANUALSNAP snapInfo[6];
+	u8   byManualSnapNum;  
+}TMANUALSNAPINFO,*PMANUALSNAPINFO;
+
+
+//devseqä¿¡æ¯
+typedef struct tagDevSeqInfo
+{
+	int	typeID;     // ç±»å‹ ID
+	int	byChanID;     // é»˜è®¤0å³å¯
+	char devseq[128];	// dev SEQ
+} TDEVSEQINFO, *PDEVSEQINFO; 
+
+//å·¥å…·ä¿¡æ¯
+typedef struct tagTToolInfo
+{
+	char toolType[16];  /*zoomrate,irate,collimation,pistart,piclear,pinoclear,pizoomin,pizoomout,pifocusfar,pifocusnear,
+	                      startcptest,endcptest,iristest,whiteptest,blackptest*/
+	s32 toolValue;     // å¦‚æœtypeç±»å‹ä¸ºzoomrateæˆ–è€…irateçš„è¯ï¼Œéœ€è¦æ·»åŠ valueå€¼
+} TTOOLINFO, *PTTOOLINFO;
+
+// æ—¶é—´è·å–
 typedef struct tagSysTimeInfo
 {
-	char szTimeZone[8];									//Ê±Çø, ¶ÔÓ¦µÄÊ±¼äÆ«ÒÆÖµ,µ¥Î»Ãë
+	char szTimeZone[8];									//æ—¶åŒº, å¯¹åº”çš„æ—¶é—´åç§»å€¼,å•ä½ç§’
 	u32  dwYear;
 	u32  dwMonth;
 	u32  dwDay;
@@ -663,874 +794,1011 @@ typedef struct tagSysTimeInfo
 typedef struct tagTimeAutoInfo
 {
 	bool  bAuto;
-	u8   byMode;										// ntp, inputprotocol,Òª¶¨Òåºê
+	u8   byMode;										// ntp, inputprotocol,è¦å®šä¹‰å®
 	char szNtpUrl[MAX_PATH];
 	u16  wNtpPort;
-	u16  wNtpTimeSpeed;									// Ãë
+	u16  wNtpTimeSpeed;									// ç§’
 }TTIMEAUTOINFO,  *PTIMEAUTOINFO;
 
-// ÏÄÁîÊ±
+typedef struct tagAutoAdaptInfo
+{
+	bool bCheck;                                        //æ˜¯å¦æ”¯æŒ
+	char szMode[9+1];									//ntp,vsip,gb28181-1,gb28181-2
+}TAUTOADAPTINFO,*PAUTOADAPTINFO;
+
+union unMode
+{
+	u8 byMode;											//æ—§æ¥å£
+	char szMode[9+1];									// any,ntp,vsip,gb28181-1,gb28181-2
+};
+
+typedef struct tagTimeAutoInfoEx
+{
+	bool  bAuto;                                        //è‡ªåŠ¨æ ¡æ—¶é—´
+	//char  szMode[9+1];									// any,ntp,vsip,gb28181-1,gb28181-2
+	unMode unModeInfo;									// å…¼å®¹è€çš„æ¥å£å’Œæ–°çš„æ¥å£
+	TAUTOADAPTINFO autoAdaptInfo[4];                    //å¦‚æœszModeä¸ºanyï¼Œå¼€å¯æ­¤åŠŸèƒ½ï¼Œå¦åˆ™ç¦ç”¨,æ”¯æŒntp,vsip,gb28181-1,gb28181-2
+	bool bNtpEnable;                                    //æ˜¯å¦å¼€å¯NTPåè®®æ ¡æ—¶
+	u16 wAdaptlocktime;                                 //æ ¡æ—¶ä¿æŠ¤æ—¶é—´,å¦‚æœszModeä¸ºanyï¼Œå¼€å¯æ­¤åŠŸèƒ½ï¼Œå¦åˆ™ç¦ç”¨
+	char szNtpUrl[MAX_PATH];							//æœåŠ¡å™¨åœ°å€
+	u16  wNtpPort;                                      //NTPç«¯å£
+	u16  wNtpTimeSpeed;									// æ ¡å¯¹æ—¶é—´é—´éš” å•ä½ï¼šç§’
+}TTIMEAUTOINFOEX,  *PTIMEAUTOINFOEX;
+
+// å¤ä»¤æ—¶
 typedef struct tagDSTInfo
 {
-	bool	bEnable;									// ÆôÓÃ
-	u8  byStartMonth;									// ÆğÊ¼ÔÂ
-	u8  byStartWeek;									// ÆğÊ¼ÖÜ£¬»ùÓÚÔÂ£¨1¡«5£©
-	u8  byStartDay;										// ÆğÊ¼Ìì£¬»ùÓÚÖÜ£¨1¡«7£©
-	u8  byStartHour;									// ÆğÊ¼Ğ¡Ê±£¨1¡«24£©
-	u8  byEndMonth;										// ½áÊøÔÂ
-	u8  byEndWeek;										// ½áÊøÖÜ£¬»ùÓÚÔÂ£¨1¡«5£©
-	u8  byEndDay;										// ½áÊøÌì£¬»ùÓÚÖÜ£¨1¡«7£©
-	u8  byEndHour;										// ½áÊøĞ¡Ê±£¨1¡«24
-	u8	byOffMinute;									// Æ«ÒÆÊ±¼ä,·Ö(0~120)
+	bool	bEnable;									// å¯ç”¨
+	u8  byStartMonth;									// èµ·å§‹æœˆ
+	u8  byStartWeek;									// èµ·å§‹å‘¨ï¼ŒåŸºäºæœˆï¼ˆ1ï½5ï¼‰
+	u8  byStartDay;										// èµ·å§‹å¤©ï¼ŒåŸºäºå‘¨ï¼ˆ1ï½7ï¼‰
+	u8  byStartHour;									// èµ·å§‹å°æ—¶ï¼ˆ1ï½24ï¼‰
+	u8  byEndMonth;										// ç»“æŸæœˆ
+	u8  byEndWeek;										// ç»“æŸå‘¨ï¼ŒåŸºäºæœˆï¼ˆ1ï½5ï¼‰
+	u8  byEndDay;										// ç»“æŸå¤©ï¼ŒåŸºäºå‘¨ï¼ˆ1ï½7ï¼‰
+	u8  byEndHour;										// ç»“æŸå°æ—¶ï¼ˆ1ï½24
+	u8	byOffMinute;									// åç§»æ—¶é—´,åˆ†(0~120)
 } TDSTINFO,  * PTDSTINFO;
 
-#define MAX_PROTOCOL_NAME			 32					// ×î´óĞ­ÒéÃû³Æ³¤¶È(32Î»)
+#define MAX_PROTOCOL_NAME			 32					// æœ€å¤§åè®®åç§°é•¿åº¦(32ä½)
 typedef struct tagRSInfo
 {
-	char  	szType[33];									// ´®¿ÚÀàĞÍ, rs232,rs485
-	u32  	dwBaudrate;									// ²¨ÌØÂÊ£¬2400 4800, 9600, 19200, 38400, 57600 , 76800 ,  115200
-	u32  	dwDataBit;									// Êı¾İÎ»£¬5,6,7,8
-	u32  	dwStopBit;;									// Í£Ö¹Î»£¬1,2
-	u8  	byAddressNum;								// µØÖ·Âë(1~255)
-	char  	szParityBit[17];							// Ğ£ÑéÎ»none , even , odd
-	char  	szStreamControl[17];						// Á÷¿Ø£¬none, hardctrl, softctrl
-	char	szControlProtocol[MAX_PROTOCOL_NAME + 1];	// ¿ØÖÆĞ­Òé Ãû³Æ
+	char  	szType[33];									// ä¸²å£ç±»å‹, rs232,rs485
+	u32  	dwBaudrate;									// æ³¢ç‰¹ç‡ï¼Œ2400 4800, 9600, 19200, 38400, 57600 , 76800 ,  115200
+	u32  	dwDataBit;									// æ•°æ®ä½ï¼Œ5,6,7,8
+	u32  	dwStopBit;;									// åœæ­¢ä½ï¼Œ1,2
+	u8  	byAddressNum;								// åœ°å€ç (1~255)
+	char  	szParityBit[17];							// æ ¡éªŒä½none , even , odd
+	char  	szStreamControl[17];						// æµæ§ï¼Œnone, hardctrl, softctrl
+	char	szControlProtocol[MAX_PROTOCOL_NAME + 1];	// æ§åˆ¶åè®® åç§°
 } TRSINFO,  * PTRSINFO;
 
 typedef struct tagLedInfo
 {
-	bool  	bOpen;										// ÊÇ·ñÆôÓÃ
-	char* 	szTime;										// ÉÁË¸µÄÊ±¼ä£¬5s,10s,30s,1m,30m,60m,24h
+	bool  	bOpen;										// æ˜¯å¦å¯ç”¨
+	char* 	szTime;										// é—ªçƒçš„æ—¶é—´ï¼Œ5s,10s,30s,1m,30m,60m,24h
 } TLEDINFO,  * PTLEDINFO;
 
 typedef struct tagUserActiveInfo
 {
-	char	szUserNmae[MAX_USER_NAME];              // ÓÃ»§Ãû
-	char	szUserPassword[MAX_USER_PASSWORD];		// ÓÃ»§ÃÜÂë
-	char    szMailAddr[128];						// ¼¤»îÓÊÏäµØÖ·
+	char	szUserNmae[MAX_USER_NAME];              // ç”¨æˆ·å
+	char	szUserPassword[MAX_USER_PASSWORD];		// ç”¨æˆ·å¯†ç 
+	char    szMailAddr[128];						// æ¿€æ´»é‚®ç®±åœ°å€
 } TUSERACTIVEINFO,  *PTUSERACTIVEINFO;
 
 typedef struct tagUploadInfo
 {
-	u32  nLenFile;										// ÊÇ·ñÆôÓÃ
-	u32  nMaxLen_Send;									// µ¥°ü·¢ËÍµÄ×î´ó³¤¶È
-	char    szFilePath[MAX_PATH];						// ÎÄ¼şÂ·¾¶
+	u32  nLenFile;										// æ˜¯å¦å¯ç”¨
+	u32  nMaxLen_Send;									// å•åŒ…å‘é€çš„æœ€å¤§é•¿åº¦
+	char    szFilePath[MAX_PATH];						// æ–‡ä»¶è·¯å¾„
 } TUPLOADINFO,  *PTUPLOADINFO;
 
 typedef struct tagDownloadInfo
 {
-	u32  nLenFile;										// ÊÇ·ñÆôÓÃ
-	u32  nMaxLen_Send;									// µ¥°ü·¢ËÍµÄ×î´ó³¤¶È
-	char    szFilePath[MAX_PATH];						// ±£´æÎÄ¼şÂ·¾¶
+	u32  nLenFile;										// æ˜¯å¦å¯ç”¨
+	u32  nMaxLen_Send;									// å•åŒ…å‘é€çš„æœ€å¤§é•¿åº¦
+	char    szFilePath[MAX_PATH];						// ä¿å­˜æ–‡ä»¶è·¯å¾„
 } TDOWNLOADINFO,  *PTDOWNLOADINFO;
 
 typedef struct tagDdnsInfo
 {
-	bool  bDdnsEnable;									//ÆôÓÃDDNS
-	char  szDdnsType[8];								//DDNSÀàĞÍ
-	char  szDevurl[MAX_PATH] ;							//Éè±¸ÓòÃû 
-	char  szUserName[MAX_USER_NAME + 1];				//ÓÃ»§Ãû
-	char  szPassWord[MAX_USER_PASSWORD + 1];			//ÃÜÂë
+	bool  bDdnsEnable;									//å¯ç”¨DDNS
+	char  szDdnsType[8];								//DDNSç±»å‹
+	char  szDevurl[MAX_PATH] ;							//è®¾å¤‡åŸŸå 
+	char  szUserName[MAX_USER_NAME + 1];				//ç”¨æˆ·å
+	char  szPassWord[MAX_USER_PASSWORD + 1];			//å¯†ç 
 }TDDNSINFO, *PTDDNSINFO;
 
 typedef struct tagUploadState
 {
-	char  szState[17];									// Éı¼¶×´Ì¬ "prepare,uploading,idel"integer 
-	u32	  nProgress;									// Éı¼¶½ø¶È 0¡«100
+	char  szState[17];									// å‡çº§çŠ¶æ€ "prepare,uploading,idel"integer 
+	u32	  nProgress;									// å‡çº§è¿›åº¦ 0ï½100
 } TUPLOADSTATE, *PTUPLOADSTATE;
 
-// È¨ÏŞ
+// æƒé™
 typedef struct tagPowerInfo
 {
-	char	szType[17];		// ÓÃ»§ÀàĞÍ: administrator, operator, viewer
-	bool	bView;			// ä¯ÀÀ
-	bool	bRecanPic;		// »Ø·Å/Í¼Æ¬×¥ÅÄ
-	bool	bPtz;			// ÔÆÌ¨¿ØÖÆ
-	bool	bParamSet;		// ²ÎÊıÅäÖÃ
-	bool	bMemory;		// ´æ´¢
-	bool	bReboot;		// ÖØÆô¡¢·¢ÏÖ¡¢×Ô¶¯Î¬»¤
-	bool	bSystem;		// ÏµÍ³ÅäÖÃ-Éı¼¶£¬ÅäÖÃµ¼Èëµ¼³ö
+	char	szType[17];		// ç”¨æˆ·ç±»å‹: administrator, operator, viewer
+	bool	bView;			// æµè§ˆ
+	bool	bRecanPic;		// å›æ”¾/å›¾ç‰‡æŠ“æ‹
+	bool	bPtz;			// äº‘å°æ§åˆ¶
+	bool	bParamSet;		// å‚æ•°é…ç½®
+	bool	bMemory;		// å­˜å‚¨
+	bool	bReboot;		// é‡å¯ã€å‘ç°ã€è‡ªåŠ¨ç»´æŠ¤
+	bool	bSystem;		// ç³»ç»Ÿé…ç½®-å‡çº§ï¼Œé…ç½®å¯¼å…¥å¯¼å‡º
 }TPOWERINFO,PTPOWERINFO;
 
-// ÓÃ»§È¨ÏŞĞÅÏ¢
+// ç”¨æˆ·æƒé™ä¿¡æ¯
 typedef struct tagUserInfo
 {
-	char	szUserName[MAX_USER_NAME + 1];				// ÓÃ»§ĞÕÃû
-	char	szOldUserName[MAX_USER_NAME + 1];			// ¾ÉÓÃ»§ĞÕÃû(»ñÈ¡ÓÃ»§ĞÅÏ¢Ê±Îª¿Õ)
-	char	szUserPassword[MAX_USER_PASSWORD+ 1];		// ÓÃ»§ÃÜÂë
-	char	szOldUserPassword[MAX_USER_PASSWORD+ 1];	// ¾ÉÓÃ»§ÃÜÂë(»ñÈ¡ÓÃ»§ĞÅÏ¢Ê±Îª¿Õ)
-	char	szUserType[17];								// ÓÃ»§ÀàĞÍ"administrator, operator, viewer"
-	bool	bView;										// ä¯ÀÀ
-	bool	bRecanPic;									// »Ø·Å/Í¼Æ¬×¥ÅÄ
-	bool	bPtz;										// ÔÆÌ¨¿ØÖÆ
-	bool	bParamSet;									// ²ÎÊıÅäÖÃ
-	bool	bMemory;									// ´æ´¢
-	bool	bReboot;									// ÖØÆô¡¢·¢ÏÖ¡¢×Ô¶¯Î¬»¤
-	bool	bSystem;									// ÏµÍ³ÅäÖÃ-Éı¼¶£¬ÅäÖÃµ¼Èëµ¼³ö
+	char	szUserName[MAX_USER_NAME + 1];				// ç”¨æˆ·å§“å
+	char	szOldUserName[MAX_USER_NAME + 1];			// æ—§ç”¨æˆ·å§“å(è·å–ç”¨æˆ·ä¿¡æ¯æ—¶ä¸ºç©º)
+	char	szUserPassword[MAX_USER_PASSWORD+ 1];		// ç”¨æˆ·å¯†ç 
+	char	szOldUserPassword[MAX_USER_PASSWORD+ 1];	// æ—§ç”¨æˆ·å¯†ç (è·å–ç”¨æˆ·ä¿¡æ¯æ—¶ä¸ºç©º)
+	char	szUserType[17];								// ç”¨æˆ·ç±»å‹"administrator, operator, viewer"
+	bool	bView;										// æµè§ˆ
+	bool	bRecanPic;									// å›æ”¾/å›¾ç‰‡æŠ“æ‹
+	bool	bPtz;										// äº‘å°æ§åˆ¶
+	bool	bParamSet;									// å‚æ•°é…ç½®
+	bool	bMemory;									// å­˜å‚¨
+	bool	bReboot;									// é‡å¯ã€å‘ç°ã€è‡ªåŠ¨ç»´æŠ¤
+	bool	bSystem;									// ç³»ç»Ÿé…ç½®-å‡çº§ï¼Œé…ç½®å¯¼å…¥å¯¼å‡º
 }TUSERINFO,PTUSERINFO;
 
-// É¾³ıÓÃ»§
+// åˆ é™¤ç”¨æˆ·
 typedef struct tagUserDelInfo
 {
-    char    szUserName[MAX_USER_NAME  + 1];				// ÓÃ»§ĞÕÃû
-	char	szUserPassword[MAX_USER_PASSWORD+ 1];		// ÓÃ»§ÃÜÂë
-	char	szUserType[17];								// ÓÃ»§ÀàĞÍ"administrator, operator, viewer"
+    char    szUserName[MAX_USER_NAME  + 1];				// ç”¨æˆ·å§“å
+	char	szUserPassword[MAX_USER_PASSWORD+ 1];		// ç”¨æˆ·å¯†ç 
+	char	szUserType[17];								// ç”¨æˆ·ç±»å‹"administrator, operator, viewer"
 }TUSERDELINFO,PTUSERDELINFO;
 
-// ĞŞ¸ÄÓÃ»§
+// ä¿®æ”¹ç”¨æˆ·
 typedef struct tagUserUpdateInfo
 {
-    char    szUserName_Old[MAX_USER_NAME  + 1];			// ¾ÉÓÃ»§ĞÕÃû
-	char	szUserPassword_Old[MAX_USER_PASSWORD+ 1];	// ¾ÉÓÃ»§ÃÜÂë
-    char    szUserName_New[MAX_USER_NAME  + 1];			// ĞÂÓÃ»§ĞÕÃû
-	char	szUserPassword_New[MAX_USER_PASSWORD+ 1];	// ĞÂÓÃ»§ÃÜÂë
-	char	szUserType[17];								// ÓÃ»§ÀàĞÍ"administrator, operator, viewer"
-	bool	bView;										// ä¯ÀÀ
-	bool	bRecanPic;									// »Ø·Å/Í¼Æ¬×¥ÅÄ
-	bool	bPtz;										// ÔÆÌ¨¿ØÖÆ
-	bool	bParamSet;									// ²ÎÊıÅäÖÃ
-	bool	bMemory;									// ´æ´¢
-	bool	bReboot;									// ÖØÆô¡¢·¢ÏÖ¡¢×Ô¶¯Î¬»¤
-	bool	bSystem;									// ÏµÍ³ÅäÖÃ-Éı¼¶£¬ÅäÖÃµ¼Èëµ¼³ö
+    char    szUserName_Old[MAX_USER_NAME  + 1];			// æ—§ç”¨æˆ·å§“å
+	char	szUserPassword_Old[MAX_USER_PASSWORD+ 1];	// æ—§ç”¨æˆ·å¯†ç 
+    char    szUserName_New[MAX_USER_NAME  + 1];			// æ–°ç”¨æˆ·å§“å
+	char	szUserPassword_New[MAX_USER_PASSWORD+ 1];	// æ–°ç”¨æˆ·å¯†ç 
+	char	szUserType[17];								// ç”¨æˆ·ç±»å‹"administrator, operator, viewer"
+	bool	bView;										// æµè§ˆ
+	bool	bRecanPic;									// å›æ”¾/å›¾ç‰‡æŠ“æ‹
+	bool	bPtz;										// äº‘å°æ§åˆ¶
+	bool	bParamSet;									// å‚æ•°é…ç½®
+	bool	bMemory;									// å­˜å‚¨
+	bool	bReboot;									// é‡å¯ã€å‘ç°ã€è‡ªåŠ¨ç»´æŠ¤
+	bool	bSystem;									// ç³»ç»Ÿé…ç½®-å‡çº§ï¼Œé…ç½®å¯¼å…¥å¯¼å‡º
 }TUSERUPDATEINFO,PTUSERUPDATEINFO;
 
 
 typedef struct tagAdvancedInfo
 {
-	char  	szKVispTimeStamp[33];	// KEDAVISIPÂëÁ÷Ê±¼ä´Á±ê×¼£º±ê×¼(normal)¡¢¾É±ê(old)
-	char  	szKVispKeepLive[33];	// KEDAVISIPÒôÊÓÆµ±£»î£º×Ô¶¯(auto)¡¢¿ªÆô(open)¡¢¹Ø±Õ(close)
-	char  	szOnvifKeepLive[33];	// OnvifÒôÊÓÆµ±£»î£º×Ô¶¯(auto)¡¢¿ªÆô(open)¡¢¹Ø±Õ(close)
-	char  	szGB28181KeepLive[33];	// GB28181ÒôÊÓÆµ±£»î£º×Ô¶¯(auto)¡¢¿ªÆô(open)¡¢¹Ø±Õ(close)
-	char  	szCGIKeepLive[33];		// CGIÒôÊÓÆµ±£»î£º×Ô¶¯(auto)¡¢¿ªÆô(open)¡¢¹Ø±Õ(close)
-	char  	szKVispOSDPicSource[33];	// KEDAVISIP OSDÍ¼Æ¬À´Ô´£º¿Í»§¶Ë(client)£¬Éè±¸(dev)
-	char  	szKVispOSDFontName[33];	// KEDAVISIP OSD×ÖÌå£ºËÎÌå(song)£¬ºÚÌå(black)
-	bool	bTCControl;			// TCÁ÷¿Ø
-	char  	szMTCFMode[33];		// ¹¤×÷Ä£Ê½£º³¬¿í¶¯Ì¬Ä£Ê½(hdr)£¬ 60Ö¡Ä£Ê½(fps60)£¬ËÄÁ÷Ä£Ê½(stream4)£¬4k 4KÄ£Ê½(4k)£¬Div4 4KËÄ·ÖÆÁÄ£Ê½(div4),ÆÕÍ¨£¨normal£©£¬HDSDI-ÆÕÍ¨Ä£Ê½£¨sdsdi£©
-	char  	szAccMode[33];		// ¹¤×÷Ä£Ê½£º×Ô¶¯µÍÑÓÊ±Ä£Ê½(autolow)£¬ÆÕÍ¨Ä£Ê½(normal)£¬Ç¿ÖÆµÍÑÓÊ±Ä£Ê½(low)
+	char  	szKVispTimeStamp[33];	// KEDAVISIPç æµæ—¶é—´æˆ³æ ‡å‡†ï¼šæ ‡å‡†(normal)ã€æ—§æ ‡(old)
+	char  	szKVispKeepLive[33];	// KEDAVISIPéŸ³è§†é¢‘ä¿æ´»ï¼šè‡ªåŠ¨(auto)ã€å¼€å¯(open)ã€å…³é—­(close)
+	char  	szOnvifKeepLive[33];	// OnviféŸ³è§†é¢‘ä¿æ´»ï¼šè‡ªåŠ¨(auto)ã€å¼€å¯(open)ã€å…³é—­(close)
+	char  	szGB28181KeepLive[33];	// GB28181éŸ³è§†é¢‘ä¿æ´»ï¼šè‡ªåŠ¨(auto)ã€å¼€å¯(open)ã€å…³é—­(close)
+	char  	szCGIKeepLive[33];		// CGIéŸ³è§†é¢‘ä¿æ´»ï¼šè‡ªåŠ¨(auto)ã€å¼€å¯(open)ã€å…³é—­(close)
+	char  	szKVispOSDPicSource[33];	// KEDAVISIP OSDå›¾ç‰‡æ¥æºï¼šå®¢æˆ·ç«¯(client)ï¼Œè®¾å¤‡(dev)
+	char  	szKVispOSDFontName[33];	// KEDAVISIP OSDå­—ä½“ï¼šå®‹ä½“(song)ï¼Œé»‘ä½“(black)
+	bool	bTCControl;			// TCæµæ§
+	char  	szMTCFMode[33];		// å·¥ä½œæ¨¡å¼ï¼šè¶…å®½åŠ¨æ€æ¨¡å¼(hdr)ï¼Œ 60å¸§æ¨¡å¼(fps60)ï¼Œå››æµæ¨¡å¼(stream4)ï¼Œ4k 4Kæ¨¡å¼(4k)ï¼ŒDiv4 4Kå››åˆ†å±æ¨¡å¼(div4),æ™®é€šï¼ˆnormalï¼‰ï¼ŒHDSDI-æ™®é€šæ¨¡å¼ï¼ˆsdsdiï¼‰
+	char  	szAccMode[33];		// å·¥ä½œæ¨¡å¼ï¼šè‡ªåŠ¨ä½å»¶æ—¶æ¨¡å¼(autolow)ï¼Œæ™®é€šæ¨¡å¼(normal)ï¼Œå¼ºåˆ¶ä½å»¶æ—¶æ¨¡å¼(low)
 } TADVANCEDINFO,  * PTADVANCEDINFO;
 
-//DDNS×´Ì¬²ÎÊı
+//DDNSçŠ¶æ€å‚æ•°
 typedef struct tagDdnsState
 {
-	char szDdnsState[10];  //×´Ì¬
+	char szDdnsState[10];  //çŠ¶æ€
 }TDDNSSTATE, *PTDDNSSTATE;
 
-//TCP\IPĞÅÏ¢
+//TCP\IPä¿¡æ¯
 typedef struct tagTCPIPv6Info
 {
-	u8    byIpMode;            //IPÄ£Ê½  0-×Ô¶¯auto 1-ÊÖ¶¯manual 3-Â·Ïßroute
-	bool   bDnsAutoEnable;     //ÆôÓÃ×Ô¶¯DNS·ÖÅä(TRUE,FALSE)
-	u32   dwSubNetMask;        //×ÓÍøÑÚÂë
-	u32   dwDefGateway;        //È±Ê¡Íø¹Ø
-	char   szIpAddr[MAX_PATH];       //IPµØÖ·
-	char   szMultCastAddr[MAX_PATH]; //¶à²¥µØÖ·(×î´ó64)
-	char   szDNSFirst[MAX_PATH];     //Ê×Ñ¡DNS·şÎñÆ÷
-	char   szDNSAlter[MAX_PATH];     //±¸Ñ¡DNS·şÎñÆ÷(×î´ó64×Ö½Ú)
+	u8    byIpMode;            //IPæ¨¡å¼  0-è‡ªåŠ¨auto 1-æ‰‹åŠ¨manual 3-è·¯çº¿route
+	bool   bDnsAutoEnable;     //å¯ç”¨è‡ªåŠ¨DNSåˆ†é…(TRUE,FALSE)
+	u32   dwSubNetMask;        //å­ç½‘æ©ç 
+	u32   dwDefGateway;        //ç¼ºçœç½‘å…³
+	char   szIpAddr[MAX_PATH];       //IPåœ°å€
+	char   szMultCastAddr[MAX_PATH]; //å¤šæ’­åœ°å€(æœ€å¤§64)
+	char   szDNSFirst[MAX_PATH];     //é¦–é€‰DNSæœåŠ¡å™¨
+	char   szDNSAlter[MAX_PATH];     //å¤‡é€‰DNSæœåŠ¡å™¨(æœ€å¤§64å­—èŠ‚)
 }TIPV6INFO, *PTIPV6INFO;
 
 typedef struct tagTCPIPv4Info
 {
-	u8   byAddrType;           //µØÖ·ÀàĞÍ  0-¾²Ì¬£¬1-¶¯Ì¬
-	bool   bDnsAutoEnable;     //ÆôÓÃ×Ô¶¯DNS·ÖÅä(TRUE,FALSE)
-	u32   dwSubNetMask;        //×ÓÍøÑÚÂë
-	u32   dwDefGateway;        //È±Ê¡Íø¹Ø
-	u32   dwIP;       		   //IPµØÖ·
-	char   szMultCastAddr[MAX_PATH]; //¶à²¥µØÖ·
-	char   szDNSFirst[MAX_PATH];     //Ê×Ñ¡DNS·şÎñÆ÷(×î´ó64×Ö½Ú)
-	char   szDNSAlter[MAX_PATH];     //±¸Ñ¡DNS·şÎñÆ÷(×î´ó64×Ö½Ú)
+	u8   byAddrType;           //åœ°å€ç±»å‹  0-é™æ€ï¼Œ1-åŠ¨æ€
+	bool   bDnsAutoEnable;     //å¯ç”¨è‡ªåŠ¨DNSåˆ†é…(TRUE,FALSE)
+	u32   dwSubNetMask;        //å­ç½‘æ©ç 
+	u32   dwDefGateway;        //ç¼ºçœç½‘å…³
+	u32   dwIP;       		   //IPåœ°å€
+	char   szMultCastAddr[MAX_PATH]; //å¤šæ’­åœ°å€
+	char   szDNSFirst[MAX_PATH];     //é¦–é€‰DNSæœåŠ¡å™¨(æœ€å¤§64å­—èŠ‚)
+	char   szDNSAlter[MAX_PATH];     //å¤‡é€‰DNSæœåŠ¡å™¨(æœ€å¤§64å­—èŠ‚)
 }TIPV4INFO, *PTIPV4INFO;
 
 typedef struct tagIPInfo
 {
-	char        szMac[18];      //MacµØÖ·  
+	char        szMac[18];      //Macåœ°å€  
 	u32         dwMtu;	        //Mtu(500~4000)
-	TIPV4INFO  	tIpv4Info;	    //Ipv4²ÎÊı½á¹¹
-	TIPV6INFO   tIpv6Info;      //Ipv6²ÎÊı½á¹¹
+	TIPV4INFO  	tIpv4Info;	    //Ipv4å‚æ•°ç»“æ„
+	TIPV6INFO   tIpv6Info;      //Ipv6å‚æ•°ç»“æ„
 }TIPINFO, *PTIPINFO;
 
 
-//¶Ë¿Ú
+//ç«¯å£
 typedef struct tagPortInfo
 {
-	u16  wHttpPort;            //http¶Ë¿Ú(0~65535)
-	u16  wHttpsPort;           //https¶Ë¿Ú(0~65535)
-	u16  wRtspPort;			   //rstp¶Ë¿Ú£¨0~65535£©
-	u16  wMulticastPort;       //¶à²¥¶Ë¿Ú (0~65535)
+	u16  wHttpPort;            //httpç«¯å£(0~65535)
+	u16  wHttpsPort;           //httpsç«¯å£(0~65535)
+	u16  wRtspPort;			   //rstpç«¯å£ï¼ˆ0~65535ï¼‰
+	u16  wMulticastPort;       //å¤šæ’­ç«¯å£ (0~65535)
 }TPORTINFO, *PTPORTINFO;
 
-//WlanĞÅÏ¢
+//Wlanä¿¡æ¯
 typedef struct tagWlanInfo
 {
-	char        szMode[5];      //Ä£Ê½(wlan)  
+	char        szMode[5];      //æ¨¡å¼(wlan)  
 	char        szSSid[33];	    //ssid
-	char        szSecurity[5];  //°²È«Ä£Ê½(wpk2)  
-	char        szEncrypt[5];   //¼ÓÃÜÄ£Ê½(aes) 
-	char        szPassword[17];	//ÃÜÂë
-	u16         wChannel;       //ĞÅµÀ(1~11)  
+	char        szSecurity[5];  //å®‰å…¨æ¨¡å¼(wpk2)  
+	char        szEncrypt[5];   //åŠ å¯†æ¨¡å¼(aes) 
+	char        szPassword[17];	//å¯†ç 
+	u16         wChannel;       //ä¿¡é“(1~11)  
+	char        szApband[5];    //(2.4gæˆ–è€…5gï¼‰
 }TWLANINFO, *PTWLANINFO;
 
-//upnpĞÅÏ¢
+//upnpä¿¡æ¯
 typedef struct tagUPnPInfo
 {
-	bool 	bEnable;               		// ÊÇ·ñÖ§³Ö
-	char  	szAlias[MAX_USER_NAME];  	// ±ğÃû
-	char  	szPortMapMode[17];          // ¶Ë¿ÚÓ³Éä·½Ê½ 0-auto 1-manual
+	bool 	bEnable;               		// æ˜¯å¦æ”¯æŒ
+	char  	szAlias[MAX_USER_NAME];  	// åˆ«å
+	char  	szPortMapMode[17];          // ç«¯å£æ˜ å°„æ–¹å¼ 0-auto 1-manual
 }TUPNPINFO, *PTQUPNPINFO;
 
-//upnp¶Ë¿ÚÓ³ÉäĞÅÏ¢
+//upnpç«¯å£æ˜ å°„ä¿¡æ¯
 typedef struct tagUPnPPortMap
 {
-	bool 	bCheck;    		    // ÊÇ·ñÑ¡Ôñ
-	char  	szProtocolName[17]; // Ğ­ÒéÃû³Æ http/rtsp/sdk
-	char    szState[17]; 		// ×´Ì¬valid/invalid
-	char    szMode[5];          // ´«ÊäÄ£Ê½ tcp/udp
-	u16     wPort;			    // Íâ²¿¶Ë¿Ú 0~65535
+	bool 	bCheck;    		    // æ˜¯å¦é€‰æ‹©
+	char  	szProtocolName[17]; // åè®®åç§° http/rtsp/sdk
+	char    szState[17]; 		// çŠ¶æ€valid/invalid
+	char    szMode[5];          // ä¼ è¾“æ¨¡å¼ tcp/udp
+	u16     wPort;			    // å¤–éƒ¨ç«¯å£ 0~65535
 	u32     dwIp;		 	    // ip
 } TUPNPPORTMAP, *PTUPNPPORTMAP;
 
 //pppoe
 typedef struct tagPPPoEInfo
 {
-	bool 	bEnable;          		              // ÆôÓÃPPPOE
-	u32  	dwDynamicIp;            	          // Éè±¸¶¯Ì¬IP(Ö»¶Á) 
-	char  	szUserName[MAX_USER_NAME + 1]; 		  // ÓÃ»§Ãû
-	char  	szPassWord[MAX_USER_PASSWORD + 1];    // ÃÜÂë
+	bool 	bEnable;          		              // å¯ç”¨PPPOE
+	u32  	dwDynamicIp;            	          // è®¾å¤‡åŠ¨æ€IP(åªè¯») 
+	char  	szUserName[MAX_USER_NAME + 1]; 		  // ç”¨æˆ·å
+	char  	szPassWord[MAX_USER_PASSWORD + 1];    // å¯†ç 
 }TPPPOEINFO, * PTPPPOEINFO;
 
 //K-SNMP
 typedef struct tagKSnmpInfo
 {
-	u16  wSvrPort;      	// Íø¹Ü·şÎñÆ÷¶Ë¿Ú£¨Ö»¶Á£©(0~65535)
-	u32  dwSvrIP;     		// Íø¹Ü·şÎñÆ÷µØÖ·
-	u32  dwCpuVpt;    	    // cpuÀûÓÃÂÊ·§Öµ(0~100)
-	u32  dwMemeryVPT; 	    // ÄÚ´æÀûÓÃÂÊ·§Öµ(0~100)
-	u32  dwLostVPT;     	// ÊÓÆµ¶ª°üÂÊ·§Öµ(0~100)
-	char szDevAdress[33]; 	// Éè±¸Î»ÖÃĞÅÏ¢(×î¶à32)
+	u16  wSvrPort;      	// ç½‘ç®¡æœåŠ¡å™¨ç«¯å£ï¼ˆåªè¯»ï¼‰(0~65535)
+	u32  dwSvrIP;     		// ç½‘ç®¡æœåŠ¡å™¨åœ°å€
+	u32  dwCpuVpt;    	    // cpuåˆ©ç”¨ç‡é˜€å€¼(0~100)
+	u32  dwMemeryVPT; 	    // å†…å­˜åˆ©ç”¨ç‡é˜€å€¼(0~100)
+	u32  dwLostVPT;     	// è§†é¢‘ä¸¢åŒ…ç‡é˜€å€¼(0~100)
+	char szDevAdress[33]; 	// è®¾å¤‡ä½ç½®ä¿¡æ¯(æœ€å¤š32)
 }TKSNMPINFO, *PTKSNMPINFO;
 
 //802.1X
 typedef struct tag8021xInfo
 {
-	bool 	bEnable;    		               // ÆôÓÃ
-	char  szProtocoltype[17];                  // Ğ­ÒéÀàĞÍ(Ö»¶Á),eap-tls,eap-ttls,eap-peap,eap-leap,eap-fast,eap-md5
-	char  szEapolVersion[17];  	               // eapol°æ±¾¡°1, 2¡±
-	char  szUserName[MAX_USER_NAME+1];    	   // ÓÃ»§Ãû
-	char  szPassWord[MAX_USER_PASSWORD+1];       // ÃÜÂë
+	bool 	bEnable;    		               // å¯ç”¨
+	char  szProtocoltype[17];                  // åè®®ç±»å‹(åªè¯»),eap-tls,eap-ttls,eap-peap,eap-leap,eap-fast,eap-md5
+	char  szEapolVersion[17];  	               // eapolç‰ˆæœ¬â€œ1, 2â€
+	char  szUserName[MAX_USER_NAME+1];    	   // ç”¨æˆ·å
+	char  szPassWord[MAX_USER_PASSWORD+1];       // å¯†ç 
 }T8021XINFO, *PT8021XINFO;
 
 //Qos
 typedef struct tagQosInfo
 {
-	bool 	bEnable;    		// ÊÇ·ñÖ§³Ö
-	u32  	dwVideoDscpValue; 	// ÒôÊÓÆµdscp(0~63)
-	u32     dwManagerDscpValue; // ¹ÜÀídscp(0~63)
+	bool 	bEnable;    		// æ˜¯å¦æ”¯æŒ
+	u32  	dwVideoDscpValue; 	// éŸ³è§†é¢‘dscp(0~63)
+	u32     dwManagerDscpValue; // ç®¡ç†dscp(0~63)
 }TQOSINFO, *PTQOSINFO;
 
 //Vsip
 typedef struct tagKVispInfo
 {
-	bool	bEnable;			        // ÆôÓÃ 	
-	bool	bSendNatPac;			    // ÊÇ·ñ·¢ËÍnatÌ½²â°ü
-	bool	bSelfNetWork;		        // ÊÇ·ñÖ§³Ö×Ô¶¯×éÍø
-	u8	    byAddrtype;			        // ÓòÃûÀàĞÍ(ip,url)	
-	u16	    wIpPort;			        // ¶Ë¿Ú
-	u16	    wLinkCheckTimeSpeed;	    // Á´Â·¼ì²âÊ±¼ä(10~1000)	
-	u32	    dwIpv4;			            // ipv4µØÖ·	
-	char	szUuid[33];			        // ÈëÍøÉè±¸uuid
-	char	szNetPassWord[33];		    // ÈëÍøÉè±¸ÃÜÂë
-	char	szUrl[MAX_PATH];		    // url(×î´ó260)
-	char	szIpv6[MAX_PATH];			// ipv6µØÖ·
+	bool	bEnable;			        // å¯ç”¨ 	
+	bool	bSendNatPac;			    // æ˜¯å¦å‘é€natæ¢æµ‹åŒ…
+	bool	bSelfNetWork;		        // æ˜¯å¦æ”¯æŒè‡ªåŠ¨ç»„ç½‘
+	u8	    byAddrtype;			        // åŸŸåç±»å‹(ip,url)	
+	u16	    wIpPort;			        // ç«¯å£
+	u16	    wLinkCheckTimeSpeed;	    // é“¾è·¯æ£€æµ‹æ—¶é—´(10~1000)	
+	u32	    dwIpv4;			            // ipv4åœ°å€	
+	char	szUuid[33];			        // å…¥ç½‘è®¾å¤‡uuid
+	char	szNetPassWord[33];		    // å…¥ç½‘è®¾å¤‡å¯†ç 
+	char	szUrl[MAX_PATH];		    // url(æœ€å¤§260)
+	char	szIpv6[MAX_PATH];			// ipv6åœ°å€
 }TKVISPINFO, *PTKVISPINFO;
 
 //Onvif
 typedef struct tagONVIFInfo
 {
-	bool	byOnvifEnable;		        // ÆôÓÃ 
-	char	szUrl[MAX_PATH];		    // ·şÎñÆ÷url
+	bool	byOnvifEnable;		        // å¯ç”¨ 
+	char	szUrl[MAX_PATH];		    // æœåŠ¡å™¨url
 }TONVIFINFO,PTONVIFINFO;
 
 //AuthMode
 typedef struct tagAuthModeInfo
 {
-	char	szAuthtication [8];		// ¼øÈ¨·½Ê½ none,digest
+	char	szAuthtication [8];		// é‰´æƒæ–¹å¼ none,digest
 }TAUTHMODEINFO,*PTAUTMODEINFO;
 
-// ±àÂëÍ¨µÀĞÅÏ¢
+// ç¼–ç é€šé“ä¿¡æ¯
 typedef struct tagGBEncChnInfo
 {
-	u32	    dwIndex;		          // ½ÚµãºÅ
-	u8	    byStramChn;		          // ÂëÁ÷Í¨µÀ
-	char	szId[33];		          // Í¨µÀid(×î´ó32)
-	char	szName[33];		          // Ãû³Æ(×î´ó32)
+	u32	    dwIndex;		          // èŠ‚ç‚¹å·
+	u8	    byStramChn;		          // ç æµé€šé“
+	char	szId[33];		          // é€šé“id(æœ€å¤§32)
+	char	szName[33];		          // åç§°(æœ€å¤§32)
 }TGBENCCHNINFO,*PTGBENCCHNINFO;
-// ¸æ¾¯Í¨µÀĞÅÏ¢
+// å‘Šè­¦é€šé“ä¿¡æ¯
 typedef struct tagGBAlarmChnInfo
 {
-	u32	    dwIndex;		          // ½ÚµãºÅ
-	char	szId[33];		          // Í¨µÀid(×î´ó32)
-	char	szName[33];		          // Ãû³Æ(×î´ó32)
+	u32	    dwIndex;		          // èŠ‚ç‚¹å·
+	char	szId[33];		          // é€šé“id(æœ€å¤§32)
+	char	szName[33];		          // åç§°(æœ€å¤§32)
 }TGBALARMCHNINFO,*PTGBALARMCHNINFO;
-// GB28181ĞÅÏ¢
+// GB28181ä¿¡æ¯
 typedef struct tagGB28181Info
 {
-	bool	 byEnable;		              // ÆôÓÃ 
-	u16	    wLocalPort;		          // ±¾µØ¶Ë¿Ú  (0~65535)
-	u16  	wPlatPort;		              // Æ½Ì¨¶Ë¿Ú(0~65535)
-	u32	    dwReletTime;		          // Ğø×âÊ±¼ä	(1~1440)
-	u32	    dwHeartBeat;		          // ĞÄÌø¼ä¸ô	(1~100)
-	u32	    dwIpv4;		                  // Æ½Ì¨ipv4µØÖ·
-	char	szPlatId[33];		          // Æ½Ì¨ID  (1~16)
-	char	szNetid[33];		          // ÈëÍøID  (×î´ó32)	
-	char	szDevOwner[33];	              // Éè±¸¹éÊô	(×î´ó32)
-	char	szCivilCode[33];	          // ĞĞÕşÇøÓò   (×î´ó32)
-	char	szPoliceRgn[33];	          // ¾¯Çø       (×î´ó32)
-	char	szSetupAddress[33];           // °²×°µØÖ·   (×î´ó32)
-	char	szExpand[MAX_EXPAND_PATH];	  // ±£Áô       (×î´ó1024)
-	char	szIpv6[MAX_PATH];             // Æ½Ì¨ipv6µØÖ·
-	char	szDevName[MAX_DEV_NAME];      // Éè±¸Ãû³Æ  (×î´ó32)
-	char	szUserName[MAX_USER_NAME];	  // ×¢²áÓÃ»§Ãû
-	char	szPassWord[MAX_USER_PASSWORD];// ×¢²áÃÜÂë
+	bool	 bEnable;		              // å¯ç”¨ 
+	u16	    wLocalPort;		          // æœ¬åœ°ç«¯å£  (0~65535)
+	u16  	wPlatPort;		              // å¹³å°ç«¯å£(0~65535)
+	u32	    dwReletTime;		          // ç»­ç§Ÿæ—¶é—´	(1~1440)
+	u32	    dwHeartBeat;		          // å¿ƒè·³é—´éš”	(1~100)
+	u32	    dwIpv4;		                  // å¹³å°ipv4åœ°å€
+	char	szPlatId[33];		          // å¹³å°ID  (1~16)
+	char	szNetid[33];		          // å…¥ç½‘ID  (æœ€å¤§32)	
+	char	szDevOwner[33];	              // è®¾å¤‡å½’å±	(æœ€å¤§32)
+	char	szCivilCode[33];	          // è¡Œæ”¿åŒºåŸŸ   (æœ€å¤§32)
+	char	szPoliceRgn[33];	          // è­¦åŒº       (æœ€å¤§32)
+	char	szSetupAddress[33];           // å®‰è£…åœ°å€   (æœ€å¤§32)
+	char	szExpand[MAX_EXPAND_PATH];	  // ä¿ç•™       (æœ€å¤§1024)
+	char	szIpv6[MAX_PATH];             // å¹³å°ipv6åœ°å€
+	char	szDevName[MAX_DEV_NAME];      // è®¾å¤‡åç§°  (æœ€å¤§32)
+	char	szUserName[MAX_USER_NAME];	  // æ³¨å†Œç”¨æˆ·å
+	char	szPassWord[MAX_USER_PASSWORD];// æ³¨å†Œå¯†ç 
 }TGB28181INFO, *PTGB28181INFO;
 
-//Vsip
+//DPSS
 typedef struct tagDpssInfo
 {
-	bool	bEnable;			        // ÆôÓÃ 	
-	u16	    wIpPort;			        // ¶Ë¿Ú(0~65535)
-	u32	    dwIpv4;			            // ipv4µØÖ·	
-	char	szUuid[35];			        // ÈëÍøÉè±¸uuid(6~32)
-	char	szIpv6[MAX_PATH];			// ipv6µØÖ·
+	bool	bEnable;			        // å¯ç”¨ 	
+	u16	    wIpPort;			        // ç«¯å£(0~65535)
+	u32	    dwIpv4;			            // ipv4åœ°å€	
+	char	szUuid[35];			        // å…¥ç½‘è®¾å¤‡uuid(6~32)
+	char	szIpv6[MAX_PATH];			// ipv6åœ°å€
 }TDPSSINFO, *PTDPSSINFO;
 
-//´ÅÅÌ×´Ì¬»ñÈ¡
+//4g
+typedef struct tagMobilenetwork
+{
+	bool	bEnable;			    // å¯ç”¨ 
+	bool	bUseDefaultApn;         // å¯ç”¨é»˜è®¤apn
+	char	szApn[33];
+	char	szNum[33];
+	char	szUser[MAX_USER_NAME];
+	char	szPassword[MAX_USER_PASSWORD];
+	char	szCarrieroperator[16];//è¿è¥å•†   "none,chinamobile,chinaunicom,chinatelecom "
+	char	szAuthentication[16]; //éªŒè¯åè®® "none,pap,chap,auto"
+	char	szNetworksystem[16];  //ç½‘ç»œåˆ¶å¼
+	char	szNetworkstatus[16];  //ç½‘ç»œçŠ¶æ€ "link,unlink"
+	char	szSigstatus[16];      //ä¿¡å·å¼ºåº¦ "good,nomal,bad,none"
+	char	szImei[16];           //imeiç 
+	char	szIpaddress[16];
+	char	szSubnetmask[16];
+	char	szDefaultgateway[16];
+	char	szDns1[16];
+	char	szDns2[16];
+	char	szSimCard[16];        //simå¡çŠ¶æ€ "yes,no"
+}TMOBILENETWORK, *PTMOBILENETWORK;
+
+//è§†å›¾åº“
+typedef struct tagPubsec
+{
+	bool	bEnable;			         // å¯ç”¨ 
+	char	szNetid[33];                 // å…¥ç½‘id
+	char	szUser[MAX_USER_NAME];
+	char	szPassword[MAX_USER_PASSWORD];
+	char	szSetupaddress[MAX_PATH];   //å®‰è£…åœ°å€
+	char	szCivilcode[MAX_PATH];      //è¡Œæ”¿åŒºåŸŸ
+	char	szPlatAddr[16];            //ip
+	u16     wPort;                      //ç«¯å£1024~65535
+	u16     wHeartbeat;                 //å¿ƒè·³é—´éš” 1~90
+}TPUBSECPARAM, *PTPUBSECPARAM;
+
+//ç£ç›˜çŠ¶æ€è·å–
 typedef struct tagStorageState
 {
-	char	szState[33];		// ´ÅÅÌ(null),´ÅÅÌÊ¹ÓÃÖĞ(disker),ËÙ¶ÈÂı(diskrslowish), ¿ÕÏĞ(idel), 
-	                            // Ã»ÓĞ¸ñÊ½»¯(noformat),¸ñÊ½»¯ÖĞ(formatting),Ê¶±ğÖĞ(identifying)
+	char	szState[33];		// ç£ç›˜(null),ç£ç›˜ä½¿ç”¨ä¸­(disker),é€Ÿåº¦æ…¢(diskrslowish), ç©ºé—²(idel), 
+	                            // æ²¡æœ‰æ ¼å¼åŒ–(noformat),æ ¼å¼åŒ–ä¸­(formatting),è¯†åˆ«ä¸­(identifying)
 }TSTORAGESTATE,*PTSTORAGESTATE;
 
-// ´æ´¢¹ÜÀí
-// ´ÅÅÌĞÅÏ¢
+// å­˜å‚¨ç®¡ç†
+// ç£ç›˜ä¿¡æ¯
 typedef struct tagDiskInfo
 {
-	u8	bySN;			          // ´ÅÅÌĞòºÅ
-	u32	dwDiskCapacity;	          // ´ÅÅÌÈİÁ¿(KB)
-	u32	dwRisidual;		          // Ê£Óà¿Õ¼ä
-	char	szState[17];		  // ´ÅÅÌ(null),´ÅÅÌÊ¹ÓÃÖĞ(disker),ËÙ¶ÈÂı(diskrslowish), ¿ÕÏĞ(idel), Ã»ÓĞ¸ñÊ½»¯(noformat),¸ñÊ½»¯ÖĞ(formatting),Ê¶±ğÖĞ(identifying)
-	char	szDiskType[17];	      // ±¾µØ´ÅÅÌ(stlocal),ÍøÅÌ(net)
-	char	szAttribute[17];	  // Ö»¶Á(readonly),ËùÓĞ²Ù×÷(all)
+	u8	bySN;			          // ç£ç›˜åºå·
+	u32	dwDiskCapacity;	          // ç£ç›˜å®¹é‡(KB)
+	u32	dwRisidual;		          // å‰©ä½™ç©ºé—´
+	char	szState[17];		  // ç£ç›˜(null),ç£ç›˜ä½¿ç”¨ä¸­(disker),é€Ÿåº¦æ…¢(diskrslowish), ç©ºé—²(idel), æ²¡æœ‰æ ¼å¼åŒ–(noformat),æ ¼å¼åŒ–ä¸­(formatting),è¯†åˆ«ä¸­(identifying)
+	char	szDiskType[17];	      // æœ¬åœ°ç£ç›˜(stlocal),ç½‘ç›˜(net)
+	char	szAttribute[17];	  // åªè¯»(readonly),æ‰€æœ‰æ“ä½œ(all)
 }TDISKINFO,*PTDISKINFO;
-// ´ÅÅÌ²ßÂÔ
+// ç£ç›˜ç­–ç•¥
 typedef struct tagStorageManager
 {
-	char	szFullMode[17];	      // ´ÅÅÌÂúÄ£Ê½(stop),¸²¸Ç(over)
-	int     nDiskMun;             // ´ÅÅÌ²Û¿ÚÊı
+	char	szFullMode[17];	      // ç£ç›˜æ»¡æ¨¡å¼(stop),è¦†ç›–(over)
+	int     nDiskMun;             // ç£ç›˜æ§½å£æ•°
 	TDISKINFO tDiskInfo[5];
 }TSTORAGEMANAGER,*PTSTORAGEMANAGER;
 
-// ¸ñÊ½»¯´ÅÅÌ
+// æ ¼å¼åŒ–ç£ç›˜
 typedef struct tagStorageFomat
 {
-	u8	byDiskSn;		// ´ÅÅÌĞòºÅ
+	u8	byDiskSn;		// ç£ç›˜åºå·
 }TSTORAGEFOMAT,*PTSTORAGEFOMAT;
 
-// ¸ñÊ½»¯½ø¶È
+// æ ¼å¼åŒ–è¿›åº¦
 typedef struct tagFomatState
 {
-	bool	bFomating;		// ÊÇ·ñÕıÔÚ¸ñÊ½»¯ÖĞ
-	u16	    wProgress;		// ¸ñÊ½»¯½ø¶È
+	bool	bFomating;		// æ˜¯å¦æ­£åœ¨æ ¼å¼åŒ–ä¸­
+	u16	    wProgress;		// æ ¼å¼åŒ–è¿›åº¦
 }TFOMATSTATE,*PTFOMATSTATE;
 
-// Â¼Ïñ¼Æ»®
+// å½•åƒè®¡åˆ’
 typedef struct tagRecSchedule
 {
-	bool	bEnable;		         // ÆôÓÃÂ¼Ïñ¼Æ»®
-	char	szPrepareTime[9];	     // Ô¤Â¼Ê±¼ä£¬Ãë£»
-	char	szDelayTime[9];	         // ÑÓ³ÙÊ±¼ä£¬Ãë£»
-	char	szRecType[7];		     // Â¼ÏñÀàĞÍ£¬(Ö÷Á÷¡¢¸¨Á÷¡¢ÈıÁ÷¡¢ËÄÁ÷)£»
-	char	szESPS [17];             // ´ò°ü¸ñÊ½£ºes¸ñÊ½(es)£¬ps¸ñÊ½(ps)
+	bool	bEnable;		         // å¯ç”¨å½•åƒè®¡åˆ’
+	char	szPrepareTime[9];	     // é¢„å½•æ—¶é—´ï¼Œç§’ï¼›
+	char	szDelayTime[9];	         // å»¶è¿Ÿæ—¶é—´ï¼Œç§’ï¼›
+	char	szRecType[7];		     // å½•åƒç±»å‹ï¼Œ(ä¸»æµã€è¾…æµã€ä¸‰æµã€å››æµ)ï¼›
+	char	szESPS [17];             // æ‰“åŒ…æ ¼å¼ï¼šesæ ¼å¼(es)ï¼Œpsæ ¼å¼(ps)
 }TRECSCHEDULE,*PTRECSCHEDULE;
 
 
-// Ç°¶Ë×¥ÅÄ
+// å‰ç«¯æŠ“æ‹
 typedef struct tagSnapPicConfig
 {
-	char	szPicType[9];		 // Í¼Æ¬¸ñÊ½, ¡±jpeg, jpg,bmp¡±
-	char    szPicResolution[10];  // Í¼Æ¬·Ö±æÂÊ ¡°1280_720£¬1920_1280¡±
-	char	szPicQuality[17];	 // Í¼Æ¬ÖÊÁ¿¡±low, middle, hight¡±
+	char	szPicType[9];		 // å›¾ç‰‡æ ¼å¼, â€jpeg, jpg,bmpâ€
+	char    szPicResolution[10];  // å›¾ç‰‡åˆ†è¾¨ç‡ â€œ1280_720ï¼Œ1920_1280â€
+	char	szPicQuality[17];	 // å›¾ç‰‡è´¨é‡â€low, middle, hightâ€
 }TSNAPPICCONFIG,*PTSNAPPICCONFIG;
 
 typedef struct tagSnapTime
 {
-	bool	bEnable;		// ÆôÓÃ
-	char   szSnapType[5];     // ¶¨Ê±×¥ÅÄÀàĞÍ "time,num,"
-	u16	   wSnapSpeed;		// ×¥ÅÄ¼ä¸ô
-	u16	   wSnapNum;		// ×¥ÅÄÊıÁ¿
+	bool	bEnable;		// å¯ç”¨
+	char   szSnapType[5];     // å®šæ—¶æŠ“æ‹ç±»å‹ "time,num,"
+	u16	   wSnapSpeed;		// æŠ“æ‹é—´éš”
+	u16	   wSnapNum;		// æŠ“æ‹æ•°é‡
 }TSNAPTIME,PTSNAPTIME;
 
 typedef struct tagSnapEvent
 {
-	bool	bEnable;		// ÆôÓÃ
-	u16	   wSnapSpeed;		// ×¥ÅÄ¼ä¸ô
-	u16	   wSnapNum;		// ×¥ÅÄÊıÁ¿
+	bool	bEnable;		// å¯ç”¨
+	u16	   wSnapSpeed;		// æŠ“æ‹é—´éš”
+	u16	   wSnapNum;		// æŠ“æ‹æ•°é‡
 }TSNAPEVENT,PTSNAPEVENT;
 
-//³£¹æÁª¶¯·½Ê½
+//å¸¸è§„è”åŠ¨æ–¹å¼
 typedef struct tagLinkMode
 {
-	bool	bLinkUploadCenter;	// ÉÏ´«ÖĞĞÄ
-	bool	bLinkShowOsd;	    // ÏÔÊ¾×ÖÄ»
-	bool    bLinkAudioOut;      // ÉùÒô±¨¾¯
-	bool	bLinkRec;		    // Â¼ÏñÁª¶¯ 
-	bool	bLinkSnap;		    // ×¥ÅÄ
+	bool	bLinkUploadCenter;	// ä¸Šä¼ ä¸­å¿ƒ
+	bool	bLinkShowOsd;	    // æ˜¾ç¤ºå­—å¹•
+	bool    bLinkAudioOut;      // å£°éŸ³æŠ¥è­¦
+	bool	bLinkRec;		    // å½•åƒè”åŠ¨ 
+	bool	bLinkSnap;		    // æŠ“æ‹
 	bool    bLinkSmtp;
 	bool    bLinkPtzEnb;
 	u8      byLinkPtzPreset;
 }TLINKMODE,*PTLINKMODE;
-// a->1Á´±í
+// a->1é“¾è¡¨
 typedef struct tagA1List
 {
 	bool bEnable; //
 	u16  wIndex;  //
 }TA1LIST,*PTA1LIST;
-//ÆäËûÁª¶¯·½Ê½
+//å…¶ä»–è”åŠ¨æ–¹å¼
 typedef struct tagOtherLinkMode
 {
-	TA1LIST tA1List[5];		// ±¨¾¯Êä³öÁ´±í 
-	u32     dwA1Num;        // ±¨¾¯Êä³ö¸öÊı
+	TA1LIST tA1List[5];		// æŠ¥è­¦è¾“å‡ºé“¾è¡¨ 
+	u32     dwA1Num;        // æŠ¥è­¦è¾“å‡ºä¸ªæ•°
 	bool	bPtz;		    //
-	u8	    byPreset;		// Ô¤ÖÃÎ»£¬ptzÁª¶¯ÓĞĞ§
+	u8	    byPreset;		// é¢„ç½®ä½ï¼Œptzè”åŠ¨æœ‰æ•ˆ
 }TOTHERLINKMODE,*PTOTHERLINKMODE;
 
-//ÊÂ¼ş´¥·¢ÇøÓò
+//äº‹ä»¶è§¦å‘åŒºåŸŸ
 typedef struct tagDetectPoint
 {
 	u32	x[4];			// x
 	u32	y[4];			// y
 }TDETECTPOINT,*PTDETECTPOINT;
 
-// ÒÆ¶¯Õì²âĞÅÏ¢
+// ç§»åŠ¨ä¾¦æµ‹ä¿¡æ¯
 typedef struct tagDetectInfo
 {
-	bool bEnable;			        // ÆôÓÃÒÆ¶¯Õì²â
-	u32	dwVgaWidth;			        // ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏ10000, 
-	u32	dwVgaHeight;			    // ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏ10000
-	u8	byLevel;				    // ÁéÃô¶È
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool bEnable;			        // å¯ç”¨ç§»åŠ¨ä¾¦æµ‹
+	u32	dwVgaWidth;			        // è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤10000, 
+	u32	dwVgaHeight;			    // è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤10000
+	u8	byLevel;				    // çµæ•åº¦
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TDETECTINFO,*PTDETECTINFO;
 
-// ÕÚ±Î±¨¾¯ĞÅÏ¢
+// é®è”½æŠ¥è­¦ä¿¡æ¯
 typedef struct tagAlarmInfo
 {
-	bool 	bEnable;		        // ÆôÓÃÕÚ±Î
-	u32	dwVgaWidth;		            // ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏ10000, 
-	u32	dwVgaHeight;		        // ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏ10000
-	u8	byLevel;		            // ÁéÃô¶È
-	u8  byAreaLevel;                // ´¥·¢ÇøÓòµÈ¼¶
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool 	bEnable;		        // å¯ç”¨é®è”½
+	u32	dwVgaWidth;		            // è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤10000, 
+	u32	dwVgaHeight;		        // è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤10000
+	u8	byLevel;		            // çµæ•åº¦
+	u8  byAreaLevel;                // è§¦å‘åŒºåŸŸç­‰çº§
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TALARMINFO,*PTALARMINFO;
 
-// ¾¯½äÏßĞÅÏ¢
+// è­¦æˆ’çº¿ä¿¡æ¯
 typedef struct tagWarningLineParam
 {
-	u16 wIndex;                     // ¾¯½äÏß±àºÅ
-	u32	dwLevel;		            // ÁéÃô¶È
-	u32 dwRatio;					// ¹ıÂËÇøÓòÕ¼±È
-	u32	dwRatioLeftPtX;				// ¹ıÂËÇøÓò×óÉÏµãx×ø±ê
-	u32	dwRatioLeftPtY;             // ¹ıÂËÇøÓò×óÉÏµãy×ø±ê
-	u32	dwRatioRightPtX;			// ¹ıÂËÇøÓòÓÒÏÂµãx×ø±ê
-	u32	dwRatioRightPtY;            // ¹ıÂËÇøÓòÓÒÏÂµãy×ø±ê
-	char szDirectionType[5];		// ¶¨Ê±×¥ÅÄÀàĞÍ "ab,ba,abba"
-	bool bMediaMode;                // ÊÇ·ñÖ§³Ö³¡¾°Ä£Ê½
-	char szMediaMode[5];			// ³¡¾°Ä£Ê½ÀàĞÍ "hor,ver"
-	u32	dwLineLeftPtX;				// ¾¯½äÏß×óÉÏµãx×ø±ê
-	u32	dwLineLeftPtY;              // ¾¯½äÏß×óÉÏµãy×ø±ê
-	u32	dwLineRightPtX;				// ¾¯½äÏßÓÒÏÂµãx×ø±ê
-	u32	dwLineRightPtY;             // ¾¯½äÏßÓÒÏÂµãy×ø±ê
-	u32	dwPtAX;						// Aµãx×ø±ê
-	u32	dwPtAY;						// Aµãy×ø±ê
-	u32	dwPtBX;						// Bµãx×ø±ê
-	u32	dwPtBY;						// Bµãy×ø±ê
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	u16 wIndex;                     // è­¦æˆ’çº¿ç¼–å·
+	u32	dwLevel;		            // çµæ•åº¦
+	u32 dwRatio;					// è¿‡æ»¤åŒºåŸŸå æ¯”
+	u32	dwRatioLeftPtX;				// è¿‡æ»¤åŒºåŸŸå·¦ä¸Šç‚¹xåæ ‡
+	u32	dwRatioLeftPtY;             // è¿‡æ»¤åŒºåŸŸå·¦ä¸Šç‚¹yåæ ‡
+	u32	dwRatioRightPtX;			// è¿‡æ»¤åŒºåŸŸå³ä¸‹ç‚¹xåæ ‡
+	u32	dwRatioRightPtY;            // è¿‡æ»¤åŒºåŸŸå³ä¸‹ç‚¹yåæ ‡
+	char szDirectionType[5];		// å®šæ—¶æŠ“æ‹ç±»å‹ "ab,ba,abba"
+	bool bMediaMode;                // æ˜¯å¦æ”¯æŒåœºæ™¯æ¨¡å¼
+	char szMediaMode[5];			// åœºæ™¯æ¨¡å¼ç±»å‹ "hor,ver"
+	u32	dwLineLeftPtX;				// è­¦æˆ’çº¿å·¦ä¸Šç‚¹xåæ ‡
+	u32	dwLineLeftPtY;              // è­¦æˆ’çº¿å·¦ä¸Šç‚¹yåæ ‡
+	u32	dwLineRightPtX;				// è­¦æˆ’çº¿å³ä¸‹ç‚¹xåæ ‡
+	u32	dwLineRightPtY;             // è­¦æˆ’çº¿å³ä¸‹ç‚¹yåæ ‡
+	u32	dwPtAX;						// Aç‚¹xåæ ‡
+	u32	dwPtAY;						// Aç‚¹yåæ ‡
+	u32	dwPtBX;						// Bç‚¹xåæ ‡
+	u32	dwPtBY;						// Bç‚¹yåæ ‡
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TWARNINGLINEPARAM,*PTWARNINGLINEPARAM;
 
 typedef struct tagWarningLineInfo
 {
-	bool 	bEnable;		        // ÆôÓÃ¾¯½äÏß
-	u32	dwVgaWidth;		            // ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏ10000, 
-	u32	dwVgaHeight;		        // ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏ10000
-	u32 dwLevelMax;					// ÁéÃô¶È×î´óÖµ
-    u32 dwLevelMin;					// ÁéÃô¶È×îĞ¡Öµ
-	u32 dwRatioMax;					// ±ÈÀıÇøÓò×î´óÕ¼±È
-	u32 dwRatioMin;					// ±ÈÀıÇøÓò×îĞ¡Õ¼±È
-	u32 dwSelected;                 // µ±Ç°Ñ¡Ôñ¾¯½äÏß(1,2,3,4)
-	TWARNINGLINEPARAM tWarningLine[4];// ¾¯½äÏß²ÎÊı
+	bool 	bEnable;		        // å¯ç”¨è­¦æˆ’çº¿
+	u32	dwVgaWidth;		            // è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤10000, 
+	u32	dwVgaHeight;		        // è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤10000
+	u32 dwLevelMax;					// çµæ•åº¦æœ€å¤§å€¼
+    u32 dwLevelMin;					// çµæ•åº¦æœ€å°å€¼
+	u32 dwRatioMax;					// æ¯”ä¾‹åŒºåŸŸæœ€å¤§å æ¯”
+	u32 dwRatioMin;					// æ¯”ä¾‹åŒºåŸŸæœ€å°å æ¯”
+	u32 dwSelected;                 // å½“å‰é€‰æ‹©è­¦æˆ’çº¿(1,2,3,4)
+	TWARNINGLINEPARAM tWarningLine[4];// è­¦æˆ’çº¿å‚æ•°
 }TWARNINGLINEINFO,*PTWARNINGLINEINFO;
 
-// ÖÇÄÜ´¥·¢ÇøÓòµã×ø±êÁ´±í
+// æ™ºèƒ½è§¦å‘åŒºåŸŸç‚¹åæ ‡é“¾è¡¨
 typedef struct tagAreaPointList
 {
-	u32	dwPtX;		        //  µãx×ø±ê
-	u32	dwPtY;		        //  µãy×ø±ê
+	u32	dwPtX;		        //  ç‚¹xåæ ‡
+	u32	dwPtY;		        //  ç‚¹yåæ ‡
 }TAREAPOINTLIST,*PTAREAPOINTLIST;
-// ÇøÓò¼ì²âĞÅÏ¢(ÈëÇÖ,½øÈë,Àë¿ª)
+// åŒºåŸŸæ£€æµ‹ä¿¡æ¯(å…¥ä¾µ,è¿›å…¥,ç¦»å¼€)
 typedef struct tagAreaDetectParam
 {
-	u16 wIndex;                     // ÇøÓò±àºÅ
-	u32	dwLevel;		            // ÁéÃô¶È
-	u32 dwRatio;					// ¹ıÂËÇøÓòÕ¼±È
-	u32 dwThreshold;                // Ê±¼äãĞÖµ
-	u32	dwRatioLeftPtX;				// ¹ıÂËÇøÓò×óÉÏµãx×ø±ê
-	u32	dwRatioLeftPtY;             // ¹ıÂËÇøÓò×óÉÏµãy×ø±ê
-	u32	dwRatioRightPtX;			// ¹ıÂËÇøÓòÓÒÏÂµãx×ø±ê
-	u32	dwRatioRightPtY;            // ¹ıÂËÇøÓòÓÒÏÂµãy×ø±ê
-	bool bMediaMode;                // ÊÇ·ñÖ§³Ö³¡¾°Ä£Ê½
-	char szMediaMode[5];			// ³¡¾°Ä£Ê½ÀàĞÍ "hor,ver"
-	u32 dwPiontNum;                 // Î§³ÉÇøÓòµÄµãÊıÄ¿(×î¶à6¸öµã,×îÉÙ3¸öµã)
-	TAREAPOINTLIST tPtList[6];      // Î§³ÉÇøÓòµÄµã×ø±êÁ´±í
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	u16 wIndex;                     // åŒºåŸŸç¼–å·
+	u32	dwLevel;		            // çµæ•åº¦
+	u32 dwRatio;					// è¿‡æ»¤åŒºåŸŸå æ¯”
+	u32 dwThreshold;                // æ—¶é—´é˜ˆå€¼
+	u32	dwRatioLeftPtX;				// è¿‡æ»¤åŒºåŸŸå·¦ä¸Šç‚¹xåæ ‡
+	u32	dwRatioLeftPtY;             // è¿‡æ»¤åŒºåŸŸå·¦ä¸Šç‚¹yåæ ‡
+	u32	dwRatioRightPtX;			// è¿‡æ»¤åŒºåŸŸå³ä¸‹ç‚¹xåæ ‡
+	u32	dwRatioRightPtY;            // è¿‡æ»¤åŒºåŸŸå³ä¸‹ç‚¹yåæ ‡
+	bool bMediaMode;                // æ˜¯å¦æ”¯æŒåœºæ™¯æ¨¡å¼
+	char szMediaMode[5];			// åœºæ™¯æ¨¡å¼ç±»å‹ "hor,ver"
+	u32 dwPiontNum;                 // å›´æˆåŒºåŸŸçš„ç‚¹æ•°ç›®(æœ€å¤š6ä¸ªç‚¹,æœ€å°‘3ä¸ªç‚¹)
+	TAREAPOINTLIST tPtList[6];      // å›´æˆåŒºåŸŸçš„ç‚¹åæ ‡é“¾è¡¨
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TAREADETECTPARAM,*PTAREADETECTPARAM;
 
 typedef struct tagAreaDetectInfo
 {
-	bool 	bEnable;		        // ÆôÓÃÇøÓò¼ì²â
-	u32	dwVgaWidth;		            // ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏ10000, 
-	u32	dwVgaHeight;		        // ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏ10000
-	u32 dwLevelMax;					// ÁéÃô¶È×î´óÖµ
-	u32 dwLevelMin;					// ÁéÃô¶È×îĞ¡Öµ
-	u32 dwRatioMax;					// ±ÈÀıÇøÓò×î´óÕ¼±È
-	u32 dwRatioMin;					// ±ÈÀıÇøÓò×îĞ¡Õ¼±È
-	u32 dwThresholdMax;				// Ê±¼äãĞÖµ×î´óÖµ(Îª0Ê±´ú±í²»Ö§³ÖÕâ¸öÄÜÁ¦)
-	u32 dwThresholdMin;				// Ê±¼äãĞÖµ×îĞ¡Öµ
-	u32 dwSelected;                 // µ±Ç°Ñ¡ÔñÈëÇÖÇøÓò(1,2,3,4)
-	TAREADETECTPARAM tAreaDetect[4];// ÈëÇÖÇøÓò²ÎÊı
+	bool 	bEnable;		        // å¯ç”¨åŒºåŸŸæ£€æµ‹
+	u32	dwVgaWidth;		            // è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤10000, 
+	u32	dwVgaHeight;		        // è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤10000
+	u32 dwLevelMax;					// çµæ•åº¦æœ€å¤§å€¼
+	u32 dwLevelMin;					// çµæ•åº¦æœ€å°å€¼
+	u32 dwRatioMax;					// æ¯”ä¾‹åŒºåŸŸæœ€å¤§å æ¯”
+	u32 dwRatioMin;					// æ¯”ä¾‹åŒºåŸŸæœ€å°å æ¯”
+	u32 dwThresholdMax;				// æ—¶é—´é˜ˆå€¼æœ€å¤§å€¼(ä¸º0æ—¶ä»£è¡¨ä¸æ”¯æŒè¿™ä¸ªèƒ½åŠ›)
+	u32 dwThresholdMin;				// æ—¶é—´é˜ˆå€¼æœ€å°å€¼
+	u32 dwSelected;                 // å½“å‰é€‰æ‹©å…¥ä¾µåŒºåŸŸ(1,2,3,4)
+	TAREADETECTPARAM tAreaDetect[4];// å…¥ä¾µåŒºåŸŸå‚æ•°
 }TAREADETECTINFO,*PTAREADETECTINFO;
-// ÎïÆ·¼ì²â(ÒÅÁô,ÄÃÈ¡)
+// ç‰©å“æ£€æµ‹(é—ç•™,æ‹¿å–)
 typedef struct tagObjectDetectParam
 {
-	u16 wIndex;                     // ÇøÓò±àºÅ
-	u32	dwLevel;		            // ÁéÃô¶È
-	u32 dwRatio;					// ¹ıÂËÇøÓòÕ¼±È
-	u32 dwThreshold;                // Ê±¼äãĞÖµ
-	u32	dwRatioLeftPtX;				// ¹ıÂËÇøÓò×óÉÏµãx×ø±ê
-	u32	dwRatioLeftPtY;             // ¹ıÂËÇøÓò×óÉÏµãy×ø±ê
-	u32	dwRatioRightPtX;			// ¹ıÂËÇøÓòÓÒÏÂµãx×ø±ê
-	u32	dwRatioRightPtY;            // ¹ıÂËÇøÓòÓÒÏÂµãy×ø±ê
-	u32 dwPiontNum;                 // Î§³ÉÇøÓòµÄµãÊıÄ¿(×î¶à6¸öµã,×îÉÙ3¸öµã)
-	TAREAPOINTLIST tPtList[6];      // Î§³ÉÇøÓòµÄµã×ø±êÁ´±í
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	u16 wIndex;                     // åŒºåŸŸç¼–å·
+	u32	dwLevel;		            // çµæ•åº¦
+	u32 dwRatio;					// è¿‡æ»¤åŒºåŸŸå æ¯”
+	u32 dwThreshold;                // æ—¶é—´é˜ˆå€¼
+	u32	dwRatioLeftPtX;				// è¿‡æ»¤åŒºåŸŸå·¦ä¸Šç‚¹xåæ ‡
+	u32	dwRatioLeftPtY;             // è¿‡æ»¤åŒºåŸŸå·¦ä¸Šç‚¹yåæ ‡
+	u32	dwRatioRightPtX;			// è¿‡æ»¤åŒºåŸŸå³ä¸‹ç‚¹xåæ ‡
+	u32	dwRatioRightPtY;            // è¿‡æ»¤åŒºåŸŸå³ä¸‹ç‚¹yåæ ‡
+	u32 dwPiontNum;                 // å›´æˆåŒºåŸŸçš„ç‚¹æ•°ç›®(æœ€å¤š6ä¸ªç‚¹,æœ€å°‘3ä¸ªç‚¹)
+	TAREAPOINTLIST tPtList[6];      // å›´æˆåŒºåŸŸçš„ç‚¹åæ ‡é“¾è¡¨
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TOBJECTDETECTPARAM,*PTOBJECTDETECTPARAM;
 
 typedef struct tagObjectDetectInfo
 {
-	bool 	bEnable;		        // ÆôÓÃÎïÆ·¼ì²â
-	u32	dwVgaWidth;		            // ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏ10000, 
-	u32	dwVgaHeight;		        // ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏ10000
-	u32 dwLevelMax;					// ÁéÃô¶È×î´óÖµ
-	u32 dwLevelMin;					// ÁéÃô¶È×îĞ¡Öµ
-	u32 dwRatioMax;					// ±ÈÀıÇøÓò×î´óÕ¼±È
-	u32 dwRatioMin;					// ±ÈÀıÇøÓò×îĞ¡Õ¼±È
-	u32 dwThresholdMax;				// Ê±¼äãĞÖµ×î´óÖµ(Îª0Ê±´ú±í²»Ö§³ÖÕâ¸öÄÜÁ¦)
-	u32 dwThresholdMin;				// Ê±¼äãĞÖµ×îĞ¡Öµ
-	u32 dwSelected;                 // µ±Ç°Ñ¡Ôñ¼ì²âÇøÓò(1,2,3,4)
-	TOBJECTDETECTPARAM tObjectDetect[4];// ÎïÆ·¼ì²âÇøÓò²ÎÊı
+	bool 	bEnable;		        // å¯ç”¨ç‰©å“æ£€æµ‹
+	u32	dwVgaWidth;		            // è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤10000, 
+	u32	dwVgaHeight;		        // è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤10000
+	u32 dwLevelMax;					// çµæ•åº¦æœ€å¤§å€¼
+	u32 dwLevelMin;					// çµæ•åº¦æœ€å°å€¼
+	u32 dwRatioMax;					// æ¯”ä¾‹åŒºåŸŸæœ€å¤§å æ¯”
+	u32 dwRatioMin;					// æ¯”ä¾‹åŒºåŸŸæœ€å°å æ¯”
+	u32 dwThresholdMax;				// æ—¶é—´é˜ˆå€¼æœ€å¤§å€¼(ä¸º0æ—¶ä»£è¡¨ä¸æ”¯æŒè¿™ä¸ªèƒ½åŠ›)
+	u32 dwThresholdMin;				// æ—¶é—´é˜ˆå€¼æœ€å°å€¼
+	u32 dwSelected;                 // å½“å‰é€‰æ‹©æ£€æµ‹åŒºåŸŸ(1,2,3,4)
+	TOBJECTDETECTPARAM tObjectDetect[4];// ç‰©å“æ£€æµ‹åŒºåŸŸå‚æ•°
 }TOBJECTDETECTINFO,*PTOBJECTDETECTINFO;
-// ÈËÔ±¼ì²â(¾Û¼¯)
+// äººå‘˜æ£€æµ‹(èšé›†)
 typedef struct tagPersontDetectParam
 {
-	u16 wIndex;                     // ÇøÓò±àºÅ
-	u32 dwRatio;					// ¹ıÂËÇøÓòÕ¼±È
-	u32 dwPiontNum;                 // Î§³ÉÇøÓòµÄµãÊıÄ¿(×î¶à6¸öµã,×îÉÙ3¸öµã)
-	TAREAPOINTLIST tPtList[6];      // Î§³ÉÇøÓòµÄµã×ø±êÁ´±í
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	u16 wIndex;                     // åŒºåŸŸç¼–å·
+	u32 dwRatio;					// è¿‡æ»¤åŒºåŸŸå æ¯”
+	u32 dwPiontNum;                 // å›´æˆåŒºåŸŸçš„ç‚¹æ•°ç›®(æœ€å¤š6ä¸ªç‚¹,æœ€å°‘3ä¸ªç‚¹)
+	TAREAPOINTLIST tPtList[6];      // å›´æˆåŒºåŸŸçš„ç‚¹åæ ‡é“¾è¡¨
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TPERSONDETECTPARAM,*PTPERSONDETECTPARAM;
 
 typedef struct tagPersonDetectInfo
 {
-	bool 	bEnable;		        // ÆôÓÃÈËÔ±¼ì²â
-	u32	dwVgaWidth;		            // ÉèÖÃÇøÓò¿í¶È£¬Ä¬ÈÏ10000, 
-	u32	dwVgaHeight;		        // ÉèÖÃÇøÓò¸ß¶È£¬Ä¬ÈÏ10000
-	u32 dwRatioMax;					// ±ÈÀıÇøÓò×î´óÕ¼±È
-	u32 dwRatioMin;					// ±ÈÀıÇøÓò×îĞ¡Õ¼±È
-	u32 dwSelected;                 // µ±Ç°Ñ¡Ôñ¼ì²âÇøÓò(1,2,3,4)
-	TPERSONDETECTPARAM tPersonDetect[4];// ÈËÔ±¼ì²âÇøÓò²ÎÊı
+	bool 	bEnable;		        // å¯ç”¨äººå‘˜æ£€æµ‹
+	u32	dwVgaWidth;		            // è®¾ç½®åŒºåŸŸå®½åº¦ï¼Œé»˜è®¤10000, 
+	u32	dwVgaHeight;		        // è®¾ç½®åŒºåŸŸé«˜åº¦ï¼Œé»˜è®¤10000
+	u32 dwRatioMax;					// æ¯”ä¾‹åŒºåŸŸæœ€å¤§å æ¯”
+	u32 dwRatioMin;					// æ¯”ä¾‹åŒºåŸŸæœ€å°å æ¯”
+	u32 dwSelected;                 // å½“å‰é€‰æ‹©æ£€æµ‹åŒºåŸŸ(1,2,3,4)
+	TPERSONDETECTPARAM tPersonDetect[4];// äººå‘˜æ£€æµ‹åŒºåŸŸå‚æ•°
 }TPERSONDETECTINFO,*PTPERSONDETECTINFO;
-// Ğé½¹¼ì²â
+// è™šç„¦æ£€æµ‹
 typedef struct tagVirtualFocusInfo
 {
-	bool 	bEnable;		        // ÆôÓÃĞé½¹¼ì²â
-	u32 dwLevelMax;					// ÁéÃô¶È×î´óÖµ
-	u32 dwLevelMin;					// ÁéÃô¶È×îĞ¡Öµ
-	u32	dwLevel;		            // ÁéÃô¶È
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool 	bEnable;		        // å¯ç”¨è™šç„¦æ£€æµ‹
+	u32 dwLevelMax;					// çµæ•åº¦æœ€å¤§å€¼
+	u32 dwLevelMin;					// çµæ•åº¦æœ€å°å€¼
+	u32	dwLevel;		            // çµæ•åº¦
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TVIRTUALFOCUSINFO,*PTVIRTUALFOCUSINFO;
-// ³¡¾°±ä¸ü
+// åœºæ™¯å˜æ›´
 typedef struct tagSightChangeInfo
 {
-	bool 	bEnable;		        // ÆôÓÃ³¡¾°±ä¸ü
-	u32 dwLevelMax;					// ÁéÃô¶È×î´óÖµ
-	u32 dwLevelMin;					// ÁéÃô¶È×îĞ¡Öµ
-	u32	dwLevel;		            // ÁéÃô¶È
-	char szChkMode[16];             // ¼ì²âÄ£Ê½(software)
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool 	bEnable;		        // å¯ç”¨åœºæ™¯å˜æ›´
+	u32 dwLevelMax;					// çµæ•åº¦æœ€å¤§å€¼
+	u32 dwLevelMin;					// çµæ•åº¦æœ€å°å€¼
+	u32	dwLevel;		            // çµæ•åº¦
+	char szChkMode[16];             // æ£€æµ‹æ¨¡å¼(software)
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TSIGHTCHANGEINFO,*PTSIGHTCHANGEINFO;
-// ÉùÒôÒì³£
+// å£°éŸ³å¼‚å¸¸
 typedef struct tagAudioExceptInfo
 {
-	bool 	bEnable;		        // ÆôÓÃÉùÒôÒì³£
-	u32 dwThresholdMax;				// ÉùÒôÇ¿¶ÈãĞÖµ×î´óÖµ
-	u32 dwThresholdMin;				// ÉùÒôÇ¿¶ÈãĞÖµ×îĞ¡Öµ
-	u32	dwThreshold;		        // ÉùÒôÇ¿¶ÈãĞÖµ
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool 	bEnable;		        // å¯ç”¨å£°éŸ³å¼‚å¸¸
+	u32 dwThresholdMax;				// å£°éŸ³å¼ºåº¦é˜ˆå€¼æœ€å¤§å€¼
+	u32 dwThresholdMin;				// å£°éŸ³å¼ºåº¦é˜ˆå€¼æœ€å°å€¼
+	u32	dwThreshold;		        // å£°éŸ³å¼ºåº¦é˜ˆå€¼
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TAUDIOEXCEPTINFO,*PTAUDIOEXCEPTINFO;
-// ÈËÁ³¼ì²â
+// äººè„¸æ£€æµ‹
 typedef struct tagFaceDetectInfo
 {
-	bool 	bEnable;		        // ÆôÓÃÈËÁ³¼ì²â
+	bool 	bEnable;		        // å¯ç”¨äººè„¸æ£€æµ‹
 }TFACEDETECTINFO,*PTFACEDETECTINFO;
-// ±¨¾¯ÊäÈëĞÅÏ¢
+// æŠ¥è­¦è¾“å…¥ä¿¡æ¯
 typedef struct tagAlarmInInfo
 {
-	bool 	bEnable;		        // ÆôÓÃ±¨¾¯ÊäÈë
-	u32 	dwAlarmNum;		        // ±¨¾¯ÊäÈë±àºÅ
-	char	szAlarmName[33];	    // ±¨¾¯Ãû³Æ
-	char	szAlarmType[17];	    // ±¨¾¯ÀàĞÍ£¬³£¿ª(open)£¬³£¹Ø(close)
-	char    szCopyToAlarm[4];       // ¸´ÖÆµ½±¨¾¯(all)
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool 	bEnable;		        // å¯ç”¨æŠ¥è­¦è¾“å…¥
+	u32 	dwAlarmNum;		        // æŠ¥è­¦è¾“å…¥ç¼–å·
+	char	szAlarmName[33];	    // æŠ¥è­¦åç§°
+	char	szAlarmType[17];	    // æŠ¥è­¦ç±»å‹ï¼Œå¸¸å¼€(open)ï¼Œå¸¸å…³(close)
+	char    szCopyToAlarm[4];       // å¤åˆ¶åˆ°æŠ¥è­¦(all)
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TALARMININFO,*PTALARMININFO;
 
-// ±¨¾¯Êä³öĞÅÏ¢
+// æŠ¥è­¦è¾“å‡ºä¿¡æ¯
 typedef struct tagAlarmOutInfo
 {
-	char   szType[4];               // Êä³öÀàĞÍ all,0~1
-	char   szDelyTime[17];		    // ÑÓ³ÙÊ±¼ä 5s/10s/30s/1m/2m/5min/10min
+	char   szType[4];               // è¾“å‡ºç±»å‹ all,0~1
+	char   szDelyTime[17];		    // å»¶è¿Ÿæ—¶é—´ 5s/10s/30s/1m/2m/5min/10min
 }TALARMOUTINFO,*PTALARMOUTINFO;
 
-// Òì³£ÀàĞÍÅäÖÃ
+// å¼‚å¸¸ç±»å‹é…ç½®
 typedef struct  tagExceptType 
 {
-	char szType[32];               //  Òì³£ÀàĞÍ  ¡°diskfull,diskerr,disconnect,iperr,illegalaccess¡±
+	char szType[32];               //  å¼‚å¸¸ç±»å‹  â€œdiskfull,diskerr,disconnect,iperr,illegalaccessâ€
 }TEXCEPTTYPE,*PTEXCEPTTYPE;
 
-// Òì³£ÅäÖÃĞÅÏ¢
+// å¼‚å¸¸é…ç½®ä¿¡æ¯
 typedef struct tagExceptInfo
 {
-	bool bEnable;		            // ÆôÓÃÒì³£ÅäÖÃ
-	char szType[32];                // Òì³£ÀàĞÍ  ¡°diskfull,diskerr,disconnect,iperr,illegalaccess¡±
-	TLINKMODE tLinkMode;	        // ³£¹æÁª¶¯·½Ê½
-	TOTHERLINKMODE tOtherLinkMode;	// ÆäËûÁª¶¯·½Ê½
+	bool bEnable;		            // å¯ç”¨å¼‚å¸¸é…ç½®
+	char szType[32];                // å¼‚å¸¸ç±»å‹  â€œdiskfull,diskerr,disconnect,iperr,illegalaccessâ€
+	TLINKMODE tLinkMode;	        // å¸¸è§„è”åŠ¨æ–¹å¼
+	TOTHERLINKMODE tOtherLinkMode;	// å…¶ä»–è”åŠ¨æ–¹å¼
 }TEXCEPTINFO,*PTEXCEPTINFO;
 
-// ÔÆÌ¨ÒÆ¶¯
+// äº‘å°ç§»åŠ¨
 typedef struct tagPtzMove
 {
-	char	szType[17];		// ÉÏ(moveup)¡¢ÏÂ(movedown)¡¢×ó(moveleft)¡¢ÓÒ(moveright)¡¢¸´Î»(ptz_reset)
-							// ÓÒÉÏ(move_rightup)¡¢ÓÒÏÂ(move_rightdown)¡¢×óÉÏ(move_leftup)¡¢×óÏÂ(move_leftdown)
-							// Í£Ö¹ÒÆ¶¯(movestop)
-							// ÊÓÒ°À­½ü(zoomtele)¡¢ÊÓÒ°À­Ô¶(zoomwide)¡¢Í£Ö¹Ëõ·Å(zoomstop)
-	                        // ¾Û½ü(focusnear)¡¢¾ÛÔ¶(focusfar)¡¢Í£Ö¹¾Û½¹(focusstop)¡¢×Ô¶¯¾Û½¹(focusauto)
-	int	    nSpeed;		    // ËÙ¶È1¡«100
+	char	szType[17];		// ä¸Š(moveup)ã€ä¸‹(movedown)ã€å·¦(moveleft)ã€å³(moveright)ã€å¤ä½(ptz_reset)
+							// å³ä¸Š(move_rightup)ã€å³ä¸‹(move_rightdown)ã€å·¦ä¸Š(move_leftup)ã€å·¦ä¸‹(move_leftdown)
+							// åœæ­¢ç§»åŠ¨(movestop)
+							// è§†é‡æ‹‰è¿‘(zoomtele)ã€è§†é‡æ‹‰è¿œ(zoomwide)ã€åœæ­¢ç¼©æ”¾(zoomstop)
+	                        // èšè¿‘(focusnear)ã€èšè¿œ(focusfar)ã€åœæ­¢èšç„¦(focusstop)ã€è‡ªåŠ¨èšç„¦(focusauto)
+	int	    nSpeed;		    // é€Ÿåº¦1ï½100
+	int     nTilSpeed;      // å‚ç›´é€Ÿåº¦(ç”¨äºæ–œå‘è¿åŠ¨)
 }TPTZMOVE,*PTPTZMOVE;
 
-// ÔÆÌ¨ÇøÓòËõ·Å
+//å®‰å¥æ‹‰å»¶è¿Ÿå®šä½è®¾ç½®
+typedef struct tagPtzAquillaPtMove
+{
+	u32  dwHorizontal;          // æƒ³è¦è¾¾åˆ°çš„ç›®æ ‡ä½ç½®çš„æ°´å¹³åæ ‡  min="0" max="36000"
+	int  nVertical;				// æƒ³è¦è¾¾åˆ°çš„ç›®æ ‡ä½ç½®çš„å‚ç›´åæ ‡ min="-2000" max="9000"
+	u8   bymutiple;             // 10çš„å¹‚æ¬¡æ–¹æ•° 1,2,3,4,5,6......(é»˜è®¤æ·»2)
+	int	 nPanSpeed;				// åˆ°è¾¾ç›®æ ‡ä½ç½®æ—¶éœ€è¦å…·æœ‰çš„æ°´å¹³é€Ÿåº¦
+	int  nTilSpeed;				// åˆ°è¾¾ç›®æ ‡ä½ç½®æ—¶éœ€è¦å…·æœ‰çš„å‚ç›´é€Ÿåº¦
+	u32  dwTime;                // éœ€è¦å¤šé•¿æ—¶é—´åˆ°è¾¾ç›®æ ‡ä½ç½®(us)
+	char szEvtType[32];         // å®‰å¥æ‹‰äº‹ä»¶ å»¶è¿Ÿæ—¶é—´åˆ°è¾¾ä½ç½®(aquilla_set_ptmove)
+}TPTZAQUILLAPTMOVE,*PTPTZAQUILLAPTMOVE;
+
+//å®‰å¥å®šä½è®¾ç½®
+typedef struct tagPtzAquillaPtzAngle
+{
+	u32  dwHorizontal;          // æ°´å¹³åæ ‡  min="0" max="36000"
+	int  nVertical;				// å‚ç›´åæ ‡ min="-2000" max="9000"
+	u32  dwRatio;               // å€ç‡ min ="100" max="3300"
+	u8   bymutiple;             // 10çš„å¹‚æ¬¡æ–¹æ•° 1,2,3,4,5,6......(é»˜è®¤æ·»2)	
+	char szEvtType[32];         // å®‰å¥æ‹‰äº‹ä»¶ å®‰å¥æ‹‰å®šä½(aquilla_set_ptzangle)
+}TPTZAQUILLAPTZANGLE,*PTPTZAQUILLAPTZANGLE;
+
+//äº‘å°è¯¯å·®æ ¡éªŒç»“æœ
+typedef struct tagPtzDevCheckRlt
+{
+	char szMac[MAX_DEV_NAME+1];  //macåœ°å€
+	u32  nHvalue;		//æ°´å¹³
+	u32  nVvalue;		//å‚ç›´
+	bool bFinish;       //æ˜¯å¦æ£€æµ‹ç»“æŸ
+} TPTZDEVCHECKRLT, *PTPTZDEVCHECKRLT; 
+
+// äº‘å°å·¡èˆª
+typedef struct tagPtzScan
+{
+	char	szType[17];		// æ°´å¹³å·¡èˆª(horizon_scan),ç›®å‰åªæ”¯æŒä¸€ç§å·¡èˆª
+	char    szMode[17];     // å¼€å§‹å·¡èˆª(open),åœæ­¢å·¡èˆª(close)
+}TPTZSCAN,*PTPTZSCAN;
+
+// äº‘å°åŒºåŸŸç¼©æ”¾
 typedef struct tagPtzZoneZoom
 {
-	char	szType[17];		 // ÇøÓò·Å´ó(zoompart)£¬ÇøÓòËõĞ¡(zoomwhole)
-	u32	    dwWidth;		 // ÇøÓò¿í
-	u32     dwHeight;        // ÇøÓò¸ß
-	u32     dwX;             // ÆğÊ¼×ø±êµã--x
-	u32     dwY;             // ÆğÊ¼×ø±êµã--y
+	char	szType[17];		 // åŒºåŸŸæ”¾å¤§(zoompart)ï¼ŒåŒºåŸŸç¼©å°(zoomwhole)
+	u32	    dwWidth;		 // åŒºåŸŸå®½
+	u32     dwHeight;        // åŒºåŸŸé«˜
+	u32     dwX;             // åŒºåŸŸä¸­é—´ç‚¹åæ ‡ç‚¹--x
+	u32     dwY;             // åŒºåŸŸä¸­é—´ç‚¹åæ ‡ç‚¹--y
 }TPTZZONEZOOM,*PTPTZZONEZOOM;
 
-// ÔÆÌ¨¾ÓÖĞÒÆ¶¯
+// äº‘å°å±…ä¸­ç§»åŠ¨
 typedef struct tagPtzGotoPoint
 {
-	char	szType[17];		 // ¾ÓÖĞ(gotopoint)
-	u8      byX;             // ×ø±êµã--x(0,255)
-	u8      byY;             // ×ø±êµã--y(0,255)
-							 // ËµÃ÷:ÕæÊµ×ø±êÖáÒÔÖĞĞÄµãÎª0µã,ºá×İ×ø±ê·¶Î§¶¼ÊÇ(-127~127),ÓÉÓÚÔÚ½á¹¹ÌåÖĞ´«µİµÄÊÇu8ÀàĞÍ
-							 // ¹ÊÒª×ªÒ»ÏÂ£¬Èç-1£¬´«ÏÂÀ´ÊÇ254,Èç-127£¬´«ÏÂÀ´¾ÍÊÇ128
+	char	szType[17];		 // å±…ä¸­(gotopoint)
+	u8      byX;             // åæ ‡ç‚¹--x(0,255)
+	u8      byY;             // åæ ‡ç‚¹--y(0,255)
+							 // è¯´æ˜:çœŸå®åæ ‡è½´ä»¥ä¸­å¿ƒç‚¹ä¸º0ç‚¹,æ¨ªçºµåæ ‡èŒƒå›´éƒ½æ˜¯(-127~127),ç”±äºåœ¨ç»“æ„ä½“ä¸­ä¼ é€’çš„æ˜¯u8ç±»å‹
+							 // æ•…è¦è½¬ä¸€ä¸‹ï¼Œå¦‚-1ï¼Œä¼ ä¸‹æ¥æ˜¯254,å¦‚-127ï¼Œä¼ ä¸‹æ¥å°±æ˜¯128
 }TPTZGOTOPOINT,*PTPTZGOTOPOINT;
 
-// ÓêË¢¿ªÆô/¹Ø±Õ
+// é›¨åˆ·å¼€å¯/å…³é—­
 typedef struct tagPtzWiper
 {
-	bool bEnable;           // ¿ªÆô/¹Ø±Õ
+	bool bEnable;           // å¼€å¯/å…³é—­
 }TPTZWIPER,*PTPTZWIPER;
 
-// Ô¤ÖÃÎ»
+// é¢„ç½®ä½
 typedef struct tagPtzPreset
 {
-	u16	    wSn;		    // Ô¤ÖÃÎ»ĞòºÅ,
-	bool	bEnable;	    // ÊÇ·ñÆôÓÃ
-	char	szName[33];	    // Ô¤ÖÃÎ»Ãû³Æ
-	char    szEvtType[33];  // Ô¤Î»ÖÃÊÂ¼şÀàĞÍ ÉèÖÃ(preset_set),µ÷ÓÃ(preset_load),É¾³ı(preset_remove)
+	u16	    wSn;		    // é¢„ç½®ä½åºå·,
+	bool	bEnable;	    // æ˜¯å¦å¯ç”¨
+	char	szName[33];	    // é¢„ç½®ä½åç§°
+	char    szEvtType[33];  // é¢„ä½ç½®äº‹ä»¶ç±»å‹ è®¾ç½®(preset_set),è°ƒç”¨(preset_load),åˆ é™¤(preset_remove)
 }TPTZPRESET,*PTPTZPRESET;
-// ÔÆÌ¨»ù±¾²ÎÊı
+
+typedef struct tagPtzPresetAll		// å…¨éƒ¨é¢„ç½®ä½ä¿¡æ¯
+{
+	TPTZPRESET tPtzPreset[256];
+}TPTZPRESETALL,*PTPTZPRESETALL;
+// äº‘å°åŸºæœ¬å‚æ•°
 typedef struct tagPtzBase
 {
-	char    szPtzVer[32];             // ÔÆÌ¨°æ±¾(Ö»¶Á)
-	u16     wScanRate;               // É¨ÃèËÙ¶ÈµÈ¼¶(0~40)
-	bool     bEnableDepth;           // ¾°Éî±ÈÀıÆôÓÃ
+	char    szPtzVer[32];             // äº‘å°ç‰ˆæœ¬(åªè¯»)
+	u16     wScanRate;               // æ‰«æé€Ÿåº¦ç­‰çº§(0~40)
+	bool     bEnableDepth;           // æ™¯æ·±æ¯”ä¾‹å¯ç”¨
 }TPTZBASE,*PTPTZBASE;
-// ÔÆÌ¨¶ÏµçÎ¬»¤
+// äº‘å°æ–­ç”µç»´æŠ¤
 typedef struct tagPtzMainTain
 {
-	bool   bEnableOutage;         //¶Ïµç»Ö¸´Æô¶¯
-	char   szOutageMemery[7];     //»Ö¸´·½Ê½outage, preset
-	u16    wOutageTime;          // »Ö¸´Ê±¼ä(10~360)
-	u16    wPreSet;               // Ô¤ÖÃÎ»(1~256)
+	bool   bEnableOutage;         //æ–­ç”µæ¢å¤å¯åŠ¨
+	char   szOutageMemery[7];     //æ¢å¤æ–¹å¼outage, preset
+	u16    wOutageTime;          // æ¢å¤æ—¶é—´(10~360)
+	u16    wPreSet;               // é¢„ç½®ä½(1~256)
 }TPTZMAINTAIN,*PTPTZMAINTAIN;
-// ÔÆÌ¨»Ö¸´³ö³§ÉèÖÃ
+// äº‘å°æ¢å¤å‡ºå‚è®¾ç½®
 typedef struct tagPtzRefactory
 {
-	char    szEvtType[32];  // »Ö¸´³ö³§ÉèÖÃÊÂ¼ş(restore_factory_settings)
+	char    szEvtType[32];  // æ¢å¤å‡ºå‚è®¾ç½®äº‹ä»¶(restore_factory_settings)
 }TPTZREFACTORY,*PTPTZREFACTORY;
-// ÔÆÌ¨ÊØÍûÈÎÎñ
+// äº‘å°å®ˆæœ›ä»»åŠ¡
 typedef struct tagPtzWatchOn
 {
-	bool   bEnable;                //ÊØÍûÈÎÎñÆô¶¯
-	char   szWatchmode[16];        //ÊØÍûÄ£Ê½outage, preset
-								   //¡±hscan,vscan,preset,pathcruise,framescan,
-								   //randscan,fullviewscan,syncscan¡±
-	u32      dwWaitTime;           // µÈ´ıÊ±¼ä(1~36000)
-	u16       wPreset;             // Ô¤ÖÃÎ»(1~256)
-	u8        byPathCruise;        // É¨ÃèÂ·¾¶(1~8)
-	u8        bySyncScan;          // »¨ÑùÉ¨ÃèÂ·¾¶(1~4)
+	bool   bEnable;                //å®ˆæœ›ä»»åŠ¡å¯åŠ¨
+	char   szWatchmode[16];        //å®ˆæœ›æ¨¡å¼outage, preset
+								   //â€hscan,vscan,preset,pathcruise,framescan,
+								   //randscan,fullviewscan,syncscanâ€
+	u32      dwWaitTime;           // ç­‰å¾…æ—¶é—´(1~36000)
+	u16       wPreset;             // é¢„ç½®ä½(1~256)
+	u8        byPathCruise;        // æ‰«æè·¯å¾„(1~8)
+	u8        bySyncScan;          // èŠ±æ ·æ‰«æè·¯å¾„(1~4)
 }TPTZWATCHON,*PTPTZWATCHON;
-// ÔÆÌ¨ÏŞÎ»
+// äº‘å°é™ä½
 typedef struct tagPtzLimit
 {
-	bool  bKeyLimit;             // ÊÇ·ñÆô¶¯É¨ÃèÏŞÎ»
-	bool  bScanLimit;            // ÊÇ·ñÆô¶¯¼ü¿ØÏŞÎ»
-	char  szEvtType[32];         // ÏŞÎ»ÊÂ¼şÀàĞÍ :×óÏŞÎ»(limit_horizonalleft) ÓÒÏŞÎ»(limit_horizonalright) 
-								 //	¼ü¿ØÏŞÎ»(manuallimitswitch_set) É¨ÃèÏŞÎ»(scanlimitswitch_set)
+	bool  bKeyLimit;             // æ˜¯å¦å¯åŠ¨æ‰«æé™ä½
+	bool  bScanLimit;            // æ˜¯å¦å¯åŠ¨é”®æ§é™ä½
+	char  szEvtType[32];         // é™ä½äº‹ä»¶ç±»å‹ :å·¦é™ä½(limit_horizonalleft) å³é™ä½(limit_horizonalright) 
+								 //	é”®æ§é™ä½(manuallimitswitch_set) æ‰«æé™ä½(scanlimitswitch_set)
 }TPTZLIMIT,*PTPTZLIMIT;
-// ÔÆÌ¨Ñ²º½É¨Ãè
+// äº‘å°å·¡èˆªæ‰«æ
 typedef struct tagPtzPathCruise
 {
-	int	nIndex;	                // É¨ÃèÂ·¾¶Ë÷Òı(1~8)
-	u16	wStayTime;	            // Í£ÁôÊ±¼ä (5~1800s)
-	bool	bEnable;	        // ÊÇ·ñÆôÓÃ
-	char	szName[33];	        // Ô¤ÖÃÎ»Ãû³Æ
+	int	nIndex;	                // æ‰«æè·¯å¾„ç´¢å¼•(1~8)
+	int nResvePos;              // é¢„ç½®ç‚¹ï¼ˆ1~1024ï¼‰
+	u16	wStayTime;	            // åœç•™æ—¶é—´ (5~1800s)
+	bool	bEnable;	        // æ˜¯å¦å¯ç”¨
+	char	szName[33];	        // é¢„ç½®ä½åç§°
 }TPTZPATHCRUISE,*PTPTZPATHCRUISE;
-// ÔÆÌ¨Ñ²º½É¨ÃèÊÂ¼ş
+// äº‘å°å·¡èˆªæ‰«æäº‹ä»¶
 typedef struct tagPtzPathCruiseEvt
 {
-	int	    nIndex;	                // É¨ÃèÂ·¾¶Ë÷Òı(1~8)
-	char    szEvtType[32];          // Ñ²º½É¨ÃèÊÂ¼ş  µ÷ÓÃ(path_cruise_start) Í£Ö¹(path_cruise_end)
+	int	    nIndex;	                // æ‰«æè·¯å¾„ç´¢å¼•(1~8)
+	char    szEvtType[32];          // å·¡èˆªæ‰«æäº‹ä»¶  è°ƒç”¨(path_cruise_start) åœæ­¢(path_cruise_end)
 }TPTZPATHCRUISEEVT,*PTPTZPATHCRUISEEVT;
 
-// ¶¨Ê±ÈÎÎñ
+// å®šæ—¶ä»»åŠ¡
 typedef struct tagTimeTask
 {
-	bool  bEnable;            // ÊÇ·ñÆô¶¯¶¨Ê±ÈÎÎñ
-	u32   dwWaitTime;       // Ê±¼äÏÔÊ¾(1~36000)
+	bool  bEnable;            // æ˜¯å¦å¯åŠ¨å®šæ—¶ä»»åŠ¡
+	u32   dwWaitTime;       // æ—¶é—´æ˜¾ç¤º(1~36000)
 }TTIMETASK,*PTTIMETASK;
 
 typedef struct tagTimeTaskList
 {
-	u8	      byWeekDay;	     // 1¡«7£ºÖÜÈÕ¡«ÖÜÁù
-	u8	      byTimeIndex;	     // Ê±¼ä¶ÎË÷Òı
-	bool      bEnable;           // ÊÇ·ñÆôÓÃÊ±¼ä¶Î
-	char      szStartTime[32];   // ¿ªÊ¼Ê±¼ä
-	char      szEndTime[32];     // ½áÊøÊ±¼ä
-	char      szCruiseMode[16];  // ÊØÍûÄ£Ê½
-	u16       wPreset;           // Ô¤ÖÃÎ»(1~256)
-	u8        byPathCruise;      // É¨ÃèÂ·¾¶(1~8)
-	u8        bySyncScan;        // »¨ÑùÉ¨ÃèÂ·¾¶(1~4)
-	char      szAssParam1[17];   // ¸¨Öú²ÎÊı1,Èç¡±alarm,manual,time,trigger¡±¡£³£¹æ²¼·À²»ĞèÒªÌîĞ´  
+	u8	      byWeekDay;	     // 1ï½7ï¼šå‘¨æ—¥ï½å‘¨å…­
+	u8	      byTimeIndex;	     // æ—¶é—´æ®µç´¢å¼•
+	bool      bEnable;           // æ˜¯å¦å¯ç”¨æ—¶é—´æ®µ
+	char      szStartTime[32];   // å¼€å§‹æ—¶é—´
+	char      szEndTime[32];     // ç»“æŸæ—¶é—´
+	char      szCruiseMode[16];  // å®ˆæœ›æ¨¡å¼
+	u16       wPreset;           // é¢„ç½®ä½(1~256)
+	u8        byPathCruise;      // æ‰«æè·¯å¾„(1~8)
+	u8        bySyncScan;        // èŠ±æ ·æ‰«æè·¯å¾„(1~4)
+	char      szAssParam1[17];   // è¾…åŠ©å‚æ•°1,å¦‚â€alarm,manual,time,triggerâ€ã€‚å¸¸è§„å¸ƒé˜²ä¸éœ€è¦å¡«å†™  
 }TTIMETASKLIST,*PTTIMETASKLIST;
 
-//¶¨Î»
+//å®šä½
 typedef struct tagPtzCoorDinate
 {
-	u32  dwHorizontal;          // Ë®Æ½×ø±ê  min="0" max="36000"
-	int  nVertical;            // ´¹Ö±×ø±ê min="-1500" max="9000"
-	u8   bymutiple;             // 10µÄÃİ´Î·½Êı 1,2,3,4,5,6......
-	char szEvtType[32];         // ¶¨Î»ÊÂ¼ş ÁãÎ»Ğ£Õı(turnto_machinezero),Ë®Æ½¶¨Î»(panposion_set),´¹Ö±¶¨Î»(tiltposion_set)
-								// Ë®Æ½´¹Ö±Í¬Ê±¶¨Î»(ptposion_set)
+	u32  dwHorizontal;          // æ°´å¹³åæ ‡  min="0" max="36000"
+	int  nVertical;            // å‚ç›´åæ ‡ min="-2000" max="9000"
+	u8   bymutiple;             // 10çš„å¹‚æ¬¡æ–¹æ•° 1,2,3,4,5,6......
+	char szEvtType[32];         // å®šä½äº‹ä»¶ é›¶ä½æ ¡æ­£(turnto_machinezero),æ°´å¹³å®šä½(panposion_set),å‚ç›´å®šä½(tiltposion_set)
+								// æ°´å¹³å‚ç›´åŒæ—¶å®šä½(ptposion_set)
 }TPTZCOORDINATE,*PTPTZCOORDINATE;
-//ÔÆÌ¨±¶ÂÊ
+//äº‘å°å€ç‡
 typedef struct tagPtzRatio
 {
-	u32  dwRatio;              // ±¶ÂÊ
-	int  nRatioMin;            // ±¶ÂÊ×îĞ¡Öµ
-	int  nRatioMax;            // ±¶ÂÊ×î´óÖµ
-	char szEvtType[32];        // ±¶ÂÊÊÂ¼ş (set_zoomratio)
+	u32  dwRatio;              // å€ç‡
+	int  nRatioMin;            // å€ç‡æœ€å°å€¼
+	int  nRatioMax;            // å€ç‡æœ€å¤§å€¼
+	char szEvtType[32];        // å€ç‡äº‹ä»¶ (set_zoomratio)
 }TPTZRATIO,*PTPTZRATIO;
 
-// »¨ÑùÉ¨Ãè
+//å®šä½+äº‘å°å€ç‡ (åŒæ—¶è®¾ç½®)
+typedef struct tagPtzCoorDinateEx
+{
+	u32  dwHorizontal;          // æ°´å¹³åæ ‡  min="0" max="36000"
+	int  nVertical;             // å‚ç›´åæ ‡ min="-2000" max="9000"
+	u32  dwRatio;               // å€ç‡	
+	u8   bymutiple;             // 10çš„å¹‚æ¬¡æ–¹æ•° 1,2,3,4,5,6......
+	char szEvtType[32];         // ptzåŒæ—¶å®šä½(ptz_set)
+}TPTZCOORDINATEEX,*PTPTZCOORDINATEEX;
+
+//äº‘å°è§†åœºè§’
+typedef struct tagPtzHVangle
+{
+	u32  dwX;                    // æ°´å¹³æ–¹ä½ä¿¡æ¯ 
+	u32  dwY;                    // å‚ç›´æ–¹ä½ä¿¡æ¯
+	int  nHangleMin;            // è§†åœºè§’æ°´å¹³æœ€å°å€¼
+	int  nHangleMax;            // è§†åœºè§’æ°´å¹³æœ€å¤§å€¼
+	int  nVangleMin;            // è§†åœºè§’å‚ç›´æœ€å°å€¼
+	int  nVangleMax;            // è§†åœºè§’å‚ç›´æœ€å¤§å€¼
+}TPTZHVANGLE,*PTPTZHVANGLE;
+
+//websocketæœåŠ¡å™¨ä¸Šä¼ (ç”¨äºptzä¿¡æ¯è‡ªåŠ¨è·å–)
+typedef struct tagPtzWsInfo
+{
+	char szIP[32];					//websocketæœåŠ¡å™¨ip
+	u16  wPort;						//websocketæœåŠ¡å™¨ç«¯å£ 	
+	char szUrl[MAX_PATH];			//websocketæœåŠ¡å™¨url
+}TPTZWSINFO,*PTPTZWSINFO;
+
+// èŠ±æ ·æ‰«æ
 typedef struct tagPtzPatternsInfo
 {
-	char  szPatternState[10];         //×´Ì¬ ¡±set,scan,idel¡±
-	u16	   wIndex;	                   //É¨Ãè»òÔ¤ÀÀµÄË÷Òı
-	bool    patternslist[4];          //Ê¹ÓÃµÄÂ·¾¶ÁĞ±í
+	char  szPatternState[10];         //çŠ¶æ€ â€set,scan,idelâ€
+	u16	   wIndex;	                   //æ‰«ææˆ–é¢„è§ˆçš„ç´¢å¼•
+	bool    patternslist[4];          //ä½¿ç”¨çš„è·¯å¾„åˆ—è¡¨
 }TPTZPATTERNSINFO,PTPTZPATTERNSINFO;
-// »¨ÑùÉ¨ÃèÊÂ¼ş
+// èŠ±æ ·æ‰«æäº‹ä»¶
 typedef struct tagPtzPatternEvt
 {
-	u8   byPatternPath;          // »¨ÑùÉ¨ÃèÂ·¾¶ 1,2,3,4
-	char szEvtType[32];          // »¨ÑùÉ¨ÃèÊÂ¼ş ¿ªÊ¼¼ÇÂ¼(syncscan_rec),Í£Ö¹¼ÇÂ¼(syncscan_stoprec),Çå³ı¼ÇÂ¼(syncscan_delete)
-								 //              Ô¤ÀÀ(syncscan_preview),Í£Ö¹(syncscan_stoppreview)
+	u8   byPatternPath;          // èŠ±æ ·æ‰«æè·¯å¾„ 1,2,3,4
+	char szEvtType[32];          // èŠ±æ ·æ‰«æäº‹ä»¶ å¼€å§‹è®°å½•(syncscan_rec),åœæ­¢è®°å½•(syncscan_stoprec),æ¸…é™¤è®°å½•(syncscan_delete)
+								 //              é¢„è§ˆ(syncscan_preview),åœæ­¢(syncscan_stoppreview)
 }TPTZPATTERNEVT,*PTPTZPATTERNEVT;
 
-// ²¼·ÀÊ±¼äĞÅÏ¢
+// å¸ƒé˜²æ—¶é—´ä¿¡æ¯
 typedef struct tagEventTime
 {
-	u8	   byWeekDay;		// 1¡«7£ºÖÜÈÕ¡«ÖÜÁù
-	u8	   byTimeIndex;		// Ê±¼ä¶ÎË÷Òı
-	bool   bEnable;         // ÊÇ·ñÆôÓÃÊ±¼ä¶Î
-	u16	   wStartTime_Year;	// ÆğÊ¼Ê±¼ä
+	u8	   byWeekDay;		// 1ï½7ï¼šå‘¨æ—¥ï½å‘¨å…­
+	u8	   byTimeIndex;		// æ—¶é—´æ®µç´¢å¼•
+	bool   bEnable;         // æ˜¯å¦å¯ç”¨æ—¶é—´æ®µ
+	u16	   wStartTime_Year;	// èµ·å§‹æ—¶é—´
 	u16	   wStartTime_Month;// 
 	u16	   wStartTime_Day;	// 
 	char   szStartTime[32];
-	u16	   wEndTime_Year;	// ½áÊøÊ±¼ä
+	u16	   wEndTime_Year;	// ç»“æŸæ—¶é—´
 	u16	   wEndTime_Month;	// 
 	u16	   wEndTime_Day;	// 
 	char   szEndTime[32];
-	char   szAssParam1[17];	// ¸¨Öú²ÎÊı1,Èç¡± alarm,manual,time,trigger¡±¡£³£¹æ²¼·À²»ĞèÒªÌîĞ´
+	char   szAssParam1[17];	// è¾…åŠ©å‚æ•°1,å¦‚â€ alarm,manual,time,triggerâ€ã€‚å¸¸è§„å¸ƒé˜²ä¸éœ€è¦å¡«å†™
 }TEVENTTIME,*PTEVENTTIME;
 
 //
 typedef struct tagTimeEx
 {
-	char   szTime[32];// Äê-ÔÂ-ÈÕ Ê±-·Ö-Ãë(utcÊ±¼ä)
+	char   szTime[32];// å¹´-æœˆ-æ—¥ æ—¶-åˆ†-ç§’(utcæ—¶é—´)
 }TTIMEEX,*PTTIMEEX;
-// ÔÂÊÓÍ¼½á¹¹Ìå
+// æœˆè§†å›¾ç»“æ„ä½“
 typedef struct tagRecMonthInfo
 {
-	bool   byHadRec[32];		// ÊÇ·ñÓĞÂ¼Ïñ
+	bool   byHadRec[32];		// æ˜¯å¦æœ‰å½•åƒ
 } TRECMONTHINFO, *PTRECMONTHINFO;
 
-// »ñÈ¡Â¼ÏñÊı¾İ²ÎÊı
+// è·å–å½•åƒæ•°æ®å‚æ•°
 typedef struct tagRecParam
 {
-	u32  dwRecType[12];	// Â¼ÏñÀàĞÍ£¬ emRecType,×î¶àËÑË÷12ÖÖÖ¸¶¨ÀàĞÍ£¬Ä¿Ç°Ö§³Ö:¡±all,alarm,time,manual¡±
-	TTIMEEX	tStartTime;	// ¿ªÊ¼Ê±¼ä
-	TTIMEEX 	tEndTime;	// Í£Ö¹Ê±¼ä
+	u32  dwRecType[12];	// å½•åƒç±»å‹ï¼Œ emRecType,æœ€å¤šæœç´¢12ç§æŒ‡å®šç±»å‹ï¼Œç›®å‰æ”¯æŒ:â€all,alarm,time,manualâ€
+	TTIMEEX	tStartTime;	// å¼€å§‹æ—¶é—´
+	TTIMEEX 	tEndTime;	// åœæ­¢æ—¶é—´
 } TRECPARAM, * PTRECPARAM;
-// Â¼ÏñÊı¾İ½á¹¹Ìå
+// å½•åƒæ•°æ®ç»“æ„ä½“
 typedef struct tagRecData
 {
-	u32  dwIndex;		// Ë÷Òı
-	u32  dwRecId;		// Â¼Ïñid
-	u32  dwRecType;		// Â¼ÏñÀàĞÍ
-	TTIMEEX	tStartTime;	// ¿ªÊ¼Ê±¼ä
-	TTIMEEX 	tEndTime;	// Í£Ö¹Ê±¼ä
+	u32  dwIndex;		// ç´¢å¼•
+	u32  dwRecId;		// å½•åƒid
+	u32  dwRecType;		// å½•åƒç±»å‹
+	TTIMEEX	tStartTime;	// å¼€å§‹æ—¶é—´
+	TTIMEEX 	tEndTime;	// åœæ­¢æ—¶é—´
 } TRECDATA, * PTRECDATA;
 
-// ¿ªÊ¼·ÅÏñ²ÎÊı
+// å¼€å§‹æ”¾åƒå‚æ•°
 typedef struct tagRecStartPlayParam
 {
 	u32	dwStartID;
@@ -1541,12 +1809,12 @@ typedef struct tagRecStartPlayParam
 	u16	wRtcpAudioPort;
 	u16	wRtpAudioPort2;
 	u16	wRtcpAudioPort2;
-	TTIMEEX	tStartTime;	// ¿ªÊ¼Ê±¼ä
-	TTIMEEX 	tEndTime;	// Í£Ö¹Ê±¼ä
-	TTIMEEX 	tPlayTime;	// ²¥·ÅÊ±¼ä
+	TTIMEEX	tStartTime;	// å¼€å§‹æ—¶é—´
+	TTIMEEX 	tEndTime;	// åœæ­¢æ—¶é—´
+	TTIMEEX 	tPlayTime;	// æ’­æ”¾æ—¶é—´
 } TRECSTARTPLAYPARAM, * PTRECSTARTPLAYPARAM;
 
-// ·ÅÏñĞÅÏ¢
+// æ”¾åƒä¿¡æ¯
 typedef struct tagRecStartPlayInfo
 {
 	u32	dwPlayID;
@@ -1555,25 +1823,25 @@ typedef struct tagRecStartPlayInfo
 	u16	wRtcpAudioPort2;
 } TRECSTARTPLAYINFO, * PTRECSTARTPLAYINFO;
 
-// ·ÅÏñ½ø¶ÈĞÅÏ¢
+// æ”¾åƒè¿›åº¦ä¿¡æ¯
 typedef struct tagRecPlayStateInfo
 {
-	char       szState [10]; // ·ÅÏñ×´Ì¬
-	TTIMEEX    tPlayTime;	// ²¥·ÅÊ±¼ä
-	u32        dwTimeStamp; //Ê±¼ä´Á
+	char       szState [10]; // æ”¾åƒçŠ¶æ€
+	TTIMEEX    tPlayTime;	// æ’­æ”¾æ—¶é—´
+	u32        dwTimeStamp; //æ—¶é—´æˆ³
 } TRECPLAYSTATEINFO, * PTRECPLAYSTATEINFO;
 
 //
 typedef struct KedaTeleZoomAlgoParam
 {	
-	u32 dwTeleZoomInRatio;  //Ëõ·Å±ÈÀı
-	u32 dwTeleCurvLevel;     //ÉÏ²¿Çú¶È
-	u32 dwTeleMultVal;       //ÉÏ²¿Ğ±ÂÊ³ËÊı
-	u32 dwWideRatio;        //ÏÂ²¿±ÈÀı
-	u32 dwMidWidth;        //»û±äĞ£ÕıÊä³ö¿í¶È
-	u32 dwMidHeight;        //»û±äĞ£ÕıÊä³ö¸ß¶È
-	u32 dwAdjHeight;       //Ô¶¶Ë·Å´óµ÷ÕûÆğÊ¼µã
-	float f32WidthScale;       //¿í¶ÈÊÊÓ¦Ëõ·Å±ÈÀı
+	u32 dwTeleZoomInRatio;  //ç¼©æ”¾æ¯”ä¾‹
+	u32 dwTeleCurvLevel;     //ä¸Šéƒ¨æ›²åº¦
+	u32 dwTeleMultVal;       //ä¸Šéƒ¨æ–œç‡ä¹˜æ•°
+	u32 dwWideRatio;        //ä¸‹éƒ¨æ¯”ä¾‹
+	u32 dwMidWidth;        //ç•¸å˜æ ¡æ­£è¾“å‡ºå®½åº¦
+	u32 dwMidHeight;        //ç•¸å˜æ ¡æ­£è¾“å‡ºé«˜åº¦
+	u32 dwAdjHeight;       //è¿œç«¯æ”¾å¤§è°ƒæ•´èµ·å§‹ç‚¹
+	float f32WidthScale;       //å®½åº¦é€‚åº”ç¼©æ”¾æ¯”ä¾‹
 }KedaTeleZoomAlgoParam_T;
 
 typedef struct tagTeleZoomParam
@@ -1583,30 +1851,108 @@ typedef struct tagTeleZoomParam
 	KedaTeleZoomAlgoParam_T tTeleZoom;
 }TTELEZOOMPARAM, *PTTELEZOOMPARAM;
 
-// »ûĞÎ½ÃÕı
+// ç•¸å½¢çŸ«æ­£
 typedef struct tagMalfAlgoParam
 {	
-	u8 bOpen;			    // 0-¹Ø±Õ£¬·Ç0-¿ªÆô
-	u32 dwMalfParam1;		 // »ûĞÎ½ÃÕıÖ÷²ÎÊı
-	u32 dwMalfParam2;		// »ûĞÎ½ÃÕı¸¨²ÎÊı
-
-	tagMalfAlgoParam ()
-	{
-		memset (this, 0, sizeof(tagMalfAlgoParam));
-	}
+	u8 bOpen;			    // 0-å…³é—­ï¼Œé0-å¼€å¯
+	u32 dwMalfParam1;		 // ç•¸å½¢çŸ«æ­£ä¸»å‚æ•°
+	u32 dwMalfParam2;		// ç•¸å½¢çŸ«æ­£è¾…å‚æ•°
 }TMALFPARAM, *PTMALFPARAM;
 
-// ¹¤×÷Ä£Ê½
+// å·¥ä½œæ¨¡å¼
 typedef struct tagMtcfInfoParam
 {
-	u8 bMtcf;              // 0-stream2 ÆÕÍ¨¶şÂëÁ÷Ä£Ê½ 1-mtcf»û±ä½ÃÕıÔ¶¶Ë·Å´ó
+	u8 bMtcf;              // 0-stream2 æ™®é€šäºŒç æµæ¨¡å¼ 1-mtcfç•¸å˜çŸ«æ­£è¿œç«¯æ”¾å¤§
 }TMTCFPARAM, *PTMTCFPARAM;
 
-// µç³Ø×´Ì¬
+// ç”µæ± çŠ¶æ€
 typedef struct tagBatStatusInfo
 {
-	u16 wBatteryStatus;        // µç³ØµçÁ¿(0 ~ 100)
+	u16 wBatteryStatus;        // ç”µæ± ç”µé‡(0 ~ 100)
 }TBATSTATUSINFO, *PTBATSTATUSINFO;
+
+// wifiæ¢é’ˆ
+typedef struct tagWifiProbeInfo
+{
+	bool	bEnable;		              // å¯ç”¨wifiæ¢é’ˆ
+	bool	bReportPlatform;		      // æ˜¯å¦ä¸Šä¼ å¹³å°
+	bool	bDisable;					  // éƒ¨åˆ†åŠŸèƒ½æ˜¯å¦å¯ä»¥è®¾ç½®(æ­¤å€¼ä¸å¯æ›´æ”¹)
+										  // ä¸ºtrueåˆ™bMacEnable,bSignalEnable,bTimeEnable,dwLongitude,dwLatitudeå‡ä¸å¯è®¾ç½®
+
+	bool	bMacEnable;					  // æ˜¯å¦æ˜¾ç¤ºç§»åŠ¨ç»ˆç«¯Macåœ°å€
+	bool	bSignalEnable;		          // æ˜¯å¦æ˜¾ç¤ºä¿¡å·å¼ºåº¦
+	bool	bTimeEnable;		          // æ˜¯å¦æ˜¾ç¤ºæ¢é’ˆæ—¶é—´
+	int	    nLongitude;		              // ç»åº¦
+	int	    nLongitudeMax;		          // ç»åº¦æœ€å¤§å€¼
+	int	    nLongitudeMin;		          // ç»åº¦æœ€å°å€¼
+	int	    nLatitude;					  // çº¬åº¦
+	int	    nLatitudeMax;				  // çº¬åº¦æœ€å¤§å€¼
+	int	    nLatitudeMin;				  // çº¬åº¦æœ€å°å€¼
+	char	szProvinceCode[MAX_PATH];     // æ‰€åœ¨çœä»£ç (åªèƒ½æ˜¯æ•°å­—å’Œå­—æ¯)
+	char	szCityCode[MAX_PATH];		  // æ‰€åœ¨å¸‚ä»£ç (åªèƒ½æ˜¯æ•°å­—å’Œå­—æ¯)
+	char	szAreaCode[MAX_PATH];		  // æ‰€åœ¨åœ°åŒºä»£ç (åªèƒ½æ˜¯æ•°å­—å’Œå­—æ¯)
+	char	szAddress[MAX_PATH];		  // æ‰€åœ¨åœ°ç‚¹åç§°(ä¸èƒ½ä¸ºç‰¹æ®Šå­—ç¬¦)
+	int	    dwDeviceNum;			      // æœç´¢åˆ°çš„ç»ˆç«¯æ•°ç›®(ç”¨æ¥å¼€è¾ŸtagWifiProbeListInfoçš„å†…å­˜)
+}TWIFIPROBEINFO, *PTWIFIPROBEINFO;
+
+// wifiæ¢é’ˆè®¾å¤‡åˆ—è¡¨
+typedef struct tagWifiProbeListInfo
+{
+	char	szMac[MAX_PATH];          // ç§»åŠ¨ç»ˆç«¯Macåœ°å€
+	char	szSignal[MAX_PATH];		  // ä¿¡å·å¼ºåº¦("bad,middle,good")
+	char	szTime[MAX_PATH];		  // æ¢é’ˆæ—¶é—´
+}TWIFIPROBELISTINFO, *PTWIFIPROBELISTINFO;
+
+// è°ƒè‰²æ¿
+typedef struct tagColorSize
+{
+	char	szColor[64];			// whitehot,blackhot,light,rainbow,north,hotiron,delaminate,medical,red
+}TCOLORSIZE, *PTCOLORSIZE;
+
+// çƒ­ç‚¹è¿½è¸ªçŠ¶æ€
+typedef struct tagHotState
+{
+	char	szState[64];			// open,close
+}THOTSTATE, *PTHOTSTATE;
+
+// åœ°ç†ä½ç½®ä¿¡æ¯
+typedef struct tagPositionInfo
+{
+	bool	bEnable;		              // å¯ç”¨
+	char	szPosmode[32];				  // åœ°ç†ä½ç½®æ¨¡å¼
+	int	    nRtpInterval;			      // æ•°æ®ä¸Šä¼ é—´éš”
+	char	szEWindicador[32];			  // ä¸œç»æˆ–è¥¿ç»
+	char	szNSindicador[32];			  // åŒ—çº¬æˆ–å—çº¬	
+	char	szSpdUnit[8];		          // é€Ÿåº¦å•ä½
+	char	szLocation[32];		          // å½“å‰ä½ç½®
+	int     nSpeedMile;
+	int     nSpeedKm;
+}TPOSITIONINFO, *PTPOSITIONINFO;
+
+//åŸºäºè™šæ‹Ÿé›¶ä½çš„å½“å‰äº‘å°è§’åº¦ä¿¡æ¯
+typedef struct tagBasicPosInfo
+{
+	s32 nHpos;					//äº‘å°æ°´å¹³ä½ç½®
+	s32 nVpos;					//äº‘å°å‚ç›´ä½ç½®
+	s32 nZoomValue;				//zoomå€¼
+}TBASICPOSINFO,*PTBASICPOSINFO;
+
+//ç™»é™†ä¿¡æ¯
+typedef struct tagLoginInfo
+{
+	u32 dwIP;
+	u16 wPort;
+	char szUser[64];
+	char szPasswd[64];
+	u16 wTime;			//æ£€æµ‹æ˜¯å¦åœ¨çº¿é—´éš”æ—¶é—´ï¼Œå•ä½ï¼šè±ªç§’
+}TLOGININFO,*PTLOGININFO;
+
+typedef struct tagDeployPicUploadParam
+{
+	char  szPicName[128];	//å›¾ç‰‡åç§°
+	u32   dwPicSize;	//å›¾ç‰‡å¤§å°
+	char* szPicData;	//å›¾ç‰‡æ•°æ®
+}TDEPLOYUPLOADPARAM, *PTDEPLOYUPLOADPARAM;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

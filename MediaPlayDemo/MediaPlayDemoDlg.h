@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "MediaPlay/MediaPlay.h"
+#include "Arithmetic/Arithmetic.h"
 
 // MediaPlayDemoDlg dialog
 class MediaPlayDemoDlg : public CDialogEx
@@ -31,4 +33,18 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+private:
+	static void CALLBACK postMediaDataCallback(
+		const int playID = 0, const unsigned char* mediaData = NULL, const int dataBytes = 0, void* userData = NULL);
+	static void CALLBACK postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, void* userData = NULL);
+public:
+	afx_msg void OnBnClickedRegisterHelmet();
+	afx_msg void OnBnClickedRegisterPhone();
+	afx_msg void OnBnClickedRegisterFight();
+	afx_msg void OnBnClickedRegisterSleep();
+	afx_msg void OnBnClickedRegisterFace();
+
+private:
+	AlarmType alarmType;
 };

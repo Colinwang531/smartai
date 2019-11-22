@@ -3,11 +3,11 @@ extern "C"
 #include "libavutil/imgutils.h"
 }
 #include "error.h"
-#include "MediaEncoder/JPEG/YUV420PToJPEGEncoder.h"
+#include "MediaModel/Encoder/JPEG/YUV420PToJPEGEncoder.h"
 
-NS_BEGIN(encoder, 1)
+NS_BEGIN(model, 1)
 
-YUV420PToJPEGEncoder::YUV420PToJPEGEncoder() : FFmpegEncoder(), inputAVFrame{ NULL }
+YUV420PToJPEGEncoder::YUV420PToJPEGEncoder() : MediaModel(), ctx{ NULL }, yuv420pFrame{ NULL }
 {}
 
 YUV420PToJPEGEncoder::~YUV420PToJPEGEncoder()
@@ -52,29 +52,29 @@ void YUV420PToJPEGEncoder::deinitialize()
 	av_frame_free(&inputAVFrame);
 }
 
-int YUV420PToJPEGEncoder::encode(
-	const unsigned char* imageData /* = NULL */, const unsigned long long imageBytes /* = 0 */, 
-	const unsigned short imageWidth /* = 1920 */, const unsigned short imageHeight /* = 1080 */)
+int YUV420PToJPEGEncoder::inputMediaData(MediaDataPtr mediaData)
 {
-	int status{ ERR_INVALID_PARAM };
+	int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
 
-	if(inputAVFrame)
+	if(ERR_OK == status)
 	{
-		av_image_fill_arrays(
-			inputAVFrame->data, inputAVFrame->linesize, (const uint8_t*)imageData, 
-			AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
-
-		if(!avcodec_send_frame(ctx, inputAVFrame))
+		if (!ctx)
 		{
-			AVPacket pkt;
-			av_init_packet(&pkt);
-			avcodec_receive_packet(ctx, &pkt);
-			status = FFmpegEncoder::encode(pkt.data, pkt.size, imageWidth, imageHeight);
-			av_packet_unref(&pkt);
+			initialize();
 		}
-		else
+
+		int ret{ av_image_fill_arrays(
+			yuv420pFrame->data, yuv420pFrame->linesize, mediaData->getData(), AV_PIX_FMT_YUV420P, 1920, 1080, 1) };
+		if (0 < ret)
 		{
-			status = ERR_BAD_OPERATE;
+			if (!avcodec_send_frame(ctx, yuv420pFrame))
+			{
+				AVPacket pkt;
+				av_init_packet(&pkt);
+				avcodec_receive_packet(ctx, &pkt);
+//				status = FFmpegEncoder::encode(pkt.data, pkt.size, imageWidth, imageHeight);
+				av_packet_unref(&pkt);
+			}
 		}
 	}
 	

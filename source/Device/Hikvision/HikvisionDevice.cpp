@@ -1,46 +1,50 @@
-#include "error.h"
 #include "HCNetSDK.h"
+#include "error.h"
 #include "Device/Hikvision/HikvisionDevice.h"
 
 NS_BEGIN(device, 1)
 
 HikvisionDevice::HikvisionDevice(
-	const char* userName /* = NULL */, const char* userPassword /* = NULL */,
-	const char* deviceIP /* = NULL */, const unsigned short devicePort /* = 0 */)
-	: Device(), EnableDeviceLoginAndLogout(),
-	loginUserName{ userName }, loginUserPassword{ userPassword }, 
-	loginDeviceIP{ deviceIP }, loginDevicePort{ devicePort }, loginUserID{ -1 }
+	const std::string name, const std::string password, 
+	const std::string ipaddr, const unsigned short port /* = 0 */)
+	: Device(), EnableDeviceLoginAndLogout(), loginUserName{ name }, loginUserPassword{ password }, 
+	loginDeviceIP{ ipaddr }, loginDevicePort{ port }, loginUserID{ -1 }
 {}
 
 HikvisionDevice::~HikvisionDevice()
 {}
 
-int HikvisionDevice::createDevice()
+int HikvisionDevice::createNewDevice()
 {
-	int status{ Device::createDevice() };
-
 	//Initialize SDK when the first device was created.
-	if (1 == Device::deviceNumber)
+	if (0 == getDeviceCount())
 	{
-		status = NET_DVR_Init() ? ERR_OK : ERR_BAD_OPERATE;
+		NET_DVR_Init();
 	}
 
-	return ERR_OK == status ? loginDevice() : status;
+	int status{ Device::createNewDevice() };
+
+	if (ERR_OK == status)
+	{
+		status = loginDevice();
+	}
+
+	return status;
 }
 
 int HikvisionDevice::destoryDevice()
 {
-	int status{ Device::destoryDevice() };
+	int status{ logoutDevice() };
 
 	if (ERR_OK == status)
 	{
-		status = logoutDevice();
+		status = Device::destoryDevice();
 	}
 
 	//Release SDK when the last device was destroyed.
-	if (0 == Device::deviceNumber)
+	if (0 == getDeviceCount())
 	{
-		status = NET_DVR_Cleanup() ? ERR_OK : ERR_BAD_OPERATE;
+		NET_DVR_Cleanup();
 	}
 
 	return status;

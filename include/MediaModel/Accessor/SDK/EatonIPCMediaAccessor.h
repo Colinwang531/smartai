@@ -35,9 +35,12 @@ private:
 	int loginIPCDevice(
 		const std::string name, const std::string password,
 		const std::string address, const int port = 8000);
-	static void CALLBACK DetectConnect(
-		unsigned long dwIP, unsigned short wPort, unsigned long dwHandle, 
-		unsigned long dwCBconnectType, unsigned long dwDataLen, unsigned long dwData, void* pContext);
+	int startIPCRealplay(void);
+	static void DetectConnect(
+		unsigned int dwIP, unsigned short wPort, 
+		unsigned int dwHandle, unsigned int dwCBconnectType, 
+		unsigned int dwDataLen, unsigned int dwData, 
+		void* pContext);
 
 private:
 	unsigned long streamID;

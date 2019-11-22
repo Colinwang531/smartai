@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <io.h>
+#include "boost/filesystem.hpp"
 #include "boost/algorithm/string.hpp"
 #include "boost/checked_delete.hpp"
 #include "boost/filesystem.hpp"
@@ -9,8 +10,7 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoFace::CVAlgoFace(CaptureFaceInfoHandler handler /* = NULL */)
-	: CVAlgo(NULL, handler)//, largestRegisterFaceID{ 0 }
+CVAlgoFace::CVAlgoFace() : CVAlgo()
 {
 	InitializeCriticalSection(&criticalSection);
 }
@@ -59,23 +59,27 @@ int CVAlgoFace::removeFacePicture(const long long uuid /* = -1 */)
 	return status;
 }
 
-int CVAlgoFace::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
+int CVAlgoFace::initializeArithmetic()
 {
-	const std::string cfgFile{ (boost::format("%s\\model\\face.cfg") % configFilePath).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\face.weights") % configFilePath).str() };
-	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
-	initParames->cfgfile = (char*)cfgFile.c_str();
-	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->matchThreshold = 0.52f;
-	int status{ face.InitModel(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, &criticalSection) };
+	const std::string executePath{
+			boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	const std::string cfgFile{ (boost::format("%s\\model\\face.cfg") % executePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\face.weights") % executePath).str() };
+	StruInitParams parameters;
+	parameters.gpu_id = 0;
+	parameters.detectThreshold = 0.20f;
+	parameters.trackThreshold = 0.15f;
+	parameters.matchThreshold = 0.52f;
+	parameters.cfgfile = (char*)cfgFile.c_str();
+	parameters.weightFile = (char*)weightFile.c_str();
 
-	if (status)
-	{
-		BGR24ImageQueue.setCapacity(1);
-//		loadAndRegisterFacePicture(configFilePath);
-	}
+	return face.InitModel(
+		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters, &criticalSection) ? ERR_OK : ERR_BAD_OPERATE;
+}
 
-	return status;
+int CVAlgoFace::deinitializeArithmetic()
+{
+	return ERR_OK;
 }
 
 void CVAlgoFace::arithmeticWorkerProcess()
@@ -86,13 +90,13 @@ void CVAlgoFace::arithmeticWorkerProcess()
 	while (1)
 	{
 		FeedBackFaceRecog feedback;
-		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
+		MediaDataPtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
 		if (bgr24ImagePtr)
 		{
 			std::vector<FaceInfo> faceInfos;
 			boost::winapi::ULONGLONG_ nowProcTime{ GetTickCount64() };
-			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
+			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 			printf("=====  MainProcFunc run time = %lld.\r\n", nowProcTime - lastKnownTickTime_test);
 			lastKnownTickTime_test = nowProcTime;
 			printf("=====  face.mapMeory.size() = %d.\r\n", (int)feedback.mapMemory.size());
@@ -138,9 +142,9 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				feedback.vecFaceResult.clear();
 			}
 
-			if (capturefaceInfoHandler && 0 < faceInfos.size())
+			if (0 < faceInfos.size())
 			{
-				capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
+//				capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
 				//boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
 				//if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)

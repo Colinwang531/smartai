@@ -30,6 +30,11 @@ int AVCaptureFilter::destroyFilter()
 
 int AVCaptureFilter::inputMediaData(MediaDataPtr mediaData)
 {
+	if (postMediaDataCallback)
+	{
+		postMediaDataCallback(mediaStreamID, mediaData->getData(), mediaData->getDataBytes(), cbUserData);
+	}
+
 	return ERR_OK;
 }
 

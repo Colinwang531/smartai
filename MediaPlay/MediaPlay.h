@@ -21,10 +21,13 @@
 // 视频帧数据回调函数
 // 回调函数执行将阻塞正常的播放效果,调用者可将回调的视频帧数据先缓存再通过其他线程处理.
 //
-// @frameData : YUV420P视频帧数据缓存.
-// @frameBytes : 视频帧数据字节数.
+// @playID : 播放ID.
+// @frameData : BGR24图片数据缓存.
+// @frameBytes : BGR24图片数据字节数.
+// @userData : 用户数据.
 // 
-typedef void (CALLBACK *MEDIAPLAY_VideoFrameCallback)(const char* frameData, const int frameBytes);
+typedef void (CALLBACK *MEDIAPLAY_VideoFrameCallback)(
+	const int playID, const unsigned char* frameData, const int frameBytes, void* userData);
 
 // 打开媒体文件播放
 //
@@ -51,9 +54,10 @@ MEDIAPLAY int MEDIAPLAY_StopPlay(const int playID = 0);
 // @password : 实时流设备登录用户密码.
 // @address : 实时流设备IP地址.
 // @port : 实时流设备端口号.
-// @channel : 实时流索引号,从0开始到设备所支持的最大通道个数.
+// @channel : 实时流索引号,从1开始到设备所支持的最大通道个数.
 // @hwnd : 视频播放的窗口句柄,该参数必须设置,否则该函数将调用失败.
-// @callback : YUV420P视频帧数据回调函数.
+// @callback : BGR图片数据回调函数.
+// @userData : 用户数据.
 //
 // @Return : >0表示播放ID,=0表示函数调用失败.
 // 
@@ -61,7 +65,8 @@ MEDIAPLAY int MEDIAPLAY_StartLivestreamPlay(
 	const char* name = NULL, const char* password = NULL, 
 	const char* address = NULL, const int port = 8000,
 	const int channel = 0, const HWND hwnd = NULL, 
-	MEDIAPLAY_VideoFrameCallback callback = NULL);
+	MEDIAPLAY_VideoFrameCallback callback = NULL,
+	void* userData = NULL);
 
 // 关闭媒体实时流播放
 //

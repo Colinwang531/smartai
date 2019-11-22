@@ -24,7 +24,7 @@ public:
 	virtual int openStream(
 		const std::string name, const std::string password, 
 		const std::string address, const int port = 8000,
-		const int channel = 0);
+		const int channel = 0, void* hwnd = NULL);
 	virtual int closeStream(void);
 };//class MediaAccessor
 

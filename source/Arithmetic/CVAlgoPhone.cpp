@@ -1,3 +1,4 @@
+#include "boost/filesystem.hpp"
 #include "boost/format.hpp"
 #include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
@@ -6,29 +7,32 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoPhone::CVAlgoPhone(CaptureAlarmInfoHandler handler /* = NULL */)
-	: CVAlgo(handler)
+CVAlgoPhone::CVAlgoPhone() : CVAlgo()
 {}
 
 CVAlgoPhone::~CVAlgoPhone()
 {}
 
-int CVAlgoPhone::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
+int CVAlgoPhone::initializeArithmetic()
 {
-	bool status{ ERR_OK };
-	const std::string cfgFile{ (boost::format("%s\\model\\phone.cfg") % configFilePath).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\phone.weights") % configFilePath).str() };
-	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
-	initParames->cfgfile = (char*)cfgFile.c_str();
-	initParames->weightFile = (char*)weightFile.c_str();
+	const std::string executePath{
+				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	const std::string cfgFile{ (boost::format("%s\\model\\phone.cfg") % executePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\phone.weights") % executePath).str() };
+	StruInitParams parameters;
+	parameters.gpu_id = 0;
+	parameters.detectThreshold = 0.80f;
+	parameters.trackThreshold = 0.20f;
+	parameters.cfgfile = (char*)cfgFile.c_str();
+	parameters.weightFile = (char*)weightFile.c_str();
 
-	if (initParames)
-	{
-		status = phone.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
-	}
+	return phone.InitAlgoriParam(
+		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters) ? ERR_OK : ERR_BAD_OPERATE;
+}
 
-	return status;
+int CVAlgoPhone::deinitializeArithmetic()
+{
+	return ERR_OK;
 }
 
 void CVAlgoPhone::arithmeticWorkerProcess()
@@ -37,13 +41,13 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 
 	while (1)
 	{
-		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
+		MediaDataPtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
 		if (bgr24ImagePtr)
 		{
 			std::vector<AlarmInfo> alarmInfos;
 //			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
+			phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
@@ -84,8 +88,8 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 						alarmInfos.push_back(alarmInfo);
 
-						bgr24ImagePtr->setOriginImage(
-							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+// 						bgr24ImagePtr->setOriginImage(
+// 							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
 						it = feedback.mapMemory.erase(it);
 					}
@@ -94,15 +98,15 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						++it;
 					}
 
-					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
+					if (0 < alarmInfos.size())
 					{
-						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+//						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
-						{
-							lastKnownTickTime = currentTickTime;
-							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-						}
+// 						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+// 						{
+// 							lastKnownTickTime = currentTickTime;
+// 							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// 						}
 					}
 // 				}
 // 				else

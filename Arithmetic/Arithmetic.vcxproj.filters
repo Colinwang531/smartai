@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\DataStruct">
+      <UniqueIdentifier>{2705fa25-27f1-497e-8847-6a5063ce4df8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Arithmetic">
+      <UniqueIdentifier>{46cc0d0f-1901-47fe-9741-e3cd1c27909d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Arithmetic">
+      <UniqueIdentifier>{9828df8d-8ca5-4840-aa68-583281ea4f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost">
+      <UniqueIdentifier>{a7439a40-a129-409b-b46e-7699053f42b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\filesystem">
+      <UniqueIdentifier>{ec6ed2cf-4065-46cb-aa60-0cc166ee8589}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\system">
+      <UniqueIdentifier>{ee5aad34-7b93-4c5e-aa73-c16f258694aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\chrono">
+      <UniqueIdentifier>{a6d91768-fceb-4011-9d3b-ccfd1760c0f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\thread">
+      <UniqueIdentifier>{d8a37999-03eb-4fc9-9c98-0070522359a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MediaData">
+      <UniqueIdentifier>{5ade8fcb-aaf8-41a6-993a-cace0119434c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MediaData">
+      <UniqueIdentifier>{c41ec6c8-6cc5-4bdb-8f3e-70ea1933e940}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Arithmetic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\predef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\UnorderedMap.h">
+      <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgo.h">
+      <Filter>Header Files\Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoFace.h">
+      <Filter>Header Files\Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoFight.h">
+      <Filter>Header Files\Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h">
+      <Filter>Header Files\Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoPhone.h">
+      <Filter>Header Files\Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h">
+      <Filter>Header Files\Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaData\MediaData.h">
+      <Filter>Header Files\MediaData</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Arithmetic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgo.cpp">
+      <Filter>Source Files\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoFace.cpp">
+      <Filter>Source Files\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoFight.cpp">
+      <Filter>Source Files\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoHelmet.cpp">
+      <Filter>Source Files\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoPhone.cpp">
+      <Filter>Source Files\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Arithmetic\CVAlgoSleep.cpp">
+      <Filter>Source Files\Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\codecvt_error_category.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\operations.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\path_traits.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\portability.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\unique_path.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\utf8_codecvt_facet.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.cpp">
+      <Filter>Source Files\boost\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp">
+      <Filter>Source Files\boost\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\chrono\src\chrono.cpp">
+      <Filter>Source Files\boost\chrono</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaData\MediaData.cpp">
+      <Filter>Source Files\MediaData</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

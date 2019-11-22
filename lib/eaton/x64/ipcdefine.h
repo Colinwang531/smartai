@@ -6,18 +6,24 @@
 #pragma pack(1)
 
 /***************************************************************************************
-					ÀàĞÍ¶¨Òå
+					ç±»å‹å®šä¹‰
 ****************************************************************************************/
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 	  /* Type definition */
 /*-----------------------------------------------------------------------------
-ÏµÍ³¹«ÓÃÎÄ¼ş£¬¿ª·¢ÈËÔ±ÑÏ½ûĞŞ¸Ä
+ç³»ç»Ÿå…¬ç”¨æ–‡ä»¶ï¼Œå¼€å‘äººå‘˜ä¸¥ç¦ä¿®æ”¹
 ------------------------------------------------------------------------------*/
 
 typedef int		s32,BOOL32;
-typedef unsigned long   u32;
+#if defined(_WIN64) || defined(WIN64) ||defined (__LP64__) || defined (__64BIT__) || defined (_LP64) || (__WORDSIZE == 64)
+typedef unsigned int    u32;
+#define KD_PTR          void*
+#else
+typedef unsigned long    u32;
+#define KD_PTR           u32
+#endif
 typedef unsigned char	u8;
 typedef unsigned short  u16;
 typedef short           s16;
@@ -61,7 +67,7 @@ typedef unsigned long long u64;
 
 
 #ifndef CDECL
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN64)
 #define CDECL  __cdecl
 #else
 #define CDECL
@@ -71,10 +77,10 @@ typedef unsigned long long u64;
 /********************************************************************************/
 
 /**********************************MAXMIN VALUE************************************/
-#define MAX_USER_NAME                64   // ×î´óÓÃ»§Ãû³¤¶È(64Î»)
-#define MAX_USER_PASSWORD            64   // ×î´óÓÃ»§ÃÜÂë³¤¶È(64Î»)
-#define MAX_DEV_NAME				 64   // ×î´óÉè±¸Ãû³Æ³¤¶È(64Î»)
-#define MAX_PROTOCOL_NAME			 32   // ×î´óĞ­ÒéÃû³Æ³¤¶È(32Î»)
+#define MAX_USER_NAME                64   // æœ€å¤§ç”¨æˆ·åé•¿åº¦(64ä½)
+#define MAX_USER_PASSWORD            64   // æœ€å¤§ç”¨æˆ·å¯†ç é•¿åº¦(64ä½)
+#define MAX_DEV_NAME				 64   // æœ€å¤§è®¾å¤‡åç§°é•¿åº¦(64ä½)
+#define MAX_PROTOCOL_NAME			 32   // æœ€å¤§åè®®åç§°é•¿åº¦(32ä½)
 
 
 #ifndef MAX_PATH
@@ -82,153 +88,154 @@ typedef unsigned long long u64;
 #endif
 
 /************************************errcode************************************/					
-#define RET_FAILD                       (0)    // Ê§°Ü
-#define RET_SUCCESS                     (1)    // ³É¹¦·µ»Ø
-#define ERR_NODLL						(2)    // Ã»ÓĞÕÒµ½SDKDLL
-#define ERR_NOFUN						(3)    // Ã»ÓĞÕÒµ½SDKDLL¶ÔÓ¦½Ó¿Ú
-#define ERR_INITFAILD                   (4)    // ³õÊ¼»¯Ê§°Ü
-#define ERR_RELEASE                  	(5)    // ÊÍ·ÅÊ§°Ü
-#define ERR_AUCFAILD					(6)    // »ñÈ¡¼øÈ¨ĞÅÏ¢Ê§°Ü
-#define ERR_MEMERYFAILD					(7)    // »ñÈ¡ÄÚ´æÊ§°Ü
-#define ERR_PARAM						(8)    // ²ÎÊı´íÎó
-#define ERR_HTTPSEND					(9)	   // http·¢ËÍÊ§°Ü
-#define ERR_ANALVZE						(10)   // ½âÎö·µ»ØÊı¾İÊ§°Ü
-#define ERR_UPLOADING					(11)   // Éè±¸ÕıÔÚÉı¼¶
-#define ERR_NOLOGIN					    (12)   // Ã»ÓĞ×¢²á
-#define ERR_NODEFINE                    (13)   // ¹¦ÄÜÄ£¿éÃ»ÓĞ¶¨Òå
+#define RET_FAILD                       (0)    // å¤±è´¥
+#define RET_SUCCESS                     (1)    // æˆåŠŸè¿”å›
+#define ERR_NODLL						(2)    // æ²¡æœ‰æ‰¾åˆ°SDKDLL
+#define ERR_NOFUN						(3)    // æ²¡æœ‰æ‰¾åˆ°SDKDLLå¯¹åº”æ¥å£
+#define ERR_INITFAILD                   (4)    // åˆå§‹åŒ–å¤±è´¥
+#define ERR_RELEASE                  	(5)    // é‡Šæ”¾å¤±è´¥
+#define ERR_AUCFAILD					(6)    // è·å–é‰´æƒä¿¡æ¯å¤±è´¥
+#define ERR_MEMERYFAILD					(7)    // è·å–å†…å­˜å¤±è´¥
+#define ERR_PARAM						(8)    // å‚æ•°é”™è¯¯
+#define ERR_HTTPSEND					(9)	   // httpå‘é€å¤±è´¥
+#define ERR_ANALVZE						(10)   // è§£æè¿”å›æ•°æ®å¤±è´¥
+#define ERR_UPLOADING					(11)   // è®¾å¤‡æ­£åœ¨å‡çº§
+#define ERR_NOLOGIN					    (12)   // æ²¡æœ‰æ³¨å†Œ
+#define ERR_NODEFINE                    (13)   // åŠŸèƒ½æ¨¡å—æ²¡æœ‰å®šä¹‰
+#define ERR_DEVICELOSE					(14)   // è®¾å¤‡ä¸åœ¨çº¿
+ 
+#define ERR_UNKNOW						(201)  //CGI AppæœªçŸ¥é”™è¯¯
+#define ERR_USERNAME					(202)  //ç”¨æˆ·åé”™è¯¯(æ ¸å¿ƒæœåŠ¡å±‚ç”¨æˆ·ä¸å­˜åœ¨)
+#define ERR_NOT_AUTH					(203)  //ç”¨æˆ·ä¿¡æ¯æœªéªŒè¯
+#define ERR_PASS						(204)  //ç”¨æˆ·å¯†ç é”™è¯¯
+#define ERR_AUTHID						(205)  //é‰´æƒIDé”™è¯¯
+#define ERR_NO_POWER					(206)  //æ²¡æœ‰æƒé™æ‰§è¡Œæ“ä½œ
+#define ERR_IP_DENY					    (207)  //IPè¢«æ‹’ç»
+#define ERR_OLDPASS				    	(208)  //æ—§å¯†ç é”™è¯¯
+#define ERR_USER_EXIST					(209)  //ç”¨æˆ·å·²å­˜åœ¨
+#define ERR_URL_NO_SUPPORT				(210)  //æ­¤CGIè¯·æ±‚ä¸æ”¯æŒ
 
-#define ERR_UNKNOW						(201)  //CGI AppÎ´Öª´íÎó
-#define ERR_USERNAME					(202)  //ÓÃ»§Ãû´íÎó(ºËĞÄ·şÎñ²ãÓÃ»§²»´æÔÚ)
-#define ERR_NOT_AUTH					(203)  //ÓÃ»§ĞÅÏ¢Î´ÑéÖ¤
-#define ERR_PASS						(204)  //ÓÃ»§ÃÜÂë´íÎó
-#define ERR_AUTHID						(205)  //¼øÈ¨ID´íÎó
-#define ERR_NO_POWER					(206)  //Ã»ÓĞÈ¨ÏŞÖ´ĞĞ²Ù×÷
-#define ERR_IP_DENY					    (207)  //IP±»¾Ü¾ø
-#define ERR_OLDPASS				    	(208)  //¾ÉÃÜÂë´íÎó
-#define ERR_USER_EXIST					(209)  //ÓÃ»§ÒÑ´æÔÚ
-#define ERR_URL_NO_SUPPORT				(210)  //´ËCGIÇëÇó²»Ö§³Ö
+#define ERR_NEED_BODY                   (211)  //è¯·æ±‚æ²¡æœ‰æºå¸¦æ¶ˆæ¯ä½“
+#define ERR_XML                     	(212)  //CGIè¯·æ±‚æºå¸¦çš„XMLæ ¼å¼é”™è¯¯
+#define ERR_XML_ROOT                	(213)  //CGIè¯·æ±‚æºå¸¦XMLé”™è¯¯ï¼ˆè¯·æ±‚çš„URLä¸XMLå†…çš„æ ¹èŠ‚ç‚¹ä¸åŒ¹é…ï¼‰
+#define ERR_PARAM_LOST                  (214)  //CGIè¯·æ±‚æºå¸¦çš„XMLä¸­ç¼ºå°‘å¿…è¦çš„å‚æ•°ï¼ˆXMLå…ƒç´ ï¼‰
+#define ERR_PARMM_TOOLONG               (215)  //XMLä¸­æºå¸¦çš„å‚æ•°è¿‡é•¿
+#define ERR_CHECK                   	(216)  //å‡çº§ä¿¡æ¯æ£€æŸ¥é”™è¯¯
+#define ERR_FILE                    	(217)  //å‡çº§æ–‡ä»¶æ£€æŸ¥é”™è¯¯, é‡å‘å½“å‰çš„åŒ…
+#define ERR_UPGRADE_FAILURE             (218)  //è®¾å¤‡å‡çº§å¤±è´¥
+#define ERR_XML_PARAM                   (219)  //XMLå‚æ•°é”™è¯¯
+#define ERR_IP                      	(220)  //IPåœ°å€æ ¼å¼é”™è¯¯
+#define ERR_MASK                    	(221)  //IPæ©ç é”™è¯¯
+#define ERR_GATEWAY                 	(222)  //IPç½‘å…³é”™è¯¯
+#define ERR_DNS                     	(223)  //DNSåœ°å€é”™è¯¯
+#define ERR_MULTICAST               	(224)  //ç»„æ’­åœ°å€é”™è¯¯
+#define ERR_MTU                     	(225)  //MTUå‚æ•°é”™è¯¯
+#define ERR_SEQ                     	(226)  //æ“ä½œæ—¶åºé”™è¯¯
+#define ERR_URL                     	(227)  //è¯·æ±‚çš„URLæ ¼å¼é”™è¯¯
+#define ERR_INVALID_ARG                 (228)  //æ— æ•ˆçš„ä¿¡ä»¤
+#define ERR_DEVICE_BUSY                 (229)  //è®¾å¤‡æ­£å¿™
+#define ERR_RECOVER                     (230)  //è®¾å¤‡æ¢å¤
+#define ERR_USER_BANNED                 (231)  //ç”¨æˆ·è¢«ç¦æ­¢ç™»å½•
+#define ERR_USER_ACTIVE                 (232)  //ç”¨æˆ·éœ€è¦æ¿€æ´»
+#define ERR_NEED_REQUERY                (233)  //éœ€è¦é‡æ–°æŸ¥è¯¢
 
-#define ERR_NEED_BODY                   (211)  //ÇëÇóÃ»ÓĞĞ¯´øÏûÏ¢Ìå
-#define ERR_XML                     	(212)  //CGIÇëÇóĞ¯´øµÄXML¸ñÊ½´íÎó
-#define ERR_XML_ROOT                	(213)  //CGIÇëÇóĞ¯´øXML´íÎó£¨ÇëÇóµÄURLÓëXMLÄÚµÄ¸ù½Úµã²»Æ¥Åä£©
-#define ERR_PARAM_LOST                  (214)  //CGIÇëÇóĞ¯´øµÄXMLÖĞÈ±ÉÙ±ØÒªµÄ²ÎÊı£¨XMLÔªËØ£©
-#define ERR_PARMM_TOOLONG               (215)  //XMLÖĞĞ¯´øµÄ²ÎÊı¹ı³¤
-#define ERR_CHECK                   	(216)  //Éı¼¶ĞÅÏ¢¼ì²é´íÎó
-#define ERR_FILE                    	(217)  //Éı¼¶ÎÄ¼ş¼ì²é´íÎó, ÖØ·¢µ±Ç°µÄ°ü
-#define ERR_UPGRADE_FAILURE             (218)  //Éè±¸Éı¼¶Ê§°Ü
-#define ERR_XML_PARAM                   (219)  //XML²ÎÊı´íÎó
-#define ERR_IP                      	(220)  //IPµØÖ·¸ñÊ½´íÎó
-#define ERR_MASK                    	(221)  //IPÑÚÂë´íÎó
-#define ERR_GATEWAY                 	(222)  //IPÍø¹Ø´íÎó
-#define ERR_DNS                     	(223)  //DNSµØÖ·´íÎó
-#define ERR_MULTICAST               	(224)  //×é²¥µØÖ·´íÎó
-#define ERR_MTU                     	(225)  //MTU²ÎÊı´íÎó
-#define ERR_SEQ                     	(226)  //²Ù×÷Ê±Ğò´íÎó
-#define ERR_URL                     	(227)  //ÇëÇóµÄURL¸ñÊ½´íÎó
-#define ERR_INVALID_ARG                 (228)  //ÎŞĞ§µÄĞÅÁî
-#define ERR_DEVICE_BUSY                 (229)  //Éè±¸ÕıÃ¦
-#define ERR_RECOVER                     (230)  //Éè±¸»Ö¸´
-#define ERR_USER_BANNED                 (231)  //ÓÃ»§±»½ûÖ¹µÇÂ¼
-#define ERR_USER_ACTIVE                 (232)  //ÓÃ»§ĞèÒª¼¤»î
-#define ERR_NEED_REQUERY                (233)  //ĞèÒªÖØĞÂ²éÑ¯
-
-#define ERR_NOFORMAT                    (2509) // Ç°¶ËÕıÔÚÂ¼Ïñ²»ÄÜ¸ñÊ½»¯
+#define ERR_NOFORMAT                    (2509) // å‰ç«¯æ­£åœ¨å½•åƒä¸èƒ½æ ¼å¼åŒ–
 
 /********************************************************************************/
 
 /************************************event************************************/	
 
-#define EVT_PTZ_BEGIN                  	(0)    			// PTZÊÂ¼ş¶¨ÒåÆğÊ¼Î»ÖÃ				
-#define EVT_PTZ_FOUCUS                  (EVT_PTZ_BEGIN + 1)    // PTZ½¹µãÊÂ¼ş
+#define EVT_PTZ_BEGIN                  	(0)    			// PTZäº‹ä»¶å®šä¹‰èµ·å§‹ä½ç½®				
+#define EVT_PTZ_FOUCUS                  (EVT_PTZ_BEGIN + 1)    // PTZç„¦ç‚¹äº‹ä»¶
 
 
 /********************************************************************************/
 
 /************************************cap************************************/	
 
-#define CAP_ANONYM                  	"anonym"    	// ºìÍâµÆÄÜÁ¦¼¯
-#define CAP_HELP                  		"help"    		// °ïÖú
-#define CAP_VIDEOSOURCENUM              "videosourcenum"// ÊÓÆµÔ´ÊıÁ¿
-#define CAP_STREAMNUM                  	"streamnum"    	// ÂëÁ÷Â·Êı
-#define CAP_AUDIOENC                  	"audioenc"    	// ÒôÆµ±àÂëÄÜÁ¦
-#define CAP_AUDIODEC                  	"audiodec"    	// ÒôÆµ½âÂëÄÜÁ¦
-#define CAP_REC                  		"rec"    		// Ö§³ÖÂ¼Ïñ¹¦ÄÜ
-#define CAP_IMAGE                  		"image"    		// Ö§³ÖÍ¼Ïñµ÷½Ú¹¦ÄÜ
-#define CAP_BRIGHTNESS                  "brightness"    // ÁÁ¶È
-#define CAP_CONTRAST                  	"contrast"    	// ¶Ô±È¶È
-#define CAP_SATURATION                 	"saturation"    // ±¥ºÍ¶È
-#define CAP_HUE                 		"hue"    		// Èñ¶È
-#define CAP_FOCUS                 		"focus"    		// Ö§³Ö¾Û½¹
-#define CAP_WHITEBALANCE                "whitebalance"  // °×Æ½ºâ 
-#define CAP_DYNAMICMODE                 "dynamicmode"   // Ö§³Ö¶¯Ì¬µ÷½Ú
-#define CAP_IMAGEENHANCE                "imageenhance"  // Í¼ÏñÔöÇ¿
-#define CAP_WDR                 		"wdr"    		// ¿í¶¯Ì¬
-#define CAP_BLC                 		"blc"    		// Ç¿¹âÒÖÖÆ
-#define CAP_HLC                 		"hlc"    		// ±³¹â²¹³¥
-#define CAP_FOGTHROUGH                 	"fogthrough"    // Í¸Îí
+#define CAP_ANONYM                  	"anonym"    	// çº¢å¤–ç¯èƒ½åŠ›é›†
+#define CAP_HELP                  		"help"    		// å¸®åŠ©
+#define CAP_VIDEOSOURCENUM              "videosourcenum"// è§†é¢‘æºæ•°é‡
+#define CAP_STREAMNUM                  	"streamnum"    	// ç æµè·¯æ•°
+#define CAP_AUDIOENC                  	"audioenc"    	// éŸ³é¢‘ç¼–ç èƒ½åŠ›
+#define CAP_AUDIODEC                  	"audiodec"    	// éŸ³é¢‘è§£ç èƒ½åŠ›
+#define CAP_REC                  		"rec"    		// æ”¯æŒå½•åƒåŠŸèƒ½
+#define CAP_IMAGE                  		"image"    		// æ”¯æŒå›¾åƒè°ƒèŠ‚åŠŸèƒ½
+#define CAP_BRIGHTNESS                  "brightness"    // äº®åº¦
+#define CAP_CONTRAST                  	"contrast"    	// å¯¹æ¯”åº¦
+#define CAP_SATURATION                 	"saturation"    // é¥±å’Œåº¦
+#define CAP_HUE                 		"hue"    		// é”åº¦
+#define CAP_FOCUS                 		"focus"    		// æ”¯æŒèšç„¦
+#define CAP_WHITEBALANCE                "whitebalance"  // ç™½å¹³è¡¡ 
+#define CAP_DYNAMICMODE                 "dynamicmode"   // æ”¯æŒåŠ¨æ€è°ƒèŠ‚
+#define CAP_IMAGEENHANCE                "imageenhance"  // å›¾åƒå¢å¼º
+#define CAP_WDR                 		"wdr"    		// å®½åŠ¨æ€
+#define CAP_BLC                 		"blc"    		// å¼ºå…‰æŠ‘åˆ¶
+#define CAP_HLC                 		"hlc"    		// èƒŒå…‰è¡¥å¿
+#define CAP_FOGTHROUGH                 	"fogthrough"    // é€é›¾
 #define CAP_GAMMA                 		"gamma"    		// Gamma
 #define CAP_SMARTIR                 	"smartir"    	// SmartIR
-#define CAP_IRIS                 		"iris"    		// ¹âÈ¦
-#define CAP_IRCUTFILTER                 "ircutfilter"   // ÈÕÒ¹ÇĞ»»
-#define CAP_SHUTTER                 	"shutter"    	// Ö§³Ö¿ìÃÅ
-#define CAP_GAIN                 		"gain"    		// ÔöÒæ
-#define CAP_CORRIDORMODE                "corridormode"  // Ö§³Ö×ßÀÈÄ£Ê½
-#define CAP_IMAGEMODE                 	"imagemode"    	// ¾µÏñÄ£Ê½
-#define CAP_NOISEREDUCE2D               "noisereduce2d" // 2D½µÔë 
-#define CAP_NOISEREDUCE3D               "noisereduce3d" // 3D½µÔë
-#define CAP_LOCALECHO                 	"localecho"    	// Ö§³Ö±¾µØ»ØÏÔ
+#define CAP_IRIS                 		"iris"    		// å…‰åœˆ
+#define CAP_IRCUTFILTER                 "ircutfilter"   // æ—¥å¤œåˆ‡æ¢
+#define CAP_SHUTTER                 	"shutter"    	// æ”¯æŒå¿«é—¨
+#define CAP_GAIN                 		"gain"    		// å¢ç›Š
+#define CAP_CORRIDORMODE                "corridormode"  // æ”¯æŒèµ°å»Šæ¨¡å¼
+#define CAP_IMAGEMODE                 	"imagemode"    	// é•œåƒæ¨¡å¼
+#define CAP_NOISEREDUCE2D               "noisereduce2d" // 2Dé™å™ª 
+#define CAP_NOISEREDUCE3D               "noisereduce3d" // 3Dé™å™ª
+#define CAP_LOCALECHO                 	"localecho"    	// æ”¯æŒæœ¬åœ°å›æ˜¾
 #define CAP_HDSDI                 		"hdsdi"    		// HDSDI
-#define CAP_POWERLINEFREQUENCY          "powerlinefrequency"// ·ÀÉÁË¸
-#define CAP_IMAGETRUN                 	"imagetrun"    	// Í¼Ïñ·­×ª
-#define CAP_ENCCLIP                 	"encclip"    	// ±àÂë²Ã¼ô
-#define CAP_ROI                 		"roi"    		// Ãô¸ĞÇøÓò
-#define CAP_VIDEOSHILD                 	"videoshild"    // ÊÓÆµÕÚ±Î
+#define CAP_POWERLINEFREQUENCY          "powerlinefrequency"// é˜²é—ªçƒ
+#define CAP_IMAGETRUN                 	"imagetrun"    	// å›¾åƒç¿»è½¬
+#define CAP_ENCCLIP                 	"encclip"    	// ç¼–ç è£å‰ª
+#define CAP_ROI                 		"roi"    		// æ•æ„ŸåŒºåŸŸ
+#define CAP_VIDEOSHILD                 	"videoshild"    // è§†é¢‘é®è”½
 #define CAP_QOS                 		"qos"    		// Qos
-#define CAP_AUDIODEC                 	"audiodec"    	// ÒôÆµ½âÂë
-#define CAP_AUDIOENC                 	"audioenc"    	// ÒôÆµ±àÂë
-#define CAP_OSD                 		"osd"    		// ×ÖÄ»
-#define CAP_DYNAMICOSD                 	"dynamicosd"    // ¶¯Ì¬OSD
-#define CAP_MTCF                 		"mtcf"    		// mtcf ¹¤×÷Ä£Ê½
-#define CAP_PTZ                  		"ptz"    		// ÔÆÌ¨
-#define CAP_PRESET                 		"preset"    	// Ô¤ÖÃÎ»
-#define CAP_WATCHON                 	"watchon"    	// ÔÆÌ¨ÊØÍû
-#define CAP_TIMETASK                 	"timetask"    	// ¶¨Ê±ÈÎÎñ
-#define CAP_PATHCRUISE                 	"pathcruise"    // Ñ²º½É¨Ãè
-#define CAP_PATTERNS                 	"patterns"    	// »¨ÑùÉ¨Ãè
-#define CAP_LIMIT                 		"limit"    		// ÏŞÎ»
-#define CAP_LASER                 		"laser"    		// ¼¤¹â
-#define CAP_WIPER                 		"wiper"    		// ÓêË¢, 
-#define CAP_SHAKE                 		"shake"    		// ·À¶¶, 
-#define CAP_ESHAKE                 		"eshake"    	// µç×Ó·À¶¶
-#define CAP_DEFRONST                 	"defronst"    	// ³ıËª,
-#define CAP_ASSFOCUS                 	"assfocus"    	// ¸¨Öúµ÷½¹
-#define CAP_INFRARED                 	"infrared"    	// ºìÍâ 
-#define CAP_ANALYZE                 	"analyze"    	// ÊÓÆµ·ÖÎö
-#define CAP_DETECT                 		"detect"    	// ÒÆ¶¯Õì²âÇøÓòÊıÁ¿£¬0²»Ö§³Ö
-#define CAP_SHIELDALARM                 "shieldalarm"   // ÕÚ±Î±¨¾¯ÇøÓòÊıÁ¿£¬0²»Ö§³Ö
-#define CAP_ALARMIN                 	"alarmin"    	// ±¨¾¯ÊäÈëÊıÁ¿£¬0²»Ö§³Ö
-#define CAP_ALARMOUT                 	"alarmout"    	// ±¨¾¯Êä³öÊıÁ¿£¬0²»Ö§³Ö
-#define CAP_EXCEPTION                 	"exception"    	// Òì³£Áª¶¯  
-#define CAP_MULCARD                 	"mulcard"    	// Íø¿¨ÊıÁ¿
-#define CAP_WIRELESS                 	"wireless"    	// ·ñÖ§³ÖÎŞÏß
-#define CAP_PPPOE                 		"pppoe"    		// PPPoEÖ§³Ö
-#define CAP_DDNS                 		"ddns"    		// DDNSÖ§³Ö
-#define CAP_8021X                 		"8021x"    		// 8021XÖ§³Ö
+#define CAP_AUDIODEC                 	"audiodec"    	// éŸ³é¢‘è§£ç 
+#define CAP_AUDIOENC                 	"audioenc"    	// éŸ³é¢‘ç¼–ç 
+#define CAP_OSD                 		"osd"    		// å­—å¹•
+#define CAP_DYNAMICOSD                 	"dynamicosd"    // åŠ¨æ€OSD
+#define CAP_MTCF                 		"mtcf"    		// mtcf å·¥ä½œæ¨¡å¼
+#define CAP_PTZ                  		"ptz"    		// äº‘å°
+#define CAP_PRESET                 		"preset"    	// é¢„ç½®ä½
+#define CAP_WATCHON                 	"watchon"    	// äº‘å°å®ˆæœ›
+#define CAP_TIMETASK                 	"timetask"    	// å®šæ—¶ä»»åŠ¡
+#define CAP_PATHCRUISE                 	"pathcruise"    // å·¡èˆªæ‰«æ
+#define CAP_PATTERNS                 	"patterns"    	// èŠ±æ ·æ‰«æ
+#define CAP_LIMIT                 		"limit"    		// é™ä½
+#define CAP_LASER                 		"laser"    		// æ¿€å…‰
+#define CAP_WIPER                 		"wiper"    		// é›¨åˆ·, 
+#define CAP_SHAKE                 		"shake"    		// é˜²æŠ–, 
+#define CAP_ESHAKE                 		"eshake"    	// ç”µå­é˜²æŠ–
+#define CAP_DEFRONST                 	"defronst"    	// é™¤éœœ,
+#define CAP_ASSFOCUS                 	"assfocus"    	// è¾…åŠ©è°ƒç„¦
+#define CAP_INFRARED                 	"infrared"    	// çº¢å¤– 
+#define CAP_ANALYZE                 	"analyze"    	// è§†é¢‘åˆ†æ
+#define CAP_DETECT                 		"detect"    	// ç§»åŠ¨ä¾¦æµ‹åŒºåŸŸæ•°é‡ï¼Œ0ä¸æ”¯æŒ
+#define CAP_SHIELDALARM                 "shieldalarm"   // é®è”½æŠ¥è­¦åŒºåŸŸæ•°é‡ï¼Œ0ä¸æ”¯æŒ
+#define CAP_ALARMIN                 	"alarmin"    	// æŠ¥è­¦è¾“å…¥æ•°é‡ï¼Œ0ä¸æ”¯æŒ
+#define CAP_ALARMOUT                 	"alarmout"    	// æŠ¥è­¦è¾“å‡ºæ•°é‡ï¼Œ0ä¸æ”¯æŒ
+#define CAP_EXCEPTION                 	"exception"    	// å¼‚å¸¸è”åŠ¨  
+#define CAP_MULCARD                 	"mulcard"    	// ç½‘å¡æ•°é‡
+#define CAP_WIRELESS                 	"wireless"    	// å¦æ”¯æŒæ— çº¿
+#define CAP_PPPOE                 		"pppoe"    		// PPPoEæ”¯æŒ
+#define CAP_DDNS                 		"ddns"    		// DDNSæ”¯æŒ
+#define CAP_8021X                 		"8021x"    		// 8021Xæ”¯æŒ
 #define CAP_VISP                 		"visp"    		// Kedavsip
 #define CAP_ONVIF                 		"onvif"    		// Onvif
 #define CAP_GB28181                 	"gb28181"    	// Gb28181
 #define CAP_KSNMP                 		"ksnmp"    		// Ksnmp
 #define CAP_IPADDR                 		"ipaddr"    	// ip
 #define CAP_WIFI                 		"wifi"    		// wifi
-#define CAP_BLUETOOTH                 	"bluetooth"    	// À¶ÑÀ
-#define CAP_AUTOMAINTAIN                "automaintain"  // ×Ô¶¯Î¬»¤
-#define CAP_FIND                 		"find"    		// ·¢ÏÖ
+#define CAP_BLUETOOTH                 	"bluetooth"    	// è“ç‰™
+#define CAP_AUTOMAINTAIN                "automaintain"  // è‡ªåŠ¨ç»´æŠ¤
+#define CAP_FIND                 		"find"    		// å‘ç°
 #define CAP_RS232                 		"rs232"    		// rs232
 #define CAP_RS485                 		"rs485"    		// rs485
-#define CAP_STORAGE                 	"storage"    	// ´æ´¢ÄÜÁ¦¼¯
-#define CAP_SNAPPIC                 	"snappic"    	// ×¥Í¼
-#define CAP_LOG                			"log"    		// ÈÕÖ¾
-#define CAP_SECURITY                 	"security"    	// °²È«
+#define CAP_STORAGE                 	"storage"    	// å­˜å‚¨èƒ½åŠ›é›†
+#define CAP_SNAPPIC                 	"snappic"    	// æŠ“å›¾
+#define CAP_LOG                			"log"    		// æ—¥å¿—
+#define CAP_SECURITY                 	"security"    	// å®‰å…¨
 
 
 
@@ -236,24 +243,24 @@ typedef unsigned long long u64;
 
 /***********************************enum************************************/
 
-// ÂëÁ÷·Ö±æÂÊ
+// ç æµåˆ†è¾¨ç‡
 enum ERESOLUTION 
 {
-	ERESOLUTION_1024_768,		// 1024¡Á 768
-	ERESOLUTION_1920_1280,		// 1920¡Á 1280
+	ERESOLUTION_1024_768,		// 1024Ã— 768
+	ERESOLUTION_1920_1280,		// 1920Ã— 1280
 };
 
 
-// UDPÊÓÆµä¯ÀÀ²ÎÊı
+// UDPè§†é¢‘æµè§ˆå‚æ•°
 enum emStreamType
 {
-	em_streamtype_vedio = 0,	// ÊÓÆµ
-	em_streamtype_audio,		// ÒôÆµ
-	em_streamtype_both,			// ÊÓÆµ + ÒôÆµ
-	em_streamtype_ps			// PSÁ÷
+	em_streamtype_vedio = 0,	// è§†é¢‘
+	em_streamtype_audio,		// éŸ³é¢‘
+	em_streamtype_both,			// è§†é¢‘ + éŸ³é¢‘
+	em_streamtype_ps			// PSæµ
 };
 
-// ºô½Ğ´«ÊäÀàĞÍ
+// å‘¼å«ä¼ è¾“ç±»å‹
 enum emTransType
 {
 	em_transtype_rtp_udp = 0,	// rtp-udp
@@ -262,7 +269,7 @@ enum emTransType
 	em_transtype_rtsp_udp		// rtsp-udp
 };
 
-// ÂëÁ÷´«ÊäÀàĞÍ
+// ç æµä¼ è¾“ç±»å‹
 enum emPlayVideoType
 {
 	type_udp =  0,     // udp
@@ -271,81 +278,81 @@ enum emPlayVideoType
 };
 
 
-// Á¬½Ó×´Ì¬
+// è¿æ¥çŠ¶æ€
 enum emConnectState
 {
-	em_connect_ok = 0,	// Á¬½Ó³É¹¦
-	em_connect_no,		// Á¬½ÓÊ§°Ü
+	em_connect_ok = 0,	// è¿æ¥æˆåŠŸ
+	em_connect_no,		// è¿æ¥å¤±è´¥
 };
 
-// IP·ÖÅä·½Ê½
+// IPåˆ†é…æ–¹å¼
 enum emIpAddrType
 {
-	em_ipaddr_static = 0,//¾²Ì¬
-	em_ipaddr_dymatic,   //¶¯Ì¬
+	em_ipaddr_static = 0,//é™æ€
+	em_ipaddr_dymatic,   //åŠ¨æ€
 };
 
-// IPµØÖ·µÄÀàĞÍ
+// IPåœ°å€çš„ç±»å‹
 enum emIPAddressType
 {
-	em_ipaddrtype_ip = 0,		// ÕûĞÍ£¬dwordÖµ
-	em_ipaddrtype_url			// urlµØÖ·£¬×Ö·û´®
+	em_ipaddrtype_ip = 0,		// æ•´å‹ï¼Œdwordå€¼
+	em_ipaddrtype_url			// urlåœ°å€ï¼Œå­—ç¬¦ä¸²
 };
-// ±¾µØÂ¼ÏñÎÄ¼ş±£´æ¸ñÊ½
+// æœ¬åœ°å½•åƒæ–‡ä»¶ä¿å­˜æ ¼å¼
 enum emLocalRecType
 {
-	em_localrectype_asf = 0,     //asf¸ñÊ½
+	em_localrectype_asf = 0,     //asfæ ¼å¼
 };
-// Í¼Æ¬±àÂëÀàĞÍ 
+// å›¾ç‰‡ç¼–ç ç±»å‹ 
 enum emPictureType
 {
 	
-	em_picture_jpeg = 0,// jpeg¸ñÊ½
-	em_picture_bmp,		// bmp¸ñÊ½
+	em_picture_jpeg = 0,// jpegæ ¼å¼
+	em_picture_bmp,		// bmpæ ¼å¼
 };
-// Â¼ÏñÊÂ¼şÀàĞÍ
+// å½•åƒäº‹ä»¶ç±»å‹
 enum emRecType
 {
-	em_record_alarm = 0, //ÊÂ¼şÂ¼Ïñ
-	em_record_time,      //Ê±¼äÂ¼Ïñ
-	em_record_manual,    //ÊÖ¶¯Â¼Ïñ
+	em_record_alarm = 0, //äº‹ä»¶å½•åƒ
+	em_record_time,      //æ—¶é—´å½•åƒ
+	em_record_manual,    //æ‰‹åŠ¨å½•åƒ
 };
-// Â¼Ïñ²¥·ÅËÙ¶È
+// å½•åƒæ’­æ”¾é€Ÿåº¦
 enum emRecPlayRate
 {
-	em_recplay_rate1 = 0,// ³õÊ¼ËÙ¶È
-	em_recplay_rate2,    // 2±¶ËÙ¶È
+	em_recplay_rate1 = 0,// åˆå§‹é€Ÿåº¦
+	em_recplay_rate2,    // 2å€é€Ÿåº¦
 	em_recplay_rate4,    
 	em_recplay_rate8,
 	em_recplay_rate16,
-	em_recplay_rate1_2,  // 1/2±¶ËÙ¶È
+	em_recplay_rate1_2,  // 1/2å€é€Ÿåº¦
 	em_recplay_rate1_4,
 	em_recplay_rate1_8,
 };
 
-// ×Ô¶¯Ğ£Ê±Ä£Ê½
+// è‡ªåŠ¨æ ¡æ—¶æ¨¡å¼
 enum EAUTOTIMEMODE 
 {
-	em_autotime_ntp = 0,			// 1024¡Á 768
-	em_autotime_inputprotocol,			// 1920¡Á 1280
+	em_autotime_ntp = 0,			// 1024Ã— 768
+	em_autotime_inputprotocol,			// 1920Ã— 1280
 };
 /********************************************************************************/
 
-/**********************************Éı¼¶×´Ì¬t************************************/
+/**********************************å‡çº§çŠ¶æ€t************************************/
 enum emUploadState
 {
-	em_uploadstate_idle = 0,     // ¿ÕÏĞ
-	em_uploadstate_checkdata,    // Ğ£Ñé
-	em_uploadstate_pre,			 // ×¼±¸Éı¼¶
-	em_uploadstate_uploading,	 // ÕıÔÚÉı¼¶
+	em_uploadstate_idle = 0,     // ç©ºé—²
+	em_uploadstate_checkdata,    // æ ¡éªŒ
+	em_uploadstate_pre,			 // å‡†å¤‡å‡çº§
+	em_uploadstate_uploading,	 // æ­£åœ¨å‡çº§
 };
 
 /********************************************************************************/
 
 /***********************************port************************************/
-#define PORT_HTTP                  (80)   // http¶Ë¿Ú
-#define PORT_RTSP                  (554)  // http¶Ë¿Ú
-#define PORT_PRINT                 (3700)  // ±¾µØ´òÓ¡¶Ë¿Ú
+#define PORT_HTTP                  (80)   // httpç«¯å£
+#define PORT_RTSP                  (554)  // httpç«¯å£
+#define PORT_PRINT                 (3700)  // æœ¬åœ°æ‰“å°ç«¯å£
 
 
 /********************************************************************************/
@@ -360,32 +367,37 @@ enum emUploadState
 /**********************************Normal define***********************************/
 #define NORMAL_BEGIN            0   // 
 #define VIEW_TCP               	(NORMAL_BEGIN + 2)   // TCP
-#define VIEW_UDP                (NORMAL_BEGIN + 3)   // UDPä¯ÀÀ
+#define VIEW_UDP                (NORMAL_BEGIN + 3)   // UDPæµè§ˆ
 #define REC_TCP               	(NORMAL_BEGIN + 2)   // TCP
-#define VIEW_UDP                (NORMAL_BEGIN + 3)   // UDPä¯ÀÀ
+#define VIEW_UDP                (NORMAL_BEGIN + 3)   // UDPæµè§ˆ
 
-/*********************************IPCSDK»Øµ÷Ô­ĞÍ¶¨Òåe***********************************/
+/*********************************IPCSDKå›è°ƒåŸå‹å®šä¹‰e***********************************/
 
 
 /*=================================================================
-º¯ÊıÃû³Æ: cbfConnectDetect
-¹¦    ÄÜ: Á¬½ÓÌ½²â»Øµ÷»Øµ÷    £¬IPC_AddConnectDetect
-²ÎÊıËµÃ÷: 
-		  dwIP		-- Éè±¸IP 
-		  wPort		-- Éè±¸http¶Ë¿Ú 
-		  dwCBconnectType	-- Á¬½Ó×´Ì¬ emConnectState
-		  dwData	-- »Ø´«Êı¾İ
-		  dwDataLen -- »Ø´«Êı¾İ³¤¶È
-		  pContext	-- ÉÏÏÂÎÄ
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: cbfConnectDetect
+åŠŸ    èƒ½: è¿æ¥æ¢æµ‹å›è°ƒå›è°ƒ    ï¼ŒIPC_AddConnectDetect
+å‚æ•°è¯´æ˜: 
+		  dwIP		-- è®¾å¤‡IP 
+		  wPort		-- è®¾å¤‡httpç«¯å£ 
+		  dwCBconnectType	-- è¿æ¥çŠ¶æ€ emConnectState
+		  dwData	-- å›ä¼ æ•°æ®
+		  dwDataLen -- å›ä¼ æ•°æ®é•¿åº¦
+		  pContext	-- ä¸Šä¸‹æ–‡
+è¿” å› å€¼: æˆåŠŸè¿”å›IPC_ERR_SUCCESS, å¤±è´¥è¿”å›é”™è¯¯ç 
 =================================================================*/
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN64)
 typedef void (__stdcall *cbfConnectDetect)(u32 dwIP, u16 wPort, u32 dwHandle,u32 dwCBconnectType, u32 dwDataLen, u32 dwData, void* pContext);
 #else
 typedef void (CDECL *cbfConnectDetect)(u32 dwIP, u16 wPort, u32 dwHandle,u32 dwCBconnectType, u32 dwDataLen, u32 dwData, void* pContext);
 #endif
 
-
+// é“¾è·¯æ£€æµ‹å›è°ƒ
+#if defined(WIN32) || defined(_WIN64)
+typedef void (__stdcall *IPC_CHECKLINK_CB)(u32 dwIp,u16 wPort,bool result);
+#else
+typedef void (CDECL *IPC_CHECKLINK_CB)(u32 dwIp,u16 wPort,bool result);
+#endif
 
 #pragma pack()
 

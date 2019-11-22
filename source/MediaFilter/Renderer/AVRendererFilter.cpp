@@ -56,6 +56,11 @@ int AVRendererFilter::destroyFilter()
 
 int AVRendererFilter::inputMediaData(MediaDataPtr mediaData)
 {
+	if (MediaDataSubID::MEDIA_DATA_SUB_ID_NV12 == mediaData->getSubID())
+	{
+		return MediaFilter::postInputMediaData(mediaData);
+	}
+
 	return mediaData && mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
 }
 

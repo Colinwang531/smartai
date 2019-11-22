@@ -1,13 +1,10 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2018, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2017-06-26
-//		Description :				海康设备类
-//
-//		History:						Author										Date													Description
-//											王科威										2017-06-26									创建
+// Base class of HIKVISION device.
 //
 
 #ifndef HIKVISION_DEVICE_H
@@ -18,12 +15,13 @@
 
 NS_BEGIN(device, 1)
 
-class HikvisionDevice : public Device, protected EnableDeviceLoginAndLogout
+class HikvisionDevice 
+	: public Device, protected EnableDeviceLoginAndLogout
 {
 public:
 	HikvisionDevice(
-		const char* userName = NULL, const char* userPassword = NULL,
-		const char* deviceIP = NULL, const unsigned short devicePort = 0);
+		const std::string name, const std::string password,
+		const std::string ipaddr, const unsigned short port = 0);
 	virtual ~HikvisionDevice(void);
 
 	inline int getUserID(void) const 
@@ -32,7 +30,7 @@ public:
 	}
 
 protected:
-	int createDevice(void) override;
+	int createNewDevice(void) override;
 	int destoryDevice(void) override;
 	int logoutDevice(void) override;
 

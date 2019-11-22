@@ -23,7 +23,7 @@ NS_BEGIN(algo, 1)
 class CVAlgoFace : public CVAlgo
 {
 public:
-	CVAlgoFace(CaptureFaceInfoHandler handler = NULL);
+	CVAlgoFace(void);
 	~CVAlgoFace(void);
 
 public:
@@ -31,8 +31,8 @@ public:
 	int removeFacePicture(const long long uuid = -1);
 
 protected:
-	int initializeWithParameter(
-		const char* configFilePath = NULL, void* parameter = NULL) override;
+	int initializeArithmetic() override;
+	int deinitializeArithmetic(void) override;
 	void arithmeticWorkerProcess(void) override;
 
 private:
@@ -43,9 +43,8 @@ private:
 	CRITICAL_SECTION criticalSection;
 //	int largestRegisterFaceID;
 	boost::unordered_map<int, const std::string> registerFaceImageGroup;
-	const char* savePath = "d:\\SavePath\\";
-};//class CVAlgoHelmet
+};//class CVAlgoFace
 
 NS_END
 
-#endif//CV_ALGO_HELMET_H
+#endif//CV_ALGO_FACE_H

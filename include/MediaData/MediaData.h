@@ -25,6 +25,7 @@ public:
 	~MediaData(void);
 
 public:
+	int copyData(const unsigned char* data = NULL, const unsigned long long dataBytes = 0);
 	int setData(
 		const unsigned char* data = NULL, const unsigned long long dataBytes = 0);
 	inline void setRawData(void* data = NULL)
@@ -89,6 +90,7 @@ private:
 	int imageWidth;
 	void* mediaDataRaw;
 	void* userData;
+	bool copyMediaData;
 };//class MediaData
 
 NS_END

@@ -31,6 +31,7 @@ protected:
 	virtual int createNewAudioDecoderFilter(void);
 	virtual int createNewVideoRendererFilter(void);
 	virtual int createNewAudioRendererFilter(void);
+	virtual int createNewVideoFormatterFilter(void);
 
 private:
 	// Live stream and callback data capture filters were created by creator.

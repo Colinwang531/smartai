@@ -1,3 +1,4 @@
+#include "boost/filesystem.hpp"
 #include "boost/format.hpp"
 #include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
@@ -6,29 +7,32 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoFight::CVAlgoFight(CaptureAlarmInfoHandler handler /* = NULL */)
-	: CVAlgo(handler)
+CVAlgoFight::CVAlgoFight() : CVAlgo()
 {}
 
 CVAlgoFight::~CVAlgoFight()
 {}
 
-int CVAlgoFight::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
+int CVAlgoFight::initializeArithmetic()
 {
-	bool status{ ERR_OK };
-	const std::string cfgFile{ (boost::format("%s\\model\\fight.cfg") % configFilePath).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\fight.weights") % configFilePath).str() };
-	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
-	initParames->cfgfile = (char*)cfgFile.c_str();
-	initParames->weightFile = (char*)weightFile.c_str();
+	const std::string executePath{
+			boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	const std::string cfgFile{ (boost::format("%s\\model\\fight.cfg") % executePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\fight.weights") % executePath).str() };
+	StruInitParams parameters;
+	parameters.gpu_id = 0;
+	parameters.detectThreshold = 0.99f;
+	parameters.trackThreshold = 0.10f;
+	parameters.cfgfile = (char*)cfgFile.c_str();
+	parameters.weightFile = (char*)weightFile.c_str();
 
-	if (initParames)
-	{
-		status = fight.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
-	}
+	return fight.InitAlgoriParam(
+		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters) ? ERR_OK : ERR_BAD_OPERATE;
+}
 
-	return status;
+int CVAlgoFight::deinitializeArithmetic()
+{
+	return ERR_OK;
 }
 
 void CVAlgoFight::arithmeticWorkerProcess()
@@ -37,13 +41,13 @@ void CVAlgoFight::arithmeticWorkerProcess()
 
 	while (1)
 	{
-		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
+		MediaDataPtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
 		if (bgr24ImagePtr)
 		{
 			std::vector<AlarmInfo> alarmInfos;
 //			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			fight.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
+			fight.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 //			printf("=====  feedback.mapMemory.size() = %d.\r\n", feedback.mapMemory.size());
@@ -83,8 +87,8 @@ void CVAlgoFight::arithmeticWorkerProcess()
 						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 						alarmInfos.push_back(alarmInfo);
 
-						bgr24ImagePtr->setOriginImage(
-							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+// 						bgr24ImagePtr->setOriginImage(
+// 							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
 						it = feedback.mapMemory.erase(it);
 					}
@@ -93,15 +97,15 @@ void CVAlgoFight::arithmeticWorkerProcess()
 						++it;
 					}
 
-					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
+					if (0 < alarmInfos.size())
 					{
-						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+//						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
-						{
-							lastKnownTickTime = currentTickTime;
-							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-						}
+// 						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+// 						{
+// 							lastKnownTickTime = currentTickTime;
+// 							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// 						}
 					}
 // 				}
 // 				else

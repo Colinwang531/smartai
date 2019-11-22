@@ -1,3 +1,4 @@
+#include <WinSock2.h>
 #include "boost/algorithm/string.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/format.hpp"
@@ -53,16 +54,14 @@ int EatonIPCMediaAccessor::initializeEatonSDK(const std::string filePath)
 {
 	u32 errorCode{ RET_SUCCESS };
 	bool bOpenTelnet{ false };
-//	std::string dllFilePath{ (boost::format("%s\\ipcsdk.dll") % filePath).str() };
 
-	BOOL32 bRet = IPC_InitDll(const_cast<char*>("ipcsdk.dll"/*dllFilePath.c_str()*/), 3300, bOpenTelnet, &errorCode);
+	BOOL32 bRet = IPC_InitDll(const_cast<char*>("ipcsdk.dll"), 3300, bOpenTelnet, &errorCode);
 	if (bRet != 1)
 	{
 		return ERR_INITFAILD;
 	}
 
-//	dllFilePath = (boost::format("%s\\ipcmedia.dll") % filePath).str();
-	bRet = IPC_InitDll(const_cast<char*>("ipcmedia.dll"/*dllFilePath.c_str()*/), 3000, bOpenTelnet, &errorCode);
+	bRet = IPC_InitDll(const_cast<char*>("ipcmedia.dll"), 3000, bOpenTelnet, &errorCode);
 	if (bRet != 1)
 	{
 		return ERR_INITFAILD;
@@ -92,7 +91,7 @@ int EatonIPCMediaAccessor::loginIPCDevice(
 		else
 		{
 			if (RET_SUCCESS == IPC_DelConnectDetect(&streamID, &errorCode) &&
-				RET_SUCCESS == IPC_AddConnectDetect(&streamID, 3000, 2, DetectConnect, NULL, &errorCode))
+				RET_SUCCESS == IPC_AddConnectDetect(&streamID, 3000, 3, DetectConnect, this, &errorCode))
 			{
 				status = ERR_OK;
 			}
@@ -102,9 +101,71 @@ int EatonIPCMediaAccessor::loginIPCDevice(
 	return status;
 }
 
+int EatonIPCMediaAccessor::startIPCRealplay(void)
+{
+// 	TPLAYVIDEOPARAM tPlayVideoParam;
+// 	memset(&tPlayVideoParam, 0, sizeof(TPLAYVIDEOPARAM));
+// 	// 申请UDP码流
+// 	tPlayVideoParam.byVideoSouce = 1;
+// 	tPlayVideoParam.byStreamChn = 1;
+// 	tPlayVideoParam.dwSrcIP = dwLocalIp;
+// 	strcpy(tPlayVideoParam.szStreamType, "both");
+// 	strcpy(tPlayVideoParam.szTransType, "rtp_udp");
+// 	tPlayVideoParam.wRtpVideoPort = wVideoPort;
+// 	tPlayVideoParam.wRtpAudioPort = wAudioPort;
+// 	tPlayVideoParam.wRtpAudioPort2 = 0;
+// 	tPlayVideoParam.wRtcpAudioPort2 = 0;
+// 	tPlayVideoParam.wRtcpVideoPort = wVideoPort + 1;
+// 	tPlayVideoParam.wRtcpAudioPort = wAudioPort + 1;
+// 
+// 	dwPlayId = IPC_StartRealPlay(&m_dwHandle, type_udp, &tPlayVideoParam, sizeof(TPLAYVIDEOPARAM), &tPlayVideoInfo, nLenInfo, &nError);
+// 	if (nError != RET_SUCCESS)
+// 	{
+// 		CString str;
+// 		str.Format(_T("Start Play Video Fail，Error Code：%d"), nError);
+// 		MessageBox(str);
+// 		return;
+// 	}
+// 	TSwitchParam tSwitchParam;
+// 	memset(&tSwitchParam, 0, sizeof(TSwitchParam));
+// 	tSwitchParam.tPlayPortInfo.tPlayVideoPort.wRtpPort = wVideoPort;
+// 	tSwitchParam.tPlayPortInfo.tPlayVideoPort.wRtcpPort = wVideoPort + 1;
+// 	tSwitchParam.tPlayPortInfo.tPlayVideoPort.wRtcpBackPort = tPlayVideoInfo.wRtcpVideoPort;
+// 	tSwitchParam.tPlayPortInfo.tPlayAudioPort.wRtpPort = wAudioPort;
+// 	tSwitchParam.tPlayPortInfo.tPlayAudioPort.wRtcpPort = wAudioPort + 1;
+// 	tSwitchParam.tPlayPortInfo.tPlayAudioPort.wRtcpBackPort = tPlayVideoInfo.wRtcpAudioPort;
+// 
+// 	tSwitchParam.tRemotePortInfo.wRemoteVideoPort = 59000;
+// 	tSwitchParam.tRemotePortInfo.wRemoteAudioPort = 59002;
+// 
+// 	tSwitchParam.tEncNameAndPayload.eEncName = E_ENCNAME_H264;
+// 	tSwitchParam.tEncNameAndPayload.byPayload = 116;
+// 
+// 	s32 nMediaRet = MEDIA_SetSwitch(m_dwMediaID, g_dwIP, dwLocalIp, tSwitchParam);
+// 	if (nMediaRet != MEDIARCV_SUCCESS)
+// 	{
+// 		CString str;
+// 		str.Format(_T("MEDIA_SetSwitch，error code：%d"), nMediaRet);
+// 		MessageBox(str);
+// 	}
+// }
+// 
+// // 申请码流的情况下才需要回调帧数据过来解码，如果只是rtsp链路接收告警，就不需要
+// s32 nMediaRet = MEDIA_SetFrameCallBack(m_dwMediaID, frameCb, this);
+// if (nMediaRet != MEDIARCV_SUCCESS)
+// {
+// 	CString str;
+// 	str.Format(_T("MEDIA_SetFrameCallBack，error code：%d"), nMediaRet);
+// 	MessageBox(str);
+// }
+	return 0;
+}
+
 void EatonIPCMediaAccessor::DetectConnect(
-	unsigned long dwIP, unsigned short wPort, unsigned long dwHandle,
-	unsigned long dwCBconnectType, unsigned long dwDataLen, unsigned long dwData, void* pContext)
+	unsigned int dwIP, unsigned short wPort, 
+	unsigned int dwHandle, unsigned int dwCBconnectType, 
+	unsigned int dwDataLen, unsigned int dwData, 
+	void* pContext)
 {
 	if (dwCBconnectType == em_connect_no)
 	{

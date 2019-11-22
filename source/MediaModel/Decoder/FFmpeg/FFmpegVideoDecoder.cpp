@@ -238,13 +238,6 @@ int FFmpegVideoDecoder::decodeMediaData(MediaDataPtr mediaData)
 					mediaDataPtr->setData(imageBuffer, imageBufferBytes);
 					mediaDataPtr->setPixel(tempAVFrame->width, tempAVFrame->height);
 					postInputMediaDataCallback(mediaDataPtr);
-
-// 					static FILE* fd{ NULL };
-// 					if (!fd)
-// 					{
-// 						fopen_s(&fd, "d:\\output.out", "wb+");
-// 					}
-// 					fwrite(imageBuffer, imageBufferBytes, 1, fd);
 				}
 			}
 		}

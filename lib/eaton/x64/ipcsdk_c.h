@@ -1,19 +1,19 @@
 /*****************************************************************************
-Ä£¿éÃû  : ipcv7sdk¹¦ÄÜ½Ó¿Ú
-ÎÄ¼þÃû  : ipcv7sdk.h
-Ïà¹ØÎÄ¼þ£ºipcv7sdk.cpp
-ÊµÏÖ¹¦ÄÜ£º
-×÷Õß    £ºÁõµÇ¿Æ
-°æ±¾    £ºIPC-V7.0-R1.0 Copyright (C) 2009 - 2012 All Rights Reserved
+æ¨¡å—å  : ipcv7sdkåŠŸèƒ½æŽ¥å£
+æ–‡ä»¶å  : ipcv7sdk.h
+ç›¸å…³æ–‡ä»¶ï¼šipcv7sdk.cpp
+å®žçŽ°åŠŸèƒ½ï¼š
+ä½œè€…    ï¼šåˆ˜ç™»ç§‘
+ç‰ˆæœ¬    ï¼šIPC-V7.0-R1.0 Copyright (C) 2009 - 2012 All Rights Reserved
 -----------------------------------------------------------------------------
-ÐÞ¸Ä¼ÇÂ¼:
-ÈÕ  ÆÚ        °æ±¾        ÐÞ¸ÄÈË        ×ß¶ÁÈË    ÐÞ¸ÄÄÚÈÝ
-20141111      v1.0        ÁõµÇ¿Æ                  ´´½¨
+ä¿®æ”¹è®°å½•:
+æ—¥  æœŸ        ç‰ˆæœ¬        ä¿®æ”¹äºº        èµ°è¯»äºº    ä¿®æ”¹å†…å®¹
+20141111      v1.0        åˆ˜ç™»ç§‘                  åˆ›å»º
 ******************************************************************************/
 #ifndef IPCSDK_H_
 #define IPCSDK_H_
 
-#include <windows.h>
+
 #include "ipcdefine.h"
 #include "ipcstruct.h"
 
@@ -23,7 +23,7 @@ extern "C" {
 
 
 
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN64)
 	#define IPC_API  extern "C" __declspec(dllexport)
 
 #ifndef CDECL
@@ -34,3074 +34,2811 @@ extern "C" {
 	#define CDECL
 #endif
 
+#ifdef _LINUX_
+	#ifndef NULL
+	#ifdef __cplusplus
+	#define NULL    0
+	#else
+	#define NULL    ((void *)0)
+	#endif
+	#endif
+#endif
+
 #endif // __cplusplus
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_InitDll
-¹¦    ÄÜ: ³õÊ¼»¯SDK¿â×ÊÔ´
-          È«¾Öµ÷ÓÃÒ»´Î¼´¿É£¬ÔÚÓ¦ÓÃ³ÌÐò¿ªÊ¼´¦µ÷ÓÃ
-		  (MFC¹¤³ÌÔÚwinappÖÐµ÷ÓÃ£¬¶¯Ì¬¿â¹¤³ÌÔÚ¿â¼ÓÔØ´¦µ÷ÓÃ)
-²ÎÊýËµÃ÷:
-			pzDLLName  ³õÊ¼»¯µÄ¶¯Ì¬¿âÃû³Æ(Èçipcsdk.dll,ipcmedia.dll)
-			wTelnetPort      Telnet¶Ë¿Ú(Ä¬ÈÏ3000)
-			bOpenTelnet     ÊÇ·ñ¿ªÆôTelnet(Ä¬ÈÏ´ò¿ª)
-			pErrorCode   	´íÎóÂë
-·µ»ØÖµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_InitDll
+åŠŸ    èƒ½: åˆå§‹åŒ–SDKåº“èµ„æº
+          å…¨å±€è°ƒç”¨ä¸€æ¬¡å³å¯ï¼Œåœ¨åº”ç”¨ç¨‹åºå¼€å§‹å¤„è°ƒç”¨
+		  (MFCå·¥ç¨‹åœ¨winappä¸­è°ƒç”¨ï¼ŒåŠ¨æ€åº“å·¥ç¨‹åœ¨åº“åŠ è½½å¤„è°ƒç”¨)
+å‚æ•°è¯´æ˜Ž:
+			pzDLLName  åˆå§‹åŒ–çš„åŠ¨æ€åº“åç§°(å¦‚ipcsdk.dll,ipcmedia.dll)
+			wTelnetPort      Telnetç«¯å£(é»˜è®¤3000)
+			bOpenTelnet     æ˜¯å¦å¼€å¯Telnet(é»˜è®¤æ‰“å¼€)
+			pErrorCode   	é”™è¯¯ç 
+è¿”å›žå€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
-IPC_API BOOL32 CDECL IPC_InitDll (char* pzDLLName = const_cast<char*>("ipcsdk.dll"), short wTelnetPort=3300, bool bOpenTelnet= 0, u32* pErrorCode = NULL);
+IPC_API BOOL32 CDECL IPC_InitDll (char* pzDLLName = NULL/*"ipcsdk.dll"*/, short wTelnetPort=3300, bool bOpenTelnet= 0, u32* pErrorCode = NULL);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ReleaseDll
-¹¦    ÄÜ: ÊÍ·ÅSDKµÄÏà¹Ø×ÊÔ´
-          ÔÚÓ¦ÓÃ³ÌÐòÍË³öÊ±µ÷ÓÃ
-²ÎÊýËµÃ÷:pErrorCode   	´íÎóÂë
-·µ»ØÖµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_ReleaseDll
+åŠŸ    èƒ½: é‡Šæ”¾SDKçš„ç›¸å…³èµ„æº
+          åœ¨åº”ç”¨ç¨‹åºé€€å‡ºæ—¶è°ƒç”¨
+å‚æ•°è¯´æ˜Ž:pErrorCode   	é”™è¯¯ç 
+è¿”å›žå€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_ReleaseDll(u32* pErrorCode);
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_Login
-¹¦    ÄÜ: ÓÃ»§×¢²á£¬×¢²áÐÅÏ¢Óëip°ó¶¨£¬ÐÞ¸ÄÁËipºóÐèÒªÖØÐÂµÇÂ¼
+å‡½æ•°åç§°: IPC_Login
+åŠŸ    èƒ½: ç”¨æˆ·æ³¨å†Œï¼Œæ³¨å†Œä¿¡æ¯ä¸Žipç»‘å®šï¼Œä¿®æ”¹äº†ipåŽéœ€è¦é‡æ–°ç™»å½•
           
-²ÎÊýËµÃ÷:
-		  pHandle   Ç°¶Ë¾ä±ú
-		  pName		ÓÃ»§Ãû
-		  pPassword ÓÃ»§ÃÜÂë
-		  pErrorCode   	´íÎóÂë
-·µ»ØÖµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‚æ•°è¯´æ˜Ž:
+		  pHandle   å‰ç«¯å¥æŸ„
+		  pName		ç”¨æˆ·å
+		  pPassword ç”¨æˆ·å¯†ç 
+		  pErrorCode   	é”™è¯¯ç 
+è¿”å›žå€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32  CDECL IPC_Login(void *pHandle,char* pName, char* pPassword, u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_Logout
-¹¦    ÄÜ: ÓÃ»§×¢Ïú×¢²á
+å‡½æ•°åç§°: IPC_Login_New(æš‚æœªå¯ç”¨)
+åŠŸ    èƒ½: ç”¨æˆ·æ³¨å†Œï¼Œæ³¨å†Œä¿¡æ¯ä¸Žipç»‘å®šï¼Œä¿®æ”¹äº†ipåŽéœ€è¦é‡æ–°ç™»å½•
           
-²ÎÊýËµÃ÷:
-		  pHandle       Ç°¶Ë¾ä±ú
-		  pErrorCode   	´íÎóÂë
-·µ»ØÖµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‚æ•°è¯´æ˜Ž:
+		  pLoginInfo	ç™»é™†ä¿¡æ¯ï¼Œç»“æž„ä½“ TLOGININFO
+		  IPC_CHECKLINK_CB é“¾è·¯æ£€æµ‹å›žè°ƒ,è®¾ç½®ä¸ºNULLåŠä¸å¼€å¯é“¾è·¯æ£€æµ‹ï¼Œæ­£å¸¸è§†é¢‘æµè§ˆå»ºè®®ä¸ç”¨å¼€å¯é“¾è·¯æ£€æµ‹ï¼Œä»¥å‡å°‘æ€§èƒ½æ¶ˆè€—
+		  pErrorCode   	é”™è¯¯ç 
+è¿”å›žå€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
-IPC_API BOOL32 CDECL IPC_Logout(void *pHandle, u32* pErrorCode);
+IPC_API BOOL32  CDECL IPC_Login_New(void* pLoginInfo,IPC_CHECKLINK_CB fCheckCB,u32* dwHandle, u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_CreateHandle
-¹¦    ÄÜ: ´´½¨¾ä±ú
+å‡½æ•°åç§°: IPC_Logout
+åŠŸ    èƒ½: ç”¨æˆ·æ³¨é”€æ³¨å†Œ
           
-²ÎÊýËµÃ÷:
-		 dwIp      ×¢²áIP
-		 wPort     ×¢²á¶Ë¿Ú
-		 pName	   ÓÃ»§Ãû
-		 pPassword ÓÃ»§ÃÜÂë
+å‚æ•°è¯´æ˜Ž:
+		  pHandle       å‰ç«¯å¥æŸ„
+		  pErrorCode   	é”™è¯¯ç 
+è¿”å›žå€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_Logout(void *pHandle, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_CheckConnectLost
+åŠŸ    èƒ½: ä¸»åŠ¨æŸ¥è¯¢å‰ç«¯æ˜¯å¦æ–­é“¾
+å‚æ•°è¯´æ˜Ž:
+		  dwIP		-- è®¾å¤‡IP 
 
-·µ »Ø Öµ: ³É¹¦·µ»ØÉè±¸¾ä±ú, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›ž RET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_CheckConnectLost(u32 dwIp, unsigned short wPort);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_CreateHandle
+åŠŸ    èƒ½: åˆ›å»ºå¥æŸ„
+          
+å‚æ•°è¯´æ˜Ž:
+		 dwIp      æ³¨å†ŒIP
+		 wPort     æ³¨å†Œç«¯å£
+		 pName	   ç”¨æˆ·å
+		 pPassword ç”¨æˆ·å¯†ç 
+
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žè®¾å¤‡å¥æŸ„, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API u32 CDECL IPC_CreateHandle(u32 dwIP, u16 wPort, char* pName, char* pPassword);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetInfoFromHandle
-¹¦    ÄÜ: ¸ù¾Ý¾ä±ú»ñÈ¡Éè±¸ÐÅÏ¢
+å‡½æ•°åç§°: IPC_GetInfoFromHandle
+åŠŸ    èƒ½: æ ¹æ®å¥æŸ„èŽ·å–è®¾å¤‡ä¿¡æ¯
           
-²ÎÊýËµÃ÷:
-		 dwHandle      Éè±¸¾ä±ú
-		 pParam		   Êý¾ÝÅäÖÃÖ¸Õë
-		 nLen		   Êý¾Ý³¤¶È
-		 pErrorCode    ´íÎóÂëÖ¸Õë
+å‚æ•°è¯´æ˜Ž:
+		 dwHandle      è®¾å¤‡å¥æŸ„
+		 pParam		   æ•°æ®é…ç½®æŒ‡é’ˆ
+		 nLen		   æ•°æ®é•¿åº¦
+		 pErrorCode    é”™è¯¯ç æŒ‡é’ˆ
 
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetInfoFromHandle(u32 dwHandle, void* pParam, int nLen, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_DestroyHandle()
-¹¦    ÄÜ: Ïú»Ù¾ä±ú
+å‡½æ•°åç§°: IPC_DestroyHandle()
+åŠŸ    èƒ½: é”€æ¯å¥æŸ„
           
-²ÎÊýËµÃ÷:
+å‚æ•°è¯´æ˜Ž:
 		 
 
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_DestroyHandle();
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSoftVersion
-¹¦    ÄÜ: »ñÈ¡Èí¼þ°æ±¾ºÅ
-²ÎÊýËµÃ÷:
-          szVersion [out]    Èí¼þ°æ±¾ºÅ
+å‡½æ•°åç§°: IPC_GetSoftVersion
+åŠŸ    èƒ½: èŽ·å–è½¯ä»¶ç‰ˆæœ¬å·
+å‚æ•°è¯´æ˜Ž:
+          szVersion [out]    è½¯ä»¶ç‰ˆæœ¬å·
 
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetVersion(char *pchVer,int nMaxLen);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetCap
-¹¦    ÄÜ: »ñÈ¡ÄÜÁ¦¼¯
-²ÎÊýËµÃ÷: nCap -- ÄÜÁ¦¼¯¸öÊý
-          apCapName -- ÄÜÁ¦¼¯µÄÃû³Æ
-		  anCapOut -- ÄÜÁ¦¼¯µÄ·µ»ØÖµ
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetCap
+åŠŸ    èƒ½: èŽ·å–èƒ½åŠ›é›†
+å‚æ•°è¯´æ˜Ž: nCap -- èƒ½åŠ›é›†ä¸ªæ•°
+          apCapName -- èƒ½åŠ›é›†çš„åç§°
+		  anCapOut -- èƒ½åŠ›é›†çš„è¿”å›žå€¼
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetCap(void *pHandle, u16 nCap, char* apCapName[], u32 anCapOut[],u32* pErrorCode);
 
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRecSchedule
-		  ¹¦    ÄÜ: »ñÈ¡²¼·ÀÊ±¼ä²ÎÊý
-²ÎÊýËµÃ÷: pIndex, ²¼·ÀÀàÐÍÊÇalarmin,warninglineµÈ,´ú±í½ÚµãºÅ
-		  pParam, ²¼·ÀÀàÐÍdetect, shieldalarm, alarmin, alarmout, exception, recchedule, warningline
-	      pTimeArr, TEVENTTIME [],²¼·ÀÊ±¼äÊý×éÖ¸Õë.
-	      nlenTime, ²¼·ÀÊ±¼äÊý¾Ý¸öÊý.
-	      nLenTimeStruct, µÈÓÚsizeof(TEVENTTIME)£¬ÓÃÓÚºóÐø¼æÈÝ.
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º<eventtype opt=¡± detect, shieldalarm, alarmin, alarmout, exception, recchedule, sightchange, warningline¡±/>
-	      <recordtype opt=¡± alarm,manual,time,trigger¡±/>
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetRecSchedule
+		  åŠŸ    èƒ½: èŽ·å–å¸ƒé˜²æ—¶é—´å‚æ•°
+å‚æ•°è¯´æ˜Ž: pIndex, å¸ƒé˜²ç±»åž‹æ˜¯alarmin,warninglineç­‰,ä»£è¡¨èŠ‚ç‚¹å·
+		  pParam, å¸ƒé˜²ç±»åž‹detect, shieldalarm, alarmin, alarmout, exception, recchedule, warningline
+	      pTimeArr, TEVENTTIME [],å¸ƒé˜²æ—¶é—´æ•°ç»„æŒ‡é’ˆ.
+	      nlenTime, å¸ƒé˜²æ—¶é—´æ•°æ®ä¸ªæ•°.
+	      nLenTimeStruct, ç­‰äºŽsizeof(TEVENTTIME)ï¼Œç”¨äºŽåŽç»­å…¼å®¹.
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š<eventtype opt=â€ detect, shieldalarm, alarmin, alarmout, exception, recchedule, sightchange, warninglineâ€/>
+	      <recordtype opt=â€ alarm,manual,time,triggerâ€/>
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetEventTime (void *pHandle, char *pEventType, char *pIndex,void * pTimeArr, int nLenTime ,int nLenTimeStruct , char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRecSchedule
-		  ¹¦    ÄÜ: ÉèÖÃ²¼·ÀÊ±¼ä²ÎÊý
-²ÎÊýËµÃ÷: pIndex, ²¼·ÀÀàÐÍÊÇalarmin,warninglineµÈ,´ú±í½ÚµãºÅ
-		  pParam, ²¼·ÀÀàÐÍdetect, shieldalarm, alarmin, alarmout, exception, recchedule, warningline
-	      pTimeArr, TEVENTTIME [],²¼·ÀÊ±¼äÊý×éÖ¸Õë.
-	      nlenTime, ²¼·ÀÊ±¼äÊý¾Ý¸öÊý.
-	      nLenTimeStruct, µÈÓÚsizeof(TEVENTTIME)£¬ÓÃÓÚºóÐø¼æÈÝ.
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetRecSchedule
+		  åŠŸ    èƒ½: è®¾ç½®å¸ƒé˜²æ—¶é—´å‚æ•°
+å‚æ•°è¯´æ˜Ž: pIndex, å¸ƒé˜²ç±»åž‹æ˜¯alarmin,warninglineç­‰,ä»£è¡¨èŠ‚ç‚¹å·
+		  pParam, å¸ƒé˜²ç±»åž‹detect, shieldalarm, alarmin, alarmout, exception, recchedule, warningline
+	      pTimeArr, TEVENTTIME [],å¸ƒé˜²æ—¶é—´æ•°ç»„æŒ‡é’ˆ.
+	      nlenTime, å¸ƒé˜²æ—¶é—´æ•°æ®ä¸ªæ•°.
+	      nLenTimeStruct, ç­‰äºŽsizeof(TEVENTTIME)ï¼Œç”¨äºŽåŽç»­å…¼å®¹.
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetEventTime (void *pHandle, char *pEventType,char *pIndex, void * pTimeArr, int nLenTime ,int nLenTimeStruct,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetTrancparent
-		  ¹¦    ÄÜ: Ê¹ÓÃÍ¸Ã÷·½Ê½Í¨ÐÅ£¬´«µÝºÍ»Ø´«µÄ²ÎÊýÎªxmlµÄ½á¹¹Êý¾Ý
-²ÎÊýËµÃ÷: pHandle		Ç°¶Ë¾ä±ú
-		  szEventType	ÊÂ¼þÀàÐÍ
-	      szParamIn		ÊäÈëµÄ²ÎÊý
-	      nLenIn		ÊäÈëµÄ²ÎÊý³¤¶È
-	      szParamOut	Êä³öµÄ²ÎÊý
-	      nLenOut		Êä³öµÄ²ÎÊý³¤¶È
-	      pErrorCode   	´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetTrancparent
+		  åŠŸ    èƒ½: ä½¿ç”¨é€æ˜Žæ–¹å¼é€šä¿¡ï¼Œä¼ é€’å’Œå›žä¼ çš„å‚æ•°ä¸ºxmlçš„ç»“æž„æ•°æ®
+å‚æ•°è¯´æ˜Ž: pHandle		å‰ç«¯å¥æŸ„
+		  szEventType	äº‹ä»¶ç±»åž‹
+	      szParamIn		è¾“å…¥çš„å‚æ•°
+	      nLenIn		è¾“å…¥çš„å‚æ•°é•¿åº¦
+	      szParamOut	è¾“å‡ºçš„å‚æ•°
+	      nLenOut		è¾“å‡ºçš„å‚æ•°é•¿åº¦
+	      pErrorCode   	é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SendTransData(void *pHandle, char* szEventType, char* szParamIn, int nLenIn, char* szParamOut, int& nLenOut,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetDeviceInfo
-¹¦    ÄÜ: »ñÈ¡Éè±¸»ù±¾ÐÅÏ¢
-²ÎÊýËµÃ÷: TDEVICEINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetDeviceInfo
+åŠŸ    èƒ½: èŽ·å–è®¾å¤‡åŸºæœ¬ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: TDEVICEINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetDeviceInfo(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetDeviceInfo
-¹¦    ÄÜ: ÉèÖÃÉè±¸»ù±¾ÐÅÏ¢
-²ÎÊýËµÃ÷: TDEVICEINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetDeviceInfo
+åŠŸ    èƒ½: è®¾ç½®è®¾å¤‡åŸºæœ¬ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: TDEVICEINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetDeviceInfo (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSystemTime
-¹¦    ÄÜ: »ñÈ¡Ê±¼ä
-²ÎÊýËµÃ÷: TSYSTIMEINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetTestToolInfo
+åŠŸ    èƒ½: è®¾ç½®æµ‹è¯•å·¥å…·åŸºæœ¬ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: TTOOLINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetTestToolInfo (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetDevSeqInfo
+åŠŸ    èƒ½: è®¾ç½®æµ‹è¯•å·¥å…·åŸºæœ¬ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: TDEVSEQINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetDevSeqInfo (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetEepromInfo
+åŠŸ    èƒ½: è®¾ç½®eepromä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: TEEPROMINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetEepromInfo (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetSystemTime
+åŠŸ    èƒ½: èŽ·å–æ—¶é—´
+å‚æ•°è¯´æ˜Ž: TSYSTIMEINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetSystemTime(void *pHandle, void* pParam, int& nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSystemTime
-¹¦    ÄÜ: ÉèÖÃÊ±¼ä
-²ÎÊýËµÃ÷: TSYSTIMEINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSystemTime
+åŠŸ    èƒ½: è®¾ç½®æ—¶é—´
+å‚æ•°è¯´æ˜Ž: TSYSTIMEINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSystemTime(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSysTimeSynChronise
-¹¦    ÄÜ: ÉèÖÃÊ±¼äÍ¬²½
-²ÎÊýËµÃ÷: TSYSTIMEINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSysTimeSynChronise
+åŠŸ    èƒ½: è®¾ç½®æ—¶é—´åŒæ­¥
+å‚æ•°è¯´æ˜Ž: TSYSTIMEINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSysTimeSynChronise(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetTimeAuto
-¹¦    ÄÜ: ÉèÖÃ×Ô¶¯Ð£Ê±
-²ÎÊýËµÃ÷: TTIMEAUTOINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetTimeAuto
+åŠŸ    èƒ½: è®¾ç½®è‡ªåŠ¨æ ¡æ—¶
+å‚æ•°è¯´æ˜Ž: TTIMEAUTOINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetTimeAuto(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetTimeAuto
-¹¦    ÄÜ: »ñÈ¡×Ô¶¯Ð£Ê±
-²ÎÊýËµÃ÷: TTIMEAUTOINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetTimeAuto
+åŠŸ    èƒ½: èŽ·å–è‡ªåŠ¨æ ¡æ—¶
+å‚æ•°è¯´æ˜Ž: TTIMEAUTOINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetTimeAuto(void *pHandle, void* pParam, int& nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetDST
-¹¦    ÄÜ: ÉèÖÃÏÄÁîÊ±
-²ÎÊýËµÃ÷: TTIMEAUTOINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetTimeAutoEx
+åŠŸ    èƒ½: è®¾ç½®è‡ªåŠ¨æ ¡æ—¶
+å‚æ•°è¯´æ˜Ž: TTIMEAUTOINFOEX
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetTimeAutoEx(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetTimeAutoEx
+åŠŸ    èƒ½: èŽ·å–è‡ªåŠ¨æ ¡æ—¶
+å‚æ•°è¯´æ˜Ž: TTIMEAUTOINFOEX
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetTimeAutoEx(void *pHandle, void* pParam, int& nLen,u32 *pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetDST
+åŠŸ    èƒ½: è®¾ç½®å¤ä»¤æ—¶
+å‚æ•°è¯´æ˜Ž: TTIMEAUTOINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetDST(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetDST
-¹¦    ÄÜ: »ñÈ¡ÏÄÁîÊ±
-²ÎÊýËµÃ÷: TTIMEAUTOINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetDST
+åŠŸ    èƒ½: èŽ·å–å¤ä»¤æ—¶
+å‚æ•°è¯´æ˜Ž: TTIMEAUTOINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetDST(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRSInfo
-¹¦    ÄÜ: »ñÈ¡´®¿ÚÐÅÏ¢
-²ÎÊýËµÃ÷: pParam, PTRSINFO
-´Ë´¦´«µÝ£º<addressnum enable="false"><controlprotocol opt="pelcol"  enable="false">
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetRSInfo
+åŠŸ    èƒ½: èŽ·å–ä¸²å£ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam, PTRSINFO
+æ­¤å¤„ä¼ é€’ï¼š<addressnum enable="false"><controlprotocol opt="pelcol"  enable="false">
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetRSInfo(void *pHandle, void* ptParam, int nLen, char* szParamAssist, int nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetRSInfo
-¹¦ÄÜ:ÉèÖÃ´®¿ÚÍ£Ö¹
-²ÎÊýËµÃ÷: pParam, PTRSINFO
-´Ë´¦´«µÝ£º<addressnum enable="false"><controlprotocol opt="pelcol"  enable="false">
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetRSInfo
+åŠŸèƒ½:è®¾ç½®ä¸²å£åœæ­¢
+å‚æ•°è¯´æ˜Ž: pParam, PTRSINFO
+æ­¤å¤„ä¼ é€’ï¼š<addressnum enable="false"><controlprotocol opt="pelcol"  enable="false">
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetRSInfo(void *pHandle, void* ptParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_LedFind
-¹¦ÄÜ:´ò¿ª¹Ø±ÕledµÆ
-²ÎÊýËµÃ÷: pParam, PTLEDINFO;
-szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-´Ë´¦´«µÝ£º<speed opt="5s,10s,30s,1m,30m,60m,24h"/>
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_LedFind
+åŠŸèƒ½:æ‰“å¼€å…³é—­ledç¯
+å‚æ•°è¯´æ˜Ž: pParam, PTLEDINFO;
+szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+æ­¤å¤„ä¼ é€’ï¼š<speed opt="5s,10s,30s,1m,30m,60m,24h"/>
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_LedFind(void *pHandle, void* ptParam, int nLen, char* szParamAssist, int nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SystemReboot
-¹¦ÄÜ:ÏµÍ³ÖØÆô
-²ÎÊýËµÃ÷: 
-		pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SystemReboot
+åŠŸèƒ½:ç³»ç»Ÿé‡å¯
+å‚æ•°è¯´æ˜Ž: 
+		pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SystemReboot(void *pHandle,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_RecoverFactory
-¹¦ÄÜ:Éè±¸»Ö¸´
-²ÎÊýËµÃ÷: szMode, base(¼òµ¥»Ö¸´£¬±£Áôip)/full(ÍêÈ«»Ö¸´)
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_RecoverFactory
+åŠŸèƒ½:è®¾å¤‡æ¢å¤
+å‚æ•°è¯´æ˜Ž: szMode, base(ç®€å•æ¢å¤ï¼Œä¿ç•™ip)/full(å®Œå…¨æ¢å¤)
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_RecoverFactory (void *pHandle, char* szMode,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_UserActive
-¹¦ÄÜ:ÓÃ»§¼¤»î(ÍêÈ«»Ö¸´Ö®ºó)
-²ÎÊýËµÃ÷:
-		dwIP         IP(»Ö¸´Ö®ºó)
-		wport        ¶Ë¿Ú
+å‡½æ•°åç§°: IPC_UserActive
+åŠŸèƒ½:ç”¨æˆ·æ¿€æ´»(å®Œå…¨æ¢å¤ä¹‹åŽ)
+å‚æ•°è¯´æ˜Ž:
+		dwIP         IP(æ¢å¤ä¹‹åŽ)
+		wport        ç«¯å£
 		pParam       PTUSERACTIVEINFO
-		pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_UserActive (u32 dwIP, u16 wPort, void*pParam,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ConfigUpload
-¹¦ÄÜ:µ¼ÈëÅäÖÃÎÄ¼þ
-²ÎÊýËµÃ÷: pParam, PTUPLOADINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_ConfigUpload
+åŠŸèƒ½:å¯¼å…¥é…ç½®æ–‡ä»¶
+å‚æ•°è¯´æ˜Ž: pParam, PTUPLOADINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_ConfigUpload(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ConfigDownload
-¹¦ÄÜ:µ¼³öÅäÖÃÎÄ¼þ
-²ÎÊýËµÃ÷: pParam, PTDOWNLOADINFO
-		 pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_ConfigDownload
+åŠŸèƒ½:å¯¼å‡ºé…ç½®æ–‡ä»¶
+å‚æ•°è¯´æ˜Ž: pParam, PTDOWNLOADINFO
+		 pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_ConfigDownload(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SysUpload
-¹¦ÄÜ:Éè±¸Éý¼¶
-²ÎÊýËµÃ÷: pParam, PTUPLOADINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SysUpload
+åŠŸèƒ½:è®¾å¤‡å‡çº§
+å‚æ•°è¯´æ˜Ž: pParam, PTUPLOADINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SysUpload(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ:IPC_ SysUploadState
-¹¦    ÄÜ:Éý¼¶×´Ì¬²éÑ¯
-²ÎÊýËµÃ÷:pHandle  		Ç°¶Ë¾ä±ú
+å‡½æ•°åç§°:IPC_ SysUploadState
+åŠŸ    èƒ½:å‡çº§çŠ¶æ€æŸ¥è¯¢
+å‚æ•°è¯´æ˜Ž:pHandle  		å‰ç«¯å¥æŸ„
 		pParam,  		PTUPLOADSTATE;
-		pErrorCode   	´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		pErrorCode   	é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SysUploadState (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAdvanced 
-¹¦ÄÜ:»ñÈ¡ÏµÍ³¸ß¼¶ÅäÖÃÐÅÏ¢
-²ÎÊýËµÃ÷: pParam, PTADVANCEDINFO
-szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-´Ë´¦´«µÝ£º<osdpicfont opt=¡±song,black¡± /><mtcfmode opt=¡±hdr,fps60,stream4,4k,div4,normal,hdsdi enable=true¡±><aacmode opt=¡±autolow, normal, low enable=true¡±>
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAdvanced 
+åŠŸèƒ½:èŽ·å–ç³»ç»Ÿé«˜çº§é…ç½®ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam, PTADVANCEDINFO
+szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+æ­¤å¤„ä¼ é€’ï¼š<osdpicfont opt=â€song,blackâ€ /><mtcfmode opt=â€hdr,fps60,stream4,4k,div4,normal,hdsdi enable=trueâ€><aacmode opt=â€autolow, normal, low enable=trueâ€>
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAdvanced (void *pHandle, void *pParam, int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAdvanced 
-¹¦ÄÜ:ÉèÖÃÏµÍ³¸ß¼¶ÅäÖÃÐÅÏ¢
-²ÎÊýËµÃ÷: 	pParam, PTADVANCEDINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAdvanced 
+åŠŸèƒ½:è®¾ç½®ç³»ç»Ÿé«˜çº§é…ç½®ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: 	pParam, PTADVANCEDINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAdvanced (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetUserInfo
-¹¦    ÄÜ: »ñÈ¡ÓÃ»§ÐÅÏ¢
-²ÎÊýËµÃ÷: pParam, ÓÃ»§È¨ÏÞÊý×éTUSERINFO[]
-		  nLen,   Êý×é³¤¶È
-		  nLenStruct,Êý¾Ý³¤¶È,µÈÓÚsizeof(TUSERINFO)
-		  pErrorCode   ´íÎóÂë
-		  pErrorCode   ´íÎóÂë
-		  ·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetUserInfo
+åŠŸ    èƒ½: èŽ·å–ç”¨æˆ·ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam, ç”¨æˆ·æƒé™æ•°ç»„TUSERINFO[]
+		  nLen,   æ•°ç»„é•¿åº¦
+		  nLenStruct,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUSERINFO)
+		  pErrorCode   é”™è¯¯ç 
+		  pErrorCode   é”™è¯¯ç 
+		  è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetUserInfo (void *pHandle, void *pParam, int& nLen, int& nLenStruct,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetUserInfo
-¹¦    ÄÜ: ÉèÖÃÓÃ»§ÐÅÏ¢
-²ÎÊýËµÃ÷: pParam, PTUSERINFO
-		  nLenStruct,Êý¾Ý³¤¶È,µÈÓÚsizeof(TUSERINFO)
-		  pErrorCode   ´íÎóÂë
-		  pErrorCode   ´íÎóÂë
-		  ·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetUserInfo
+åŠŸ    èƒ½: è®¾ç½®ç”¨æˆ·ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam, PTUSERINFO
+		  nLenStruct,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUSERINFO)
+		  pErrorCode   é”™è¯¯ç 
+		  pErrorCode   é”™è¯¯ç 
+		  è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetUserInfo (void *pHandle, void *pParam, int nLenStruct,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_AddUser
-¹¦    ÄÜ: Ìí¼ÓÓÃ»§
-²ÎÊýËµÃ÷: pParam, PTUSERINFO
-		  nLen,Êý¾Ý³¤¶È,µÈÓÚsizeof(TUSERINFO)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_AddUser
+åŠŸ    èƒ½: æ·»åŠ ç”¨æˆ·
+å‚æ•°è¯´æ˜Ž: pParam, PTUSERINFO
+		  nLen,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUSERINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_AddUser (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_DelUser
-¹¦    ÄÜ: É¾³ýÓÃ»§
-²ÎÊýËµÃ÷: pParam, PTUSERDELINFO
-		  nLen,Êý¾Ý³¤¶È,µÈÓÚsizeof(TUSERDELINFO)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_DelUser
+åŠŸ    èƒ½: åˆ é™¤ç”¨æˆ·
+å‚æ•°è¯´æ˜Ž: pParam, PTUSERDELINFO
+		  nLen,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUSERDELINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_DelUser (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_UpdateUser
-¹¦    ÄÜ: ÐÞ¸ÄÓÃ»§
-²ÎÊýËµÃ÷: pParam, PTUSERUPDATEINFO
-		  nLen,Êý¾Ý³¤¶È,µÈÓÚsizeof(TUSERUPDATEINFO)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_UpdateUser
+åŠŸ    èƒ½: ä¿®æ”¹ç”¨æˆ·
+å‚æ•°è¯´æ˜Ž: pParam, PTUSERUPDATEINFO
+		  nLen,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUSERUPDATEINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_UpdateUser (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetPowerInfo
-¹¦    ÄÜ: »ñÈ¡ÓÃ»§È¨ÏÞÅäÖÃ
-²ÎÊýËµÃ÷: pParam, ÓÃ»§È¨ÏÞÊý×éTPOWERINFO[]
-		  nLen, Êý×é³¤¶È
-		  nLenStruct,Êý¾Ý³¤¶È,µÈÓÚsizeof(TPOWERINFO).
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetPowerInfo
+åŠŸ    èƒ½: èŽ·å–ç”¨æˆ·æƒé™é…ç½®
+å‚æ•°è¯´æ˜Ž: pParam, ç”¨æˆ·æƒé™æ•°ç»„TPOWERINFO[]
+		  nLen, æ•°ç»„é•¿åº¦
+		  nLenStruct,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TPOWERINFO).
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetPowerInfo (void *pHandle, void *pParam, int nLen, int& nLenStruct,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPowerInfo
-¹¦    ÄÜ: ÉèÖÃÓÃ»§È¨ÏÞÅäÖÃ
-²ÎÊýËµÃ÷: pParam, PTPOWERINFO
-		  nLen, Êý×é³¤¶È
-		  nLenStruct,Êý¾Ý³¤¶È,µÈÓÚsizeof(TPOWERINFO)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetPowerInfo
+åŠŸ    èƒ½: è®¾ç½®ç”¨æˆ·æƒé™é…ç½®
+å‚æ•°è¯´æ˜Ž: pParam, PTPOWERINFO
+		  nLen, æ•°ç»„é•¿åº¦
+		  nLenStruct,æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TPOWERINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetPowerInfo (void *pHandle, void *pParam, int nLen, int nLenStruct, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetDdnsParam
-¹¦    ÄÜ: »ñÈ¡DDNS²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»Ø RET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetDdnsParam
+åŠŸ    èƒ½: èŽ·å–DDNSå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›ž RET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetDdns(void *pHandle,void *pParam, int nLen, char* const szParamAssist, int nLenAssist, u32 *pErrorCode);
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetDdns
-¹¦    ÄÜ: ÉèÖÃDDNS²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetDdns
+åŠŸ    èƒ½: è®¾ç½®DDNSå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetDdns(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetDdnsState
-¹¦    ÄÜ: »ñÈ¡DDNS×´Ì¬²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetDdnsState
+åŠŸ    èƒ½: èŽ·å–DDNSçŠ¶æ€å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetDdnsState(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetNetPort
-¹¦    ÄÜ: »ñÈ¡¶Ë¿Ú²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetNetPort
+åŠŸ    èƒ½: èŽ·å–ç«¯å£å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetNetPort(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetNetPort
-¹¦    ÄÜ: ÉèÖÃ¶Ë¿Ú²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetNetPort
+åŠŸ    èƒ½: è®¾ç½®ç«¯å£å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetNetPort(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetIpInfo
-¹¦    ÄÜ: »ñÈ¡IP²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetIpInfo
+åŠŸ    èƒ½: èŽ·å–IPå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetIpInfo(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetIpInfo
-¹¦    ÄÜ: ÉèÖÃIP²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸Õë
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetIpInfo
+åŠŸ    èƒ½: è®¾ç½®IPå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆ
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetIpInfo(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetWlanInfo
-¹¦    ÄÜ: »ñÈ¡Wlan²ÎÊý
-²ÎÊýËµÃ÷: dwHandle      Éè±¸¾ä±ú
-		  pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTWLANINFO
-		  nLen -- Êý¾Ý³¤¶È
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetWlanInfo
+åŠŸ    èƒ½: èŽ·å–Wlanå‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTWLANINFO
+		  nLen -- æ•°æ®é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetWlanInfo(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetWlanInfo
-¹¦    ÄÜ: ÉèÖÃWlan²ÎÊý
-²ÎÊýËµÃ÷: dwHandle      Éè±¸¾ä±ú
-		  pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTWLANINFO
-		  nLen -- Êý¾Ý³¤¶È
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetWlanInfo
+åŠŸ    èƒ½: è®¾ç½®Wlanå‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTWLANINFO
+		  nLen -- æ•°æ®é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetWlanInfo(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetPPPoE
-¹¦    ÄÜ: »ñÈ¡PPPoE²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTUPNPPORTMAP
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetPPPoE
+åŠŸ    èƒ½: èŽ·å–PPPoEå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTUPNPPORTMAP
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPPPoE(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPPPoE
-¹¦    ÄÜ: ÉèÖÃPPPoE²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTUPNPPORTMAP
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetPPPoE
+åŠŸ    èƒ½: è®¾ç½®PPPoEå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTUPNPPORTMAP
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPPPoE(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetQos
-¹¦    ÄÜ: »ñÈ¡Qos²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTQOSINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetQos
+åŠŸ    èƒ½: èŽ·å–Qoså‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTQOSINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetQos(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetQos
-¹¦    ÄÜ: ÉèÖÃQos²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTQOSINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetQos
+åŠŸ    èƒ½: è®¾ç½®Qoså‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTQOSINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetQos(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetKSnmp
-¹¦    ÄÜ: »ñÈ¡KSnmp²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTKSNMPINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetKSnmp
+åŠŸ    èƒ½: èŽ·å–KSnmpå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTKSNMPINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetKSnmp(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetKSnmp
-¹¦    ÄÜ: ÉèÖÃKSnmp²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTKSNMPINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetKSnmp
+åŠŸ    èƒ½: è®¾ç½®KSnmpå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTKSNMPINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetKSnmp(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_Get8021x
-		  ¹¦    ÄÜ: »ñÈ¡8021x²ÎÊý
-²ÎÊýËµÃ÷: pParam, PT8021XINFO
-	  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-	  ´Ë´¦´«µÝ£º<protocoltype opt=¡°eap-tls,eap-ttls,eap-peap,eap-leap,eap-fast,eap-md5¡±>
-				<eapolversion opt= ¡°1, 2¡±>
-	  ·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_Get8021x
+		  åŠŸ    èƒ½: èŽ·å–8021xå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PT8021XINFO
+	  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+	  æ­¤å¤„ä¼ é€’ï¼š<protocoltype opt=â€œeap-tls,eap-ttls,eap-peap,eap-leap,eap-fast,eap-md5â€>
+				<eapolversion opt= â€œ1, 2â€>
+	  è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 ==================================================================*/
 IPC_API int CDECL IPC_Get8021x(void *pHandle, void *pParam,  int nLen, char* const szParamAssist, int nLenAssist, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_Set8021x
-¹¦    ÄÜ: ÉèÖÃ802.1x²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëT8021XINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_Set8021x
+åŠŸ    èƒ½: è®¾ç½®802.1xå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆT8021XINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_Set8021x(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetUPnP
-¹¦    ÄÜ: »ñÈ¡UPnP²ÎÊý
-²ÎÊýËµÃ÷: pParamInfo[out] -- TUPNPINFO
-		  nlenInfo -- pParamInfoÊý¾Ý³¤¶È,µÈÓÚsizeof(TUPNPINFO).
-		  pParamMap[out] -- ¶Ë¿ÚÓ³Éä±íÊý¾Ý.
-		  nlenMap -- ¶Ë¿ÚÓ³ÉäµÄÊý¾Ý¸öÊýTUPNPPORTMAP.
-		  nLenMapStruct -- µÈÓÚsizeof(TUPNPPORTMAP)£¬ÓÃÓÚºóÐø¼æÈÝ.
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetUPnP
+åŠŸ    èƒ½: èŽ·å–UPnPå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParamInfo[out] -- TUPNPINFO
+		  nlenInfo -- pParamInfoæ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUPNPINFO).
+		  pParamMap[out] -- ç«¯å£æ˜ å°„è¡¨æ•°æ®.
+		  nlenMap -- ç«¯å£æ˜ å°„çš„æ•°æ®ä¸ªæ•°TUPNPPORTMAP.
+		  nLenMapStruct -- ç­‰äºŽsizeof(TUPNPPORTMAP)ï¼Œç”¨äºŽåŽç»­å…¼å®¹.
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetUPnP (void *pHandle, void * pInfo, int nlenInfo, void * pMap, int nLenMap, int &nLenMapStruct, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetUPnP
-¹¦    ÄÜ: ÉèÖÃUPnP²ÎÊý
-²ÎÊýËµÃ÷: pParamInfo[out] -- TUPNPINFO
-		  nlenInfo -- pParamInfoÊý¾Ý³¤¶È,µÈÓÚsizeof(TUPNPINFO).
-		  pParamMap[out] -- ¶Ë¿ÚÓ³Éä±íÊý¾Ý.
-		  nlenMap -- ¶Ë¿ÚÓ³ÉäµÄÊý¾Ý¸öÊýTUPNPPORTMAP.
-		  nLenMapStruct -- µÈÓÚsizeof(TUPNPPORTMAP)£¬ÓÃÓÚºóÐø¼æÈÝ.
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetUPnP
+åŠŸ    èƒ½: è®¾ç½®UPnPå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParamInfo[out] -- TUPNPINFO
+		  nlenInfo -- pParamInfoæ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TUPNPINFO).
+		  pParamMap[out] -- ç«¯å£æ˜ å°„è¡¨æ•°æ®.
+		  nlenMap -- ç«¯å£æ˜ å°„çš„æ•°æ®ä¸ªæ•°TUPNPPORTMAP.
+		  nLenMapStruct -- ç­‰äºŽsizeof(TUPNPPORTMAP)ï¼Œç”¨äºŽåŽç»­å…¼å®¹.
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetUPnP (void *pHandle, void * pInfo, int nlenInfo, void * pMap, int nLenMap, int &nLenMapStruct, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVsip
-¹¦    ÄÜ: »ñÈ¡Vsip²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTKVISPINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetVsip
+åŠŸ    èƒ½: èŽ·å–Vsipå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTKVISPINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetVsip(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVsip
-¹¦    ÄÜ: ÉèÖÃVsip²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTKVISPINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetVsip
+åŠŸ    èƒ½: è®¾ç½®Vsipå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTKVISPINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetVsip(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetOnvif
-¹¦    ÄÜ: »ñÈ¡Onvif²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTONVIFINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetOnvif
+åŠŸ    èƒ½: èŽ·å–Onvifå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTONVIFINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetOnvif(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetOnvif
-¹¦    ÄÜ: ÉèÖÃOnvif²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTONVIFINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetOnvif
+åŠŸ    èƒ½: è®¾ç½®Onvifå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTONVIFINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetOnvif(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetDpss
-¹¦    ÄÜ: »ñÈ¡Dpss²ÎÊý
-²ÎÊýËµÃ÷: dwHandle      Éè±¸¾ä±ú
+å‡½æ•°åç§°: IPC_GetDpss
+åŠŸ    èƒ½: èŽ·å–Dpsså‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
 		  pParam, TDPSSINFO
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetDpss(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetDpss
-¹¦    ÄÜ: ÉèÖÃDpss²ÎÊý
-²ÎÊýËµÃ÷: dwHandle      Éè±¸¾ä±ú
+å‡½æ•°åç§°: IPC_SetDpss
+åŠŸ    èƒ½: è®¾ç½®Dpsså‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
 		  pParam, TDPSSINFO
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetDpss(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAuthMode
-¹¦    ÄÜ: »ñÈ¡AuthMode²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTAUTHMODEINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetAuthMode
+åŠŸ    èƒ½: èŽ·å–AuthModeå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTAUTHMODEINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetAuthMode(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAuthMode
-¹¦    ÄÜ: ÉèÖÃAuthMode²ÎÊý
-²ÎÊýËµÃ÷: pParam [out] -- ÅäÖÃÊý¾ÝÖ¸ÕëTAUTHMODEINFO
-		  nLen -- Êý¾Ý³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetAuthMode
+åŠŸ    èƒ½: è®¾ç½®AuthModeå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam [out] -- é…ç½®æ•°æ®æŒ‡é’ˆTAUTHMODEINFO
+		  nLen -- æ•°æ®é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetAuthMode(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetGB28181
-¹¦    ÄÜ: »ñÈ¡GB28181²ÎÊý
-²ÎÊýËµÃ÷: pInfo, PTONVIFINFO
-          byPlateid   ×¢²áÆ½Ì¨ºÅ(1~16)
-	      pEncChnArr TGBENCCHNINFO[] ±àÂëÍ¨µÀÊý¾ÝÊý×éÖ¸Õë
-	      nlenEncChnInfo ±àÂëÍ¨µÀÊý¾ÝÊý×é¸öÊý
-	      pAlarmChnArr TGBALARMCHNINFO[] ¸æ¾¯Í¨µÀÊý¾ÝÊý×éÖ¸Õë
-	      nlenAlarmChnInfo¸æ¾¯Í¨µÀÊý¾ÝÊý×é¸öÊý
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º
+å‡½æ•°åç§°: IPC_GetGB28181
+åŠŸ    èƒ½: èŽ·å–GB28181å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfo, PTONVIFINFO
+          byPlateid   æ³¨å†Œå¹³å°å·(1~16)
+	      pEncChnArr TGBENCCHNINFO[] ç¼–ç é€šé“æ•°æ®æ•°ç»„æŒ‡é’ˆ
+	      nlenEncChnInfo ç¼–ç é€šé“æ•°æ®æ•°ç»„ä¸ªæ•°
+	      pAlarmChnArr TGBALARMCHNINFO[] å‘Šè­¦é€šé“æ•°æ®æ•°ç»„æŒ‡é’ˆ
+	      nlenAlarmChnInfoå‘Šè­¦é€šé“æ•°æ®æ•°ç»„ä¸ªæ•°
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š
 		  <expand max="1024" opt="plat_domain,requriusedomain,fromtousedomain,
 		  longitude,latitude,reg_retry_span,kplv_timeout_max_time,sdpfuseipc,
 		  sdptimeisutc,rtcprtpdiff,alarmspan,catantfusecatarsp">
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetGB28181(void *pHandle, char*byPlateid,void *pInfo,  int nLenInfo, void *pEncChnArr, int& nLenEncChnInfo, void *pAlarmChnArr,  int& nLenAlarmChnInfo,char* const szParamAssist, int nLenAssist, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetGB28181
-¹¦    ÄÜ: ÉèÖÃGB28181²ÎÊý
-²ÎÊýËµÃ÷: pInfo, PTONVIFINFO
-		  byPlateid   ×¢²áÆ½Ì¨ºÅ(1~16)
-	      pEncChnArr TGBENCCHNINFO[] ±àÂëÍ¨µÀÊý¾ÝÊý×éÖ¸Õë
-	      nlenEncChnInfo ±àÂëÍ¨µÀÊý¾ÝÊý×é¸öÊý
-	      pAlarmChnArr TGBALARMCHNINFO[] ¸æ¾¯Í¨µÀÊý¾ÝÊý×éÖ¸Õë
-	      nlenAlarmChnInfo¸æ¾¯Í¨µÀÊý¾ÝÊý×é¸öÊý
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetGB28181
+åŠŸ    èƒ½: è®¾ç½®GB28181å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfo, PTONVIFINFO
+		  byPlateid   æ³¨å†Œå¹³å°å·(1~16)
+	      pEncChnArr TGBENCCHNINFO[] ç¼–ç é€šé“æ•°æ®æ•°ç»„æŒ‡é’ˆ
+	      nlenEncChnInfo ç¼–ç é€šé“æ•°æ®æ•°ç»„ä¸ªæ•°
+	      pAlarmChnArr TGBALARMCHNINFO[] å‘Šè­¦é€šé“æ•°æ®æ•°ç»„æŒ‡é’ˆ
+	      nlenAlarmChnInfoå‘Šè­¦é€šé“æ•°æ®æ•°ç»„ä¸ªæ•°
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetGB28181(void *pHandle,char*byPlateid, void *pInfo,  int nLenInfo, void *pEncChnArr, int nLenEncChnInfo, void *pAlarmChnArr,  int nLenAlarmChnInfo, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetStorageState
-		  ¹¦    ÄÜ: »ñÈ¡´ÅÅÌ×´Ì¬
-²ÎÊýËµÃ÷: pParam, PTSTORAGESTATE
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º
+å‡½æ•°åç§°: IPC_GetWifiProbe
+åŠŸ    èƒ½: èŽ·å–wifiæŽ¢é’ˆ
+å‚æ•°è¯´æ˜Ž: pParam, TWIFIPROBEINFO
+		  nLen, æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TWIFIPROBEINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetWifiProbe (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetWifiProbe
+åŠŸ    èƒ½: è®¾ç½®wifiæŽ¢é’ˆ
+å‚æ•°è¯´æ˜Ž: pParam, TWIFIPROBEINFO
+		  nLen, æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TWIFIPROBEINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetWifiProbe (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetWifiProbeList
+åŠŸ    èƒ½: èŽ·å–wifiæŽ¢é’ˆè®¾å¤‡åˆ—è¡¨
+å‚æ•°è¯´æ˜Ž: pParam, TWIFIPROBELISTINFO
+		  nLen, æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TWIFIPROBELISTINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetWifiProbeList (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetStorageState
+		  åŠŸ    èƒ½: èŽ·å–ç£ç›˜çŠ¶æ€
+å‚æ•°è¯´æ˜Ž: pParam, PTSTORAGESTATE
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š
 		  <state opt="null,disker,diskrslowish,idel,noformat,formating,identifing">
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetStorageState (void *pHandle,void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetStorageNum
-¹¦    ÄÜ: »ñÈ¡´ÅÅÌ¸öÊý
-²ÎÊýËµÃ÷: 
-	      nLenDisks    ´ÅÅÌ¸öÊý
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetStorageNum
+åŠŸ    èƒ½: èŽ·å–ç£ç›˜ä¸ªæ•°
+å‚æ•°è¯´æ˜Ž: 
+	      nLenDisks    ç£ç›˜ä¸ªæ•°
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetStorageNum (void *pHandle, int &nLenDisks, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetStorageManager
-		  ¹¦    ÄÜ: »ñÈ¡´æ´¢¹ÜÀí²ÎÊý
-²ÎÊýËµÃ÷: pInfo, TSTORAGEMANAGER
-	      nlenInfo, pInfoÊý¾Ý³¤¶È,µÈÓÚsizeof(TSTORAGEMANAGER).
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º<fullmode opt=¡±stop,over¡±/>   
+å‡½æ•°åç§°: IPC_GetStorageManager
+		  åŠŸ    èƒ½: èŽ·å–å­˜å‚¨ç®¡ç†å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfo, TSTORAGEMANAGER
+	      nlenInfo, pInfoæ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TSTORAGEMANAGER).
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š<fullmode opt=â€stop,overâ€/>   
 		  <!-- req, xs:string --> <state opt="null,disker,diskrslowish,idel,noformat,formating,identifing">
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
  =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetStorageMgr  (void *pHandle, void * pInfo, int nLenInfo, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetStorageManager
-		  ¹¦    ÄÜ: ÉèÖÃ´æ´¢¹ÜÀí²ÎÊý
-²ÎÊýËµÃ÷: pInfo, TSTORAGEMANAGER
-	      nlenInfo, pInfoÊý¾Ý³¤¶È,µÈÓÚsizeof(TSTORAGEMANAGER).
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetStorageManager
+		  åŠŸ    èƒ½: è®¾ç½®å­˜å‚¨ç®¡ç†å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfo, TSTORAGEMANAGER
+	      nlenInfo, pInfoæ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TSTORAGEMANAGER).
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetStorageMgr  (void *pHandle, void * pInfo, int nLenInfo, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_DiskFomat 
-¹¦    ÄÜ: ´ÅÅÌ¸ñÊ½»¯
-²ÎÊýËµÃ÷: pParam, PTSTORAGEFOMAT
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_DiskFomat 
+åŠŸ    èƒ½: ç£ç›˜æ ¼å¼åŒ–
+å‚æ•°è¯´æ˜Ž: pParam, PTSTORAGEFOMAT
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_DiskFomat  (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetFomatProgress
-		  ¹¦    ÄÜ: ´ÅÅÌ¸ñÊ½»¯½ø¶È
-²ÎÊýËµÃ÷: pParam, PTFOMATSTATE
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetFomatProgress
+		  åŠŸ    èƒ½: ç£ç›˜æ ¼å¼åŒ–è¿›åº¦
+å‚æ•°è¯´æ˜Ž: pParam, PTFOMATSTATE
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetFomatProgress (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRecSchedule
-		  ¹¦    ÄÜ: »ñÈ¡Â¼Ïñ¼Æ»®²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTRECSCHEDULE
-	  nlenInfo, pParamInfoÊý¾Ý³¤¶È,µÈÓÚsizeof(TRECSCHEDULE).
-	  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º<preparetime opt=¡±none,5,10,15,20,25,30,infinite¡±/>
-	  <delaytime opt=¡±none,5,10,15,20,25,30,infinite¡±/>
-	  <rectype opt=¡±main,assist,three¡±/><esps opt=¡±es, ps¡±/><time max= 8 index=1>
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetRecSchedule
+		  åŠŸ    èƒ½: èŽ·å–å½•åƒè®¡åˆ’å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTRECSCHEDULE
+	  nlenInfo, pParamInfoæ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TRECSCHEDULE).
+	  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š<preparetime opt=â€none,5,10,15,20,25,30,infiniteâ€/>
+	  <delaytime opt=â€none,5,10,15,20,25,30,infiniteâ€/>
+	  <rectype opt=â€main,assist,threeâ€/><esps opt=â€es, psâ€/><time max= 8 index=1>
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetRecSchedule (void *pHandle, void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetRecSchedule
-		  ¹¦    ÄÜ: ÉèÖÃÂ¼Ïñ¼Æ»®²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTRECSCHEDULE
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetRecSchedule
+		  åŠŸ    èƒ½: è®¾ç½®å½•åƒè®¡åˆ’å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTRECSCHEDULE
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetRecSchedule (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSnapPicConfig
-¹¦    ÄÜ: »ñÈ¡Ç°¶Ë×¥ÅÄ²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTSNAPPICCONFIG
-	      nlen,  pParamÊý¾Ý³¤¶È,µÈÓÚsizeof(TSNAPPICCONFIG).
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º<type opt=¡±jpeg, jpg,bmp¡±/>
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetSnapPicConfig
+åŠŸ    èƒ½: èŽ·å–å‰ç«¯æŠ“æ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTSNAPPICCONFIG
+	      nlen,  pParamæ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TSNAPPICCONFIG).
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š<type opt=â€jpeg, jpg,bmpâ€/>
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetSnapPicCfg  (void *pHandle, void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSnapPicConfig
-¹¦    ÄÜ: ÉèÖÃÇ°¶Ë×¥ÅÄ²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTSNAPPICCONFIG
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSnapPicConfig
+åŠŸ    èƒ½: è®¾ç½®å‰ç«¯æŠ“æ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTSNAPPICCONFIG
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSnapPicCfg (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSnapTime
-¹¦    ÄÜ: »ñÈ¡¶¨Ê±×¥ÅÄµÄÅäÖÃ
-²ÎÊýËµÃ÷: pHandle  Ç°¶Ë¾ä±ú
+å‡½æ•°åç§°: IPC_GetSnapTime
+åŠŸ    èƒ½: èŽ·å–å®šæ—¶æŠ“æ‹çš„é…ç½®
+å‚æ•°è¯´æ˜Ž: pHandle  å‰ç«¯å¥æŸ„
 	      pParam, PTSNAPTIME
-	      pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+	      pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetSnapTime (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSnapTime
-¹¦    ÄÜ: ÉèÖÃ¶¨Ê±×¥ÅÄµÄÅäÖÃ
-²ÎÊýËµÃ÷: pHandle  Ç°¶Ë¾ä±ú
+å‡½æ•°åç§°: IPC_SetSnapTime
+åŠŸ    èƒ½: è®¾ç½®å®šæ—¶æŠ“æ‹çš„é…ç½®
+å‚æ•°è¯´æ˜Ž: pHandle  å‰ç«¯å¥æŸ„
 	      pParam, PTSNAPTIME
-	      pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+	      pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSnapTime (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSnapTime
-¹¦    ÄÜ: »ñÈ¡ÊÂ¼þ×¥ÅÄµÄÅäÖÃ
-²ÎÊýËµÃ÷: pHandle  Ç°¶Ë¾ä±ú
+å‡½æ•°åç§°: IPC_GetSnapTime
+åŠŸ    èƒ½: èŽ·å–äº‹ä»¶æŠ“æ‹çš„é…ç½®
+å‚æ•°è¯´æ˜Ž: pHandle  å‰ç«¯å¥æŸ„
 	      pParam, PTSNAPEVENT
-	      pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+	      pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetSnapEvent (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSnapTime
-¹¦    ÄÜ: ÉèÖÃÊÂ¼þ×¥ÅÄµÄÅäÖÃ
-²ÎÊýËµÃ÷: pHandle  Ç°¶Ë¾ä±ú
+å‡½æ•°åç§°: IPC_SetSnapTime
+åŠŸ    èƒ½: è®¾ç½®äº‹ä»¶æŠ“æ‹çš„é…ç½®
+å‚æ•°è¯´æ˜Ž: pHandle  å‰ç«¯å¥æŸ„
 	      pParam, PTSNAPEVENT
-	      pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+	      pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSnapEvent (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoShield
-¹¦    ÄÜ: »ñÈ¡ÒÆ¶¯Õì²â²ÎÊý
-²ÎÊýËµÃ÷: pParam, TDETECTINFO
-	      nLen£¬ TDETECTINFO³¤¶È£¬ sizeof(TDETECTINFO);
-	      pAreaArr, TDETECTPOINTÊÓÆµÕÚ±ÎÇøÓòÊý×é;
-	      nLenArea£¬ÊÓÆµÕÚ±ÎÇøÓòÊýÁ¿;
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º
+å‡½æ•°åç§°: IPC_GetVideoShield
+åŠŸ    èƒ½: èŽ·å–ç§»åŠ¨ä¾¦æµ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, TDETECTINFO
+	      nLenï¼Œ TDETECTINFOé•¿åº¦ï¼Œ sizeof(TDETECTINFO);
+	      pAreaArr, TDETECTPOINTè§†é¢‘é®è”½åŒºåŸŸæ•°ç»„;
+	      nLenAreaï¼Œè§†é¢‘é®è”½åŒºåŸŸæ•°é‡;
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š
 		  <allcolor opt="gray,red,yellow,blue,orange,green,transparent,half-transparent,mosaic">
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetDetect(void *pHandle,  void *pParam,int nLen, void *pAreaArr,int nLenArea,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVideoShield
-¹¦    ÄÜ: ÉèÖÃÒÆ¶¯Õì²â²ÎÊý
-²ÎÊýËµÃ÷: pParam, TDETECTINFO
-	      nLen£¬ TDETECTINFO³¤¶È£¬ sizeof(TDETECTINFO);
-	      pAreaArr, TDETECTPOINTÊÓÆµÕÚ±ÎÇøÓòÊý×é;
-	      nLenArea£¬ÊÓÆµÕÚ±ÎÇøÓòÊýÁ¿;
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetVideoShield
+åŠŸ    èƒ½: è®¾ç½®ç§»åŠ¨ä¾¦æµ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, TDETECTINFO
+	      nLenï¼Œ TDETECTINFOé•¿åº¦ï¼Œ sizeof(TDETECTINFO);
+	      pAreaArr, TDETECTPOINTè§†é¢‘é®è”½åŒºåŸŸæ•°ç»„;
+	      nLenAreaï¼Œè§†é¢‘é®è”½åŒºåŸŸæ•°é‡;
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetDetect (void *pHandle, void *pParam,int nLen, void *pAreaArr,int nLenArea,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetShieldAlarm
-¹¦    ÄÜ: »ñÈ¡ÕÚµ²±¨¾¯²ÎÊý
-²ÎÊýËµÃ÷: pParam,   TALARMINFO
-	      nLen£¬    TALARMINFO³¤¶È£¬ sizeof(TALARMINFO);
-	      pAreaArr, TDETECTPOINTÊÓÆµÕÚ±ÎÇøÓòÊý×é;
-	      nLenArea£¬ÊÓÆµÕÚ±ÎÇøÓòÊýÁ¿;
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî	
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetShieldAlarm
+åŠŸ    èƒ½: èŽ·å–é®æŒ¡æŠ¥è­¦å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,   TALARMINFO
+	      nLenï¼Œ    TALARMINFOé•¿åº¦ï¼Œ sizeof(TALARMINFO);
+	      pAreaArr, TDETECTPOINTè§†é¢‘é®è”½åŒºåŸŸæ•°ç»„;
+	      nLenAreaï¼Œè§†é¢‘é®è”½åŒºåŸŸæ•°é‡;
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹	
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetShieldAlarm (void *pHandle,void *pParam,int nLen, void *pAreaArr,int nLenArea,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetShieldAlarm
-¹¦    ÄÜ: ÉèÖÃÕÚµ²±¨¾¯²ÎÊý
-²ÎÊýËµÃ÷: pParam,   TALARMINFO
-	      nLen£¬    TALARMINFO³¤¶È£¬ sizeof(TALARMINFO);
-	      pAreaArr, TDETECTPOINTÊÓÆµÕÚ±ÎÇøÓòÊý×é;
-	      nLenArea£¬ÊÓÆµÕÚ±ÎÇøÓòÊýÁ¿;
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetShieldAlarm
+åŠŸ    èƒ½: è®¾ç½®é®æŒ¡æŠ¥è­¦å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,   TALARMINFO
+	      nLenï¼Œ    TALARMINFOé•¿åº¦ï¼Œ sizeof(TALARMINFO);
+	      pAreaArr, TDETECTPOINTè§†é¢‘é®è”½åŒºåŸŸæ•°ç»„;
+	      nLenAreaï¼Œè§†é¢‘é®è”½åŒºåŸŸæ•°é‡;
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetShieldAlarm (void *pHandle,void *pParam,int nLen, void *pAreaArr,int nLenArea,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetWarningLine
-¹¦    ÄÜ: »ñÈ¡¾¯½äÏß²ÎÊý
-²ÎÊýËµÃ÷: pParam,   TWARNINGLINEINFO
-	      nLen£¬    TWARNINGLINEINFO³¤¶È£¬ sizeof(TWARNINGLINEINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetWarningLine
+åŠŸ    èƒ½: èŽ·å–è­¦æˆ’çº¿å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,   TWARNINGLINEINFO
+	      nLenï¼Œ    TWARNINGLINEINFOé•¿åº¦ï¼Œ sizeof(TWARNINGLINEINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetWarningLine (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetWarningLine
-¹¦    ÄÜ: ÉèÖÃ¾¯½äÏß²ÎÊý
-²ÎÊýËµÃ÷: pParam,   TWARNINGLINEINFO
-	      nLen£¬    TWARNINGLINEINFO³¤¶È£¬ sizeof(TWARNINGLINEINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetWarningLine
+åŠŸ    èƒ½: è®¾ç½®è­¦æˆ’çº¿å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,   TWARNINGLINEINFO
+	      nLenï¼Œ    TWARNINGLINEINFOé•¿åº¦ï¼Œ sizeof(TWARNINGLINEINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetWarningLine (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAreaDetectEnter
-¹¦    ÄÜ: »ñÈ¡ÇøÓòÈëÇÖ²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAREADETECTINFO
-	      nLen£¬       TAREADETECTINFO³¤¶È£¬ sizeof(TAREADETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAreaDetectEnter
+åŠŸ    èƒ½: èŽ·å–åŒºåŸŸå…¥ä¾µå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAREADETECTINFO
+	      nLenï¼Œ       TAREADETECTINFOé•¿åº¦ï¼Œ sizeof(TAREADETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAreaDetectEnter (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAreaDetectEnter
-¹¦    ÄÜ: ÉèÖÃÇøÓòÈëÇÖ²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAREADETECTINFO
-	      nLen£¬       TAREADETECTINFO³¤¶È£¬ sizeof(TAREADETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAreaDetectEnter
+åŠŸ    èƒ½: è®¾ç½®åŒºåŸŸå…¥ä¾µå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAREADETECTINFO
+	      nLenï¼Œ       TAREADETECTINFOé•¿åº¦ï¼Œ sizeof(TAREADETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAreaDetectEnter (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAreaDetectEntry
-¹¦    ÄÜ: »ñÈ¡ÇøÓò½øÈë²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAREADETECTINFO
-	      nLen£¬       TAREADETECTINFO³¤¶È£¬ sizeof(TAREADETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAreaDetectEntry
+åŠŸ    èƒ½: èŽ·å–åŒºåŸŸè¿›å…¥å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAREADETECTINFO
+	      nLenï¼Œ       TAREADETECTINFOé•¿åº¦ï¼Œ sizeof(TAREADETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAreaDetectEntry (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAreaDetectEntry
-¹¦    ÄÜ: ÉèÖÃÇøÓò½øÈë²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAREADETECTINFO
-	      nLen£¬       TAREADETECTINFO³¤¶È£¬ sizeof(TAREADETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAreaDetectEntry
+åŠŸ    èƒ½: è®¾ç½®åŒºåŸŸè¿›å…¥å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAREADETECTINFO
+	      nLenï¼Œ       TAREADETECTINFOé•¿åº¦ï¼Œ sizeof(TAREADETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAreaDetectEntry (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAreaDetectExit
-¹¦    ÄÜ: »ñÈ¡ÇøÓòÀë¿ª²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAREADETECTINFO
-	      nLen£¬       TAREADETECTINFO³¤¶È£¬ sizeof(TAREADETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAreaDetectExit
+åŠŸ    èƒ½: èŽ·å–åŒºåŸŸç¦»å¼€å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAREADETECTINFO
+	      nLenï¼Œ       TAREADETECTINFOé•¿åº¦ï¼Œ sizeof(TAREADETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAreaDetectExit (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAreaDetectExit
-¹¦    ÄÜ: ÉèÖÃÇøÓòÀë¿ª²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAREADETECTINFO
-	      nLen£¬       TAREADETECTINFO³¤¶È£¬ sizeof(TAREADETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAreaDetectExit
+åŠŸ    èƒ½: è®¾ç½®åŒºåŸŸç¦»å¼€å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAREADETECTINFO
+	      nLenï¼Œ       TAREADETECTINFOé•¿åº¦ï¼Œ sizeof(TAREADETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAreaDetectExit (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetObjectLeft
-¹¦    ÄÜ: »ñÈ¡ÎïÆ·ÒÅÁô²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TOBJECTDETECTINFO
-	      nLen£¬       TOBJECTDETECTINFO³¤¶È£¬ sizeof(TOBJECTDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetObjectLeft
+åŠŸ    èƒ½: èŽ·å–ç‰©å“é—ç•™å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TOBJECTDETECTINFO
+	      nLenï¼Œ       TOBJECTDETECTINFOé•¿åº¦ï¼Œ sizeof(TOBJECTDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetObjectLeft (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetObjectLeft
-¹¦    ÄÜ: ÉèÖÃÎïÆ·ÒÅÁô²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TOBJECTDETECTINFO
-	      nLen£¬       TOBJECTDETECTINFO³¤¶È£¬ sizeof(TOBJECTDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetObjectLeft
+åŠŸ    èƒ½: è®¾ç½®ç‰©å“é—ç•™å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TOBJECTDETECTINFO
+	      nLenï¼Œ       TOBJECTDETECTINFOé•¿åº¦ï¼Œ sizeof(TOBJECTDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetObjectLeft (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetObjectRemoval
-¹¦    ÄÜ: »ñÈ¡ÎïÆ·ÄÃÈ¡²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TOBJECTDETECTINFO
-	      nLen£¬       TOBJECTDETECTINFO³¤¶È£¬ sizeof(TOBJECTDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetObjectRemoval
+åŠŸ    èƒ½: èŽ·å–ç‰©å“æ‹¿å–å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TOBJECTDETECTINFO
+	      nLenï¼Œ       TOBJECTDETECTINFOé•¿åº¦ï¼Œ sizeof(TOBJECTDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetObjectRemoval (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetObjectRemoval
-¹¦    ÄÜ: ÉèÖÃÎïÆ·ÄÃÈ¡²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TOBJECTDETECTINFO
-	      nLen£¬       TOBJECTDETECTINFO³¤¶È£¬ sizeof(TOBJECTDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetObjectRemoval
+åŠŸ    èƒ½: è®¾ç½®ç‰©å“æ‹¿å–å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TOBJECTDETECTINFO
+	      nLenï¼Œ       TOBJECTDETECTINFOé•¿åº¦ï¼Œ sizeof(TOBJECTDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetObjectRemoval (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetPersonAggregate
-¹¦    ÄÜ: »ñÈ¡ÈËÔ±¾Û¼¯²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TPERSONDETECTINFO
-	      nLen£¬       TPERSONDETECTINFO³¤¶È£¬ sizeof(TPERSONDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetPersonAggregate
+åŠŸ    èƒ½: èŽ·å–äººå‘˜èšé›†å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TPERSONDETECTINFO
+	      nLenï¼Œ       TPERSONDETECTINFOé•¿åº¦ï¼Œ sizeof(TPERSONDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetPersonAggregate (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPersonAggregate
-¹¦    ÄÜ: ÉèÖÃÈËÔ±¾Û¼¯²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TPERSONDETECTINFO
-	      nLen£¬       TPERSONDETECTINFO³¤¶È£¬ sizeof(TPERSONDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetPersonAggregate
+åŠŸ    èƒ½: è®¾ç½®äººå‘˜èšé›†å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TPERSONDETECTINFO
+	      nLenï¼Œ       TPERSONDETECTINFOé•¿åº¦ï¼Œ sizeof(TPERSONDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetPersonAggregate (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVirtualFocus
-¹¦    ÄÜ: »ñÈ¡Ðé½¹¼ì²â²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TVIRTUALFOCUSINFO
-	      nLen£¬       TVIRTUALFOCUSINFO³¤¶È£¬ sizeof(TVIRTUALFOCUSINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetVirtualFocus
+åŠŸ    èƒ½: èŽ·å–è™šç„¦æ£€æµ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TVIRTUALFOCUSINFO
+	      nLenï¼Œ       TVIRTUALFOCUSINFOé•¿åº¦ï¼Œ sizeof(TVIRTUALFOCUSINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetVirtualFocus (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVirtualFocus
-¹¦    ÄÜ: ÉèÖÃÐé½¹¼ì²â²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TVIRTUALFOCUSINFO
-	      nLen£¬       TVIRTUALFOCUSINFO³¤¶È£¬ sizeof(TVIRTUALFOCUSINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetVirtualFocus
+åŠŸ    èƒ½: è®¾ç½®è™šç„¦æ£€æµ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TVIRTUALFOCUSINFO
+	      nLenï¼Œ       TVIRTUALFOCUSINFOé•¿åº¦ï¼Œ sizeof(TVIRTUALFOCUSINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetVirtualFocus (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSightChange
-¹¦    ÄÜ: »ñÈ¡³¡¾°±ä¸ü²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TSIGHTCHANGEINFO
-	      nLen£¬       TSIGHTCHANGEINFO³¤¶È£¬ sizeof(TSIGHTCHANGEINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetSightChange
+åŠŸ    èƒ½: èŽ·å–åœºæ™¯å˜æ›´å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TSIGHTCHANGEINFO
+	      nLenï¼Œ       TSIGHTCHANGEINFOé•¿åº¦ï¼Œ sizeof(TSIGHTCHANGEINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetSightChange (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSightChange
-¹¦    ÄÜ: ÉèÖÃ³¡¾°±ä¸ü²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TSIGHTCHANGEINFO
-	      nLen£¬       TSIGHTCHANGEINFO³¤¶È£¬ sizeof(TSIGHTCHANGEINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSightChange
+åŠŸ    èƒ½: è®¾ç½®åœºæ™¯å˜æ›´å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TSIGHTCHANGEINFO
+	      nLenï¼Œ       TSIGHTCHANGEINFOé•¿åº¦ï¼Œ sizeof(TSIGHTCHANGEINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSightChange (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAudioExcept
-¹¦    ÄÜ: »ñÈ¡ÉùÒôÒì³£²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAUDIOEXCEPTINFO
-	      nLen£¬       TAUDIOEXCEPTINFO³¤¶È£¬ sizeof(TAUDIOEXCEPTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAudioExcept
+åŠŸ    èƒ½: èŽ·å–å£°éŸ³å¼‚å¸¸å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAUDIOEXCEPTINFO
+	      nLenï¼Œ       TAUDIOEXCEPTINFOé•¿åº¦ï¼Œ sizeof(TAUDIOEXCEPTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAudioExcept (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAudioExcept
-¹¦    ÄÜ: ÉèÖÃÉùÒôÒì³£²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TAUDIOEXCEPTINFO
-	      nLen£¬       TAUDIOEXCEPTINFO³¤¶È£¬ sizeof(TAUDIOEXCEPTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAudioExcept
+åŠŸ    èƒ½: è®¾ç½®å£°éŸ³å¼‚å¸¸å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TAUDIOEXCEPTINFO
+	      nLenï¼Œ       TAUDIOEXCEPTINFOé•¿åº¦ï¼Œ sizeof(TAUDIOEXCEPTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAudioExcept (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetFaceDetect
-¹¦    ÄÜ: »ñÈ¡ÈËÁ³¼ì²â²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TFACEDETECTINFO
-	      nLen£¬       TFACEDETECTINFO³¤¶È£¬ sizeof(TFACEDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetFaceDetect
+åŠŸ    èƒ½: èŽ·å–äººè„¸æ£€æµ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TFACEDETECTINFO
+	      nLenï¼Œ       TFACEDETECTINFOé•¿åº¦ï¼Œ sizeof(TFACEDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetFaceDetect (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetFaceDetect
-¹¦    ÄÜ: ÉèÖÃÈËÁ³¼ì²â²ÎÊý
-²ÎÊýËµÃ÷: pParam,      TFACEDETECTINFO
-	      nLen£¬       TFACEDETECTINFO³¤¶È£¬ sizeof(TFACEDETECTINFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetFaceDetect
+åŠŸ    èƒ½: è®¾ç½®äººè„¸æ£€æµ‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,      TFACEDETECTINFO
+	      nLenï¼Œ       TFACEDETECTINFOé•¿åº¦ï¼Œ sizeof(TFACEDETECTINFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetFaceDetect (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAlarmIn
-¹¦    ÄÜ: »ñÈ¡±¨¾¯ÊäÈë²ÎÊý
-²ÎÊýËµÃ÷: pParam,PTALARMININFO
-	      nLen£¬ TALARMININFO³¤¶È£¬ sizeof(TALARMININFO);
-	      szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  nLenAssist, ¸¨ÖúÐÅÏ¢³¤¶È
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAlarmIn
+åŠŸ    èƒ½: èŽ·å–æŠ¥è­¦è¾“å…¥å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,PTALARMININFO
+	      nLenï¼Œ TALARMININFOé•¿åº¦ï¼Œ sizeof(TALARMININFO);
+	      szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  nLenAssist, è¾…åŠ©ä¿¡æ¯é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAlarmIn(void *pHandle, char*pAlmNum, void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAlarmIn
-¹¦    ÄÜ: ÉèÖÃ±¨¾¯ÊäÈë²ÎÊý
-²ÎÊýËµÃ÷: pParam,PTALARMININFO
-	      nLen£¬ TALARMININFO³¤¶È£¬ sizeof(TALARMININFO);
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAlarmIn
+åŠŸ    èƒ½: è®¾ç½®æŠ¥è­¦è¾“å…¥å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam,PTALARMININFO
+	      nLenï¼Œ TALARMININFOé•¿åº¦ï¼Œ sizeof(TALARMININFO);
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAlarmIn (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAlarmOut
-¹¦    ÄÜ: »ñÈ¡±¨¾¯Êä³ö²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTALARMOUT
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetAlarmOut
+åŠŸ    èƒ½: èŽ·å–æŠ¥è­¦è¾“å‡ºå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTALARMOUT
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetAlarmOut (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAlarmOut
-¹¦    ÄÜ: ÉèÖÃ±¨¾¯Êä³ö²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTALARMOUT
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetAlarmOut
+åŠŸ    èƒ½: è®¾ç½®æŠ¥è­¦è¾“å‡ºå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTALARMOUT
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetAlarmOut (void *pHandle,void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetExceptType
-¹¦    ÄÜ: »ñÈ¡Òì³£ÀàÐÍ²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTEXCEPTTYPE
-		  nLen£¬ TEXCEPTTYPE³¤¶È£¬ sizeof(TEXCEPTTYPE)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetExceptType
+åŠŸ    èƒ½: èŽ·å–å¼‚å¸¸ç±»åž‹å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTEXCEPTTYPE
+		  nLenï¼Œ TEXCEPTTYPEé•¿åº¦ï¼Œ sizeof(TEXCEPTTYPE)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetExceptType (void *pHandle,void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetExcpet
-		  ¹¦    ÄÜ: »ñÈ¡Òì³£ÅäÖÃ²ÎÊý
-²ÎÊýËµÃ÷: pExceptType  Òì³£ÀàÐÍ
+å‡½æ•°åç§°: IPC_GetExcpet
+		  åŠŸ    èƒ½: èŽ·å–å¼‚å¸¸é…ç½®å‚æ•°
+å‚æ•°è¯´æ˜Ž: pExceptType  å¼‚å¸¸ç±»åž‹
           pParam, PTEXCEPTINFO
-		  nLen£¬ TEXCEPTINFO³¤¶È£¬ sizeof(TEXCEPTINFO);
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  nLenAssist, ¸¨ÖúÐÅÏ¢³¤¶È
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  nLenï¼Œ TEXCEPTINFOé•¿åº¦ï¼Œ sizeof(TEXCEPTINFO);
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  nLenAssist, è¾…åŠ©ä¿¡æ¯é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetExcept (void *pHandle, char*pExceptType ,void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetExcept
-¹¦    ÄÜ: ÉèÖÃÒì³£ÅäÖÃ²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTEXCEPTINFO
-		  nLen£¬ TEXCEPTINFO³¤¶È£¬ sizeof(TEXCEPTINFO);
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetExcept
+åŠŸ    èƒ½: è®¾ç½®å¼‚å¸¸é…ç½®å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTEXCEPTINFO
+		  nLenï¼Œ TEXCEPTINFOé•¿åº¦ï¼Œ sizeof(TEXCEPTINFO);
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetExcept (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_PtzMove
-¹¦    ÄÜ: ÉèÖÃPTZÒÆ¶¯(ÉÏ,ÏÂ,×ó,ÓÒ,¸´Î»£¬Í£Ö¹)
-²ÎÊýËµÃ÷: pParam,PTPTZMOVE
-		  nLen£¬ TPTZMOVE³¤¶È£¬ sizeof(TPTZMOVE);
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_PtzMove
+åŠŸ    èƒ½: è®¾ç½®PTZç§»åŠ¨(ä¸Š,ä¸‹,å·¦,å³,å¤ä½ï¼Œåœæ­¢)
+å‚æ•°è¯´æ˜Ž: pParam,PTPTZMOVE
+		  nLenï¼Œ TPTZMOVEé•¿åº¦ï¼Œ sizeof(TPTZMOVE);
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_PtzMove (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
+
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_PtzZoneZoom
-¹¦    ÄÜ: ÉèÖÃPTZÇøÓòËõ·Å
-²ÎÊýËµÃ÷: pParam,PTPTZZONEZOOM
-		  nLen£¬ TPTZZONEZOOM³¤¶È£¬ sizeof(TPTZZONEZOOM);
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_PtzScan
+åŠŸ    èƒ½: è®¾ç½®PTZæ°´å¹³å·¡èˆª
+å‚æ•°è¯´æ˜Ž: pParam,PTPTZSCAN
+		  nLenï¼Œ TPTZSCANé•¿åº¦ï¼Œ sizeof(TPTZSCAN);
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_PtzScan (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_PtzZoneZoom
+åŠŸ    èƒ½: è®¾ç½®PTZåŒºåŸŸç¼©æ”¾
+å‚æ•°è¯´æ˜Ž: pParam,PTPTZZONEZOOM
+		  nLenï¼Œ TPTZZONEZOOMé•¿åº¦ï¼Œ sizeof(TPTZZONEZOOM);
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_PtzZoneZoom (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_PtzGotoPoint
-¹¦    ÄÜ: ÉèÖÃPTZ¾ÓÖÐ¶¨Î»
-²ÎÊýËµÃ÷: pParam,TPTZGOTOPOINT
-		  nLen£¬ TPTZGOTOPOINT³¤¶È£¬ sizeof(TPTZGOTOPOINT);
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_PtzGotoPoint
+åŠŸ    èƒ½: è®¾ç½®PTZå±…ä¸­å®šä½
+å‚æ•°è¯´æ˜Ž: pParam,TPTZGOTOPOINT
+		  nLenï¼Œ TPTZGOTOPOINTé•¿åº¦ï¼Œ sizeof(TPTZGOTOPOINT);
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_PtzGotoPoint (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzWiper
-¹¦    ÄÜ: ÉèÖÃÓêË¢¿ªÆô/¹Ø±Õ
-²ÎÊýËµÃ÷: pParam,TPTZWIPER
-		  nLen£¬ TPTZWIPER³¤¶È£¬ sizeof(TPTZWIPER);
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetPtzWiper
+åŠŸ    èƒ½: è®¾ç½®é›¨åˆ·å¼€å¯/å…³é—­
+å‚æ•°è¯´æ˜Ž: pParam,TPTZWIPER
+		  nLenï¼Œ TPTZWIPERé•¿åº¦ï¼Œ sizeof(TPTZWIPER);
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzWiper (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetPtzBase
-¹¦    ÄÜ: »ñÈ¡ÔÆÌ¨»ù±¾²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ GetPtzBase
+åŠŸ    èƒ½: èŽ·å–äº‘å°åŸºæœ¬å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 	      pParam, PTPTZBASE
-		  nLen£¬ TPTZBASEµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼Œ TPTZBASEçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzBase (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ SetPtzBase
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨»ù±¾²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTPTZBASE
-	      nLen£¬TPTZBASEµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_ SetPtzBase
+åŠŸ    èƒ½: è®¾ç½®äº‘å°åŸºæœ¬å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZBASE
+	      nLenï¼ŒTPTZBASEçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzBase (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ IPC_GetPtzMainTain
-¹¦    ÄÜ: »ñÈ¡ÔÆÌ¨¶ÏµçÎ¬»¤²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ IPC_GetPtzMainTain
+åŠŸ    èƒ½: èŽ·å–äº‘å°æ–­ç”µç»´æŠ¤å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 	      pParam, PTPTZMAINTAIN
-		  nLen£¬ TPTZMAINTAINµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼Œ TPTZMAINTAINçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzMainTain (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ IPC_SetPtzMainTain
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨¶ÏµçÎ¬»¤²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTPTZMAINTAIN
-	      nLen£¬TPTZMAINTAINµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_ IPC_SetPtzMainTain
+åŠŸ    èƒ½: è®¾ç½®äº‘å°æ–­ç”µç»´æŠ¤å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZMAINTAIN
+	      nLenï¼ŒTPTZMAINTAINçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzMainTain (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ IPC_SetPtzRefactory
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨»Ö¸´³ö³§ÉèÖÃ
-²ÎÊýËµÃ÷: pParam, PTPTZREFACTORY
-	      nLen£¬TPTZREFACTORYµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_ IPC_SetPtzRefactory
+åŠŸ    èƒ½: è®¾ç½®äº‘å°æ¢å¤å‡ºåŽ‚è®¾ç½®
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZREFACTORY
+	      nLenï¼ŒTPTZREFACTORYçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzRefactory (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetPtzWatchOn
-¹¦    ÄÜ: »ñÈ¡ÔÆÌ¨ÊØÍûÈÎÎñ²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ GetPtzWatchOn
+åŠŸ    èƒ½: èŽ·å–äº‘å°å®ˆæœ›ä»»åŠ¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 		  pParam, PTPTZWATCHON
-		  nLen£¬ TPTZWATCHONµÄ³¤¶È
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<mode opt=¡±hscan,vscan,preset,pathcruise,framescan,
-		  randscan,fullviewscan,syncscan¡±>
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼Œ TPTZWATCHONçš„é•¿åº¦
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<mode opt=â€hscan,vscan,preset,pathcruise,framescan,
+		  randscan,fullviewscan,syncscanâ€>
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzWatchOn (void *pHandle, void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ SetPtzWatchOn
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨ÊØÍûÈÎÎñ²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTPTZWATCHON
-	      nLen£¬TPTZWATCHONµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_ SetPtzWatchOn
+åŠŸ    èƒ½: è®¾ç½®äº‘å°å®ˆæœ›ä»»åŠ¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZWATCHON
+	      nLenï¼ŒTPTZWATCHONçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzWatchOn (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetPtzPreset
-¹¦    ÄÜ: »ñÈ¡Ô¤ÖÃÎ»²ÎÊý
-²ÎÊýËµÃ÷: 
-	      bySn,ÐèÒª»ñÈ¡µÄÔ¤ÖÃÎ»µÄÐòºÅ£¬1~255, 0´ú±í»ñÈ¡ËùÓÐµÄÔ¤ÖÃÎ»ÐÅÏ¢
+å‡½æ•°åç§°: IPC_ GetPtzPreset
+åŠŸ    èƒ½: èŽ·å–é¢„ç½®ä½å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
+	      bySn,éœ€è¦èŽ·å–çš„é¢„ç½®ä½çš„åºå·ï¼Œ1~255
 		  pParam, PTPTZPRESET
-		  nLen£¬bySnÎª0 ·µ»ØTPTZPRESETÊý×éµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼ŒbySnä¸º0 è¿”å›žTPTZPRESETæ•°ç»„çš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzPreset (void *pHandle, u8 bySn, void *pParam,int nLen,u32 *pErrorCode);
+
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzPreset
-¹¦    ÄÜ: ÉèÖÃÔ¤ÖÃÎ»²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTPTZPRESET
-	  ·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetPtzPresetAll
+åŠŸ    èƒ½: èŽ·å–å…¨éƒ¨é¢„ç½®ä½å‚æ•°
+å‚æ•°è¯´æ˜Ž:
+		  pParam, PTPTZPRESETALL
+		  nLenè¿”å›žTPTZPRESETæ•°ç»„çš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GetPtzPresetAll (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetPtzPreset
+åŠŸ    èƒ½: è®¾ç½®é¢„ç½®ä½å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZPRESET
+	  è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzPreset (void *pHandle, void *pParam,  int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetPtzLimit
-¹¦    ÄÜ: »ñÈ¡ÔÆÌ¨ÏÞÎ»ÈÎÎñ²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ GetPtzLimit
+åŠŸ    èƒ½: èŽ·å–äº‘å°é™ä½ä»»åŠ¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 		  pParam, PTPTZLIMIT
-		  nLen£¬ TPTZLIMITµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼Œ TPTZLIMITçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzLimit (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ SetPtzLimit
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨ÏÞÎ»ÈÎÎñ²ÎÊý
-²ÎÊýËµÃ÷: pParam, PTPTZLIMIT
-	  nLen£¬TPTZLIMITµÄ³¤¶È
-	  ·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_ SetPtzLimit
+åŠŸ    èƒ½: è®¾ç½®äº‘å°é™ä½ä»»åŠ¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZLIMIT
+	  nLenï¼ŒTPTZLIMITçš„é•¿åº¦
+	  è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzLimit (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetPtzPathCruise
-¹¦    ÄÜ: »ñÈ¡Ñ²º½É¨Ãè²ÎÊý
-²ÎÊýËµÃ÷: 
-	      bySn,ÐèÒª»ñÈ¡µÄÉ¨ÃèÂ·¾¶µÄÐòºÅ£¬1~8, 0´ú±í»ñÈ¡ËùÓÐÐÅÏ¢
+å‡½æ•°åç§°: IPC_ GetPtzPathCruise
+åŠŸ    èƒ½: èŽ·å–å·¡èˆªæ‰«æå‚æ•°
+å‚æ•°è¯´æ˜Ž: 
+	      bySn,éœ€è¦èŽ·å–çš„æ‰«æè·¯å¾„çš„åºå·ï¼Œ1~8, 0ä»£è¡¨èŽ·å–æ‰€æœ‰ä¿¡æ¯
 		  pParam, PTPTZPATHCRUISE
-		  nLen£¬bySnÎª0 ·µ»ØTPTZPATHCRUISEÊý×éµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼ŒbySnä¸º0 è¿”å›žTPTZPATHCRUISEæ•°ç»„çš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzPathCruise (void *pHandle, u8 bySn, void *pParam,int& nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzPathCruise
-¹¦    ÄÜ: ÉèÖÃÑ²º½É¨Ãè²ÎÊý
-²ÎÊýËµÃ÷: pParam, TPTZPATHCRUISE[]£¬É¨ÃèÂ·¾¶ÐÅÏ¢Êý×é
-	      nLen£¬TPTZPATHCRUISEÊý×éµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetPtzPathCruise
+åŠŸ    èƒ½: è®¾ç½®å·¡èˆªæ‰«æå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam, TPTZPATHCRUISE[]ï¼Œæ‰«æè·¯å¾„ä¿¡æ¯æ•°ç»„
+	      nLenï¼ŒTPTZPATHCRUISEæ•°ç»„çš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzPathCruise (void *pHandle, u8 bySn,void *pParam,  int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzPathCruiseEvent
-¹¦    ÄÜ: ÉèÖÃÑ²º½É¨ÃèÊÂ¼þ(µ÷ÓÃÑ²º½,Í£Ö¹Ñ²º½)
-²ÎÊýËµÃ÷: pParam, TPTZPATHCRUISEEVT£¬Ñ²º½É¨ÃèÊÂ¼þ
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetPtzPathCruiseEvent
+åŠŸ    èƒ½: è®¾ç½®å·¡èˆªæ‰«æäº‹ä»¶(è°ƒç”¨å·¡èˆª,åœæ­¢å·¡èˆª)
+å‚æ•°è¯´æ˜Ž: pParam, TPTZPATHCRUISEEVTï¼Œå·¡èˆªæ‰«æäº‹ä»¶
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzPathCruiseEvent (void *pHandle, void *pParam,  int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetTimeTask
-¹¦    ÄÜ: »ñÈ¡¶¨Ê±ÈÎÎñ²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ GetTimeTask
+åŠŸ    èƒ½: èŽ·å–å®šæ—¶ä»»åŠ¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 	      pParam, PTTIMETASK
-		  nLen£¬sizeof(TTIMETASK);
+		  nLenï¼Œsizeof(TTIMETASK);
 	      pTimeArr, PTTIMETASKLIST
-		  nlenTime,¶¨Ê±ÈÎÎñÊ±¼äÊý¾Ý¸öÊý.
-		  nLenTimeStruct, µÈÓÚsizeof(TTIMETASKLIST)£¬ÓÃÓÚºóÐø¼æÈÝ.
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî´Ë´¦´«µÝ£º<mode opt=¡±close,hscan,vscan,preset,pathcruise,framescan,randscan,
-		  fullviewscan,syncscan¡±>
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nlenTime,å®šæ—¶ä»»åŠ¡æ—¶é—´æ•°æ®ä¸ªæ•°.
+		  nLenTimeStruct, ç­‰äºŽsizeof(TTIMETASKLIST)ï¼Œç”¨äºŽåŽç»­å…¼å®¹.
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹æ­¤å¤„ä¼ é€’ï¼š<mode opt=â€close,hscan,vscan,preset,pathcruise,framescan,randscan,
+		  fullviewscan,syncscanâ€>
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetTimeTask (void *pHandle, void *pParam, int nLen, void * pTimeArr, int nLenTime ,int nLenTimeStruct , char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ SetTimeTask
-¹¦    ÄÜ: ÉèÖÃ¶¨Ê±ÈÎÎñ²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ SetTimeTask
+åŠŸ    èƒ½: è®¾ç½®å®šæ—¶ä»»åŠ¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 	      pParam, PTTIMETASK
-		  nLen£¬sizeof(TTIMETASK);
+		  nLenï¼Œsizeof(TTIMETASK);
 	      pTimeArr, PTTIMETASKLIST
-		  nlenTime,¶¨Ê±ÈÎÎñÊ±¼äÊý¾Ý¸öÊý.
-		  nLenTimeStruct, µÈÓÚsizeof(TTIMETASKLIST)£¬ÓÃÓÚºóÐø¼æÈÝ.
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nlenTime,å®šæ—¶ä»»åŠ¡æ—¶é—´æ•°æ®ä¸ªæ•°.
+		  nLenTimeStruct, ç­‰äºŽsizeof(TTIMETASKLIST)ï¼Œç”¨äºŽåŽç»­å…¼å®¹.
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetTimeTask (void *pHandle, void *pParam, int nLen ,void * pTimeArr, int nLenTime ,int nLenTimeStruct,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_ GetPtzMainTain
-¹¦    ÄÜ: »ñÈ¡ÔÆÌ¨×ø±ê²ÎÊý
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_ GetPtzMainTain
+åŠŸ    èƒ½: èŽ·å–äº‘å°åæ ‡å‚æ•°
+å‚æ•°è¯´æ˜Ž: 
 	      pParam, PTPTZCOORDINATE
-		  nLen£¬ TPTZCOORDINATEµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼Œ TPTZCOORDINATEçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzCoorDinate (void *pHandle, void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzCoorDinateEvt
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨×ø±êÊÂ¼þ
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_SetPtzCoorDinateEvt
+åŠŸ    èƒ½: è®¾ç½®äº‘å°åæ ‡äº‹ä»¶
+å‚æ•°è¯´æ˜Ž: 
 	      pParam, PTPTZCOORDINATE
-		  nLen£¬ TPTZCOORDINATEµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  nLenï¼Œ TPTZCOORDINATEçš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzCoorDinateEvt(void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetPtzRatio
-¹¦    ÄÜ: »ñÈ¡ÔÆÌ¨±¶ÂÊ
-²ÎÊýËµÃ÷: 
-	      dwHandle      Éè±¸¾ä±ú
-		  pParam, PTPTZCOORDINATE
-		  nLen£¬ TPTZCOORDINATEµÄ³¤¶È
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetPtzRatio
+åŠŸ    èƒ½: èŽ·å–äº‘å°å€çŽ‡
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TPTZRATIO
+		  nLenï¼Œ TPTZRATIOçš„é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetPtzRatio (void* pHandle, void *pParam,int nLen, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzRatio
-¹¦    ÄÜ: ÉèÖÃÔÆÌ¨±¶ÂÊ
-²ÎÊýËµÃ÷: 
-	      dwHandle      Éè±¸¾ä±ú
-		  pParam, PTPTZCOORDINATE
-		  nLen£¬ TPTZCOORDINATEµÄ³¤¶È
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetPtzRatio
+åŠŸ    èƒ½: è®¾ç½®äº‘å°å€çŽ‡
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TPTZRATIO
+		  nLenï¼Œ TPTZRATIOçš„é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetPtzRatio(void* pHandle, void *pParam,int nLen, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetPtzPatternsInfo
-¹¦    ÄÜ: ÊµÏÖ»¨ÑùÉ¨ÃèÐÅÏ¢»ñÈ¡
-²ÎÊýËµÃ÷: pParam, PTPTZPATTERNSINFO
-		  nLen,   »¨ÑùÉ¨ÃèÁ´±í¸öÊý
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetPtzCoorDinateEvt
+åŠŸ    èƒ½: è®¾ç½®äº‘å°P,T,Zå€¼
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, PTPTZCOORDINATEEX
+		  nLenï¼Œ TPTZCOORDINATEEXçš„é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetPtzCoorDinateEX(void* pHandle, void *pParam,int nLen, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetAquillaPTMove
+åŠŸ    èƒ½: è®¾ç½®å®‰å¥Žæ‹‰å»¶è¿Ÿå®šä½
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TPTZAQUILLAPTMOVE
+		  nLenï¼Œ TPTZAQUILLAPTMOVEçš„é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetAquillaPTMove(void* pHandle, void *pParam,int nLen, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetAquillaPTZAngle
+åŠŸ    èƒ½: è®¾ç½®å®‰å¥Žæ‹‰å®šä½
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TPTZAQUILLAPTZANGLE
+		  nLenï¼Œ TPTZAQUILLAPTZANGLEçš„é•¿åº¦
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetAquillaPTZAngle(void* pHandle, void *pParam,int nLen, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_PtzDeviationCheck
+åŠŸ    èƒ½: äº‘å°è¯¯å·®æ ¡éªŒ
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_PtzDeviationCheck(void* pHandle, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetPtzDevCheckRlt
+åŠŸ    èƒ½: èŽ·å–äº‘å°è¯¯å·®æ ¡éªŒç»“æžœ
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam,		TPTZDEVCHECKRLT
+		  nLenï¼Œ        TPTZDEVCHECKRLTçš„é•¿åº¦
+		  pErrorCode    é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetPtzDevCheckRlt(void* pHandle, void *pParam,int nLen, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetPtzPatternsInfo
+åŠŸ    èƒ½: å®žçŽ°èŠ±æ ·æ‰«æä¿¡æ¯èŽ·å–
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZPATTERNSINFO
+		  nLen,   èŠ±æ ·æ‰«æé“¾è¡¨ä¸ªæ•°
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetPtzPatternsInfo (void *pHandle, void *pParam,  int &nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPtzPatternEvt
-¹¦    ÄÜ: ÉèÖÃ»¨ÑùÉ¨ÃèÊÂ¼þ
-²ÎÊýËµÃ÷: pParam, PTPTZPATTERNEVT
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetPtzPatternEvt
+åŠŸ    èƒ½: è®¾ç½®èŠ±æ ·æ‰«æäº‹ä»¶
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZPATTERNEVT
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetPtzPatternEvt (void *pHandle, void *pParam,  int nLen,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_AddConnectDetect
-¹¦    ÄÜ: Ôö¼ÓÁ´Â·¼ì²â,Ò»¸öipÖ»ÓÐÒ»¸ö¼ì²â
-²ÎÊýËµÃ÷:
-		  dwIP		-- Éè±¸IP 
-		  wPort		-- Éè±¸http¶Ë¿Ú 
-		  dwConnectTimeOut	-- ¼ì²â³¬Ê±Ê±¼ä
-		  dwReConnectTimes -- ¶ÏÁ´ÖØÁ¬´ÎÊý
-		  pcbfFun	-- »Øµ÷º¯Êý
-          pContext	-- ÉÏÏÂÎÄ
-·µ »Ø Öµ: ³É¹¦·µ»Ø RET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetPtzHvangle
+åŠŸ    èƒ½: èŽ·å–è§†åœºè§’æ•°æ®
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZHVANGLE  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GetPtzHVangle (void *pHandle, void *pParam,  int nLen,u32 *pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetPtzWSInfo
+åŠŸ    èƒ½: è®¾ç½®websocketä¿¡æ¯ç»™è®¾å¤‡ï¼Œç”¨æ¥ä¸Šä¼ ptzä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: 
+	      dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam,		TPTZWSINFO
+		  nLenï¼Œ        TPTZWSINFOé•¿åº¦
+		  pErrorCode    é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetPtzWSInfo(void* pHandle, void *pParam,int nLen, u32* pErrorCode);
+/*=================================================================
+å‡½æ•°åç§°: IPC_AddConnectDetect
+åŠŸ    èƒ½: å¢žåŠ é“¾è·¯æ£€æµ‹,ä¸€ä¸ªipåªæœ‰ä¸€ä¸ªæ£€æµ‹
+å‚æ•°è¯´æ˜Ž:
+		  dwIP		-- è®¾å¤‡IP 
+		  wPort		-- è®¾å¤‡httpç«¯å£ 
+		  dwConnectTimeOut	-- æ£€æµ‹è¶…æ—¶æ—¶é—´
+		  dwReConnectTimes -- æ–­é“¾é‡è¿žæ¬¡æ•°
+		  pcbfFun	-- å›žè°ƒå‡½æ•°
+          pContext	-- ä¸Šä¸‹æ–‡
+è¿” å›ž å€¼: æˆåŠŸè¿”å›ž RET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_AddConnectDetect(void *pHandle, u32 dwConnectTimeOut, u32 dwReConnectTimes, cbfConnectDetect pcbfFun, void* pContext,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_DelConnectDetect
-¹¦    ÄÜ: É¾³ýÁ´Â·¼ì²â,Ò»¸öipÖ»ÓÐÒ»¸ö¼ì²â
-²ÎÊýËµÃ÷:
-		  dwIP		-- Éè±¸IP 
+å‡½æ•°åç§°: IPC_DelConnectDetect
+åŠŸ    èƒ½: åˆ é™¤é“¾è·¯æ£€æµ‹,ä¸€ä¸ªipåªæœ‰ä¸€ä¸ªæ£€æµ‹
+å‚æ•°è¯´æ˜Ž:
+		  dwIP		-- è®¾å¤‡IP 
 
-·µ »Ø Öµ: ³É¹¦·µ»Ø RET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›ž RET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_DelConnectDetect(void *pHandle,u32 *pErrorCode);
 
-/*=================================================================
-º¯ÊýÃû³Æ: IPC_IsConnect
-¹¦    ÄÜ: Á¬½Ó×´Ì¬ÅÐ¶Ï
-          
-²ÎÊýËµÃ÷:
-		 dwHandle      Éè±¸¾ä±ú
-		 bIsConnect	   Á¬½Ó×´Ì¬
-		 pErrorCode    ´íÎóÂëÖ¸Õë
+IPC_API BOOL32 CDECL IPC_CheckConnectLost(u32 dwIp, u16 wPort);
 
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+/*=================================================================
+å‡½æ•°åç§°: IPC_IsConnect
+åŠŸ    èƒ½: è¿žæŽ¥çŠ¶æ€åˆ¤æ–­
+          
+å‚æ•°è¯´æ˜Ž:
+		 dwHandle      è®¾å¤‡å¥æŸ„
+		 bIsConnect	   è¿žæŽ¥çŠ¶æ€
+		 pErrorCode    é”™è¯¯ç æŒ‡é’ˆ
+
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_IsConnect(u32 dwHandle, bool& bIsConnect, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoInfo
-¹¦    ÄÜ: »ñÈ¡rtpÂëÁ÷
-²ÎÊýËµÃ÷: pParam [in]       ÊäÈë½á¹¹Ìå²ÎÊý
-		  nLen [in]		    ÊäÈë½á¹¹Ìå³¤¶È
-		  pInfoOut [out]	Êä³ö½á¹¹Ìå²ÎÊý
-		  nLenInfo [out]	Êä³ö½á¹¹Ìå³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetVideoInfo
+åŠŸ    èƒ½: èŽ·å–rtpç æµ
+å‚æ•°è¯´æ˜Ž: pParam [in]       è¾“å…¥ç»“æž„ä½“å‚æ•°
+		  nLen [in]		    è¾“å…¥ç»“æž„ä½“é•¿åº¦
+		  pInfoOut [out]	è¾“å‡ºç»“æž„ä½“å‚æ•°
+		  nLenInfo [out]	è¾“å‡ºç»“æž„ä½“é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetVideoInfo(void *pHandle, emPlayVideoType eType,void *pParam, int nParamLen, void*pInfoOut,int& nLenInfo, u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRtspURL
-¹¦    ÄÜ: »ñÈ¡rtpÂëÁ÷,´ø¸æ¾¯ÔªÊý¾Ý
-²ÎÊýËµÃ÷: pParam [in]       ÊäÈë½á¹¹Ìå²ÎÊý
-		  nLen [in]		    ÊäÈë½á¹¹Ìå³¤¶È
-		  pInfoOut [out]	Êä³ö½á¹¹Ìå²ÎÊý
-		  nLenInfo [out]	Êä³ö½á¹¹Ìå³¤¶È
-		  bNoStream			TRUE²»ÉêÇëtcpÂëÁ÷£¬FALSEÉêÇëtclÂëÁ÷
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetRtspURL
+åŠŸ    èƒ½: èŽ·å–rtpç æµ,å¸¦å‘Šè­¦å…ƒæ•°æ®
+å‚æ•°è¯´æ˜Ž: pParam [in]       è¾“å…¥ç»“æž„ä½“å‚æ•°
+		  nLen [in]		    è¾“å…¥ç»“æž„ä½“é•¿åº¦
+		  pInfoOut [out]	è¾“å‡ºç»“æž„ä½“å‚æ•°
+		  nLenInfo [out]	è¾“å‡ºç»“æž„ä½“é•¿åº¦
+		  bNoStream			FALSEç”³è¯·rtspç æµç æµ,ä¸ç”³è¯·rtspç æµï¼Œåªç”³è¯·rtspçš„é“¾è·¯æ¥ä¼ é€å‘Šè­¦æ•°æ®
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetRtspUrl(void *pHandle, emPlayVideoType eType,void *pParam, int nParamLen, void*pInfoOut,int& nLenInfo, u32* pErrorCode, int bNoStream = FALSE);
 
+
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_StartVideo
-¹¦    ÄÜ: ä¯ÀÀÇëÇó²ÎÊý(TCP,UDP)
-²ÎÊýËµÃ÷: eType  ÂëÁ÷´«ÊäÀàÐÍ type_udp,type_tcp
+å‡½æ•°åç§°: IPC_GetRtspURLRec
+åŠŸ    èƒ½: èŽ·å–å½•åƒçš„url
+å‚æ•°è¯´æ˜Ž: pParam [in]       è¾“å…¥ç»“æž„ä½“å‚æ•°
+		  nLen [in]		    è¾“å…¥ç»“æž„ä½“é•¿åº¦
+		  pInfoOut [out]	è¾“å‡ºç»“æž„ä½“å‚æ•°
+		  nLenInfo [out]	è¾“å‡ºç»“æž„ä½“é•¿åº¦
+		  bNoStream			TRUEä¸ç”³è¯·tcpç æµï¼ŒFALSEç”³è¯·tclç æµ
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetRtspUrlRec(void *pHandle, emPlayVideoType eType,void *pParam, int nParamLen, void*pInfoOut,int& nLenInfo, u32* pErrorCode);
+
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_StartVideo
+åŠŸ    èƒ½: æµè§ˆè¯·æ±‚å‚æ•°(TCP,UDP)
+å‚æ•°è¯´æ˜Ž: eType  ç æµä¼ è¾“ç±»åž‹ type_udp,type_tcp
 		  pParam[in]--TVIDEOPARAM
-		  nLen --ÊäÈë½á¹¹Ìå³¤¶È
+		  nLen --è¾“å…¥ç»“æž„ä½“é•¿åº¦
 		  pInfoOut[out]--TPLAYVIDEOINFO
-		  nLenInfo[out] --Êä³ö½á¹¹Ìå
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: UDP:³É¹¦²¥·Åid,Ê§°Ü·µ»Ø0£¬Ô­Òò½âÎöpErrorCode,TCP:³É¹¦²¥·Å·µ»Øid,Ê§°ÜÒÀ¾ÝpErrorCodeÊÇ·ñÎªRET_FAILD
+		  nLenInfo[out] --è¾“å‡ºç»“æž„ä½“
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: UDP:æˆåŠŸæ’­æ”¾id,å¤±è´¥è¿”å›ž0ï¼ŒåŽŸå› è§£æžpErrorCode,TCP:æˆåŠŸæ’­æ”¾è¿”å›žid,å¤±è´¥ä¾æ®pErrorCodeæ˜¯å¦ä¸ºRET_FAILD
 =================================================================*/
 IPC_API u32 CDECL IPC_StartRealPlay(void *pHandle, emPlayVideoType eType,void* pParam, int nLen,void*pInfoOut,int& nLenInfo,u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetRtspMetaPort
-¹¦    ÄÜ: ÉèÖÃRtsp Meta¶Ë¿Ú
-²ÎÊýËµÃ÷: eType  ÂëÁ÷´«ÊäÀàÐÍ type_udp,type_tcp
-		  bVideo	ÊÇ·ñ´æÔÚÊÓÆµ
+å‡½æ•°åç§°: IPC_SetRtspMetaPort
+åŠŸ    èƒ½: è®¾ç½®Rtsp Metaç«¯å£
+å‚æ•°è¯´æ˜Ž: eType  ç æµä¼ è¾“ç±»åž‹ type_udp,type_tcp
+		  bVideo	æ˜¯å¦å­˜åœ¨è§†é¢‘
 		  pParam[in]--TPLAYVIDEOPARAM
-		  nLen --ÊäÈë½á¹¹Ìå³¤¶È	
+		  nLen --è¾“å…¥ç»“æž„ä½“é•¿åº¦	
 		  pInfoOut[out]--TPLAYVIDEOINFO
-		  nLenInfo[out] --Êä³ö½á¹¹Ìå
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦²¥·Åid,Ê§°Ü·µ»Ø0£¬Ô­Òò½âÎöpErrorCode
+		  nLenInfo[out] --è¾“å‡ºç»“æž„ä½“
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸæ’­æ”¾id,å¤±è´¥è¿”å›ž0ï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API u32 CDECL IPC_SetRtspMetaPort(void *pHandle, emPlayVideoType eType, bool bVideo, void* pParam, int nLen,void*pInfoOut,int& nLenInfo,u32* pErrorCode);
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_RemoveRtspMetaPort
-¹¦    ÄÜ: È¥³ýRtsp Meta¶Ë¿Ú
-²ÎÊýËµÃ÷: 
-		  dwPlayID      ²¥·ÅID
-		  pErrorCode    ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦²¥·Åid,Ê§°Ü·µ»Ø0£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_RemoveRtspMetaPort
+åŠŸ    èƒ½: åŽ»é™¤Rtsp Metaç«¯å£
+å‚æ•°è¯´æ˜Ž: 
+		  dwPlayID      æ’­æ”¾ID
+		  pErrorCode    é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸæ’­æ”¾id,å¤±è´¥è¿”å›ž0ï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API u32 CDECL IPC_RemoveRtspMetaPort(void *pHandle, u32 dwPlayID, u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_StopVideo
-¹¦    ÄÜ: Í£Ö¹ä¯ÀÀÇëÇó²ÎÊý(TCP)
-²ÎÊýËµÃ÷: eType         ÂëÁ÷´«ÊäÀàÐÍ type_udp,type_tcp
-		  dwPlayID      ²¥·ÅID
-		  pErrorCode    ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_StopVideo
+åŠŸ    èƒ½: åœæ­¢æµè§ˆè¯·æ±‚å‚æ•°(TCP)
+å‚æ•°è¯´æ˜Ž: eType         ç æµä¼ è¾“ç±»åž‹ type_udp,type_tcp
+		  dwPlayID      æ’­æ”¾ID
+		  pErrorCode    é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_StopRealPlay(void *pHandle,emPlayVideoType eType,u32 dwPlayID, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SendKeyFrame
-¹¦    ÄÜ: ÇëÇó¹Ø¼üÖ¡
-²ÎÊýËµÃ÷: dwPlayID[in]--TRTCPVIDEOINFOÖÐdwPlayID ²¥·ÅÆ÷¾ä±ú
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SendKeyFrame
+åŠŸ    èƒ½: è¯·æ±‚å…³é”®å¸§
+å‚æ•°è¯´æ˜Ž: dwPlayID[in]--TRTCPVIDEOINFOä¸­dwPlayID æ’­æ”¾å™¨å¥æŸ„
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SendKeyFrame(void *pHandle, u32 dwPlayID, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoVolume_RTCP
-¹¦    ÄÜ: »ñÈ¡ÊÓÆµÒôÁ¿
-²ÎÊýËµÃ÷: pInfoOut[out]--TRTCPVIDEOVOLUMEINFO
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetVideoVolume_RTCP
+åŠŸ    èƒ½: èŽ·å–è§†é¢‘éŸ³é‡
+å‚æ•°è¯´æ˜Ž: pInfoOut[out]--TRTCPVIDEOVOLUMEINFO
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API int CDECL IPC_GetVideoVolume_RTCP(void *pHandle, void *pInfoOut, int nLenInfo, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVideoVolume_RTCP
-¹¦    ÄÜ: ÉèÖÃÊÓÆµÒôÁ¿
-²ÎÊýËµÃ÷: pParam[in]--TRTCPVIDEOVOLUMEINFO
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetVideoVolume_RTCP
+åŠŸ    èƒ½: è®¾ç½®è§†é¢‘éŸ³é‡
+å‚æ•°è¯´æ˜Ž: pParam[in]--TRTCPVIDEOVOLUMEINFO
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API int CDECL IPC_SetVideoVolume_RTCP(void *pHandle, void* pParam, int nLen, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_VoiceCallState
-¹¦    ÄÜ: ÊÇ·ñ¿ªÆôºô½Ð
-²ÎÊýËµÃ÷: pInfoOut [out] TRTCPCALLSTATEINFO
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_VoiceCallState
+åŠŸ    èƒ½: æ˜¯å¦å¼€å¯å‘¼å«
+å‚æ•°è¯´æ˜Ž: pInfoOut [out] TRTCPCALLSTATEINFO
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_VoiceCallState (void *pHandle, void* pInfoOut, int nOutInfo, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_StartVoiceCall
-¹¦    ÄÜ: ¿ªÊ¼ºô½Ð
-²ÎÊýËµÃ÷: pHandle		Ç°¶Ë¾ä±ú
-		  emTransType   ±àÂë´«Êä¸ñÊ½
+å‡½æ•°åç§°: IPC_StartVoiceCall
+åŠŸ    èƒ½: å¼€å§‹å‘¼å«
+å‚æ•°è¯´æ˜Ž: pHandle		å‰ç«¯å¥æŸ„
+		  emTransType   ç¼–ç ä¼ è¾“æ ¼å¼
 		  pInfoOut [out] TRTCPPREPARECALLINFO
-		  pErrorCode   	´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øºô½ÐID, Ê§°Ü·µ»Ø0£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   	é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žå‘¼å«ID, å¤±è´¥è¿”å›ž0ï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API u32 CDECL IPC_StartVoiceCall(void *pHandle,emTransType eTranstype, void*pInfoOut,int& nLenInfo,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_StopVoiceCall
-¹¦    ÄÜ: Í£Ö¹ºô½Ð
-²ÎÊýËµÃ÷: dwPlayID[in]--TRTCPPREPARECALLINFOÖÐdwID
-pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_StopVoiceCall
+åŠŸ    èƒ½: åœæ­¢å‘¼å«
+å‚æ•°è¯´æ˜Ž: dwPlayID[in]--TRTCPPREPARECALLINFOä¸­dwID
+pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_StopVoiceCall(void *pHandle, u32 dwVoiceCallId, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_PuSnapShot
-¹¦    ÄÜ: Ç°¶ËÊÖ¶¯×¥ÅÄ
-²ÎÊýËµÃ÷: 
-		  byStreamId[in]--Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈýÂëÁ÷(3),ËÄÂëÁ÷(4)
-		  pchFileName     ±£´æµÄÍ¼Æ¬ÎÄ¼þÈ«Â·¾¶(ÎÄ¼þÂ·¾¶),ºó×ºÎªjpeg
-		  pErrorCode      ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_PuSnapShot
+åŠŸ    èƒ½: å‰ç«¯æ‰‹åŠ¨æŠ“æ‹
+å‚æ•°è¯´æ˜Ž: 
+		  byStreamId[in]--ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),å››ç æµ(4)
+		  pchFileName     ä¿å­˜çš„å›¾ç‰‡æ–‡ä»¶å…¨è·¯å¾„(æ–‡ä»¶è·¯å¾„),åŽç¼€ä¸ºjpeg
+		  pErrorCode      é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_PuSnapShot(void *pHandle, u8 byStreamId, const char *pchFileName, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetMultiVideoMode
-¹¦    ÄÜ: »ñÈ¡¶àÂëÁ÷Ä£Ê½²ÎÊý
-²ÎÊýËµÃ÷: pInfoOut[in]--TMULTIVIDEOMODEINFO
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetPuSnapShotUrl
+åŠŸ    èƒ½: å‰ç«¯æ‰‹åŠ¨æŠ“æ‹
+å‚æ•°è¯´æ˜Ž: 
+		  byStreamId[in]--ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),å››ç æµ(4)
+		  pImageUrl     å›¾ç‰‡url
+		  pErrorCode      é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetPuSnapShotUrl(void *pHandle, u8 byStreamId, char *pImageUrl, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetMultiVideoMode
+åŠŸ    èƒ½: èŽ·å–å¤šç æµæ¨¡å¼å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfoOut[in]--TMULTIVIDEOMODEINFO
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetMultiVideoMode(void *pHandle,u8 byVideoSource, void *pInfoOut, int &nLenInfo, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetMultiVideoMode
-¹¦    ÄÜ: ÉèÖÃ¶àÂëÁ÷Ä£Ê½²ÎÊý
-²ÎÊýËµÃ÷: pParam[in]--TMULTIVIDEOMODEPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetMultiVideoMode
+åŠŸ    èƒ½: è®¾ç½®å¤šç æµæ¨¡å¼å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in]--TMULTIVIDEOMODEPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetMultiVideoMode(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoEnc
-¹¦    ÄÜ: »ñÈ¡ÊÓÆµ±àÂë²ÎÊý
-²ÎÊýËµÃ÷: pInfoOut[in]--TVIDEOENCINFO
-		  byVideoSource[in]--ÊÓÆµÔ´ID
-		  byStreamId[in]--Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈýÂëÁ÷(3),ËÀÂëÁ÷(4)
-		  szAssistInfo ¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetVideoEnc
+åŠŸ    èƒ½: èŽ·å–è§†é¢‘ç¼–ç å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfoOut[in]--TVIDEOENCINFO
+		  byVideoSource[in]--è§†é¢‘æºID
+		  byStreamId[in]--ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),æ­»ç æµ(4)
+		  szAssistInfo è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetVideoEnc(void *pHandle, u8 byVideoSource, u8 byStreamId, void *pInfoOut, int &nLenInfo, char* szAssistInfo, int &nAssistLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVideoEnc
-¹¦    ÄÜ: ÉèÖÃÊÓÆµ±àÂë²ÎÊý
-²ÎÊýËµÃ÷: pParam[in]--TVIDEOENCPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetVideoEnc
+åŠŸ    èƒ½: è®¾ç½®è§†é¢‘ç¼–ç å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in]--TVIDEOENCPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetVideoEnc(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAudioEnc
-¹¦    ÄÜ: »ñÈ¡ÒôÆµ±àÂë²ÎÊý
-²ÎÊýËµÃ÷: pInfoOut[in]--TAUDIOENCINFO
-		  byVideoSource[in]--ÊÓÆµÔ´ID
-		  byStreamId[in]--Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈýÂëÁ÷(3),ËÀÂëÁ÷(4)
-		  szAssistInfo ¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetAudioEnc
+åŠŸ    èƒ½: èŽ·å–éŸ³é¢‘ç¼–ç å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfoOut[in]--TAUDIOENCINFO
+		  byVideoSource[in]--è§†é¢‘æºID
+		  byStreamId[in]--ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),æ­»ç æµ(4)
+		  szAssistInfo è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetAudioEnc(void *pHandle, u8 byVideoSource, u8 byStreamId, void *pInfoOut, int &nLenInfo, char* szAssistInfo, int &nAssistLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAudioEnc
-¹¦    ÄÜ: ÉèÖÃÒôÆµ±àÂë²ÎÊý
-²ÎÊýËµÃ÷: pParam[in]--TAUDIOENCPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetAudioEnc
+åŠŸ    èƒ½: è®¾ç½®éŸ³é¢‘ç¼–ç å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in]--TAUDIOENCPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetAudioEnc(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
+IPC_API int CDECL IPC_SetAudioEncExt(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
+
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAudioDec
-¹¦    ÄÜ: »ñÈ¡ÒôÆµ½âÂë²ÎÊý
-²ÎÊýËµÃ÷: pInfoOut[in]--TAUDIODECINFO
-		  byVideoSource[in]--ÊÓÆµÔ´ID
-		  byStreamId[in]--Ö÷ÂëÁ÷(1),¸¨ÂëÁ÷(2),ÈýÂëÁ÷(3),ËÀÂëÁ÷(4)
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetAudioDec
+åŠŸ    èƒ½: èŽ·å–éŸ³é¢‘è§£ç å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfoOut[in]--TAUDIODECINFO
+		  byVideoSource[in]--è§†é¢‘æºID
+		  byStreamId[in]--ä¸»ç æµ(1),è¾…ç æµ(2),ä¸‰ç æµ(3),æ­»ç æµ(4)
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetAudioDec(void *pHandle, u8 byVideoSource, u8 byStreamId, void *pInfoOut, int &nLenInfo, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetAudioDec
-¹¦    ÄÜ: ÉèÖÃÒôÆµ½âÂë²ÎÊý
-²ÎÊýËµÃ÷: pParam[in]--TAUDIODECPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetAudioDec
+åŠŸ    èƒ½: è®¾ç½®éŸ³é¢‘è§£ç å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in]--TAUDIODECPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetAudioDec(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoShield
-¹¦    ÄÜ: »ñÈ¡Í¼ÏñÕÚ±Î
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetVideoShield
+åŠŸ    èƒ½: èŽ·å–å›¾åƒé®è”½
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TVIDEOSHIELDINFO
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetVideoShield(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo,  char* szAssistInfo, int &nAssistLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVideoShield
-¹¦    ÄÜ: ÉèÖÃÍ¼ÏñÕÚ±Î
-²ÎÊýËµÃ÷: pParam[in] --TVIDEOSHIELDPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetVideoShield
+åŠŸ    èƒ½: è®¾ç½®å›¾åƒé®è”½
+å‚æ•°è¯´æ˜Ž: pParam[in] --TVIDEOSHIELDPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetVideoShield(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoRoi
-¹¦    ÄÜ: »ñÈ¡Ãô¸ÐÇøÓò±àÂë
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetVideoRoi
+åŠŸ    èƒ½: èŽ·å–æ•æ„ŸåŒºåŸŸç¼–ç 
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TVIDEOROIINFO
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetVideoRoi(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVideoRoi
-¹¦    ÄÜ: ÉèÖÃÃô¸ÐÇøÓò±àÂë
-²ÎÊýËµÃ÷: pParam[in] --TVIDEOROIPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetVideoRoi
+åŠŸ    èƒ½: è®¾ç½®æ•æ„ŸåŒºåŸŸç¼–ç 
+å‚æ•°è¯´æ˜Ž: pParam[in] --TVIDEOROIPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetVideoRoi(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetVideoEncCut
-¹¦    ÄÜ: »ñÈ¡±àÂë²Ã¼ô
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetVideoEncCut
+åŠŸ    èƒ½: èŽ·å–ç¼–ç è£å‰ª
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TVIDEOENCCUTINFO
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetVideoEncCut(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetVideoEncCut
-¹¦    ÄÜ: ÉèÖÃ±àÂë²Ã¼ô
-²ÎÊýËµÃ÷: pParam[in] --TVIDEOENCCUTPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetCheckPointOsd
+åŠŸ    èƒ½: èŽ·å– check point osd ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: 
+		  dwHandle      è®¾å¤‡å¥æŸ„
+		  byVideoSource[in] --è§†é¢‘æºID
+		  pInfoOut[out] --TCHECKPOINTINFO
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetCheckPointOsd(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo, u32* pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetCheckPointOsd
+åŠŸ    èƒ½: è®¾ç½®check point osd
+å‚æ•°è¯´æ˜Ž: pParam[in] --TCHECKPOINTPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_SetCheckPointOsd(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetUavTrack
+åŠŸ    èƒ½: è®¾ç½®æ™ºèƒ½è·Ÿè¸ªå¼€å…³
+å‚æ•°è¯´æ˜Ž: pParam[in] --enable
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_SetUavTrack(void *pHandle, bool pParam, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetUavTrack
+åŠŸ    èƒ½: èŽ·å–æ™ºèƒ½è·Ÿè¸ªå¼€å…³
+å‚æ•°è¯´æ˜Ž: pParam[in] --enable
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GetUavTrack(void *pHandle, bool& pParam, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetEventManualSnap
+åŠŸ    èƒ½: èŽ·å– äº‹ä»¶æŠ“æ‹ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam[in] --TMANUALSNAPINFO
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GetEventManualSnap(void* pHandle,void* pInfoOut, int &nLenInfo, u32* pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetEventManualSnap
+åŠŸ    èƒ½: è®¾ç½®äº‹ä»¶æŠ“æ‹ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam[in] --TMANUALSNAPINFO
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_SetEventManualSnap(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetVideoEncCut
+åŠŸ    èƒ½: è®¾ç½®ç¼–ç è£å‰ª
+å‚æ•°è¯´æ˜Ž: pParam[in] --TVIDEOENCCUTPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetVideoEncCut(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetOsdCap
-¹¦    ÄÜ: »ñÈ¡OSD²ÎÊýÄÜÁ¦Ö§³Ö
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetOsdCap
+åŠŸ    èƒ½: èŽ·å–OSDå‚æ•°èƒ½åŠ›æ”¯æŒ
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TOSDCAPINFO
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetOsdCap(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetOsd
-¹¦    ÄÜ: »ñÈ¡OSDÈ«¾ÖÊôÐÔ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetOsd
+åŠŸ    èƒ½: èŽ·å–OSDå…¨å±€å±žæ€§å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TOSDINFO
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetOsd(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo, char* szAssistInfo, int &nAssistLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetOsd
-¹¦    ÄÜ: ÉèÖÃOSDÈ«¾ÖÊôÐÔ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TOSDPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetOsd
+åŠŸ    èƒ½: è®¾ç½®OSDå…¨å±€å±žæ€§å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TOSDPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetOsd(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetOsdList
-¹¦    ÄÜ: ÉèÖÃµ¥¸öOSDÊôÐÔ²ÎÊý
-²ÎÊýËµÃ÷: pParam TOSDLISTINFO[] OSDÊôÐÔÊý×éÖ¸Õë
-	      nLen   OSDÊôÐÔÊý×é¸öÊý
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetOsdList
+åŠŸ    èƒ½: è®¾ç½®å•ä¸ªOSDå±žæ€§å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam TOSDLISTINFO[] OSDå±žæ€§æ•°ç»„æŒ‡é’ˆ
+	      nLen   OSDå±žæ€§æ•°ç»„ä¸ªæ•°
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetOsdList(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetOsdList
-¹¦    ÄÜ: »ñÈ¡µ¥¸öOSDÊôÐÔ²ÎÊý
-²ÎÊýËµÃ÷: pInfoOut TOSDLISTINFO[] OSDÊôÐÔÊý×éÖ¸Õë
-	      nLenInfo OSDÊôÐÔÊý×é¸öÊý
-·µ »Ø Öµ: ³É¹¦·µ»ØRET_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetSmartOsdInfo
+åŠŸ    èƒ½: è®¾ç½®çƒŸç«æŠ¥è­¦ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž:  pParam[in] --TOSDSMARTPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_SetSmartOsdInfo(void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetOsdList
+åŠŸ    èƒ½: èŽ·å–å•ä¸ªOSDå±žæ€§å‚æ•°
+å‚æ•°è¯´æ˜Ž: pInfoOut TOSDLISTINFO[] OSDå±žæ€§æ•°ç»„æŒ‡é’ˆ
+	      nLenInfo OSDå±žæ€§æ•°ç»„ä¸ªæ•°
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetOsdList(void *pHandle, u8 byVideoSource,void *pInfoOut, int &nLenInfo, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetOsdStateQuery
-¹¦    ÄÜ: OsdÍ¼Æ¬ÉÏ´«×´Ì¬²éÑ¯
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetSmartOsdInfo
+åŠŸ    èƒ½: èŽ·å–çƒŸç«æŠ¥è­¦ä¿¡æ¯
+å‚æ•°è¯´æ˜Ž:byVideoSource[in] --è§†é¢‘æºID
+		 pInfoOut[out] --TOSDSMARTINFO
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GetSmartOsdInfo(void *pHandle, u8 byVideoSource,void *pInfoOut, int &nLenInfo, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetOsdStateQuery
+åŠŸ    èƒ½: Osdå›¾ç‰‡ä¸Šä¼ çŠ¶æ€æŸ¥è¯¢
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TOSDSTATEINFO
-		  szParamAssist,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+		  szParamAssist,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetOsdStateQuery(void *pHandle, u8 byVideoSource, void* pInfoOut, int &nLenInfo, char* szAssistInfo, int &nAssistLen, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetOsdPrepare
-¹¦    ÄÜ: OsdÍ¼Æ¬×¼±¸ÉÏ´«
-²ÎÊýËµÃ÷: pParam[in] --TOSDPREPAREPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetOsdPrepare
+åŠŸ    èƒ½: Osdå›¾ç‰‡å‡†å¤‡ä¸Šä¼ 
+å‚æ•°è¯´æ˜Ž: pParam[in] --TOSDPREPAREPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetOsdPrepare(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetOsdUploadFile
-¹¦    ÄÜ: OsdÍ¼Æ¬ÉÏ´«
-²ÎÊýËµÃ÷: pParam[in] --TOSDUPLOADFILEPARAM
-·µ »Ø Öµ: ³É¹¦·µ»ØIPC_ERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_SetOsdUploadFile
+åŠŸ    èƒ½: Osdå›¾ç‰‡ä¸Šä¼ 
+å‚æ•°è¯´æ˜Ž: pParam[in] --TOSDUPLOADFILEPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_SetOsdUploadFile(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_RecoveryDef
-¹¦    ÄÜ: Í¼Ïñ»Ö¸´Ä¬ÈÏ
-²ÎÊýËµÃ÷: pParam[in] --TIMGDEFPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_RecoveryDef
+åŠŸ    èƒ½: å›¾åƒæ¢å¤é»˜è®¤
+å‚æ•°è¯´æ˜Ž: pParam[in] --TIMGDEFPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API int CDECL IPC_Img_Def(void *pHandle,void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetColor
-¹¦    ÄÜ: »ñÈ¡Í¼Ïñ³£¹æÉèÖÃ
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetColor
+åŠŸ    èƒ½: èŽ·å–å›¾åƒå¸¸è§„è®¾ç½®
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TCOLORINFO
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetColor(void *pHandle, u8 byVideoSource, void* pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetColor
-¹¦    ÄÜ: ÉèÖÃÍ¼Ïñ³£¹æÉèÖÃ
-²ÎÊýËµÃ÷: pParam[in] --TCOLORPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetColor
+åŠŸ    èƒ½: è®¾ç½®å›¾åƒå¸¸è§„è®¾ç½®
+å‚æ•°è¯´æ˜Ž: pParam[in] --TCOLORPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetColor(void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetFocus
-¹¦    ÄÜ: »ñÈ¡¾Û½¹²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetFocus
+åŠŸ    èƒ½: èŽ·å–èšç„¦å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TFOCUSINFO
-		  szParamAssist[out] --¾Û½¹¿ÉÑ¡²ÎÊý,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)	  
-		  pErrorCode   ´íÎóÂë		  
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] --èšç„¦å¯é€‰å‚æ•°,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)	  
+		  pErrorCode   é”™è¯¯ç 		  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetFocus(void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetFocus
-¹¦    ÄÜ: ÉèÖÃ¾Û½¹²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TFOCUSPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetFocus
+åŠŸ    èƒ½: è®¾ç½®èšç„¦å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TFOCUSPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetFocus (void *pHandle, void* pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetWhiteBlance
-¹¦    ÄÜ: »ñÈ¡°×Æ½ºâ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetWhiteBlance
+åŠŸ    èƒ½: èŽ·å–ç™½å¹³è¡¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TWHITEBLANCEINFO
-		  szParamAssist[out] --°×Æ½ºâ¿ÉÑ¡²ÎÊý,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)		  
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] --ç™½å¹³è¡¡å¯é€‰å‚æ•°,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)		  
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetWhiteBlance (void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetWhiteBlance
-¹¦    ÄÜ: ÉèÖÃ°×Æ½ºâ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TWHITEBLANCEPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetWhiteBlance
+åŠŸ    èƒ½: è®¾ç½®ç™½å¹³è¡¡å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TWHITEBLANCEPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetWhiteBlance (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetIrcutFilter
-¹¦    ÄÜ: »ñÈ¡ÈÕÒ¹Ä£Ê½²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetIrcutFilter
+åŠŸ    èƒ½: èŽ·å–æ—¥å¤œæ¨¡å¼å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TRCUTFILTERINFO
-		  szParamAssist[out] --ÈÕÒ¹Ä£Ê½¿ÉÑ¡²ÎÊý,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)	  
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] --æ—¥å¤œæ¨¡å¼å¯é€‰å‚æ•°,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)	  
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetIrcutfilter (void *pHandle, u8 byVideoSource,void *pParam,int nLen, char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetIrcutFilter
-¹¦    ÄÜ: ÉèÖÃÈÕÒ¹Ä£Ê½²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TTRCUTFILTERPARAM
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetIrcutFilter
+åŠŸ    èƒ½: è®¾ç½®æ—¥å¤œæ¨¡å¼å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TTRCUTFILTERPARAM
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetIrcutfilter (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetIris
-¹¦    ÄÜ: »ñÈ¡¹âÈ¦²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetIris
+åŠŸ    èƒ½: èŽ·å–å…‰åœˆå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TIRISINFO
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetIris (void *pHandle, u8 byVideoSource,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetIris
-¹¦    ÄÜ: ÉèÖÃ¹âÈ¦²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TIRISPARAM
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetIris
+åŠŸ    èƒ½: è®¾ç½®å…‰åœˆå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TIRISPARAM
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetIris (void *pHandle,void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetShutter
-¹¦    ÄÜ: »ñÈ¡¿ìÃÅ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetShutter
+åŠŸ    èƒ½: èŽ·å–å¿«é—¨å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TSHUTTERINFO
-		  szParamAssist[out] --¿ìÃÅ¿ÉÑ¡²ÎÊý,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî(½¨Òé³¤¶È512ÒÔÉÏ)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] --å¿«é—¨å¯é€‰å‚æ•°,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹(å»ºè®®é•¿åº¦512ä»¥ä¸Š)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetShutter(void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSutter
-¹¦    ÄÜ: ÉèÖÃ¿ìÃÅ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TSHUTTERPARAM
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSutter
+åŠŸ    èƒ½: è®¾ç½®å¿«é—¨å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TSHUTTERPARAM
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetShutter (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetGain
-¹¦    ÄÜ: »ñÈ¡ÔöÒæ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetGain
+åŠŸ    èƒ½: èŽ·å–å¢žç›Šå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pInfoOut[out] --TGAININFO
-		  pParam   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pParam   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetGain(void *pHandle, u8 byVideoSource,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetGain
-¹¦    ÄÜ: ÉèÖÃÔöÒæ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TGAINPARAM
-	      pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetGain
+åŠŸ    èƒ½: è®¾ç½®å¢žç›Šå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TGAINPARAM
+	      pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetGain (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetInfrared
-¹¦    ÄÜ: »ñÈ¡ºìÍâ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetInfrared
+åŠŸ    èƒ½: èŽ·å–çº¢å¤–å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TINFRAREDINFO
-		  szParamAssist[out] -- ºìÍâ¹âÆôÓÃÄ£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<contrlmode opt=¡±close,auto,farlamp,middlelamp,nearlamp,exnearlamp¡±/>
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] -- çº¢å¤–å…‰å¯ç”¨æ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<contrlmode opt=â€close,auto,farlamp,middlelamp,nearlamp,exnearlampâ€/>
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetInfrared (void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetInfrared
-¹¦    ÄÜ: ÉèÖÃºìÍâ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TINFRAREDPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetInfrared
+åŠŸ    èƒ½: è®¾ç½®çº¢å¤–å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TINFRAREDPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetInfrared (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetLaser
-¹¦    ÄÜ: »ñÈ¡¼¤¹â²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetLaser
+åŠŸ    èƒ½: èŽ·å–æ¿€å…‰å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TLASERINFO
-		  szParamAssist[out] --¼¤¹â¾Û¹âÄ£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<spotmode opt=¡±def,littlefacula,bigfaxula,custom1,custom2¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] --æ¿€å…‰èšå…‰æ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<spotmode opt=â€def,littlefacula,bigfaxula,custom1,custom2â€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetLaser (void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetLaser
-¹¦    ÄÜ: ÉèÖÃ¼¤¹â²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TLASERPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetLaser
+åŠŸ    èƒ½: è®¾ç½®æ¿€å…‰å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TLASERPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetLaser (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetCorrido
-¹¦    ÄÜ: »ñÈ¡×ßÀÈ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetCorrido
+åŠŸ    èƒ½: èŽ·å–èµ°å»Šå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TCORRIDOINFO
-		  szParamAssist[out] --×ßÀÈÄ£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<spotmode opt=¡±close, left,right¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szParamAssist[out] --èµ°å»Šæ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<spotmode opt=â€close, left,rightâ€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetCorridorMode (void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetCorrido
-¹¦    ÄÜ: ÉèÖÃ×ßÀÈ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TCORRIDOPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetCorrido
+åŠŸ    èƒ½: è®¾ç½®èµ°å»Šå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TCORRIDOPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetCorridorMode (void *pHandle,void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetImageMode
-¹¦    ÄÜ: »ñÈ¡¾µÏñÄ£Ê½²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetImageMode
+åŠŸ    èƒ½: èŽ·å–é•œåƒæ¨¡å¼å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TIMAGEMODEINFO
-		  szAssistInfo[out] --¾µÏñÄ£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ:<spotmode opt=¡±close, horizont, vertical, central¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szAssistInfo[out] --é•œåƒæ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’:<spotmode opt=â€close, horizont, vertical, centralâ€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetImageMode (void *pHandle, u8 byVideoSource, void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetImageMode
-¹¦    ÄÜ: ÉèÖÃ¾µÏñ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TIMAGEMODEPARAM
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetImageMode
+åŠŸ    èƒ½: è®¾ç½®é•œåƒå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TIMAGEMODEPARAM
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetImageMode (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetNoiseRedece2D
-¹¦    ÄÜ: »ñÈ¡2D½µÔë²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetNoiseRedece2D
+åŠŸ    èƒ½: èŽ·å–2Dé™å™ªå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TNOISEREDUCE2DINFO
-		  szAssistInfo[out] --2DÄ£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<spotmode opt=¡±auto,open,close¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szAssistInfo[out] --2Dæ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<spotmode opt=â€auto,open,closeâ€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_Get2DDenoise (void *pHandle, u8 byVideoSource, void *pParam, int nLen, char* szAssistInfo, int &nAssistLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetNoiseRedece2D
-¹¦    ÄÜ: ÉèÖÃ2D½µÔë²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TNOISEREDUCE2DPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetNoiseRedece2D
+åŠŸ    èƒ½: è®¾ç½®2Dé™å™ªå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TNOISEREDUCE2DPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_Set2DDenoise (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetNoiseRedece3D
-¹¦    ÄÜ: »ñÈ¡3D½µÔë²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetNoiseRedece3D
+åŠŸ    èƒ½: èŽ·å–3Dé™å™ªå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TNOISEREDUCE3DINFO
-		  szAssistInfo[out] --3DÄ£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<spotmode opt=¡±auto,open,close¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szAssistInfo[out] --3Dæ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<spotmode opt=â€auto,open,closeâ€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_Get3DDenoise(void *pHandle, u8 byVideoSource,void *pParam, int nLen, char* szAssistInfo, int &nAssistLen,u32 *pErrorCode);
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetNoiseRedece3D
-¹¦    ÄÜ: ÉèÖÃ3D½µÔë²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TNOISEREDUCE3DPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetNoiseRedece3D
+åŠŸ    èƒ½: è®¾ç½®3Dé™å™ªå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TNOISEREDUCE3DPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_Set3DDenoise (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetLocalEcho
-¹¦    ÄÜ: »ñÈ¡±¾µØ»ØÏÔ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetLocalEcho
+åŠŸ    èƒ½: èŽ·å–æœ¬åœ°å›žæ˜¾å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TLOCALECHOINFO
-		  szAssistInfo[out] --Ä£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<spotmode opt=¡±close, PAL,NTSC,LINE,INTERLEAVE¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szAssistInfo[out] --æ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<spotmode opt=â€close, PAL,NTSC,LINE,INTERLEAVEâ€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetLocalEcho (void *pHandle, u8 byVideoSource, void *pParam, int nLen, char* szAssistInfo, int &nAssistLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetLocalEcho
-¹¦    ÄÜ: ÉèÖÃ±¾µØ»ØÏÔ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TLOCALECHOPARAM
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetLocalEcho
+åŠŸ    èƒ½: è®¾ç½®æœ¬åœ°å›žæ˜¾å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TLOCALECHOPARAM
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetLocalEcho (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetPowerLineFrequency
-¹¦    ÄÜ: »ñÈ¡·ÀÉÁË¸²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
+å‡½æ•°åç§°: IPC_GetPowerLineFrequency
+åŠŸ    èƒ½: èŽ·å–é˜²é—ªçƒå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
 		  pParam[out] --TPOWERLINEFREQUENCYINFO
-		  szAssistInfo[out] --Ä£Ê½,¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  ´Ë´¦´«µÝ£º<spotmode opt=¡±50hz,60hz,auto¡±/> 
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  szAssistInfo[out] --æ¨¡å¼,è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  æ­¤å¤„ä¼ é€’ï¼š<spotmode opt=â€50hz,60hz,autoâ€/> 
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetPowerLineFrequency (void *pHandle, u8 byVideoSource,void *pParam, int nLen,  char* szAssistInfo, int &nAssistLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetPowerLineFrequency
-¹¦    ÄÜ: ÉèÖÃ·ÀÉÁË¸²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TPOWERLINEFREQUENCYPARAM
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetPowerLineFrequency
+åŠŸ    èƒ½: è®¾ç½®é˜²é—ªçƒå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TPOWERLINEFREQUENCYPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetPowerLineFrequency (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetWDR
-¹¦    ÄÜ: »ñÈ¡¿í¶¯Ì¬²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
-		  pParam[out] --TDYNAMICMODEINFO Ö»ÓÐnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetWDR
+åŠŸ    èƒ½: èŽ·å–å®½åŠ¨æ€å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
+		  pParam[out] --TDYNAMICMODEINFO åªæœ‰nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetWDR(void *pHandle, u8 byVideoSource, void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetWDR
-¹¦    ÄÜ: ÉèÖÃ¿í¶¯Ì¬²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TDYNAMICMODEPARAM  szMode[17]Ä¬ÈÏÎªwdr Ö»ÐèÉèÖÃnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetWDR
+åŠŸ    èƒ½: è®¾ç½®å®½åŠ¨æ€å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDYNAMICMODEPARAM  szMode[17]é»˜è®¤ä¸ºwdr åªéœ€è®¾ç½®nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetWDR (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetHLC
-¹¦    ÄÜ: »ñÈ¡Ç¿¹âÒÖÖÆ²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
-		  pParam[out] --TDYNAMICMODEINFO Ö»ÓÐnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetHLC
+åŠŸ    èƒ½: èŽ·å–å¼ºå…‰æŠ‘åˆ¶å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
+		  pParam[out] --TDYNAMICMODEINFO åªæœ‰nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetHLC(void *pHandle, u8 byVideoSource,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetHLC
-¹¦    ÄÜ: ÉèÖÃÇ¿¹âÒÖÖÆ²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TDYNAMICMODEPARAM  szMode[17]Ä¬ÈÏÎªhlc Ö»ÐèÉèÖÃnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetHLC
+åŠŸ    èƒ½: è®¾ç½®å¼ºå…‰æŠ‘åˆ¶å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDYNAMICMODEPARAM  szMode[17]é»˜è®¤ä¸ºhlc åªéœ€è®¾ç½®nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetHLC (void *pHandle, void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetFogThrough
-¹¦    ÄÜ: »ñÈ¡Í¸Îí²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
-		  pParam[out] --TDYNAMICMODEINFO Ö»ÓÐnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetFogThrough
+åŠŸ    èƒ½: èŽ·å–é€é›¾å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
+		  pParam[out] --TDYNAMICMODEINFO åªæœ‰nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetFogThrough (void *pHandle, u8 byVideoSource,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetFogThrough
-¹¦    ÄÜ: ÉèÖÃÍ¸Îí²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TDYNAMICMODEPARAM  szMode[17]Ä¬ÈÏÎªfogthrough»òÕßclose Ö»ÐèÉèÖÃnLevelÓÐÐ§
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetFogThrough
+åŠŸ    èƒ½: è®¾ç½®é€é›¾å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDYNAMICMODEPARAM  szMode[17]é»˜è®¤ä¸ºfogthroughæˆ–è€…close åªéœ€è®¾ç½®nLevelæœ‰æ•ˆ
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetFogThrough (void *pHandle,void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetGamma
-¹¦    ÄÜ: »ñÈ¡Gamma²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
-		  pParam[out] --TDYNAMICMODEINFO Ö»ÓÐnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetGamma
+åŠŸ    èƒ½: èŽ·å–Gammaå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
+		  pParam[out] --TDYNAMICMODEINFO åªæœ‰nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetGamma (void *pHandle, u8 byVideoSource, void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetGamma
-¹¦    ÄÜ: ÉèÖÃGamma²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TDYNAMICMODEPARAM  szMode[17]Ä¬ÈÏÎªgamma»òclose Ö»ÐèÉèÖÃnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetGamma
+åŠŸ    èƒ½: è®¾ç½®Gammaå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDYNAMICMODEPARAM  szMode[17]é»˜è®¤ä¸ºgammaæˆ–close åªéœ€è®¾ç½®nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetGamma (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetSmartIR
-¹¦    ÄÜ: »ñÈ¡SmartIR²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
-		  pParam[out] --TDYNAMICMODEINFO Ö»ÓÐnLevelÓÐÐ§
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetSmartIR
+åŠŸ    èƒ½: èŽ·å–SmartIRå‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
+		  pParam[out] --TDYNAMICMODEINFO åªæœ‰nLevelæœ‰æ•ˆ
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetSmartIR (void *pHandle, u8 byVideoSource,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSmartIR
-¹¦    ÄÜ: ÉèÖÃSmartIR²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TDYNAMICMODEPARAM  szMode[17]Ä¬ÈÏÎªsmartir»òclose Ö»ÐèÉèÖÃnLevelÓÐÐ§
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSmartIR
+åŠŸ    èƒ½: è®¾ç½®SmartIRå‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDYNAMICMODEPARAM  szMode[17]é»˜è®¤ä¸ºsmartiræˆ–close åªéœ€è®¾ç½®nLevelæœ‰æ•ˆ
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSmartIR (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetBLC
-¹¦    ÄÜ: »ñÈ¡±³¹â²¹³¥²ÎÊý
-²ÎÊýËµÃ÷: byVideoSource[in] --ÊÓÆµÔ´ID
-		  pParam[out] --TDYNAMICMODEINFO Ö»ÓÐnLevelÓÐÐ§
-		  szParamAssist ¸¨ÖúÐÅÏ¢ÒÔxmlÆ¬¶ÎµÄ·½Ê½´«µÝenableÑ¡ÏîºÍoptÑ¡Ïî
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetBLC
+åŠŸ    èƒ½: èŽ·å–èƒŒå…‰è¡¥å¿å‚æ•°
+å‚æ•°è¯´æ˜Ž: byVideoSource[in] --è§†é¢‘æºID
+		  pParam[out] --TDYNAMICMODEINFO åªæœ‰nLevelæœ‰æ•ˆ
+		  szParamAssist è¾…åŠ©ä¿¡æ¯ä»¥xmlç‰‡æ®µçš„æ–¹å¼ä¼ é€’enableé€‰é¡¹å’Œopté€‰é¡¹
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetBLC(void *pHandle, u8 byVideoSource,void *pParam,int nLen,char* szParamAssist, int& nLenAssist,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetBLC
-¹¦    ÄÜ: ÉèÖÃ±³¹â²¹³¥²ÎÊý
-²ÎÊýËµÃ÷: pParam[in] --TDYNAMICMODEPARAM  szMode[17]Ä¬ÈÏÎªautoblc,regionblc»òclose Ö»ÐèÉèÖÃnLevelÓÐÐ§
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetBLC
+åŠŸ    èƒ½: è®¾ç½®èƒŒå…‰è¡¥å¿å‚æ•°
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDYNAMICMODEPARAM  szMode[17]é»˜è®¤ä¸ºautoblc,regionblcæˆ–close åªéœ€è®¾ç½®nLevelæœ‰æ•ˆ
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetBLC (void *pHandle, void *pParam, int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetFillLight
-¹¦    ÄÜ: »ñÈ¡ºìÍâ²¹¹âµÆ
-²ÎÊýËµÃ÷: 
+å‡½æ•°åç§°: IPC_GetFillLight
+åŠŸ    èƒ½: èŽ·å–çº¢å¤–è¡¥å…‰ç¯
+å‚æ•°è¯´æ˜Ž: 
 		  pParam[out] --TDFILLLIGHT
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetFillLight (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetFillLight
-¹¦    ÄÜ: ÉèÖÃºìÍâ²¹¹âµÆ
-²ÎÊýËµÃ÷: pParam[in] --TDFILLLIGHT
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetFillLight
+åŠŸ    èƒ½: è®¾ç½®çº¢å¤–è¡¥å…‰ç¯
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDFILLLIGHT
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetFillLight (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetDynPluginState
-¹¦    ÄÜ: ÉèÖÃ¶¯Ì¬²å¼þ×´Ì¬
-²ÎÊýËµÃ÷: pParam[in] --TDDYNMAICPLUGIN
-          pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetDynPluginState
+åŠŸ    èƒ½: è®¾ç½®åŠ¨æ€æ’ä»¶çŠ¶æ€
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDDYNMAICPLUGIN
+          pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetDynPluginState (void *pHandle,void *pParam,int nLen,u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRecMonthInfo
-¹¦    ÄÜ:	»ñÈ¡ÔÂÊÓÍ¼
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-		    pErrorCode   	´íÎóÂë
-		    nMonth		ÔÂ·Ý 
+å‡½æ•°åç§°: IPC_GetRecMonthInfo
+åŠŸ    èƒ½:	èŽ·å–æœˆè§†å›¾
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+		    pErrorCode   	é”™è¯¯ç 
+			nYear       å¹´
+		    nMonth		æœˆä»½ 
 		    pDataOut, 		Array of TRECMONTHINFO;
-	        nArrayLenOut, 	Êý×é³¤¶È;
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse, Ô­Òò½âÎöpErrorCode
+	        nArrayLenOut, 	æ•°ç»„é•¿åº¦;
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse, åŽŸå› è§£æžpErrorCode
 =================================================================*/
-IPC_API BOOL32 CDECL IPC_GetRecMonthInfo(void *pHandle, int nMonth, void *pDataOut, int& nArrayLenOut ,u32* pErrorCode);
+IPC_API BOOL32 CDECL IPC_GetRecMonthInfo(void *pHandle, int nYear, int nMonth, void *pDataOut, int& nArrayLenOut ,u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRecordData
-¹¦    ÄÜ:	»ñÈ¡Â¼ÏñÊý¾Ý(Í¬²½)
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
-			u32 dwRecId		Â¼Ïñid£¬id == 0 ±íÊ¾Í¬²½£¬id  != 0 ÐèÒªÔÚ×¼±¸»ñÈ¡µÄ½Ó¿ÚÀï´´½¨ID¡£
+å‡½æ•°åç§°: IPC_GetRecordData
+åŠŸ    èƒ½:	èŽ·å–å½•åƒæ•°æ®(åŒæ­¥)
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
+			u32 dwRecId		å½•åƒidï¼Œid == 0 è¡¨ç¤ºåŒæ­¥ï¼Œid  != 0 éœ€è¦åœ¨å‡†å¤‡èŽ·å–çš„æŽ¥å£é‡Œåˆ›å»ºIDã€‚
 			pParam 		    PTRECPARAM;
 			pDataOut		Array of PTRECDATA;
-			nArrLenOut		Â¼ÏñÊý¾ÝÊý×é³¤¶È,ÊäÈëµÄÊ±ºò£¬ÊäÈë×î´óµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»Ø»ñÈ¡µÄÂ¼ÏñÊý¾Ý¸öÊý, Ê§°Ü·µ»Ø0, Ô­Òò½âÎöpErrorCode;
+			nArrLenOut		å½•åƒæ•°æ®æ•°ç»„é•¿åº¦,è¾“å…¥çš„æ—¶å€™ï¼Œè¾“å…¥æœ€å¤§çš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žèŽ·å–çš„å½•åƒæ•°æ®ä¸ªæ•°, å¤±è´¥è¿”å›ž0, åŽŸå› è§£æžpErrorCode;
 =================================================================*/
 IPC_API u32 CDECL IPC_GetRecordData(void *pHandle, u32 dwRecId, void *pParam, void *pDataOut,int& nArrLenOut,u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetRecordNext
-¹¦    ÄÜ:	»ñÈ¡Â¼ÏñÊý¾Ý(Òì²½)
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-		    pErrorCode   	´íÎóÂë
-		    u32 dwTaskId		Â¼Ïñid£¬id  != 0 ÐèÒªÔÚ×¼±¸»ñÈ¡µÄ½Ó¿ÚÀï´´½¨ID¡£
-		    dwFirstIndex	¿ªÊ¼»ñÈ¡µÄÆðÊ¼Ë÷ÒýÎ»ÖÃ
+å‡½æ•°åç§°: IPC_GetRecordNext
+åŠŸ    èƒ½:	èŽ·å–å½•åƒæ•°æ®(å¼‚æ­¥)
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+		    pErrorCode   	é”™è¯¯ç 
+		    u32 dwTaskId		å½•åƒidï¼Œid  != 0 éœ€è¦åœ¨å‡†å¤‡èŽ·å–çš„æŽ¥å£é‡Œåˆ›å»ºIDã€‚
+		    dwFirstIndex	å¼€å§‹èŽ·å–çš„èµ·å§‹ç´¢å¼•ä½ç½®
 		    pDataOut		Array of PTRECDATA;
-	        nArrLenOut		Â¼ÏñÊý¾ÝÊý×é³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»Ø»ñÈ¡µÄÂ¼ÏñÊý¾Ý¸öÊý, Ê§°Ü·µ»Ø0, Ô­Òò½âÎöpErrorCode;
+	        nArrLenOut		å½•åƒæ•°æ®æ•°ç»„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žèŽ·å–çš„å½•åƒæ•°æ®ä¸ªæ•°, å¤±è´¥è¿”å›ž0, åŽŸå› è§£æžpErrorCode;
 =================================================================*/
 IPC_API u32 CDECL IPC_GetRecordNext (void *pHandle, u32 dwTaskId, u32 dwFirstIndex,bool &bFinished,void *pDataOut,int nArrLenOut,u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_PreLoadRecordList
-¹¦    ÄÜ:	×¼±¸Â¼ÏñÊý¾Ý
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
+å‡½æ•°åç§°: IPC_PreLoadRecordList
+åŠŸ    èƒ½:	å‡†å¤‡å½•åƒæ•°æ®
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
 			pParam 		TRECPARAM
-			nParamLen		½á¹¹ÌåµÄ³¤¶È
-·µ »Ø Öµ: ³É¹¦·µ»Ø²éÑ¯ID, Ê§°Ü·µ»Ø0, Ô­Òò½âÎöpErrorCode;
+			nParamLen		ç»“æž„ä½“çš„é•¿åº¦
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žæŸ¥è¯¢ID, å¤±è´¥è¿”å›ž0, åŽŸå› è§£æžpErrorCode;
 =================================================================*/
 IPC_API u32 CDECL IPC_PreLoadRecordList(void *pHandle, void *pParam, int nParamLen =0, u32* pErrorCode=0);
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_StartRecordPlay
-¹¦    ÄÜ:		¿ªÊ¼·ÅÏñ
-²ÎÊýËµÃ÷:		pHandle		Ç°¶Ë¾ä±ú
-				pErrorCode   	´íÎóÂë
+å‡½æ•°åç§°: 	IPC_StartRecordPlay
+åŠŸ    èƒ½:		å¼€å§‹æ”¾åƒ
+å‚æ•°è¯´æ˜Ž:		pHandle		å‰ç«¯å¥æŸ„
+				pErrorCode   	é”™è¯¯ç 
 				pParam		PTRECSTARTPLAYPARAM
-				nParamLen	·ÅÏñ²ÎÊýµÄ³¤¶È
+				nParamLen	æ”¾åƒå‚æ•°çš„é•¿åº¦
 				pDataOut		PTRECSTARTPLAYINFO
-				nDataLen		·ÅÏñ»Ø´«Êý¾Ý³¤¶È
-				bDec			ÊÇ·ñ½âÂë
-·µ »Ø Öµ: 	³É¹¦·µ»Ø²¥·Åid, Ê§°Ü·µ»Ø0;
+				nDataLen		æ”¾åƒå›žä¼ æ•°æ®é•¿åº¦
+				bDec			æ˜¯å¦è§£ç 
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žæ’­æ”¾id, å¤±è´¥è¿”å›ž0;
 =================================================================*/
-IPC_API u32 CDECL IPC_StartRecordPlay(void *pHandle, void *pParam, int nParamLen,void *pDataOut, int nDataLen,bool bDec, u32* pErrorCode);
+IPC_API u32 CDECL IPC_StartRecordPlay(void *pHandle, void *pParam, int nParamLen,void *pDataOut, int nDataLen,bool bDec, bool bNoStream, u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_StopRecordPlay
-¹¦    ÄÜ:	Í£Ö¹·ÅÏñ
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
-			dwPlayID		²¥·ÅID
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+å‡½æ•°åç§°: 	IPC_StopRecordPlay
+åŠŸ    èƒ½:	åœæ­¢æ”¾åƒ
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
+			dwPlayID		æ’­æ”¾ID
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_StopRecordPlay(void *pHandle, u32 dwPlayID, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_PauseRecordPlay
-¹¦    ÄÜ:	ÔÝÍ£·ÅÏñ
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode  ´íÎóÂë
-			dwPlayID	²¥·ÅID
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+å‡½æ•°åç§°: 	IPC_PauseRecordPlay
+åŠŸ    èƒ½:	æš‚åœæ”¾åƒ
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode  é”™è¯¯ç 
+			dwPlayID	æ’­æ”¾ID
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_PauseRecordPlay(void *pHandle, u32 dwPlayID, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_ResumeRecordPlay
-¹¦    ÄÜ:	»Ö¸´·ÅÏñ
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode  ´íÎóÂë
-			dwPlayID	²¥·ÅID
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+å‡½æ•°åç§°: 	IPC_ResumeRecordPlay
+åŠŸ    èƒ½:	æ¢å¤æ”¾åƒ
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode  é”™è¯¯ç 
+			dwPlayID	æ’­æ”¾ID
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_ResumeRecordPlay(void *pHandle, u32 dwPlayID, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_MoveRecordPlay
-¹¦    ÄÜ:	²¥·ÅÎ»ÖÃÒÆ¶¯
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
-			dwPlayID		²¥·ÅID
+å‡½æ•°åç§°: 	IPC_MoveRecordPlay
+åŠŸ    èƒ½:	æ’­æ”¾ä½ç½®ç§»åŠ¨
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
+			dwPlayID		æ’­æ”¾ID
 			pParam		PTTIMEEX
-			nParamLen		²ÎÊý³¤¶È
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+			nParamLen		å‚æ•°é•¿åº¦
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_MoveRecordPlay(void *pHandle, u32 dwPlayID, void *pParam, int nParamLen,u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_SetRecordPlayRate
-¹¦    ÄÜ:	²¥·ÅËÙ¶È¿ØÖÆ
-²ÎÊýËµÃ÷:	pHandle			Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
-			dwPlayID		²¥·ÅID
+å‡½æ•°åç§°: 	IPC_SetRecordPlayRate
+åŠŸ    èƒ½:	æ’­æ”¾é€Ÿåº¦æŽ§åˆ¶
+å‚æ•°è¯´æ˜Ž:	pHandle			å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
+			dwPlayID		æ’­æ”¾ID
 			dwPlayRate		emRecPlayRate
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetRecordPlayRate(void *pHandle, u32 dwPlayID,u32 dwPlayRate, u32* pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_ Getrecplaystate
-¹¦    ÄÜ:	»ñÈ¡·ÅÏñ½ø¶È
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
-			dwPlayID		²¥·ÅID
+å‡½æ•°åç§°: 	IPC_ Getrecplaystate
+åŠŸ    èƒ½:	èŽ·å–æ”¾åƒè¿›åº¦
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
+			dwPlayID		æ’­æ”¾ID
 			pDataOut		PTRECPLAYSTATEINFO
-			nDataOut          TRECPLAYSTATEINFO´óÐ¡
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+			nDataOut          TRECPLAYSTATEINFOå¤§å°
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_Getrecplaystate (void *pHandle, u32 dwPlayID,void* pDataOut, int &nDataOut,u32* pErrorCode);
 
 
 /*=================================================================
-º¯ÊýÃû³Æ: 	IPC_Setrecdownloadspeed
-¹¦    ÄÜ:	ÉèÖÃÂ¼ÏñÏÂÔØËÙ¶È
-²ÎÊýËµÃ÷:	pHandle		Ç°¶Ë¾ä±ú
-			pErrorCode   	´íÎóÂë
-·µ »Ø Öµ: 	³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse,´íÎóÂëpErrorCode;
+å‡½æ•°åç§°: 	IPC_Setrecdownloadspeed
+åŠŸ    èƒ½:	è®¾ç½®å½•åƒä¸‹è½½é€Ÿåº¦
+å‚æ•°è¯´æ˜Ž:	pHandle		å‰ç«¯å¥æŸ„
+			pErrorCode   	é”™è¯¯ç 
+è¿” å›ž å€¼: 	æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalse,é”™è¯¯ç pErrorCode;
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_Setrecdownloadspeed (void *pHandle,u32* pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetCompileTime
-¹¦    ÄÜ: »ñÈ¡ipcsdk¿â±àÒëÊ±¼ä
+å‡½æ•°åç§°: IPC_GetCompileTime
+åŠŸ    èƒ½: èŽ·å–ipcsdkåº“ç¼–è¯‘æ—¶é—´
           
-²ÎÊýËµÃ÷:
-		  szCompileTime sdk¿â±àÒëÊ±¼ä
-		  pErrorCode   	´íÎóÂë
-·µ»ØÖµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‚æ•°è¯´æ˜Ž:
+		  szCompileTime sdkåº“ç¼–è¯‘æ—¶é—´
+		  pErrorCode   	é”™è¯¯ç 
+è¿”å›žå€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetCompileTime(char* szCompileTime,u32*pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_AssTeleZoomInfo
-¹¦    ÄÜ: Ô¶¶Ë·Å´ó
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    pchFileName     ±£´æµÄÍ¼Æ¬ÎÄ¼þÈ«Â·¾¶(ÎÄ¼þÃû+ÎÄ¼þÂ·¾¶)    
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_AssTeleZoomInfo
+åŠŸ    èƒ½: è¿œç«¯æ”¾å¤§
+å‚æ•°è¯´æ˜Ž:
+    hPlayHandle     æ’­æ”¾å™¨å¥æŸ„
+    pchFileName     ä¿å­˜çš„å›¾ç‰‡æ–‡ä»¶å…¨è·¯å¾„(æ–‡ä»¶å+æ–‡ä»¶è·¯å¾„)    
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_AssTeleZoomInfo (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAssTeleZoomInfo
-¹¦    ÄÜ: Ô¶¶Ë·Å´ó
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    pchFileName     ±£´æµÄÍ¼Æ¬ÎÄ¼þÈ«Â·¾¶(ÎÄ¼þÃû+ÎÄ¼þÂ·¾¶)    
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetAssTeleZoomInfo
+åŠŸ    èƒ½: è¿œç«¯æ”¾å¤§
+å‚æ•°è¯´æ˜Ž:
+    hPlayHandle     æ’­æ”¾å™¨å¥æŸ„
+    pchFileName     ä¿å­˜çš„å›¾ç‰‡æ–‡ä»¶å…¨è·¯å¾„(æ–‡ä»¶å+æ–‡ä»¶è·¯å¾„)    
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetAssTeleZoomInfo (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_AssMalfInfo
-¹¦    ÄÜ: »ûÐÎ½ÃÕý
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    pchFileName     ±£´æµÄÍ¼Æ¬ÎÄ¼þÈ«Â·¾¶(ÎÄ¼þÃû+ÎÄ¼þÂ·¾¶)    
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_AssMalfInfo
+åŠŸ    èƒ½: ç•¸å½¢çŸ«æ­£
+å‚æ•°è¯´æ˜Ž:
+    hPlayHandle     æ’­æ”¾å™¨å¥æŸ„
+    pchFileName     ä¿å­˜çš„å›¾ç‰‡æ–‡ä»¶å…¨è·¯å¾„(æ–‡ä»¶å+æ–‡ä»¶è·¯å¾„)    
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_AssMalfInfo (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetAssMalfInfo
-¹¦    ÄÜ: »ûÐÎ½ÃÕý
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    pchFileName     ±£´æµÄÍ¼Æ¬ÎÄ¼þÈ«Â·¾¶(ÎÄ¼þÃû+ÎÄ¼þÂ·¾¶)    
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
+å‡½æ•°åç§°: IPC_GetAssMalfInfo
+åŠŸ    èƒ½: ç•¸å½¢çŸ«æ­£
+å‚æ•°è¯´æ˜Ž:
+    hPlayHandle     æ’­æ”¾å™¨å¥æŸ„
+    pchFileName     ä¿å­˜çš„å›¾ç‰‡æ–‡ä»¶å…¨è·¯å¾„(æ–‡ä»¶å+æ–‡ä»¶è·¯å¾„)    
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
 =================================================================*/
 IPC_API int CDECL IPC_GetAssMalfInfo (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetMTCF
-¹¦    ÄÜ: ÉèÖÃ¹¤×÷Ä£Ê½
-²ÎÊýËµÃ÷: pParam, TMTCFPARAM
-		  nLen, Êý¾Ý³¤¶È,µÈÓÚsizeof(TMTCFPARAM)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetMTCF
+åŠŸ    èƒ½: è®¾ç½®å·¥ä½œæ¨¡å¼
+å‚æ•°è¯´æ˜Ž: pParam, TMTCFPARAM
+		  nLen, æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TMTCFPARAM)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetMTCF (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetMTCF
-¹¦    ÄÜ: »ñÈ¡¹¤×÷Ä£Ê½
-²ÎÊýËµÃ÷: pParam, TMTCFPARAM
-		  nLen, Êý¾Ý³¤¶È,µÈÓÚsizeof(TMTCFPARAM)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetMTCF
+åŠŸ    èƒ½: èŽ·å–å·¥ä½œæ¨¡å¼
+å‚æ•°è¯´æ˜Ž: pParam, TMTCFPARAM
+		  nLen, æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TMTCFPARAM)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetMTCF (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_GetBatteryStatus
-¹¦    ÄÜ: »ñÈ¡µç³ØµçÁ¿
-²ÎÊýËµÃ÷: pParam, TBATSTATUSINFO
-		  nLen, Êý¾Ý³¤¶È,µÈÓÚsizeof(TBATSTATUSINFO)
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_GetBatteryStatus
+åŠŸ    èƒ½: èŽ·å–ç”µæ± ç”µé‡
+å‚æ•°è¯´æ˜Ž: pParam, TBATSTATUSINFO
+		  nLen, æ•°æ®é•¿åº¦,ç­‰äºŽsizeof(TBATSTATUSINFO)
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_GetBatteryStatus (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
 
 /*=================================================================
-º¯ÊýÃû³Æ: IPC_SetSSH
-¹¦    ÄÜ: ÉèÖÃSSH¿ªÆô/¹Ø±Õ
-²ÎÊýËµÃ÷: bOpen,       ÊÇ·ñ¿ªÆôssh
-		  pErrorCode   ´íÎóÂë
-·µ »Ø Öµ: ³É¹¦·µ»Øtrue, Ê§°Ü·µ»Øfalse£¬Ô­Òò½âÎöpErrorCode
+å‡½æ•°åç§°: IPC_SetSSH
+åŠŸ    èƒ½: è®¾ç½®SSHå¼€å¯/å…³é—­
+å‚æ•°è¯´æ˜Ž: bOpen,       æ˜¯å¦å¼€å¯ssh
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
 =================================================================*/
 IPC_API BOOL32 CDECL IPC_SetSSH (void *pHandle, bool bOpen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetColorSize
+åŠŸ    èƒ½: è®¾ç½®è°ƒè‰²æ¿
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZHVANGLE  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_SetColorSize (void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetColorSize
+åŠŸ    èƒ½: èŽ·å–è°ƒè‰²æ¿
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZHVANGLE  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GetColorSize (void *pHandle, void *pParam,  int nLen, char* szParamAssist, int& nLenAssist, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SethotPointState
+åŠŸ    èƒ½: è®¾ç½®çƒ­ç‚¹è¿½è¸ªçŠ¶æ€
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZHVANGLE  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_SethotPointState (void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GethotPointState
+åŠŸ    èƒ½: èŽ·å–çƒ­ç‚¹è¿½è¸ªçŠ¶æ€
+å‚æ•°è¯´æ˜Ž: pParam, PTPTZHVANGLE  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API int CDECL IPC_GethotPointState (void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetGpsInfo
+åŠŸ    èƒ½: èŽ·å–GPSä¿¡æ¯
+å‚æ•°è¯´æ˜Ž: pParam, TPOSITIONINFO  
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetGpsInfo (void *pHandle, void *pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetMobilenetwork
+åŠŸ    èƒ½: èŽ·å–4gå‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TMOBILENETWORK
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetMobilenetwork(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetMobilenetwork
+åŠŸ    èƒ½: è®¾ç½®4gå‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TMOBILENETWORK
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetMobilenetwork(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetPubsec
+åŠŸ    èƒ½: èŽ·å–è§†å›¾åº“å‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TPUBSECPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetPubsec(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetPubsec
+åŠŸ    èƒ½: è®¾ç½®è§†å›¾åº“å‚æ•°
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TPUBSECPARAM
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetPubsec(void *pHandle, void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetAzimuth
+åŠŸ    èƒ½: è®¾ç½®æ–¹ä½è§’
+å‚æ•°è¯´æ˜Ž: NA 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žRET_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetAzimuth (void *pHandle, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_GetBasicPos
+åŠŸ    èƒ½: èŽ·å–åŸºäºŽè™šæ‹Ÿé›¶ä½çš„å½“å‰äº‘å°è§’åº¦
+å‚æ•°è¯´æ˜Ž: dwHandle      è®¾å¤‡å¥æŸ„
+		  pParam, TBASICPOSINFO
+		  pErrorCode   é”™è¯¯ç 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žtrue, å¤±è´¥è¿”å›žfalseï¼ŒåŽŸå› è§£æžpErrorCode
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_GetBasicPos (void *pHandle,void *pParam,  int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetDeployPicStart
+åŠŸ    èƒ½: å‡†å¤‡ä¸Šä¼ å›¾ç‰‡
+å‚æ•°è¯´æ˜Ž: param totalnum å›¾ç‰‡æ•°ç›® æœ€å¤§200å¼ 
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetDeployPicStart(void *pHandle, int nParam, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetDeployPicUpload
+åŠŸ    èƒ½: ä¸Šä¼ å›¾ç‰‡
+å‚æ•°è¯´æ˜Ž: pParam[in] --TDEPLOYUPLOADPARAM
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetDeployPicUpload(void *pHandle, void* pParam, int nLen, u32 *pErrorCode);
+
+/*=================================================================
+å‡½æ•°åç§°: IPC_SetDeployPicStop
+åŠŸ    èƒ½: ä¸Šä¼ å›¾ç‰‡
+å‚æ•°è¯´æ˜Ž: pParam[in] --NA
+è¿” å›ž å€¼: æˆåŠŸè¿”å›žIPC_ERR_SUCCESS, å¤±è´¥è¿”å›žé”™è¯¯ç 
+=================================================================*/
+IPC_API BOOL32 CDECL IPC_SetDeployPicStop(void *pHandle, u32 *pErrorCode);
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
 
-
-#endif //
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*****************************************************************************
-Ä£¿éÃû  : ipcmedia¹¦ÄÜ½Ó¿Ú
-ÎÄ¼þÃû  : ipcmedia_c.h
-Ïà¹ØÎÄ¼þ£ºipcmedia_c.cpp
-ÊµÏÖ¹¦ÄÜ£º
-×÷Õß    £ºsunjun
-°æ±¾    £ºIPC-V7.0-R1.0 Copyright (C) 2009 - 2012 All Rights Reserved
------------------------------------------------------------------------------
-ÐÞ¸Ä¼ÇÂ¼:
-ÈÕ  ÆÚ        °æ±¾        ÐÞ¸ÄÈË        ×ß¶ÁÈË    ÐÞ¸ÄÄÚÈÝ
-20150602      v1.0        sunjun	                 ´´½¨
-******************************************************************************/
- #ifndef IPCMEDIA_H_
- #define IPCMEDIA_H_
- 
- 
- #ifdef __cplusplus
- extern "C" {
- 
- #ifdef WIN32
- 	#define IPC_API  extern "C" __declspec(dllexport)
- 
- #ifndef CDECL
- 	#define CDECL  __cdecl
- #endif
- #else
- 	#define IPC_API
- 	#define CDECL
- #endif
- 
- #endif // __cplusplus
- 
- #define STDCALL  __stdcall
- #define OUT
- 
- 	/* Ã½Ìå¾ä±ú */
- #define PLAYERHANDLE unsigned long
- 
- 	/* ´íÎóÂë */
- #define ERR_SUCCESS                     (0)    // ³É¹¦·µ»Ø
- #define ERR_NOMEDIADLL						(1)    // Ã»ÓÐÕÒµ½SDKDLL
- #define ERR_NOMEDIAFUN						(2)    // Ã»ÓÐÕÒµ½SDKDLL¶ÔÓ¦½Ó¿Ú
- #define ERR_INIT_OSP                    (-1)   // OSPÍ¨ÐÅÄ£¿é³õÊ¼»¯Ê§°Ü
- #define ERR_GET_PLAYER                  (-30)  // »ñÈ¡²¥·ÅÆ÷¶ÔÏóÊ§°Ü
- #define ERR_INVALID_VD_SRC_ID           (-31)  // ÎÞÐ§µÄÊÓÆµÔ´Í¨µÀºÅ
- #define ERR_INIT_DECODER                (-32)  // ½âÂëÆ÷³õÊ¼»¯Ê§°Ü
- #define ERR_START_DECODE                (-33)  // ÊÓÒôÆµ½âÂëÊ§°Ü
- #define ERR_INVALID_PLAY_WND            (-35)  // ÎÞÐ§µÄ²¥·Å´°¿Ú¾ä±ú
- #define ERR_INIT_ENCODER                (-38)  // ±àÂëÆ÷³õÊ¼»¯Ê§°Ü
- #define ERR_START_SEND_AUDIO            (-41)  // ÒôÆµ±àÂë·¢ËÍÊ§°Ü
- #define ERR_STOP_ENCODE                 (-42)  // ±àÂëÆ÷Í£Ö¹ÒôÆµ±àÂëÊ§°Ü
- #define ERR_REC_WITH_NO_VD_PLAY         (-43)  // ÔÚÃ»ÓÐÊÓÆµ²¥·ÅµÄÇé¿öÏÂ½øÐÐ±¾µØÂ¼Ïñ
- #define ERR_INIT_LOCAL_RECORDER         (-44)  // ±¾µØÂ¼Ïñ»ú³õÊ¼»¯Ê§°Ü
- #define ERR_START_LOCAL_REC             (-45)  // ¿ªÊ¼±¾µØÂ¼ÏñÊ§°Ü
- #define ERR_STOP_LOCAL_REC              (-46)  // Í£Ö¹±¾µØÂ¼ÏñÊ§°Ü
- #define ERR_SHOT_WITH_NO_VD_PLAY        (-47)  // ÔÚÃ»ÓÐÊÓÆµ²¥·ÅµÄÇé¿öÏÂ½øÐÐ±¾µØ×¥ÅÄ
- #define ERR_LOCAL_SNAPSHOT              (-48)  // ±¾µØ×¥ÅÄÊ§°Ü
- #define ERR_LOCAL_RECV_PU_REC           (-49)  // ±¾µØ½ÓÊÕÇ°¶ËÂ¼ÏñÊ§°Ü
- #define ERR_INVALID_REC_FILE_NAME       (-50)  // ±¾µØÂëÁ÷ÎÄ¼þÃûÎª¿Õ
- #define ERR_LOCAL_OPEN_FILE             (-51)  // ±¾µØ½âÂëÆ÷´ò¿ªÎÄ¼þÊ§°Ü
- #define ERR_LOCAL_PLAY_FILE             (-52)  // ±¾µØ½âÂëÆ÷²¥·ÅÎÄ¼þÊ§°Ü
- #define ERR_INVALID_PU_REC_INFO         (-97)  // Ö¸¶¨µÄÇ°¶ËÂ¼ÏñÐÅÏ¢Îª¿Õ
- 
- // ÂëÁ÷´«ÊäÀàÐÍ 
- #define MEDIA_STREAM_TYPE_UDP		    0x00	// UDPÍ¨µÀ
- #define MEDIA_STREAM_TYPE_TCP		    0x01	// TCPÍ¨µÀ
- 
- // ²¥·ÅÀàÐÍ 
- enum EPlayType
- {
- 	PLAY_VIDEO = 1,
- 	PLAY_PUREC
- };
-
-
- // Â¼Ïñ»Øµ÷×´Ì¬
- typedef enum EMRecorderCBType
- {
-	 MEDREC_START = 1,
-	 MEDREC_STOP,
-	 MEDREC_FILE_START ,
-	 MEDREC_START_TIME,
-	 MEDPREREC_START,
-	 MEDPREREC_STOP,
-	 MEDSTREAM_STOP,
- }EMRecorderCBType_t;
-
- // Â¼ÏñÍ£Ö¹Ô­Òò
- typedef enum EMRecorderStopReason
- {
-	 RECSTOPREASON_NORMAL = 0,
-	 RECSTOPREASON_FORMAT_CHG = 1,  //format change
-	 RECSTOPREASON_FILE_FAIL = 2,
-	 RECSTOPREASON_DISK_WRITE_FULL =3,//´ÅÅÌÒÑÐ´Âú
-
- }EMRecorderStopReason_t;
- 
- // ÊÓÆµÖ¡Í·½á¹¹
- typedef struct tagIPCFrameHdr
- {
-	 u8     m_byMediaType;				// Ã½ÌåÀàÐÍ
-	 u8    *m_pData;						// Êý¾Ý»º³å
-	 u32    m_dwPreBufSize;				// m_pData»º³åÇ°Ô¤ÁôÁË¶àÉÙ¿Õ¼ä£¬ÓÃÓÚ¼Ó
-	 // RTP optionµÄÊ±ºòÆ«ÒÆÖ¸ÕëÒ»°ãÎª12+4+12
-	 // (FIXED HEADER + Extence option + Extence bit)
-	 u32    m_dwDataSize;				// m_pDataÖ¸ÏòµÄÊµ¼Ê»º³å´óÐ¡»º³å´óÐ¡
-	 u8     m_byFrameRate;				// ·¢ËÍÖ¡ÂÊ,ÓÃÓÚ½ÓÊÕ¶Ë
-	 u8      m_byPadSize;				// Ìî³äÊý¾Ý³¤¶È*/
-	 u32    m_dwFrameID;					// Ö¡±êÊ¶£¬ÓÃÓÚ½ÓÊÕ¶Ë
-	 u32    m_dwTimeStamp;				// Ê±¼ä´Á, ÓÃÓÚ½ÓÊÕ¶Ë
-	 u64    m_llNTPTimeStamp;			// NTP time 
-	 u32    m_dwSSRC;					// Í¬²½Ô´, ÓÃÓÚ½ÓÊÕ¶Ë
-	 union
-	 {
-		 struct{
-			 BOOL32    m_bKeyFrame;		// ÆµÖ¡ÀàÐÍ£¨I or P£©
-			 u16       m_wVideoWidth;	// ÊÓÆµÖ¡¿í
-			 u16       m_wVideoHeight;	// ÊÓÆµÖ¡¿í
-		 }m_tVideoParam;
-		 u8    m_byAudioMode;			//ÒôÆµÄ£Ê½
-	 };
- } TIPC_FRAMEHDR,*PTIPC_FRAMEHDR;
-
- // ½âÂëÆ÷Í³¼ÆÐÅÏ¢
- typedef struct tagIPCDecStatics
- {
-	 unsigned char	byVideoFrameRate;	// ÊÓÆµ½âÂëÖ¡ÂÊ
-	 unsigned short	wVideoBitRate;		// ÊÓÆµ½âÂëÂëÂÊ
-	 unsigned short	wAudioBitRate;		// ÓïÒô½âÂëÂëÂÊ
-	 unsigned long   dwVideoRecvFrame;	// ÊÕµ½µÄÊÓÆµÖ¡Êý
-	 unsigned long   dwAudioRecvFrame;	// ÊÕµ½µÄÓïÒôÖ¡Êý
-	 unsigned long   dwVideoLoseFrame;	// ¶ªÊ§µÄÊÓÆµÖ¡Êý
-	 unsigned long   dwAudioLoseFrame;	// ¶ªÊ§µÄÓïÒôÖ¡Êý
-	 unsigned short	wVideoLoseRatio;	// ÊÓÆµ¶ªÊ§ÂÊ,µ¥Î»ÊÇ% 	
-	 unsigned short	wAudioLoseRatio;	// ÒôÆµ¶ªÊ§ÂÊ,µ¥Î»ÊÇ% 	
-	 unsigned long   dwPackError;		// ÂÒÖ¡Êý
-	 unsigned long   dwIndexLose;		// ÐòºÅ¶ªÖ¡
-	 unsigned long   dwSizeLose;			// ´óÐ¡¶ªÖ¡
-	 unsigned long   dwFullLose;			// Âú¶ªÖ¡
-	 unsigned long   wAvrVideoBitRate;	// 1·ÖÖÓÄÚÊÓÆµ½âÂëÆ½¾ùÂëÂÊ
-	 unsigned long	wAvrAudioBitRate;	// 1·ÖÖÓÄÚÓïÒô½âÂëÆ½¾ùÂëÂÊ
-	 int	            bVidCompellingIFrm;	// ÊÓÆµÇ¿ÖÆÇëÇóIÖ¡
-	 unsigned long   dwDecdWidth;		// ÂëÁ÷µÄ¿í
-	 unsigned long   dwDecdHeight;		// ÂëÁ÷µÄ¸ß
- } TIPC_DEC_STATICS, *PTIPC_DEC_STATICS;
-
- // ½ÓÊÕÊý¾ÝÍ³¼Æ
- typedef struct tagIPCRcvStatistics
- {
-	 u32    m_dwPackNum;					// ÒÑ½ÓÊÕµÄ°üÊý
-	 u32    m_dwPackLose;				// G°üÊý
-	 u32    m_dwPackIndexError;			// °üÂÒÐòÊý
-	 u32    m_dwFrameNum;				// ÒÑ½ÓÊÕµÄÖ¡Êý
- }TIPC_RCV_STATICSTICS;
-
- // Ã½ÌåÐÅÏ¢
- typedef struct tagIPCMediaInfo
- {
-	 unsigned long dwLocalIP;			// ½âÂë¶ËµØÖ·
-	 unsigned short wVideoPort;			// ÊÓÆµ½âÂë¶Ë¿Ú
-	 unsigned short wAudioPort;			// ÒôÆµ½âÂë¶Ë¿Ú
- } TIPC_MEDIA_INFO, *PTIPC_MEDIA_INFO;
-
-
- // µ¥¸öÂ¼ÏñÎÄ¼þÐÅÏ¢(ÓÃÓÚÏÂÔØ)
- typedef struct tagIPCRecFileInfo
- {
-	 unsigned char   byChanID;			                              // Í¨µÀID
-	 unsigned long   dwStartTime;		                              // ¿ªÊ¼Ê±¼ä
-	 unsigned long   dwEndTime;		                                  // ½áÊøÊ±¼ä
-	 unsigned long   dwRecSize;		                                  // ÎÄ¼þ´óÐ¡
-	 unsigned char   byRecFileType;		                              // Â¼ÏñÎÄ¼þÀàÐÍ(EPuRecQueryTypeÀàÐÍ)
-	 unsigned long   dwFileID;
- } TIPC_REC_FILE_INFO, *PTIPC_REC_FILE_INFO;
-
- typedef struct tagIPCRecordSopInfo
- {
-	 WORD m_wStopReason;
-	 u64 m_qwTotalDiskUsage;
- } TIPC_REC_STOP_INFO;
-
- 
- // ÊÓÆµ½âÂë»Øµ÷(×Ô»æ)
- typedef void (__stdcall *MEDIA_DRAW_CB)(PLAYERHANDLE hPlayHandle, unsigned long dwPaintDC, unsigned long dwFrmID, unsigned long dwParam);
- 
- // ÊÓÒôÆµÖ¡Êý¾Ý»Øµ÷
- typedef void (__stdcall *MEDIA_FRAME_CB)(PLAYERHANDLE hPlayHandle, PTIPC_FRAMEHDR pFrmHdr, unsigned long dwParam);
-
- // ¸æ¾¯»Øµ÷
- typedef void (__stdcall *MEDIA_ALARM_CB) (PLAYERHANDLE hPlayHandle, int& nType, int& nData, unsigned long dwParam); 
-
- //ÔªÊý¾ÝÖ¡Êý¾Ý»Øµ÷
- typedef void (__stdcall *MEAT_FRAME_CB)(PLAYERHANDLE hPlayHandle, PTIPC_FRAMEHDR pFrmHdr, unsigned long dwParam);
- 
- // YUV½âÂëÂëÁ÷ÐÅÏ¢»Øµ÷
- typedef void (*PYUVCALLBACK)(void* pParam,int &nWidth,int &nHeight,int &nBufferLen,unsigned char* pBuffer);
-
- // ²ÎÊý·Ö±ðÎªÎ»Í¼»º³åÖ¸Õë¡¢Î»Í¼¿í¡¢¸ß¡¢Î»Éî
- typedef void (__stdcall *MEDIA_FRAMEINFO_CB)(PLAYERHANDLE hPlayHandle, unsigned char *pBitmapBuf, unsigned long dwWidth, unsigned long dwHeight, unsigned long dwbitcount,unsigned long dwFrmID, unsigned long dwParam);
- 
- // ¶ÏÁ´¼ì²â
- typedef void (__stdcall *MEDIA_CONNECTLOST_CB)(PLAYERHANDLE hPlayHandle, void *pContext);
-
- // Â¼Ïñ×´Ì¬»Øµ÷
- typedef void (__stdcall *MEDIA_REC_STATE_CB)(PLAYERHANDLE hPlayHandle, unsigned long dwRecorderID, unsigned long dwCBType, void* pData, int nDataLen, void* pContext);
-
- // Â¼ÏñÏÂÔØ»Øµ÷
- typedef void (__stdcall *MEDIA_DOWN_REC_CB)(PLAYERHANDLE hPlayHandle, unsigned long dwStatusCode, unsigned long dwCurTime, void* pContext);
- 
- /*=================================================================
- º¯ÊýÃû³Æ:	MED_InitMedia
- ¹¦    ÄÜ:	³õÊ¼»¯IPCMEDIA
-			È«¾Öµ÷ÓÃÒ»´Î¼´¿É£¬ÔÚÓ¦ÓÃ³ÌÐò¿ªÊ¼´¦µ÷ÓÃ
-			(MFC¹¤³ÌÔÚwinappÖÐµ÷ÓÃ£¬¶¯Ì¬¿â¹¤³ÌÔÚ¿â¼ÓÔØ´¦µ÷ÓÃ)
- ²ÎÊýËµÃ÷:	
-			wTelnetPort				Telnet¶Ë¿Ú(Ä¬ÈÏ3000)
-			bOpenTelnet				ÊÇ·ñ¿ªÆôTelnet(Ä¬ÈÏ´ò¿ª)
-			bMedPtRetrieve			ÊÇ·ñÆôÓÃ¶Ë¿Ú»ØÊÕ²ßÂÔ
- ·µ »Ø Öµ:	³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_InitMedia(char* szDLLFilePath = NULL, unsigned short wTelnetPort = 3000, int bOpenTelnet = 1, int bMedPtRetrieve = 1);
- 
- /*=================================================================
- º¯ÊýÃû³Æ:	MED_FreeMedia
- ¹¦    ÄÜ:	ÊÍ·ÅIPCMEDIAµÄÏà¹Ø×ÊÔ´
-			ÔÚÓ¦ÓÃ³ÌÐòÍË³öÊ±µ÷ÓÃ
- ²ÎÊýËµÃ÷:	void
- ·µ »Ø Öµ:	³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_FreeMedia();
- 
- /*=================================================================
- º¯ÊýÃû³Æ:	MED_GetVideoPlayPort
- ¹¦    ÄÜ:	»ñÈ¡²¥·Å¶Ë¿Ú
- ²ÎÊýËµÃ÷:	
-			wVideoPort				ÊÓÆµ¶Ë¿Ú
-			wAudioPort				ÒôÆµ¶Ë¿Ú
-			byVideoChan				²¥·ÅÍ¨µÀ
- ·µ »Ø Öµ:	³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_GetVideoPlayPort( WORD& wVideoPort,WORD& wAudioPort ,DWORD& dwLocalIp,DWORD dwRemotIp,WORD wRemotPort,BYTE videoChan);
- 
- /*=================================================================
- º¯ÊýÃû³Æ:	MED_StopLocalPlay
- ¹¦    ÄÜ:	±¾µØÍ£Ö¹½ÓÊÕÂëÁ÷²¥·Å
- ²ÎÊýËµÃ÷:
-			hPlayHandle				²¥·ÅÆ÷¾ä±ú
- 			bDestroy				ÊÇ·ñÏú»Ù²¥·ÅÆ÷
- ·µ »Ø Öµ:	³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_StopLocalPlay(PLAYERHANDLE hPlayHandle, int bDestroy = 1);
- 
- /*=================================================================
- º¯ÊýÃû³Æ:	MED_LocalPlay
- ¹¦    ÄÜ:	±¾µØ½ÓÊÕÂëÁ÷²¥·Å
- ²ÎÊýËµÃ÷:
-			hPlayWnd				Í¼ÏñÊä³ö´°¿Ú¾ä±ú
- 			dwRemoteIP				Éè±¸¶ËµØÖ·(ÓÃÓÚ¶ª°üÖØ´«)
- 			wVideoDecPort			ÊÓÆµ½âÂë¶Ë¿Ú(´«¿ÕÔòÓÉsdk·ÖÅä)
- 			wAudioDecPort			ÒôÆµ½âÂë¶Ë¿Ú(´«¿ÕÔòÓÉsdk·ÖÅä)
-			wVideoBackRtcp			ÊÓÆµRTCP»Ø´«¶Ë¿Ú
-			wAudioBackRtcp			ÒôÆµRTCP»Ø´«¶Ë¿Ú
-			bDoubleAudio            ÊÇ·ñ¿ªÆôË«ÒôÆµ
-			bMeta                   ÊÇ·ñ¿ªÆôÔªÊý¾Ý
-			nTransType              ÂëÁ÷ÀàÐÍ
-			b4k                     ÊÇ·ñ¿ªÆô4k
- ·µ »Ø Öµ:	³É¹¦·µ»Ø´óÓÚ0µÄ²¥·ÅÆ÷¾ä±úÖµ, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
-IPC_API long CDECL MED_LocalPlay(unsigned long hPlayWnd, unsigned long dwRemoteIP, unsigned char byChanId, unsigned short wVideoDecPort, unsigned short wAudioDecPort,unsigned short wVideoBackRtcp,unsigned short wAudioBackRtcp, unsigned short wAudioBackRtcp2,BOOL bDoubleAudio, BOOL bMeta, UINT nTransType, BOOL b4k = FALSE);
-
- /*=================================================================
- º¯ÊýÃû³Æ: MED_PauseLocalPlay
- ¹¦    ÄÜ: ÔÝÍ£ÊÓÆµä¯ÀÀ
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_PauseLocalPlay(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_ResumeLocalPlay
- ¹¦    ÄÜ: »Ö¸´ÊÓÆµä¯ÀÀ
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_ResumeLocalPlay(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_IsLocalPlay
- ¹¦    ÄÜ: ÊÇ·ñÕýÔÚä¯ÀÀÊÓÆµ
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: TRUE-ÕýÔÚä¯ÀÀ, FALSE-²»ÔÚä¯ÀÀ×´Ì¬
- =================================================================*/
- IPC_API int CDECL MED_IsLocalPlay(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_ChangePlayWnd
- ¹¦    ÄÜ: ±ä¸üÂëÁ÷Êä³ö´°¿Ú
- ²ÎÊýËµÃ÷: 
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     hNewPlayWnd     ²¥·ÅÊÓÆµµÄ´°¿Ú¾ä±ú(ÐÂ´°¿Ú)
-     bSaveLastFrame  ÊÓÆµ¶³½áÊ±ÊÇ·ñÐèÒª±£´æ×îºóÒ»Ö¡Í¼Ïñ
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_ChangePlayWnd(PLAYERHANDLE hPlayHandle, unsigned long hNewPlayWnd, int bSaveLastFrame = 1);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetDrawCallBack
- ¹¦    ÄÜ: ÉèÖÃ»æÍ¼½âÂë»Øµ÷
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     fDrawCB         »æÍ¼½âÂë»Øµ÷
-     dwContext       »Øµ÷Ïà¹ØÉÏÏÂÎÄ
- ·µ »Ø Öµ: void
- =================================================================*/
- IPC_API int CDECL MED_SetDrawCallBack(PLAYERHANDLE hPlayHandle, MEDIA_DRAW_CB fDrawCB, unsigned long dwContext);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetFrameCallBack
- ¹¦    ÄÜ: ÉèÖÃÊÓÒôÆµÖ¡Êý¾Ý»Øµ÷
- ²ÎÊýËµÃ÷:    
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     fFrameCB        Ö¡Í·ÐÅÏ¢»Øµ÷
-     dwContext       »Øµ÷Ïà¹ØÉÏÏÂÎÄ
- ·µ »Ø Öµ: void
- =================================================================*/
- IPC_API int CDECL MED_SetFrameCallBack(PLAYERHANDLE hPlayHandle, MEDIA_FRAME_CB fFrameCB, unsigned long dwContext);
-
- IPC_API int CDECL MED_SetAlarmCallBack(PLAYERHANDLE hPlayHandle, MEDIA_ALARM_CB fFrameCB, unsigned long dwContext);
-
- IPC_API void CDECL MED_SetYuvCallBack (unsigned long hPlayHandle, PYUVCALLBACK pFun, u32 dwContext);
-
- IPC_API int CDECL MED_SetMetadataCallBack(PLAYERHANDLE hPlayHandle, MEAT_FRAME_CB fFrameCB, unsigned long dwContext);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetFrameInfoCallBack
- ¹¦    ÄÜ: ÉèÖÃYUV½âÂëÂëÁ÷ÐÅÏ¢»Øµ÷
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     fFrameInfoCB    YUV½âÂëÂëÁ÷ÐÅÏ¢»Øµ÷
-     dwContext       »Øµ÷Ïà¹ØÉÏÏÂÎÄ
- ·µ »Ø Öµ: void
- =================================================================*/
- IPC_API int CDECL MED_SetFrameInfoCallBack(PLAYERHANDLE hPlayHandle, MEDIA_FRAMEINFO_CB fFrameInfoCB, unsigned long dwContext);
- 
- 
- /*===============================================================
- º¯ÊýÃû³Æ: MED_SetVerticalSyncMode
- ¹¦    ÄÜ: ¿ªÆô»ò¹Ø±Õ½âÂëµÄ´¹Ö±Í¬²½
- ²ÎÊýËµÃ÷: 
-     bVerSync        ÊÇ·ñ¿ªÆô´¹Ö±Í¬²½
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú£¬²»Ö¸¶¨Ôò¶ÔËùÓÐ½âÂëÆ÷½øÐÐÉèÖÃ
- ·µ »Ø Öµ: void
- ================================================================*/
- IPC_API int CDECL MED_SetVerticalSyncMode(int bVerSync, PLAYERHANDLE hPlayHandle = 0);
- 
- /*===============================================================
- º¯ÊýÃû³Æ: MED_SetShowMargins
- ¹¦    ÄÜ: ÉèÖÃÍ¼Ïñ²Ã¼ô
-           (È«¾Ö²Ù×÷, ÔÚ³õÊ¼»¯²¥·ÅÆ÷Ç°µ÷ÓÃ)
- ²ÎÊýËµÃ÷: 
-     nLeft           ²Ã¼ôµÄ×ó±ßÔµ¿í¶È
- 	nTop            ²Ã¼ôµÄÉÏ±ßÔµ¿í¶È
- 	nRight          ²Ã¼ôµÄÓÒ±ßÔµ¿í¶È
- 	nBottom         ²Ã¼ôµÄÏÂ±ßÔµ¿í¶È
- 	bAuto           ÊÇ·ñ»áËæ½âÂëÍ¼Ïó´óÐ¡¸Ä±ä
- ·µ »Ø Öµ: void
- ================================================================*/
- IPC_API int CDECL MED_SetShowMargins(int nLeft, int nTop, int nRight, int nBottom, int bAuto = 1);
- 
- /*===============================================================
- º¯ÊýÃû³Æ: MED_SetShowMarginsEx
- ¹¦    ÄÜ: ÉèÖÃÍ¼Ïñ²Ã¼ô
- ²ÎÊýËµÃ÷:    
-     nLeft           ²Ã¼ôµÄ×ó±ßÔµ¿í¶È
- 	nTop            ²Ã¼ôµÄÉÏ±ßÔµ¿í¶È
- 	nRight          ²Ã¼ôµÄÓÒ±ßÔµ¿í¶È
- 	nBottom         ²Ã¼ôµÄÏÂ±ßÔµ¿í¶È
- 	hPlayHandle     ²¥·ÅÆ÷¾ä±ú(Îª¿ÕÔòÉèÖÃËùÓÐ)
- 	bAuto           ÊÇ·ñ»áËæ½âÂëÍ¼Ïó´óÐ¡¸Ä±ä
- ·µ »Ø Öµ: void
- ================================================================*/
- IPC_API int CDECL MED_SetShowMarginsEx(int nLeft, int nTop, int nRight, int nBottom, PLAYERHANDLE hPlayHandle = NULL, int bAuto = 1);
- 
- /*===============================================================
- º¯ÊýÃû³Æ: MED_SetSmoothness
- ¹¦    ÄÜ: ÉèÖÃÊÓÆµÁ÷³©¶È
-           (ÐëÔÚÊÓÆµä¯ÀÀÖ®Ç°Ê¹ÓÃ£¬ÓÃÓÚÉèÖÃ½âÂëÆ÷³õÊ¼»¯²ÎÊý)
- ²ÎÊýËµÃ÷:
-     nSmoothness     ÊÓÆµÁ÷³©¶È(Ä¬ÈÏ·¶Î§1~20)
- ·µ »Ø Öµ: void
- ================================================================*/
- IPC_API int CDECL MED_SetSmoothness(int nSmoothness);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_GetDecoderStatis
- ¹¦    ÄÜ: »ñµÃ½âÂëÐÅÏ¢
- ²ÎÊýËµÃ÷:
-     hPlayHandle        ²¥·ÅÆ÷¾ä±ú
-     ptDecStatics [out] ½âÂëÍ³¼ÆÐÅÏ¢
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_GetDecoderStatis(PLAYERHANDLE hPlayHandle, TIPC_DEC_STATICS *ptDecStatics);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_GetStatistics
- ¹¦    ÄÜ: »ñÈ¡½ÓÊÕ¶ËµÄ°üµÄÍ³¼Æ
- ²ÎÊýËµÃ÷:
-     hPlayHandle        ²¥·ÅÆ÷¾ä±ú
-     tKdvVidRcvStatistics [in/out] ÊÓÆµÊý¾Ý
- 	tKdvAudRcvStatistics [in/out] ÒôÆµÊý¾Ý
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_GetStatistics(PLAYERHANDLE hPlayHandle, TIPC_RCV_STATICSTICS &tKdvVidRcvStatistics,TIPC_RCV_STATICSTICS &tKdvAudRcvStatistics);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_GetMediaInfo
- ¹¦    ÄÜ: »ñµÃÃ½ÌåÐÅÏ¢(½âÂë¶Ë¿ÚµÈ)
- ²ÎÊýËµÃ÷:
-     hPlayHandle        ²¥·ÅÆ÷¾ä±ú
-     ptMediaInfo [out]  Ã½ÌåÐÅÏ¢
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_GetMediaInfo(PLAYERHANDLE hPlayHandle, TIPC_MEDIA_INFO *ptMediaInfo);
- 
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_DenoiseFilter
- ¹¦    ÄÜ: ¿ªÆôÍ¼Ïñ½µÔë(½âÂë¶Ë¿ÚµÈ)
- ²ÎÊýËµÃ÷: hPlayHandle²¥·ÅÆ÷¾ä±ú; bEnable ÊÇ·ñ¿ªÆôÍ¼Ïñ½µÔë; nLevelÍ¼Ïñ½µÔëµÈ¼¶
-     
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_DenoiseFilter(PLAYERHANDLE hPlayHandle, BOOL bEnable, int nLevel = 3);
- 
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_StartAudioCall
- ¹¦    ÄÜ: ¿ªÊ¼ÓïÒôºô½Ð
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- 	dwDesIP         Éè±¸·½IPµØÖ·
- 	wDesPort        Éè±¸ÒôÆµ½âÂë¶Ë¿Ú
- 	wPort           ±¾µØRTCP¶Ë¿Ú
-     byADecChn       ÒôÆµ½âÂëÍ¨µÀºÅ(´Ó0¿ªÊ¼)
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_StartAudioCall(PLAYERHANDLE hPlayHandle, unsigned long dwDesIP, unsigned short wDesPort, unsigned short wPort = 0, char byADecChn = 0);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_StopAudioCall
- ¹¦    ÄÜ: Í£Ö¹ÓïÒôºô½Ð
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     byADecChn       ÒôÆµ½âÂëÍ¨µÀºÅ(´Ó0¿ªÊ¼)
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_StopAudioCall(PLAYERHANDLE hPlayHandle, unsigned char byADecChn = 0);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_IsAudioSending
- ¹¦    ÄÜ: ÊÇ·ñ´¦ÓÚÓïÒô·¢ËÍ×´Ì¬
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: TRUE-·¢ËÍÖÐ, FALSE-Ã»ÓÐ·¢ËÍ
- =================================================================*/
- IPC_API int CDECL MED_IsAudioSending(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_IsAudioMute
- ¹¦    ÄÜ: ±¾µØ¼àÌýÊÇ·ñ¾²Òô
- ²ÎÊýËµÃ÷: 
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: TRUE-¾²Òô, FALSE-·Ç¾²Òô
- =================================================================*/
- IPC_API int CDECL MED_IsAudioMute(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetMute
- ¹¦    ÄÜ: ±¾µØ¼àÌýÉèÖÃÊÇ·ñ¾²Òô
- ²ÎÊýËµÃ÷: 
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     bMute           1-¾²Òô, 0-·Ç¾²Òô
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_SetMute(PLAYERHANDLE hPlayHandle, int bMute);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetVolume
- ¹¦    ÄÜ: ÉèÖÃ±¾µØ¼àÌýÒôÁ¿
- ²ÎÊýËµÃ÷: 
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     byVolume        ÒôÁ¿Öµ 0-25(»ò0-10)
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_SetVolume(PLAYERHANDLE hPlayHandle, unsigned char byVolume);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_GetVolume
- ¹¦    ÄÜ: »ñÈ¡±¾µØ¼àÌýÒôÁ¿
- ²ÎÊýËµÃ÷: 
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     pbyVolume [out] ÒôÁ¿Öµ
- ·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
- =================================================================*/
- IPC_API int CDECL MED_GetVolume(PLAYERHANDLE hPlayHandle, unsigned char *pbyVolume);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_IsCallMute
- ¹¦    ÄÜ: ÓïÒôºô½ÐÊÇ·ñÊÇÑÆÒô×´Ì¬
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: TRUE-ÑÆÒô, FALSE-·ÇÑÆÒô
- =================================================================*/
- IPC_API int CDECL MED_IsCallMute(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetCallMute
- ¹¦    ÄÜ: ÉèÖÃÓïÒôºô½ÐÑÆÒô×´Ì¬
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     bMute           1-ÑÆÒô, 0-·ÇÑÆÒô
- ·µ »Ø Öµ: void
- =================================================================*/
- IPC_API int CDECL MED_SetCallMute(PLAYERHANDLE hPlayHandle, int bMute);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetCallVolume
- ¹¦    ÄÜ: ÉèÖÃÓïÒôºô½ÐÒôÁ¿
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-     byVolume        ÒôÁ¿Öµ 0-25
- ·µ »Ø Öµ: void
- =================================================================*/
- IPC_API int CDECL MED_SetCallVolume(PLAYERHANDLE hPlayHandle, unsigned char byVolume);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_GetCallVolume
- ¹¦    ÄÜ: »ñÈ¡ÓïÒôºô½ÐÒôÁ¿
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- ·µ »Ø Öµ: ·µ»ØÒôÁ¿Öµ
- =================================================================*/
- IPC_API unsigned char CDECL MED_GetCallVolume(PLAYERHANDLE hPlayHandle);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_GetCallVolume
- ¹¦    ÄÜ: UDP±£»î
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- 	wTimeOut		³¬Ê±Ê±¼ä
- 	MEDIA_CONNECTLOST_CB	¶ÏÁ´»Øµ÷
- 	pContext		»Øµ÷ÉÏÏÂÎÄ
- ·µ »Ø Öµ: ·µ»ØÒôÁ¿Öµ
- =================================================================*/
- IPC_API int CDECL MED_SetConnectLostCallBack(PLAYERHANDLE hPlayHandle, WORD wTimeOut, MEDIA_CONNECTLOST_CB  pEventCallBack , void *pContext);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetRealPlay
- ¹¦    ÄÜ: ÉèÖÃÊµÊ±ä¯ÀÀ
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- 	bRealPlay		ÊµÊ±ä¯ÀÀ
- 	wBufNum			buf¸öÊý
- ·µ »Ø Öµ: ·µ»ØÒôÁ¿Öµ
- =================================================================*/
- IPC_API int CDECL MED_SetRealPlay(PLAYERHANDLE hPlayHandle, BOOL bRealPlay, WORD wBufNum);
- 
- /*=================================================================
- º¯ÊýÃû³Æ: MED_SetDecTimer
- ¹¦    ÄÜ: ÉèÖÃ½âÂë¶¨Ê±
- ²ÎÊýËµÃ÷:
-     hPlayHandle     ²¥·ÅÆ÷¾ä±ú
- 	wDecTimer		½âÂë¶¨Ê±
- 	·µ »Ø Öµ:		·µ»ØÒôÁ¿Öµ
- =================================================================*/
- IPC_API int CDECL MED_SetDecTimer(PLAYERHANDLE hPlayHandle, WORD wDecTimer);
-
- /*=================================================================
-º¯ÊýÃû³Æ: MED_StartLocalRec
-¹¦    ÄÜ: ¿ªÊ¼±¾µØÂ¼Ïñ
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    pchFileName     ±£´æµÄÎÄ¼þÃû
-    pchFilePath     ±£´æµÄÎÄ¼þÂ·¾¶
-	fRecStatCB      Â¼Ïñ×´Ì¬»Øµ÷
-	pContext        ÓÃ»§ÉÏÏÂÎÄ
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API int CDECL MED_StartLocalRec(PLAYERHANDLE hPlayHandle, const char *pchFileName, const char *pchFilePath, u32 dwCutRecFileLength =0, MEDIA_REC_STATE_CB fRecStatCB = 0, void* pContext = 0);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_IsLocalRecording
-¹¦    ÄÜ: ÊÇ·ñ´¦ÓÚ±¾µØÂ¼Ïñ×´Ì¬
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-·µ »Ø Öµ: TRUE-±¾µØÂ¼ÏñÖÐ, FALSE-²»ÔÚ±¾µØÂ¼ÏñÖÐ
-=================================================================*/
-IPC_API int CDECL MED_IsLocalRecording(PLAYERHANDLE hPlayHandle);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_StopLocalRec
-¹¦    ÄÜ: Í£Ö¹±¾µØÂ¼Ïñ
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    bStopTransfer   ÊÇ·ñÍ£Ö¹×ª·¢ÂëÁ÷
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API int CDECL MED_StopLocalRec(PLAYERHANDLE hPlayHandle, int bStopTransfer = 1);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_LocalSnapshot
-¹¦    ÄÜ: ±¾µØ×¥ÅÄ
-²ÎÊýËµÃ÷:
-    hPlayHandle     ²¥·ÅÆ÷¾ä±ú
-    pchFileName     ±£´æµÄÍ¼Æ¬ÎÄ¼þÈ«Â·¾¶(ÎÄ¼þÃû+ÎÄ¼þÂ·¾¶)    
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API int CDECL MED_LocalSnapshot(PLAYERHANDLE hPlayHandle, const char *pchFileName);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_DownloadPuRec
-¹¦    ÄÜ: ÏÂÔØÇ°¶ËÂ¼ÏñÎÄ¼þ
-          (Í¬Ò»Ê±¼äÖ»ÄÜÏÂÔØÒ»Ì¨Ç°¶ËµÄÂ¼Ïñ)
-²ÎÊýËµÃ÷:
-    dwDevIP         Ç°¶ËµØÖ·
-	wDevPort        Ç°¶Ë·¢ËÍ¶Ë¿Ú
-    ptRecFileInfo   Â¼ÏñÎÄ¼þÐÅÏ¢
-    pchSavePath     ÏÂÔØÎÄ¼þµÄÈ«Â·¾¶
-	fDownRecCB      Â¼ÏñÏÂÔØ»Øµ÷
-    pContext        ÓÃ»§ÉÏÏÂÎÄ
-    bReStart        ÊÇ·ñÖØÐÂÏÂÔØ
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API int CDECL MED_DownloadPuRec(unsigned long dwDevIP, unsigned short wDevPort, const TIPC_REC_FILE_INFO *ptRecFileInfo, const char *pchSavePath, 
-										 MEDIA_DOWN_REC_CB fDownRecCB = 0, void* pContext = 0, int bReStart = 1,int bIsNVR = 0);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_StopDownloadPuRec
-¹¦    ÄÜ: Í£Ö¹ÏÂÔØÇ°¶ËÂ¼Ïñ
-²ÎÊýËµÃ÷:
-    bEndWrite       ÊÇ·ñÖÕÖ¹Ð´ÎÄ¼þ
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API int CDECL MED_StopDownloadPuRec(int bEndWrite);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_MetaPlay
-¹¦    ÄÜ: ÔªÊý¾Ý´«Êä¿ªÆô(²»ÉêÇëÂëÁ÷,²»´´½¨½âÂëÆ÷,ÔªÊý¾Ý¿ªÆô)
-²ÎÊýËµÃ÷:
-    hPlayWnd        ²¥·Å´°¿Ú¾ä±ú(²»ÓÃ´°¿Ú,¿ÉÒÔÌîNULL)
-    dwRemoteIP      Ä¿µÄIP
-	wAudioDecPort   ÒôÆµ½âÂë¶Ë¿Ú
-·µ »Ø Öµ: ³É¹¦·µ»Ø´óÓÚ0µÄ²¥·ÅÆ÷¾ä±úÖµ, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API long CDECL MED_MetaPlay(unsigned long hPlayWnd, unsigned long dwRemoteIP, unsigned short wAudioDecPort);
-
-/*=================================================================
-º¯ÊýÃû³Æ: MED_StopMetaPlay
-¹¦   ÄÜ:  ÔªÊý¾Ý´«Êä¹Ø±Õ
-²ÎÊýËµÃ÷:
-		hPlayHandle   ²¥·ÅÆ÷¾ä±ú
-		bDestroy      ÊÇ·ñÏú»Ù
-·µ »Ø Öµ: ³É¹¦·µ»ØERR_SUCCESS, Ê§°Ü·µ»Ø´íÎóÂë
-=================================================================*/
-IPC_API int CDECL  MED_StopMetaPlay(PLAYERHANDLE hPlayHandle, int bDestroy/*=1*/);
-
- #ifdef __cplusplus
- }
- #endif // __cplusplus
- 
 
 #endif //

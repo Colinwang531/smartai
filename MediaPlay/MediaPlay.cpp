@@ -11,6 +11,8 @@ using MediaAccessor = NS(model, 1)::MediaAccessor;
 using MediaDemuxer = NS(model, 1)::MediaDemuxer;
 #include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
 using VideoD3DRenderer = NS(model, 1)::VideoD3DRenderer;
+#include "MediaFilter/TargetMediaFilter.h"
+using TargetMediaFilter = NS(filter, 1)::TargetMediaFilter;
 #include "DataStruct/UnorderedMap.h"
 using MediaPlayGroup = UnorderedMap<int, MediaGraphPtr>;
 #include "MediaPlay.h"
@@ -89,15 +91,28 @@ int MEDIAPLAY_StartLivestreamPlay(
 	const char* name /*= NULL*/, const char* password /*= NULL*/,
 	const char* address /*= NULL*/, const int port /*= 8000*/,
 	const int channel /*= 0*/, const HWND hwnd /*= NULL*/,
-	MEDIAPLAY_VideoFrameCallback callback /*= NULL*/)
+	MEDIAPLAY_VideoFrameCallback callback /*= NULL*/,
+	void* userData /*= NULL*/)
 {
 	int status{ ERR_INVALID_PARAM };
 
 	if (name && password && address && 0 < port && 0 <= channel && hwnd)
 	{
+		++mediaPlayID;
 		MediaGraphPtr mediaGraphPtr{ boost::make_shared<LivestreamMediaGraph>() };
 		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->createNewGraph())
 		{
+			MediaFilterRef mediaDataCaptureFilterRef{ mediaGraphPtr->queryMediaFilterByID(NS(filter, 1)::AVMediaDataCaptureFilterID) };
+			if (!mediaDataCaptureFilterRef.expired())
+			{
+				boost::shared_ptr<TargetMediaFilter> targetMediaFilterPtr{
+					boost::dynamic_pointer_cast<TargetMediaFilter>(mediaDataCaptureFilterRef.lock()) };
+				if (targetMediaFilterPtr)
+				{
+					targetMediaFilterPtr->setMediaDataCallback(mediaPlayID, callback, userData);
+				}
+			}
+
 			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(NS(filter, 1)::AVMediaVideoRendererFilterID) };
 			if (!videoRendererFilterRef.expired())
 			{
@@ -123,11 +138,11 @@ int MEDIAPLAY_StartLivestreamPlay(
 						boost::dynamic_pointer_cast<MediaAccessor>(mediaModelRef.lock()) };
 					if (mediaAccessorPtr)
 					{
-						status = mediaAccessorPtr->openStream(name, password, address, port, channel);
+						status = mediaAccessorPtr->openStream(name, password, address, port, channel, hwnd);
 
 						if (ERR_OK == status)
 						{
-							mediaPlayGroup.insert(++mediaPlayID, mediaGraphPtr);
+							mediaPlayGroup.insert(mediaPlayID, mediaGraphPtr);
 						}
 					}
 				}

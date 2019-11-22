@@ -1,52 +1,49 @@
+#include "boost/filesystem.hpp"
 #include "boost/format.hpp"
-#include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
 #include "error.h"
 #include "Arithmetic/CVAlgoHelmet.h"
 
 NS_BEGIN(algo, 1)
 
-CVAlgoHelmet::CVAlgoHelmet(const std::string NVRIP, const int cameraIndex, CaptureAlarmInfoHandler handler /* = NULL */)
-	: CVAlgo(handler), NVRIpAddress{ NVRIP }, cameraIndexID{ cameraIndex }
+CVAlgoHelmet::CVAlgoHelmet() : CVAlgo()
 {}
 
 CVAlgoHelmet::~CVAlgoHelmet()
 {}
 
-int CVAlgoHelmet::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
+int CVAlgoHelmet::initializeArithmetic()
 {
-	int status{ ERR_OK };
-	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % configFilePath).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % configFilePath).str() };
-	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
-	initParames->cfgfile = (char*)cfgFile.c_str();
-	initParames->weightFile = (char*)weightFile.c_str();
+	const std::string executePath{
+				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % executePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % executePath).str() };
+	StruInitParams parameters;
+	parameters.gpu_id = 0;
+	parameters.detectThreshold = 0.20f;
+	parameters.trackThreshold = 0.15f;
+	parameters.cfgfile = (char*)cfgFile.c_str();
+	parameters.weightFile = (char*)weightFile.c_str();
 
-	if (initParames)
-	{
-		status = helmet.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
-	}
+	return helmet.InitAlgoriParam(
+		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters) ? ERR_OK : ERR_BAD_OPERATE;
+}
 
-	return status;
+int CVAlgoHelmet::deinitializeArithmetic(void)
+{
+	return ERR_OK;
 }
 
 void CVAlgoHelmet::arithmeticWorkerProcess()
 {
-//	boost::winapi::ULONGLONG_ lastKnownTickTime{ 0 };
-//	DWORD threadID{ GetCurrentThreadId() };
-
 	while (1)
 	{
-		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
+		MediaDataPtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
 		if (bgr24ImagePtr)
 		{
 			std::vector<AlarmInfo> alarmInfos;
-//			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			helmet.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
-// 			printf("=====  MainProcFunc run time = %lld, thread ID = %d, %s_%d.\r\n", 
-// 				GetTickCount64() - mainProcTime, (int)threadID, NVRIpAddress.c_str(), cameraIndexID);
+			helmet.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 
 			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
 			for (Iterator it = feedback.mapMemory.begin(); it != feedback.mapMemory.end();)
@@ -86,8 +83,6 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
 						alarmInfos.push_back(alarmInfo);
 
-						bgr24ImagePtr->setOriginImage(
-							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
 						it = feedback.mapMemory.erase(it);
 					}
@@ -96,15 +91,9 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 						++it;
 					}
 
-					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
+					if (0 < alarmInfos.size() && postDetectAlarmInfoCallback)
 					{
-						boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
-
-						if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
-						{
-							lastKnownTickTime = currentTickTime;
-							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-						}
+						postDetectAlarmInfoCallback(alarmInfos[0], (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 					}
 // 				}
 // 				else

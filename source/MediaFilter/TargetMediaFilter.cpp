@@ -2,7 +2,8 @@
 
 NS_BEGIN(filter, 1)
 
-TargetMediaFilter::TargetMediaFilter() : MediaFilter()
+TargetMediaFilter::TargetMediaFilter() 
+	: MediaFilter(), postMediaDataCallback{ NULL }, cbUserData{ NULL }, mediaStreamID{ 0 }
 {}
 
 TargetMediaFilter::~TargetMediaFilter()

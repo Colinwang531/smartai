@@ -28,6 +28,7 @@ BOOST_STATIC_CONSTANT(std::string, AVMediaVideoDecoderFilterID = "AVMediaVideoDe
 BOOST_STATIC_CONSTANT(std::string, AVMediaAudioDecoderFilterID = "AVMediaAudioDecoderFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaVideoRendererFilterID = "AVMediaVideoRendererFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaAudioRendererFilterID = "AVMediaAudioRendererFilterID");
+BOOST_STATIC_CONSTANT(std::string, AVMediaVideoFormatterFilterID = "AVMediaVideoFormatterFilterID");
 BOOST_STATIC_CONSTANT(std::string, AVMediaDataCaptureFilterID = "AVMediaDataCaptureFilterID");
 
 class MediaFilter 

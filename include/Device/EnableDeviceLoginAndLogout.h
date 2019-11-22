@@ -1,13 +1,10 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2017, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@hotmail.com
-//		Date :							2017-05-31
-//		Description :				设备登录/注销接口
-//
-//		History:						Author										Date													Description
-//											王科威										2017-05-31									创建
+// Abstract base class of device for logging in and out.
 //
 
 #ifndef ENABLE_DEVICE_LOGIN_AND_LOGOUT_H

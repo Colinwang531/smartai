@@ -1,7 +1,8 @@
+#include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaModel/Accessor/SDK/EatonIPCMediaAccessor.h"
-using EatonIPCMediaAccessor = NS(model, 1)::EatonIPCMediaAccessor;
+#include "MediaModel/Accessor/SDK/HikvisionIPCMediaAccessor.h"
+using HikvisionIPCMediaAccessor = NS(model, 1)::HikvisionIPCMediaAccessor;
 #include "MediaFilter/Capture/LivestreamCaptureFilter.h"
 
 NS_BEGIN(filter, 1)
@@ -15,13 +16,15 @@ LivestreamCaptureFilter::~LivestreamCaptureFilter()
 int LivestreamCaptureFilter::createNewFilter()
 {
 	int status{ ERR_BAD_ALLOC };
-	MediaModelPtr eatonIPMediaAccessorModelPtr{ boost::make_shared<EatonIPCMediaAccessor>() };
+	MediaModelPtr hikvisionIPMediaAccessorModelPtr{ boost::make_shared<HikvisionIPCMediaAccessor>() };
 
-	if (eatonIPMediaAccessorModelPtr && 
-		ERR_OK == createNewInputPin(NS(pin, 1)::VideoStreamOutputPinID) &&
+	if (hikvisionIPMediaAccessorModelPtr &&
+		ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID) &&
 		ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
 	{
-		mediaModelPtr.swap(eatonIPMediaAccessorModelPtr);
+		hikvisionIPMediaAccessorModelPtr->setPostInputMediaDataCallback(
+			boost::bind(&LivestreamCaptureFilter::postInputMediaData, this, _1));
+		mediaModelPtr.swap(hikvisionIPMediaAccessorModelPtr);
 		status = MediaFilter::createNewFilter();
 	}
 

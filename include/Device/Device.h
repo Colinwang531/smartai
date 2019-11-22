@@ -1,22 +1,23 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2018, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2017-06-26
-//		Description :				设备抽象基类，所有物理硬件设备都可以直接继承于此
-//
-//		History:						Author										Date													Description
-//											王科威										2017-06-26									创建
+// Abstract base class of device.
 //
 
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include "boost/thread/mutex.hpp"
-#include "predef.h"
+#include "boost/function.hpp"
+#include "Mutex/RWLock.h"
+#include "MediaData/MediaData.h"
+using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
 NS_BEGIN(device, 1)
+
+typedef boost::function<int(MediaDataPtr)> PostInputMediaDataCallback;
 
 class Device
 {
@@ -25,12 +26,22 @@ public:
 	virtual ~Device(void);
 
 public:
-	virtual int createDevice(void);
+	virtual int createNewDevice(void);
 	virtual int destoryDevice(void);
+	inline unsigned long long getDeviceCount(void) const
+	{
+		ReadLock rl{ mtx };
+		return deviceCount;
+	}
+	inline void setPostInputMediaDataCallback(PostInputMediaDataCallback callback = NULL)
+	{
+		postInputMediaDataCallback = callback;
+	}
 
 protected:
-	boost::mutex mtx;
-	static unsigned long long deviceNumber;
+	static SharedMutex mtx;
+	static unsigned long long deviceCount;
+	PostInputMediaDataCallback postInputMediaDataCallback;
 };//class Device
 
 NS_END

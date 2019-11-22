@@ -72,7 +72,7 @@ int MediaFilter::postInputMediaData(MediaDataPtr mediaData)
 	{
 		const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
 
-		if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
+		if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID || MediaDataMainID::MEDIA_DATA_MAIN_ID_IMAGE == mediaDataMainID)
 		{
 			MediaPinRef mediaPinRef{ queryMediaPinByID(NS(pin, 1)::VideoStreamOutputPinID) };
 			if (!mediaPinRef.expired())

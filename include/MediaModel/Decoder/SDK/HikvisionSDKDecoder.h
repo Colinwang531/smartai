@@ -1,44 +1,36 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2017, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2017-12-11
-//		Description:					海康设备SDK音视频混合解码器类
-//
-//		History:						Author									Date												Description
-//											王科威									2017-12-11								创建
+// Base class of decoder model using HIKVISION library.
 //
 
 #ifndef HIKVISION_SDK_DECODER_H
 #define HIKVISION_SDK_DECODER_H
 
-#include "boost/function.hpp"
 #include "WindowsPlayM4.h"
-#include "MediaDecoder/MediaMixerDecoder.h"
+#include "MediaModel/Decoder/MediaDecoder.h"
 
-NS_BEGIN(decoder, 1)
+NS_BEGIN(model, 1)
 
-typedef boost::function<
-	void(const char*, const long, const long, const long)> FrameDataDecodeHandler;
-
-class HikvisionSDKDecoder : public MediaMixerDecoder
+class HikvisionSDKDecoder : public MediaDecoder
 {
 public:
-	HikvisionSDKDecoder(FrameDataDecodeHandler handler = NULL);
+	HikvisionSDKDecoder(void);
 	virtual ~HikvisionSDKDecoder(void);
 
 public:
-	int decode(
-		const unsigned char* frameData = NULL, const int frameBytes = 0) override;
+	int inputMediaData(MediaDataPtr mediaData) override;
 
 private:
-	static void CALLBACK decodeFrameInfoCallback(
+	static void CALLBACK postDecodeFrameInfoCallback(
 		long decoderID = 0, char* decodeFrame = NULL, long frameBytes = 0, 
 		FRAME_INFO* frameInfo = NULL, void* nUser = NULL, void* nReserved2 = NULL);
 
 private:
-	FrameDataDecodeHandler frameDataDecodeHandler;
+	long decoderID;
 };//class HikvisionSDKDecoder
 
 NS_END

@@ -35,6 +35,7 @@ protected:
 
 private:
 	const AVDecoderType decoderType;
+	bool resetModel;
 };//class AVDecoderFilter
 
 NS_END

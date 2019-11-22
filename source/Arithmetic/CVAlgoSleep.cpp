@@ -1,3 +1,4 @@
+#include "boost/filesystem.hpp"
 #include "boost/format.hpp"
 #include "boost/checked_delete.hpp"
 #include "error.h"
@@ -5,29 +6,33 @@
 
 NS_BEGIN(algo, 1)
 
-CVAlgoSleep::CVAlgoSleep(CaptureAlarmInfoHandler handler /* = NULL */)
-	: CVAlgo(handler)
+CVAlgoSleep::CVAlgoSleep() : CVAlgo()
 {}
 
 CVAlgoSleep::~CVAlgoSleep()
 {}
 
-int CVAlgoSleep::initializeWithParameter(const char* configFilePath /* = NULL */, void* parameter /* = NULL */)
+int CVAlgoSleep::initializeArithmetic()
 {
-	int status{ ERR_OK };
-	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % configFilePath).str() };
-	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % configFilePath).str() };
-	StruInitParams* initParames{ reinterpret_cast<StruInitParams*>(parameter) };
-	initParames->cfgfile = (char*)cfgFile.c_str();
-	initParames->weightFile = (char*)weightFile.c_str();
-	initParames->sleepTime = 240;
-	if (initParames)
-	{
-		status = sleep.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
-	}
+	const std::string executePath{
+				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % executePath).str() };
+	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % executePath).str() };
+	StruInitParams parameters;
+	parameters.gpu_id = 0;
+	parameters.sleepTime = 240;
+	parameters.detectThreshold = 0.65f;
+	parameters.trackThreshold = 0.15f;
+	parameters.cfgfile = (char*)cfgFile.c_str();
+	parameters.weightFile = (char*)weightFile.c_str();
 
-	return status;
+	return sleep.InitAlgoriParam(
+		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters) ? ERR_OK : ERR_BAD_OPERATE;
+}
+
+int CVAlgoSleep::deinitializeArithmetic()
+{
+	return ERR_OK;
 }
 
 void CVAlgoSleep::arithmeticWorkerProcess()
@@ -36,13 +41,13 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 
 	while (1)
 	{
-		MediaImagePtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
+		MediaDataPtr bgr24ImagePtr{ BGR24ImageQueue.remove() };
 
 		if (bgr24ImagePtr)
 		{
 			std::vector<AlarmInfo> alarmInfos;
 //			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			sleep.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
+			sleep.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
@@ -65,8 +70,8 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 					alarmInfos.push_back(alarmInfo);
 //					printf("=====  vecShowInfo.detectCOnfidence = %f.\r\n", feedback.vecShowInfo);
 
-					bgr24ImagePtr->setOriginImage(
-						(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+// 					bgr24ImagePtr->setOriginImage(
+// 						(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 					boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
 //					it = feedback.mapMemory.erase(it);
 				}
@@ -84,15 +89,15 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 					it++;
 				}
 
-				if (0 < alarmInfos.size() && captureAlarmInfoHandler)
+				if (0 < alarmInfos.size())
 				{
-					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+//					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
 
-					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
-					{
-						lastKnownTickTime = currentTickTime;
-						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-					}
+// 					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+// 					{
+// 						lastKnownTickTime = currentTickTime;
+// 						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// 					}
 				}
 			}
 		}
