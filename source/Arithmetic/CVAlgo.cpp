@@ -5,7 +5,7 @@ NS_BEGIN(algo, 1)
 
 boost::thread_group CVAlgo::threadGroup;
 
-CVAlgo::CVAlgo() : stopped{ false }
+CVAlgo::CVAlgo() : stopped{ false }, totalFrameNumber{ 0 }
 {}
 
 CVAlgo::~CVAlgo()
@@ -46,7 +46,7 @@ int CVAlgo::inputImageData(const unsigned char* imageData /* = NULL */, const in
 {
 	int status{ imageData && 0 < imageBytes ? ERR_OK : ERR_INVALID_PARAM };
 
-	if (ERR_OK == status)
+	if (ERR_OK == status && (++totalFrameNumber % 2 == 1))
 	{
 		MediaDataPtr mediaDataPtr{
 			boost::make_shared<MediaData>(MediaDataMainID::MEDIA_DATA_MAIN_ID_IMAGE, MediaDataSubID::MEDIA_DATA_SUB_ID_BGR24) };

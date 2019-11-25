@@ -193,6 +193,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClInclude Include="..\include\MediaModel\Decoder\SDK\HikvisionSDKDecoder.h" />
     <ClInclude Include="..\include\MediaModel\Demuxer\FFmpeg\FFmpegAVMediaDemuxer.h" />
     <ClInclude Include="..\include\MediaModel\Demuxer\MediaDemuxer.h" />
+    <ClInclude Include="..\include\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.h" />
     <ClInclude Include="..\include\MediaModel\Formatter\YV12ToBGR24Formatter.h" />
     <ClInclude Include="..\include\MediaModel\MediaModel.h" />
     <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3D.h" />
@@ -254,6 +255,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClCompile Include="..\source\MediaModel\Decoder\SDK\HikvisionSDKDecoder.cpp" />
     <ClCompile Include="..\source\MediaModel\Demuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp" />
     <ClCompile Include="..\source\MediaModel\Demuxer\MediaDemuxer.cpp" />
+    <ClCompile Include="..\source\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.cpp" />
     <ClCompile Include="..\source\MediaModel\Formatter\YV12ToBGR24PFormatter.cpp" />
     <ClCompile Include="..\source\MediaModel\MediaModel.cpp" />
     <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3D.cpp" />

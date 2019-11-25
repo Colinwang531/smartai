@@ -187,6 +187,21 @@
     <Filter Include="Header Files\Model\Formatter">
       <UniqueIdentifier>{96c38231-aacf-4e6c-aa4a-401d335b3e78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Model\Encoder">
+      <UniqueIdentifier>{86264a3b-470b-4d0d-a096-76fddcdc9214}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Encoder\JPEG">
+      <UniqueIdentifier>{56598802-5104-47d0-a171-86daaafab1ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Encoder">
+      <UniqueIdentifier>{54657d28-5f12-4e9b-977f-2caab80dc01d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Encoder\JPEG">
+      <UniqueIdentifier>{03b90f20-8f45-47bc-bcd8-3c3f5569e862}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Decoder\SDK">
+      <UniqueIdentifier>{87763438-9577-476c-86ff-ea60e6ea25d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -335,6 +350,9 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaModel\Formatter\YV12ToBGR24Formatter.h">
       <Filter>Header Files\Model\Formatter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.h">
+      <Filter>Header Files\Model\Encoder\JPEG</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -511,6 +529,9 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaModel\Formatter\YV12ToBGR24PFormatter.cpp">
       <Filter>Source Files\Model\Formatter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.cpp">
+      <Filter>Source Files\Model\Encoder\JPEG</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

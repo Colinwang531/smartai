@@ -106,11 +106,12 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
+	JPEGENCODER_RegisterPostJpegEncodeCallback(&MediaPlayDemoDlg::postJpegEncodeCallback, this);
 // 	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
 // 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
 //	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
-	MEDIAPLAY_StartLivestreamPlay(
-		"admin", "eaton12345", "192.168.30.11", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+// 	MEDIAPLAY_StartLivestreamPlay(
+// 		"admin", "eaton12345", "192.168.30.11", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 	MEDIAPLAY_StartLivestreamPlay(
 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
@@ -169,7 +170,7 @@ HCURSOR MediaPlayDemoDlg::OnQueryDragIcon()
 void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
 {
 	MediaPlayDemoDlg* demo{ reinterpret_cast<MediaPlayDemoDlg*>(userData) };
-	if (1 == playID && AlarmType::ALARM_TYPE_NONE != demo->alarmType)
+	if (1 == playID/* && AlarmType::ALARM_TYPE_NONE != demo->alarmType*/)
 	{
 		MediaPlayDemoDlg* demo{ reinterpret_cast<MediaPlayDemoDlg*>(userData) };
 		ARITHMETIC_InputImageData(demo->alarmType, mediaData, dataBytes);
@@ -178,13 +179,29 @@ void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const u
 
 void MediaPlayDemoDlg::postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, void* userData /* = NULL */)
 {
-	char text[2048]{ 0 };
-	sprintf_s(text, 2048, "Helmet alarm x = %d, y = %d, w = %d, h = %d, label = %d.\r\n",
-		alarmInfo.x, alarmInfo.y, alarmInfo.w, alarmInfo.h, alarmInfo.status);
-	OutputDebugStringA(text);
+	if (AlarmType::ALARM_TYPE_FACE == alarmInfo.type)
+	{
+		char text[2048]{ 0 };
+		sprintf_s(text, 2048, "Face detected ID = %d, similarity = %f.\r\n", alarmInfo.faceID, alarmInfo.similarity);
+		OutputDebugStringA(text);
+	}
+	else
+	{
+		char text[2048]{ 0 };
+		sprintf_s(text, 2048, "Helmet alarm x = %d, y = %d, w = %d, h = %d, label = %d.\r\n",
+			alarmInfo.x, alarmInfo.y, alarmInfo.w, alarmInfo.h, alarmInfo.status);
+		OutputDebugStringA(text);
+
+		JPEGENCODER_EncodeJpegPicture(alarmInfo.bgr24, alarmInfo.bgr24Bytes);
+	}
 }
 
-
+void MediaPlayDemoDlg::postJpegEncodeCallback(const unsigned char* jpegData, const int jpegBytes, void* userData)
+{
+	char text[2048]{ 0 };
+	sprintf_s(text, 2048, "Save JPEG picture %d bytes.\r\n", jpegBytes);
+	OutputDebugStringA(text);
+}
 
 void MediaPlayDemoDlg::OnBnClickedRegisterHelmet()
 {
@@ -224,4 +241,9 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 	// TODO: Add your control notification handler code here
 	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_FACE;
+
+	int ret{ ARITHMETIC_AddFaceImage("C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg", 1) };
+	char text[2048]{ 0 };
+	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
+	OutputDebugStringA(text);
 }

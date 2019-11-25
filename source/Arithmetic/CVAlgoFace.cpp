@@ -94,7 +94,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 
 		if (bgr24ImagePtr)
 		{
-			std::vector<FaceInfo> faceInfos;
+			std::vector</*FaceInfo*/AlarmInfo> faceInfos;
 			boost::winapi::ULONGLONG_ nowProcTime{ GetTickCount64() };
 			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 			printf("=====  MainProcFunc run time = %lld.\r\n", nowProcTime - lastKnownTickTime_test);
@@ -106,34 +106,33 @@ void CVAlgoFace::arithmeticWorkerProcess()
 //				printf("=====  face.vecFaceResult.size() = %d.\r\n", (int)feedback.vecFaceResult.size());
 				for (int j = 0; j != feedback.vecFaceResult.size(); ++j)
 				{
-					FaceInfo faceInfo;
+					/*FaceInfo*/AlarmInfo faceInfo;
 					faceInfo.type = AlarmType::ALARM_TYPE_FACE;
 					faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
-//					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
+					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
 
-					mtx.lock();
-					boost::unordered_map<int, const std::string>::iterator it{
-						registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId) };
-					if (registerFaceImageGroup.end() != it)
-					{
-						FILE* fd{ NULL };
-						fopen_s(&fd, it->second.c_str(), "rb+");
-						if (fd)
-						{
-							faceInfo.imageBytes = _filelength(_fileno(fd));
-							faceInfo.imageData = new(std::nothrow) char[faceInfo.imageBytes];
-							if (faceInfo.imageData)
-							{
-								fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
-							}
-							fclose(fd);
-							std::vector<std::string> faceImageFileNameSegment;
-							boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
-							faceInfo.faceID = atoll(faceImageFileNameSegment[1].c_str());
-						}
-
-					}
-					mtx.unlock();
+// 					mtx.lock();
+// 					boost::unordered_map<int, const std::string>::iterator it{
+// 						registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId) };
+// 					if (registerFaceImageGroup.end() != it)
+// 					{
+// 						FILE* fd{ NULL };
+// 						fopen_s(&fd, it->second.c_str(), "rb+");
+// 						if (fd)
+// 						{
+// 							faceInfo.imageBytes = _filelength(_fileno(fd));
+// 							faceInfo.imageData = new(std::nothrow) char[faceInfo.imageBytes];
+// 							if (faceInfo.imageData)
+// 							{
+// 								fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
+// 							}
+// 							fclose(fd);
+// 							std::vector<std::string> faceImageFileNameSegment;
+// 							boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
+// 							faceInfo.faceID = atoll(faceImageFileNameSegment[1].c_str());
+// 						}
+// 					}
+// 					mtx.unlock();
 
 					faceInfos.push_back(faceInfo);
 					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
@@ -142,7 +141,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				feedback.vecFaceResult.clear();
 			}
 
-			if (0 < faceInfos.size())
+			if (0 < faceInfos.size() && postDetectAlarmInfoCallback)
 			{
 //				capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
 				//boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
@@ -152,6 +151,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				//	lastKnownTickTime = currentTickTime;
 				//	capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
 				//}
+				postDetectAlarmInfoCallback(faceInfos[0], NULL, 0);
 			}
 
 			 feedback.vecShowInfo.clear();

@@ -167,6 +167,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClInclude Include="..\include\MediaData\MediaData.h" />
     <ClInclude Include="..\include\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.h" />
     <ClInclude Include="..\include\MediaModel\Formatter\BGR24ToYUV420PFormatter.h" />
+    <ClInclude Include="..\include\MediaModel\MediaModel.h" />
     <ClInclude Include="..\include\predef.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="JpegEncoder.h" />
@@ -176,6 +177,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClCompile Include="..\source\MediaData\MediaData.cpp" />
     <ClCompile Include="..\source\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.cpp" />
     <ClCompile Include="..\source\MediaModel\Formatter\BGR24ToYUV420PFormatter.cpp" />
+    <ClCompile Include="..\source\MediaModel\MediaModel.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="JpegEncoder.cpp" />
     <ClCompile Include="pch.cpp">

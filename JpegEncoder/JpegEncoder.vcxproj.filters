@@ -63,6 +63,9 @@
     <ClInclude Include="..\include\MediaData\MediaData.h">
       <Filter>Header Files\MediaData</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MediaModel\MediaModel.h">
+      <Filter>Header Files\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -82,6 +85,9 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaData\MediaData.cpp">
       <Filter>Source Files\MediaData</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\MediaModel.cpp">
+      <Filter>Source Files\Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

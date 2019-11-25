@@ -46,6 +46,7 @@ void BGR24ToYUV420PFormatter::deinitialize()
 {
 	av_free(yuv420pImage);
 	av_frame_free(&yuv420pFrame);
+	av_frame_free(&bgr24Frame);
 	sws_freeContext(ctx);
 }
 
@@ -67,7 +68,7 @@ int BGR24ToYUV420PFormatter::inputMediaData(MediaDataPtr mediaData)
 			if (0 < ret)
 			{
 				ret = sws_scale(
-					ctx, (uint8_t const* const*)bgr24Frame->data, bgr24Frame->linesize, 0, 1080, bgr24Frame->data, bgr24Frame->linesize);
+					ctx, (uint8_t const* const*)bgr24Frame->data, bgr24Frame->linesize, 0, 1080, yuv420pFrame->data, yuv420pFrame->linesize);
 				if (0 < ret && postInputMediaDataCallback)
 				{
 					MediaDataPtr mediaDataPtr{

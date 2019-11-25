@@ -18,7 +18,7 @@ MediaModelPtr bgr24ToYuv420pFormatterPtr;
 
 int postBGR24ToYUV420PFormatCallback(MediaDataPtr mediaData)
 {
-	return mediaData && bgr24ToYuv420pFormatterPtr ? bgr24ToYuv420pFormatterPtr->inputMediaData(mediaData) : ERR_BAD_OPERATE;
+	return mediaData && yuv420pToJpegEncoderPtr ? yuv420pToJpegEncoderPtr->inputMediaData(mediaData) : ERR_BAD_OPERATE;
 }
 
 int postYUV420PToJPEGEncodeCallback(MediaDataPtr mediaData)
@@ -27,6 +27,8 @@ int postYUV420PToJPEGEncodeCallback(MediaDataPtr mediaData)
 	{
 		postJpegEncodeCallbak(mediaData->getData(), mediaData->getDataBytes(), cbUserData);
 	}
+
+	return ERR_OK;
 }
 
 void JPEGENCODER_RegisterPostJpegEncodeCallback(

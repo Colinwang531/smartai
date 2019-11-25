@@ -36,6 +36,8 @@ typedef struct tagAlarmInfo_t
 	int y;
 	int w;
 	int h;
+	int faceID;
+	float similarity;
 	const unsigned char* bgr24;
 	int bgr24Bytes;
 }AlarmInfo;
@@ -58,6 +60,15 @@ typedef void (CALLBACK *ARITHMETIC_AlarmInfoNotifyCallback)(const AlarmInfo alar
 // 
 ARITHMETIC int ARITHMETIC_RegisterAlarmNotifyCallback(
 	const AlarmType alarmType = AlarmType::ALARM_TYPE_NONE, ARITHMETIC_AlarmInfoNotifyCallback callback = NULL, void* userData = NULL);
+
+// 添加人脸图片数据,注册人脸图片数据前必须先调用ARITHMETIC_RegisterAlarmNotifyCallback方法注册人脸算法
+//
+// @filePath : 人脸图片存储路径.
+// @faceID : 用户自定义的人脸ID.
+//
+// @Return : 1表示成功,<0表示错误码.
+//
+ARITHMETIC int ARITHMETIC_AddFaceImage(const char* filePath = NULL, const int faceID = 0);
 
 // 调用者输入图片数据进行算法检测
 //

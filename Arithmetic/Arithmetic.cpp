@@ -30,6 +30,8 @@ static void postDetectAlarmInfoCallback(
 	info.status = alarmInfo.status;
 	info.bgr24 = bgr24Image;
 	info.bgr24Bytes = bgr24ImageBytes;
+	info.faceID = alarmInfo.faceID;
+	info.similarity = alarmInfo.similarity;
 	std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*> callback{ alarmInfoNotifyCallbackGroup.at(info.type) };
 	if (callback.first)
 	{
@@ -78,6 +80,20 @@ int ARITHMETIC_RegisterAlarmNotifyCallback(const AlarmType alarmType , ARITHMETI
 	}
 
 	return ERR_OK == status ? 1 : 0;
+}
+
+int ARITHMETIC_AddFaceImage(const char* filePath /*= NULL*/, const int faceID /*= 0*/)
+{
+	int status{ ERR_NOT_SUPPORT };
+	ArithmeticPtr faceArithmeticPtr{ arithmeticGroup.at(AlarmType::ALARM_TYPE_FACE) };
+
+	if (faceArithmeticPtr)
+	{
+		boost::shared_ptr<CVAlgoFace> facePtr{ boost::dynamic_pointer_cast<CVAlgoFace>(faceArithmeticPtr) };
+		status = facePtr->addFacePicture(filePath, faceID);
+	}
+
+	return status;
 }
  
 int ARITHMETIC_InputImageData(

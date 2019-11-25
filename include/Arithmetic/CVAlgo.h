@@ -51,6 +51,8 @@ typedef struct tagAlarmInfo_t
 	int y;
 	int w;
 	int h;
+	int faceID;
+	float similarity;
 }AlarmInfo;
 
 typedef boost::function<void(const AlarmInfo, unsigned char*, int)> PostDetectAlarmInfoCallback;
@@ -100,6 +102,7 @@ protected:
 	boost::condition condition;
 	PostDetectAlarmInfoCallback postDetectAlarmInfoCallback;
 	static boost::thread_group threadGroup;
+	unsigned long long totalFrameNumber;
 
 private:
 	int arithmeticID;
