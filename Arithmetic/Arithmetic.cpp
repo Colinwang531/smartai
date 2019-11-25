@@ -28,14 +28,12 @@ static void postDetectAlarmInfoCallback(
 	info.w = alarmInfo.w;
 	info.h = alarmInfo.h;
 	info.status = alarmInfo.status;
-	info.bgr24 = bgr24Image;
-	info.bgr24Bytes = bgr24ImageBytes;
 	info.faceID = alarmInfo.faceID;
 	info.similarity = alarmInfo.similarity;
 	std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*> callback{ alarmInfoNotifyCallbackGroup.at(info.type) };
 	if (callback.first)
 	{
-		callback.first(info, callback.second);
+		callback.first(info, bgr24Image, bgr24ImageBytes, callback.second);
 	}
 }
 

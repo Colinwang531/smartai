@@ -106,14 +106,14 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-	JPEGENCODER_RegisterPostJpegEncodeCallback(&MediaPlayDemoDlg::postJpegEncodeCallback, this);
+//	JPEGENCODER_RegisterPostJpegEncodeCallback(&MediaPlayDemoDlg::postJpegEncodeCallback, this);
 // 	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
 // 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
-//	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
+	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
 // 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.11", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
-	MEDIAPLAY_StartLivestreamPlay(
-		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+// 	MEDIAPLAY_StartLivestreamPlay(
+// 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -177,7 +177,7 @@ void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const u
 	}
 }
 
-void MediaPlayDemoDlg::postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, void* userData /* = NULL */)
+void MediaPlayDemoDlg::postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
 {
 	if (AlarmType::ALARM_TYPE_FACE == alarmInfo.type)
 	{
@@ -192,7 +192,7 @@ void MediaPlayDemoDlg::postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, vo
 			alarmInfo.x, alarmInfo.y, alarmInfo.w, alarmInfo.h, alarmInfo.status);
 		OutputDebugStringA(text);
 
-		JPEGENCODER_EncodeJpegPicture(alarmInfo.bgr24, alarmInfo.bgr24Bytes);
+		JPEGENCODER_EncodeJpegPicture(mediaData, dataBytes);
 	}
 }
 

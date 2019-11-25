@@ -17,7 +17,7 @@ MediaFilter::~MediaFilter()
 	// ======     MOST IMPORTANT     ======
 	// Because media pin instance for inputing hold instance of filter using shared_from_this(), 
 	// we must clear set of pins before destroying instance of filter.
-	mediaPinGroup.clear();
+	destroyFilter();
 }
 
 int MediaFilter::createNewFilter(void)
@@ -29,6 +29,27 @@ int MediaFilter::createNewFilter(void)
 	}
 
 	return ERR_OK;
+}
+
+int MediaFilter::destroyFilter(void)
+{
+	mediaPinGroup.clear();
+	return ERR_OK;
+}
+
+// int MediaFilter::inputMediaData(MediaDataPtr mediaData)
+// {
+// 	return mediaModelPtr && mediaData ? mediaModelPtr->inputMediaData(mediaData) : ERR_BAD_OPERATE;
+// }
+
+bool MediaFilter::isSourceFilter(void) const
+{
+	return false;
+}
+
+bool MediaFilter::isTargetFilter(void) const
+{
+	return false;
 }
 
 int MediaFilter::createNewInputPin(const std::string pinID)

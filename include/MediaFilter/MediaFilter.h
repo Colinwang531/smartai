@@ -40,7 +40,10 @@ public:
 
 public: 
 	virtual int createNewFilter(void);
-	virtual int destroyFilter(void) = 0;
+	virtual int destroyFilter(void);
+	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+	virtual bool isSourceFilter(void) const;
+	virtual bool isTargetFilter(void) const;
 	inline MediaPinRef queryMediaPinByID(const std::string pinID)
 	{
 		return mediaPinGroup.at(pinID);
@@ -48,16 +51,6 @@ public:
 	inline MediaModelRef getMediaModel(void) const
 	{
 		return mediaModelPtr;
-	}
-	// Receive media data package from pin instance.
-	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
-	virtual bool isSourceFilter(void) const
-	{
-		return false;
-	}
-	virtual bool isTargetFilter(void) const
-	{
-		return false;
 	}
 
 protected:

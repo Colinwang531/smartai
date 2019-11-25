@@ -38,8 +38,6 @@ typedef struct tagAlarmInfo_t
 	int h;
 	int faceID;
 	float similarity;
-	const unsigned char* bgr24;
-	int bgr24Bytes;
 }AlarmInfo;
 
 // AI算法检测到的报警数据推送回调函数
@@ -47,8 +45,11 @@ typedef struct tagAlarmInfo_t
 //
 // @alarmInfo : 报警信息.
 // @userData : 用户数据.
+// @data : BGR24图片数据.
+// @dataBytes : BGR24图片字节数.
 // 
-typedef void (CALLBACK *ARITHMETIC_AlarmInfoNotifyCallback)(const AlarmInfo alarmInfo, void* userData);
+typedef void (CALLBACK *ARITHMETIC_AlarmInfoNotifyCallback)(
+	const AlarmInfo alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes,void* userData);
 
 // 调用者注册自己需要接收的AI算法报警推送信息
 //

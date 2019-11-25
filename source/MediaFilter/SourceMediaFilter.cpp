@@ -11,7 +11,7 @@ SourceMediaFilter::~SourceMediaFilter()
 
 int SourceMediaFilter::inputMediaData(MediaDataPtr mediaData)
 {
-	return ERR_NOT_IMPLEMENT;
+	return ERR_NOT_SUPPORT;
 }
 
 NS_END
