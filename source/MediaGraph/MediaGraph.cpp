@@ -1,41 +1,44 @@
 #include "error.h"
+#include "MediaFilter/MediaFilter.h"
 #include "MediaGraph/MediaGraph.h"
 
-NS_BEGIN(graph, 1)
-
-MediaGraph::MediaGraph()
-{}
-
-MediaGraph::~MediaGraph()
-{}
-
-MediaFilterRef MediaGraph::queryMediaFilterByID(const std::string filterID)
+namespace framework
 {
-	return mediaFilterGroup.at(filterID);
-}
-
-int MediaGraph::addMediaFilter(const std::string filterID, MediaFilterPtr mediaFilter)
-{
-	int status{ !filterID.empty() && mediaFilter ? ERR_OK : ERR_INVALID_PARAM };
-
-	if (ERR_OK == status)
+	namespace multimedia
 	{
-		mediaFilterGroup.insert(filterID, mediaFilter);
-	}
+		MediaGraph::MediaGraph()
+		{}
 
-	return status;
-}
+		MediaGraph::~MediaGraph()
+		{}
 
-int MediaGraph::removeMediaFilter(const std::string filterID)
-{
-	int status{ filterID.empty() ? ERR_INVALID_PARAM : ERR_OK };
+		MediaFilter* MediaGraph::queryMediaFilterByID(const std::string& filterID)
+		{
+			return mediaFilterGroup.at(filterID);
+		}
 
-	if (ERR_OK == status)
-	{
-		mediaFilterGroup.remove(filterID);
-	}
+		int MediaGraph::addMediaFilter(const std::string& filterID, MediaFilter* filter /* = NULL */)
+		{
+			int status{ filterID.empty() || filter ? ERR_INVALID_PARAM : ERR_OK };
 
-	return status;
-}
+			if (ERR_OK == status)
+			{
+				mediaFilterGroup.insert(filterID, filter);
+			}
 
-NS_END
+			return status;
+		}
+
+		int MediaGraph::removeMediaFilter(const std::string& filterID)
+		{
+			int status{ filterID.empty() ? ERR_INVALID_PARAM : ERR_OK };
+
+			if (ERR_OK == status)
+			{
+				mediaFilterGroup.remove(filterID);
+			}
+
+			return status;
+		}
+	}//namespace multimedia
+}//namespace framework

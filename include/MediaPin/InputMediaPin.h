@@ -10,24 +10,37 @@
 #ifndef INPUT_MEDIA_PIN_H
 #define INPUT_MEDIA_PIN_H
 
-#include "MediaFilter/MediaFilter.h"
-using MediaFilterRef = boost::weak_ptr<NS(filter, 1)::MediaFilter>;
+#include "MediaPin.h"
 
-NS_BEGIN(pin, 1)
-
-class InputMediaPin : public MediaPin
+namespace framework
 {
-public:
-	InputMediaPin(MediaFilterRef filterRef);
-	virtual ~InputMediaPin(void);
+	namespace multimedia
+	{
+		class MediaFilter;
 
-public:
-	int inputData(MediaDataPtr dataPtr) override;
+		class InputMediaPin : public MediaPin
+		{
+		public:
+			InputMediaPin(const MediaFilter& filter);
+			virtual ~InputMediaPin(void);
 
-private:
-	MediaFilterRef parentMediaFilterRef;
-};//class InputMediaPin
+		public:
+			int inputMediaData(MediaData* mediaData = NULL) override;
 
-NS_END
+		protected:
+			int connectPin(const MediaPin* pin = NULL) override
+			{
+				return ERR_NOT_SUPPORT;
+			}
+			bool isInputPin(void) const override
+			{
+				return true;
+			}
+
+		private:
+			const MediaFilter& mediaFilter;
+		};//class InputMediaPin
+	}//namespace multimedia
+}//namespace framework
 
 #endif//INPUT_MEDIA_PIN_H

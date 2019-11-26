@@ -13,22 +13,26 @@
 #include "DataStruct/Vector.h"
 #include "MediaPin.h"
 
-NS_BEGIN(pin, 1)
-
-class OutputMediaPin : public MediaPin
+namespace framework
 {
-public:
-	OutputMediaPin(void);
-	virtual ~OutputMediaPin(void);
+	namespace multimedia
+	{
+		class OutputMediaPin : public MediaPin
+		{
+		public:
+			OutputMediaPin(void);
+			virtual ~OutputMediaPin(void);
 
-public:
-	int connectPin(MediaPinRef inputPinRef) override;
-	int inputData(MediaDataPtr dataPtr) override;
+		public:
+			int inputMediaData(MediaData* mediaData = NULL) override;
 
-private:
-	Vector<MediaPinRef> inputPinRefGroup;
-};//class OutputMediaPin
+		protected:
+			int connectPin(const MediaPin* pin = NULL) override;
 
-NS_END
+		private:
+			Vector<MediaPin*> inputPinRefGroup;
+		};//class OutputMediaPin
+	}//namespace multimedia
+}//namespace framework
 
 #endif//OUTPUT_MEDIA_PIN_H

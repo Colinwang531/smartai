@@ -9,11 +9,6 @@ MediaPin::MediaPin()
 MediaPin::~MediaPin()
 {}
 
-int MediaPin::connectPin(boost::weak_ptr<MediaPin> inputPinRef)
-{
-	return ERR_NOT_SUPPORT;
-}
-
 int MediaPin::inputData(MediaDataPtr dataPtr)
 {
 	return dataPtr ? ERR_OK : ERR_INVALID_PARAM;

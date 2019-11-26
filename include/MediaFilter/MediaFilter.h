@@ -10,59 +10,58 @@
 #ifndef MEDIA_FILTER_H
 #define MEDIA_FILTER_H
 
-#include "boost/enable_shared_from_this.hpp"
-#include "MediaPin/MediaPin.h"
-using MediaPinPtr = boost::shared_ptr<NS(pin, 1)::MediaPin>;
-#include "MediaModel/MediaModel.h"
-using MediaModelPtr = boost::shared_ptr<NS(model, 1)::MediaModel>;
-using MediaModelRef = boost::weak_ptr<NS(model, 1)::MediaModel>;
+#include "boost/noncopyable.hpp"
 #include "DataStruct/UnorderedMap.h"
-using MediaPinGroup = UnorderedMap<const std::string, MediaPinPtr>;
 
-NS_BEGIN(filter, 1)
+static const std::string AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID";
+static const std::string AVMediaLivestreamCaptureFilterID = "AVMediaLivestreamCaptureFilterID";
+static const std::string AVMediaPlaybackControlFilterID = "AVMediaPlaybackControlFilterID";
+static const std::string AVMediaVideoDecoderFilterID = "AVMediaVideoDecoderFilterID";
+static const std::string AVMediaAudioDecoderFilterID = "AVMediaAudioDecoderFilterID";
+static const std::string AVMediaVideoRendererFilterID = "AVMediaVideoRendererFilterID";
+static const std::string AVMediaSoundPlayerFilterID = "AVMediaSoundPlayerFilterID";
+static const std::string AVMediaImageFormatFilterID = "AVMediaImageFormatFilterID";
+static const std::string AVMediaDataCallbackFilterID = "AVMediaDataCallbackFilterID";
 
-BOOST_STATIC_CONSTANT(std::string, AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaLivestreamCaptureFilterID = "AVMediaLivestreamCaptureFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaControllerFilterID = "AVMediaControllerFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaVideoDecoderFilterID = "AVMediaVideoDecoderFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaAudioDecoderFilterID = "AVMediaAudioDecoderFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaVideoRendererFilterID = "AVMediaVideoRendererFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaAudioRendererFilterID = "AVMediaAudioRendererFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaVideoFormatterFilterID = "AVMediaVideoFormatterFilterID");
-BOOST_STATIC_CONSTANT(std::string, AVMediaDataCaptureFilterID = "AVMediaDataCaptureFilterID");
-
-class MediaFilter 
-	: public boost::enable_shared_from_this<MediaFilter>
+namespace framework
 {
-public:
-	MediaFilter(void);
-	virtual ~MediaFilter(void);
-
-public: 
-	virtual int createNewFilter(void);
-	virtual int destroyFilter(void);
-	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
-	virtual bool isSourceFilter(void) const;
-	virtual bool isTargetFilter(void) const;
-	inline MediaPinRef queryMediaPinByID(const std::string pinID)
+	namespace multimedia
 	{
-		return mediaPinGroup.at(pinID);
-	}
-	inline MediaModelRef getMediaModel(void) const
-	{
-		return mediaModelPtr;
-	}
+		class MediaModel;
+		class MediaPin;
+		using MediaPinGroup = UnorderedMap<const std::string, MediaPin*>;
 
-protected:
-	int createNewInputPin(const std::string pinID);
-	int createNewOutputPin(const std::string pinID);
-	int postInputMediaData(MediaDataPtr mediaData);
+		class MediaFilter : private boost::noncopyable
+		{
+		public:
+			MediaFilter(void);
+			virtual ~MediaFilter(void);
 
-protected:
-	MediaPinGroup mediaPinGroup;
-	MediaModelPtr mediaModelPtr;
-};//class MediaFilter
+		public:
+			virtual int createNewFilter(void);
+			virtual int destroyFilter(void);
+			virtual int inputMediaData(MediaData* mediaData = NULL);
+			virtual bool isSourceFilter(void) const;
+			virtual bool isTargetFilter(void) const;
+			inline MediaPin* queryMediaPinByID(const std::string& pinID)
+			{
+				return mediaPinGroup.at(pinID);
+			}
+			inline MediaModel* getMediaModel(void) const
+			{
+				return mediaModel;
+			}
 
-NS_END
+		protected:
+			int createNewInputPin(const std::string& pinID);
+			int createNewOutputPin(const std::string& pinID);
+			int postInputMediaData(MediaData* mediaData = NULL);
+
+		protected:
+			MediaPinGroup mediaPinGroup;
+			MediaModel* mediaModel;
+		};//class MediaFilter
+	}//namespace multimedia
+}//namespace framework
 
 #endif//MEDIA_FILTER_H

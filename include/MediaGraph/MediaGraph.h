@@ -11,34 +11,35 @@
 #define MEDIA_GRAPH_H
 
 #include "boost/noncopyable.hpp"
-#include "MediaFilter/MediaFilter.h"
-using MediaFilterPtr = boost::shared_ptr<NS(filter, 1)::MediaFilter>;
-using MediaFilterRef = boost::weak_ptr<NS(filter, 1)::MediaFilter>;
 #include "DataStruct/UnorderedMap.h"
-using MediaFilterGroup = UnorderedMap<const std::string, MediaFilterPtr>;
 
-NS_BEGIN(graph, 1)
-
-class MediaGraph : private boost::noncopyable
+namespace framework
 {
-public:
-	MediaGraph(void);
-	virtual ~MediaGraph(void);
+	namespace multimedia
+	{
+		class MediaFilter;
+		using MediaFilterGroup = UnorderedMap<const std::string, MediaFilter*>;
 
-public:
-	virtual int createNewGraph(void) = 0;
-	virtual int destroyGraph(void) = 0;
-	virtual int linkMediaGraph(void) = 0;
-	virtual MediaFilterRef queryMediaFilterByID(const std::string filterID);
+		class MediaGraph : private boost::noncopyable
+		{
+		public:
+			MediaGraph(void);
+			virtual ~MediaGraph(void);
 
-protected:
-	int addMediaFilter(const std::string filterID, MediaFilterPtr mediaFilter);
-	int removeMediaFilter(const std::string filterID);
+		public:
+			virtual int createNewGraph(void) = 0;
+			virtual int destroyGraph(void) = 0;
+			virtual MediaFilter* queryMediaFilterByID(const std::string& filterID);
 
-protected:
-	MediaFilterGroup mediaFilterGroup;
-};//class MediaGraph
+		protected:
+			virtual int postCreateNewGraph(void) = 0;
+			int addMediaFilter(const std::string& filterID, MediaFilter* filter = NULL);
+			int removeMediaFilter(const std::string& filterID);
 
-NS_END
+		protected:
+			MediaFilterGroup mediaFilterGroup;
+		};//class MediaGraph
+	}//namespace multimedia
+}//namespace framework
 
 #endif//MEDIA_GRAPH_H

@@ -1,26 +1,21 @@
 #include "error.h"
+#include "MediaData/MediaData.h"
+#include "MediaFilter/MediaFilter.h"
 #include "MediaPin/InputMediaPin.h"
 
-NS_BEGIN(pin, 1)
-
-InputMediaPin::InputMediaPin(MediaFilterRef filterRef)
-	: MediaPin(), parentMediaFilterRef{ filterRef }
-{}
-
-InputMediaPin::~InputMediaPin()
-{}
-
-int InputMediaPin::inputData(MediaDataPtr dataPtr)
+namespace framework
 {
-	int status{ MediaPin::inputData(dataPtr) };
-
-	if (ERR_OK == status)
+	namespace multimedia
 	{
-		status = parentMediaFilterRef.expired() ? 
-			ERR_BAD_OPERATE : parentMediaFilterRef.lock()->inputMediaData(dataPtr);
-	}
+		InputMediaPin::InputMediaPin(const MediaFilter& filter) : MediaPin(), mediaFilter{ filter }
+		{}
 
-	return status;
-}
+		InputMediaPin::~InputMediaPin()
+		{}
 
-NS_END
+		int InputMediaPin::inputMediaData(MediaData* mediaData /* = NULL */)
+		{
+			return mediaData ? mediaFilter.inputMediaData(mediaData) : ERR_INVALID_PARAM;
+		}
+	}//namespace multimedia
+}//namespace framework

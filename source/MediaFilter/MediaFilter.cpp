@@ -37,10 +37,10 @@ int MediaFilter::destroyFilter(void)
 	return ERR_OK;
 }
 
-// int MediaFilter::inputMediaData(MediaDataPtr mediaData)
-// {
-// 	return mediaModelPtr && mediaData ? mediaModelPtr->inputMediaData(mediaData) : ERR_BAD_OPERATE;
-// }
+int MediaFilter::inputMediaData(MediaDataPtr mediaData)
+{
+	return mediaModelPtr && mediaData ? mediaModelPtr->inputMediaData(mediaData) : ERR_BAD_OPERATE;
+}
 
 bool MediaFilter::isSourceFilter(void) const
 {
