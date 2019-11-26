@@ -109,9 +109,9 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 //	JPEGENCODER_RegisterPostJpegEncodeCallback(&MediaPlayDemoDlg::postJpegEncodeCallback, this);
 // 	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
 // 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
-	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
-// 	MEDIAPLAY_StartLivestreamPlay(
-// 		"admin", "eaton12345", "192.168.30.11", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+//	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
+	MEDIAPLAY_StartLivestreamPlay(
+		"admin", "Cpt@2019", "192.168.10.203", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 // 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
@@ -242,7 +242,9 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_FACE;
 
-	int ret{ ARITHMETIC_AddFaceImage("C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg", 1) };
+	int ret{ ARITHMETIC_AddFaceImage("D:\\HASystem\\PortableAlgorithmService\\bin\\Debug\\face\\119328278400991232_107827453.jpg"/*"C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg"*/, 107827453) };
+	ret = ARITHMETIC_AddFaceImage("D:\\HASystem\\PortableAlgorithmService\\bin\\Debug\\face\\119331023652651008_108481359.jpg"/*"C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg"*/, 108481359);
+	ret = ARITHMETIC_AddFaceImage("D:\\HASystem\\PortableAlgorithmService\\bin\\Debug\\face\\119331307535728640_108545093.jpg"/*"C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg"*/, 108545093);
 	char text[2048]{ 0 };
 	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
 	OutputDebugStringA(text);

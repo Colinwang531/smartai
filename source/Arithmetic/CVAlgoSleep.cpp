@@ -20,7 +20,7 @@ int CVAlgoSleep::initializeArithmetic()
 	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % executePath).str() };
 	StruInitParams parameters;
 	parameters.gpu_id = 0;
-	parameters.sleepTime = 240;
+	parameters.sleepTime = 15;
 	parameters.detectThreshold = 0.65f;
 	parameters.trackThreshold = 0.15f;
 	parameters.cfgfile = (char*)cfgFile.c_str();
@@ -89,15 +89,19 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 					it++;
 				}
 
-				if (0 < alarmInfos.size())
+// 				if (0 < alarmInfos.size())
+// 				{
+// //					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+// 
+// // 					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+// // 					{
+// // 						lastKnownTickTime = currentTickTime;
+// // 						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// // 					}
+// 				}
+				if (0 < alarmInfos.size() && postDetectAlarmInfoCallback)
 				{
-//					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
-
-// 					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
-// 					{
-// 						lastKnownTickTime = currentTickTime;
-// 						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-// 					}
+					postDetectAlarmInfoCallback(alarmInfos[0], (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 				}
 			}
 		}
