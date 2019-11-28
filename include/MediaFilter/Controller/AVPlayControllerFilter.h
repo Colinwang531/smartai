@@ -12,30 +12,32 @@
 
 #include "MediaFilter/MediaFilter.h"
 
-NS_BEGIN(filter, 1)
-
-class AVPlayControllerFilter : public MediaFilter
+namespace framework
 {
-public:
-	AVPlayControllerFilter(void);
-	virtual ~AVPlayControllerFilter(void);
+	namespace multimedia
+	{
+		class AVPlayControllerFilter : public MediaFilter
+		{
+		public:
+			AVPlayControllerFilter(void);
+			virtual ~AVPlayControllerFilter(void);
 
-public:
-	int startPlay(void);
-	int stopPlay(void);
-	int pausePlay(void);
-	int fastPlay(const short speed = 1);
-	int slowPlay(const short speed = -1);
+		public:
+			int startPlay(void);
+			int stopPlay(void);
+			int pausePlay(void);
+			int fastPlay(const short speed = 1);
+			int slowPlay(const short speed = -1);
 
-protected:
-	int createNewFilter(void) override;
-	int destroyFilter(void) override;
-	int inputMediaData(MediaDataPtr mediaData) override;
+		protected:
+			int createNewFilter(
+				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
+			int inputMediaData(MediaDataPtr mediaData) override;
 
-private:
-	int checkSpeedValue(const short speed = 0);
-};//class AVPlayControllerFilter
-
-NS_END
+		private:
+			int checkSpeedValue(const short speed = 0);
+		};//class AVPlayControllerFilter
+	}//namespace multimedia
+}//namespace framework
 
 #endif//AV_PLAY_CONTROLLER_FILTER_H

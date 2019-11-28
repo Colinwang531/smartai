@@ -10,6 +10,10 @@
 #ifndef MEDIA_PIN_H
 #define MEDIA_PIN_H
 
+#include <string>
+#include "boost/shared_ptr.hpp"
+#include "boost/weak_ptr.hpp"
+
 static const std::string VideoStreamInputPinID = "VideoStreamInputPinID";
 static const std::string AudioStreamInputPinID = "AudioStreamInputPinID";
 static const std::string VideoStreamOutputPinID = "VideoStreamOutputPinID";
@@ -20,16 +24,20 @@ namespace framework
 	namespace multimedia
 	{
 		class MediaData;
+		using MediaDataPtr = boost::shared_ptr<MediaData>;
 
 		class MediaPin
 		{
+		protected:
+			using MediaPinRef = boost::weak_ptr<MediaPin>;
+
 		public:
 			MediaPin(void);
 			virtual ~MediaPin(void);
 
 		public:
-			virtual int connectPin(const MediaPin* pin = NULL) = 0;
-			virtual int inputMediaData(MediaData* mediaData = NULL);
+			virtual int connectPin(MediaPinRef pin) = 0;
+			virtual int inputMediaData(MediaDataPtr mediaData) = 0;
 			virtual bool isInputPin(void) const
 			{
 				return false;

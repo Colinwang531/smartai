@@ -12,33 +12,37 @@
 
 #include "MediaGraph.h"
 
-NS_BEGIN(graph, 1)
-
-class PlaybackMediaGraph : public MediaGraph
+namespace framework
 {
-public:
-	PlaybackMediaGraph(void);
-	virtual ~PlaybackMediaGraph(void);
+	namespace multimedia
+	{
+		class PlaybackMediaGraph : public MediaGraph
+		{
+		public:
+			PlaybackMediaGraph(void);
+			virtual ~PlaybackMediaGraph(void);
 
-protected:
-	int createNewGraph(void) override;
-	int destroyGraph(void) override;
-	int linkMediaGraph(void) override;
+		protected:
+			int createNewGraph(void) override;
+			int postCreateNewGraph(void) override;
 
-protected:
-	// Decoder and renderer filters were created by user.
-	virtual int createNewVideoDecoderFilter(void);
-	virtual int createNewAudioDecoderFilter(void);
-	virtual int createNewVideoRendererFilter(void);
-	virtual int createNewAudioRendererFilter(void);
+		protected:
+			// Filters of demuxer, decoder, image formatter and renderer were created by user.
+			virtual int createNewDemuxerFilter(void) = 0;
+			virtual int createNewImageFormatterFilter(void) = 0;
+			virtual int createNewVideoDecoderFilter(void) = 0;
+			virtual int createNewAudioDecoderFilter(void) = 0;
+			virtual int createNewVideoRendererFilter(void) = 0;
+			virtual int createNewSoundPlayerFilter(void) = 0;
 
-private:
-	// Demuxer, controller and callback data capture filters were created by creator.
-	virtual int createNewDemuxerFilter(void);
-	virtual int createNewControllerFilter(void);
-	virtual int createNewDataCaptureFilter(void);
-};//class PlaybackMediaGraph
-
-NS_END
+		private:
+			// Filters of Play controller and data capture were created by creator.
+			virtual int createNewPlayControllerFilter(void);
+			virtual int createNewDataCaptureFilter(void);
+			// Connect all filters.
+			int linkMediaFilter(void);
+		};//class PlaybackMediaGraph
+	}//namespace multimedia
+}//namespace framework
 
 #endif//PLAYBACK_MEDIA_GRAPH_H

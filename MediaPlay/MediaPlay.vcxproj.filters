@@ -43,9 +43,6 @@
     <Filter Include="Header Files\Filter\Renderer">
       <UniqueIdentifier>{8e58e87f-702b-403a-8751-d2668e75e891}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Filter\Capture">
-      <UniqueIdentifier>{27b70b00-e6a0-4a5c-b707-0c457542e4f6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Filter\Demuxer">
       <UniqueIdentifier>{1ad1ee21-9ce0-4f09-b3c7-d9aa30b7ab25}</UniqueIdentifier>
     </Filter>
@@ -57,9 +54,6 @@
     </Filter>
     <Filter Include="Source Files\Filter\Renderer">
       <UniqueIdentifier>{0717ae88-7eef-4a0f-8cd8-e6dfa002bb30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Filter\Capture">
-      <UniqueIdentifier>{e89e0f11-fd1c-4413-86dd-d56d03ef4127}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\DataStruct">
       <UniqueIdentifier>{a63d9130-b1be-445d-b63d-c1d646a81fe5}</UniqueIdentifier>
@@ -82,9 +76,6 @@
     <Filter Include="Header Files\Model\Decoder">
       <UniqueIdentifier>{410bf5da-244e-4245-818c-6cbe9646a1b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Model\Renderer">
-      <UniqueIdentifier>{17276f77-a78e-461e-86d5-e6d2c18065b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Model">
       <UniqueIdentifier>{de90c381-5566-42a7-920a-9ba7490afe4b}</UniqueIdentifier>
     </Filter>
@@ -94,17 +85,11 @@
     <Filter Include="Source Files\Model\Decoder">
       <UniqueIdentifier>{68e8d437-5155-456e-aed5-b9b611f68ac8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Model\Renderer">
-      <UniqueIdentifier>{51acbbb6-97fa-4b31-86be-bd3d2657ea06}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Model\Demuxer\FFmpeg">
       <UniqueIdentifier>{93891628-9d9c-40f1-a264-f5224aa7e9ff}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Model\Decoder\FFmpeg">
       <UniqueIdentifier>{cc5ac746-01a0-4cda-bdaa-797ab133d6a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Renderer\D3D">
-      <UniqueIdentifier>{ab9846d4-511b-40f3-a3a0-bd506d73e400}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Model\Demuxer\FFmpeg">
       <UniqueIdentifier>{bc00d6f5-b741-44da-9179-d57cd6860284}</UniqueIdentifier>
@@ -112,68 +97,14 @@
     <Filter Include="Source Files\Model\Decoder\FFmpeg">
       <UniqueIdentifier>{09d7caa0-6df6-4885-b670-b1aad89bef35}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Model\Renderer\D3D">
-      <UniqueIdentifier>{32840b6b-db15-4347-9b20-adb9409f18ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Graph\File">
-      <UniqueIdentifier>{a632eef8-a52f-40dc-b003-2c46b49a43a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Graph\File">
-      <UniqueIdentifier>{cea02db7-9384-4213-9db8-5bff1b925b0c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Data">
       <UniqueIdentifier>{b2b828f7-fbf6-46d5-a11b-274d7613e051}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Data">
       <UniqueIdentifier>{91b41f55-dfa2-4f47-bcbd-796013947931}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Model\Renderer\DXS">
-      <UniqueIdentifier>{18e4bca4-e049-487f-9776-d22bb0acc3de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Renderer\DXS">
-      <UniqueIdentifier>{867176d3-1b3c-4da5-835a-bcf3ec7ff30d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Renderer\D3D\Direct3d">
-      <UniqueIdentifier>{141793cd-3119-4295-9192-caddd0b567fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Renderer\D3D\Direct3d">
-      <UniqueIdentifier>{442e2401-70a3-4b38-b392-cb9ab09ba45c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Accessor">
-      <UniqueIdentifier>{810cf62b-e8fb-4410-9f4f-d4504436ee08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Accessor">
-      <UniqueIdentifier>{24ff1688-4cb5-46e5-90fc-63e9227abb99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Accessor\SDK">
-      <UniqueIdentifier>{345c0ed4-b592-428f-b83b-482c34feb6a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Accessor\SDK">
-      <UniqueIdentifier>{736f6600-d052-4dff-b18b-42516f86c11b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\eaton">
-      <UniqueIdentifier>{8fdead57-dbb4-4e56-869d-24a51ca44740}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\boost\filesystem">
       <UniqueIdentifier>{7071cfde-992a-4357-8e4c-9f48f4b36ca0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Device">
-      <UniqueIdentifier>{9e3f562e-f499-488d-bcd7-81fe1ce2d77e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Device">
-      <UniqueIdentifier>{3a06f7dd-af47-45d6-be49-d9a271f9089f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Device\Hikvision">
-      <UniqueIdentifier>{c2f8561f-9b23-4a39-b30d-96b6471bf0fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Device\Hikvision">
-      <UniqueIdentifier>{7660dcc7-be4f-4088-9b82-f66c3ff40911}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Decoder\SDK">
-      <UniqueIdentifier>{c81546db-6042-4270-956c-3c0a0f6408c4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Decoder\SDK">
-      <UniqueIdentifier>{4f2456f2-dcae-4b29-9180-2a93cfdd0384}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Filter\Formatter">
       <UniqueIdentifier>{606677ad-dbf7-4aca-80fa-ddf3aeb5140a}</UniqueIdentifier>
@@ -181,26 +112,20 @@
     <Filter Include="Source Files\Filter\Formatter">
       <UniqueIdentifier>{85369717-dc29-43b2-9285-be7aa4cffdae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Model\Formatter">
-      <UniqueIdentifier>{4d6255b3-b2ed-4179-9711-0282309d26d6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Formatter">
-      <UniqueIdentifier>{96c38231-aacf-4e6c-aa4a-401d335b3e78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Encoder">
-      <UniqueIdentifier>{86264a3b-470b-4d0d-a096-76fddcdc9214}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Model\Encoder\JPEG">
-      <UniqueIdentifier>{56598802-5104-47d0-a171-86daaafab1ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Encoder">
-      <UniqueIdentifier>{54657d28-5f12-4e9b-977f-2caab80dc01d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Model\Encoder\JPEG">
-      <UniqueIdentifier>{03b90f20-8f45-47bc-bcd8-3c3f5569e862}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Filter\Decoder\SDK">
       <UniqueIdentifier>{87763438-9577-476c-86ff-ea60e6ea25d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graph\FFmpeg">
+      <UniqueIdentifier>{cea02db7-9384-4213-9db8-5bff1b925b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Graph\FFmpeg">
+      <UniqueIdentifier>{a632eef8-a52f-40dc-b003-2c46b49a43a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Callback">
+      <UniqueIdentifier>{b01f9aa8-3e03-42ec-a2ad-c49e7d285330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Callback">
+      <UniqueIdentifier>{a2b2da77-a58b-4fba-b90e-3c802e86505c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -234,9 +159,6 @@
     <ClInclude Include="..\include\MediaFilter\Decoder\AVDecoderFilter.h">
       <Filter>Header Files\Filter\Decoder</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h">
-      <Filter>Header Files\Filter\Capture</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaFilter\Renderer\AVRendererFilter.h">
       <Filter>Header Files\Filter\Renderer</Filter>
     </ClInclude>
@@ -267,23 +189,11 @@
     <ClInclude Include="..\include\MediaModel\Demuxer\MediaDemuxer.h">
       <Filter>Header Files\Model\Demuxer</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Demuxer\FFmpeg\FFmpegAVMediaDemuxer.h">
-      <Filter>Header Files\Model\Demuxer\FFmpeg</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaModel\Decoder\MediaDecoder.h">
       <Filter>Header Files\Model\Decoder</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MediaModel\Decoder\FFmpeg\FFmpegVideoDecoder.h">
       <Filter>Header Files\Model\Decoder\FFmpeg</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\MediaRenderer.h">
-      <Filter>Header Files\Model\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\VideoD3DRenderer.h">
-      <Filter>Header Files\Model\Renderer\D3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\File\LocalFilePlaybackMediaGraph.h">
-      <Filter>Header Files\Graph\File</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MediaData\MediaData.h">
       <Filter>Header Files\Data</Filter>
@@ -291,68 +201,20 @@
     <ClInclude Include="..\include\MediaModel\Decoder\FFmpeg\FFmpegAudioDecoder.h">
       <Filter>Header Files\Model\Decoder\FFmpeg</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\DXS\AudioDxSoundPlayer.h">
-      <Filter>Header Files\Model\Renderer\DXS</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3D.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DDevice.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DFont.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DPixelShader.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DTexture.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DVertexBuffer.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Renderer\D3D\Direct3d\D3DDisplay.h">
-      <Filter>Header Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaGraph\LivestreamMediaGraph.h">
-      <Filter>Header Files\Graph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaFilter\Capture\LivestreamCaptureFilter.h">
-      <Filter>Header Files\Filter\Capture</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Accessor\MediaAccessor.h">
-      <Filter>Header Files\Model\Accessor</Filter>
-    </ClInclude>
     <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp">
       <Filter>Source Files\boost\filesystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Accessor\SDK\HikvisionIPCMediaAccessor.h">
-      <Filter>Header Files\Model\Accessor\SDK</Filter>
+    <ClInclude Include="..\include\MediaGraph\FFmpeg\FFmpegPlaybackMediaGraph.h">
+      <Filter>Header Files\Graph\FFmpeg</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Device\Device.h">
-      <Filter>Header Files\Device</Filter>
+    <ClInclude Include="..\include\MediaFilter\Callback\AVDataCallbackFilter.h">
+      <Filter>Header Files\Filter\Callback</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\Device\EnableDeviceLoginAndLogout.h">
-      <Filter>Header Files\Device</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Device\Hikvision\HikvisionDevice.h">
-      <Filter>Header Files\Device\Hikvision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\Device\Hikvision\HikvisionIPC.h">
-      <Filter>Header Files\Device\Hikvision</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Decoder\SDK\HikvisionSDKDecoder.h">
-      <Filter>Header Files\Model\Decoder\SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaFilter\Formatter\VideoFormatterFilter.h">
+    <ClInclude Include="..\include\MediaFilter\Formatter\ImageFormatterFilter.h">
       <Filter>Header Files\Filter\Formatter</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Formatter\YV12ToBGR24Formatter.h">
-      <Filter>Header Files\Model\Formatter</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.h">
-      <Filter>Header Files\Model\Encoder\JPEG</Filter>
+    <ClInclude Include="..\include\MediaModel\Demuxer\FFmpeg\FFmpegLocalFileDemuxer.h">
+      <Filter>Header Files\Model\Demuxer\FFmpeg</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -385,9 +247,6 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Decoder\AVDecoderFilter.cpp">
       <Filter>Source Files\Filter\Decoder</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp">
-      <Filter>Source Files\Filter\Capture</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Renderer\AVRendererFilter.cpp">
       <Filter>Source Files\Filter\Renderer</Filter>
@@ -425,65 +284,17 @@
     <ClCompile Include="..\source\MediaModel\Demuxer\MediaDemuxer.cpp">
       <Filter>Source Files\Model\Demuxer</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Demuxer\FFmpeg\FFmpegAVMediaDemuxer.cpp">
-      <Filter>Source Files\Model\Demuxer\FFmpeg</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MediaModel\Decoder\MediaDecoder.cpp">
       <Filter>Source Files\Model\Decoder</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MediaModel\Decoder\FFmpeg\FFmpegVideoDecoder.cpp">
       <Filter>Source Files\Model\Decoder\FFmpeg</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\MediaRenderer.cpp">
-      <Filter>Source Files\Model\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\VideoD3DRenderer.cpp">
-      <Filter>Source Files\Model\Renderer\D3D</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\File\LocalFilePlaybackMediaGraph.cpp">
-      <Filter>Source Files\Graph\File</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MediaData\MediaData.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MediaModel\Decoder\FFmpeg\FFmpegAudioDecoder.cpp">
       <Filter>Source Files\Model\Decoder\FFmpeg</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\DXS\AudioDxSoundPlayer.cpp">
-      <Filter>Source Files\Model\Renderer\DXS</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3D.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DDevice.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DFont.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DPixelShader.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DTexture.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DVertexBuffer.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Renderer\D3D\Direct3d\D3DDisplay.cpp">
-      <Filter>Source Files\Model\Renderer\D3D\Direct3d</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaGraph\LivestreamMediaGraph.cpp">
-      <Filter>Source Files\Graph</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaFilter\Capture\LivestreamCaptureFilter.cpp">
-      <Filter>Source Files\Filter\Capture</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Accessor\MediaAccessor.cpp">
-      <Filter>Source Files\Model\Accessor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\lib\eaton\x64\ipcsdk_c.cpp">
-      <Filter>Source Files\eaton</Filter>
     </ClCompile>
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\codecvt_error_category.cpp">
       <Filter>Source Files\boost\filesystem</Filter>
@@ -509,29 +320,17 @@
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.cpp">
       <Filter>Source Files\boost\filesystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Accessor\SDK\HikvisionIPCMediaAccessor.cpp">
-      <Filter>Source Files\Model\Accessor\SDK</Filter>
+    <ClCompile Include="..\source\MediaGraph\FFmpeg\FFmpegPlaybackMediaGraph.cpp">
+      <Filter>Source Files\Graph\FFmpeg</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Device\Device.cpp">
-      <Filter>Source Files\Device</Filter>
+    <ClCompile Include="..\source\MediaFilter\Callback\AVDataCallbackFilter.cpp">
+      <Filter>Source Files\Filter\Callback</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\Device\Hikvision\HikvisionDevice.cpp">
-      <Filter>Source Files\Device\Hikvision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\Device\Hikvision\HikvisionIPC.cpp">
-      <Filter>Source Files\Device\Hikvision</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Decoder\SDK\HikvisionSDKDecoder.cpp">
-      <Filter>Source Files\Model\Decoder\SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaFilter\Formatter\VideoFormatterFilter.cpp">
+    <ClCompile Include="..\source\MediaFilter\Formatter\ImageFormatterFilter.cpp">
       <Filter>Source Files\Filter\Formatter</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Formatter\YV12ToBGR24PFormatter.cpp">
-      <Filter>Source Files\Model\Formatter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModel\Encoder\JPEG\YUV420PToJPEGEncoder.cpp">
-      <Filter>Source Files\Model\Encoder\JPEG</Filter>
+    <ClCompile Include="..\source\MediaModel\Demuxer\FFmpeg\FFmpegLocalFileDemuxer.cpp">
+      <Filter>Source Files\Model\Demuxer\FFmpeg</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

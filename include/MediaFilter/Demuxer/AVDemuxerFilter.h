@@ -12,19 +12,21 @@
 
 #include "MediaFilter/SourceMediaFilter.h"
 
-NS_BEGIN(filter, 1)
-
-class AVDemuxerFilter : public SourceMediaFilter
+namespace framework
 {
-public:
-	AVDemuxerFilter(void);
-	virtual ~AVDemuxerFilter(void);
+	namespace multimedia
+	{
+		class AVDemuxerFilter : public SourceMediaFilter
+		{
+		public:
+			AVDemuxerFilter(void);
+			virtual ~AVDemuxerFilter(void);
 
-protected:
-	int createNewFilter(void) override;
-	int destroyFilter(void) override;
-};//class AVDemuxerFilter
-
-NS_END
+		protected:
+			int createNewFilter(
+				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
+		};//class AVDemuxerFilter
+	}//namespace multimedia
+}//namespace framework
 
 #endif//AV_DEMUXER_FILTER_H

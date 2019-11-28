@@ -1,11 +1,19 @@
+#include "MediaData/MediaData.h"
 #include "MediaModel/MediaModel.h"
 
-NS_BEGIN(model, 1)
+namespace framework
+{
+	namespace multimedia
+	{
+		MediaModel::MediaModel()
+		{}
 
-MediaModel::MediaModel()
-{}
+		MediaModel::~MediaModel()
+		{}
 
-MediaModel::~MediaModel()
-{}
-
-NS_END
+		void MediaModel::setPostInputMediaDataCallback(PostInputMediaDataCallback callback /* = NULL */)
+		{
+			postInputMediaDataCallback = callback;
+		}
+	}//namespace multimedia
+}//namespace framework

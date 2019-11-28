@@ -2,60 +2,39 @@
 #include "error.h"
 #include "MediaModel/Demuxer/MediaDemuxer.h"
 
-NS_BEGIN(model, 1)
-
-MediaDemuxer::MediaDemuxer() : MediaModel(), stopped{ true }
-{}
-
-MediaDemuxer::~MediaDemuxer()
-{}
-
-int MediaDemuxer::openStream(const std::string streamUrl)
+namespace framework
 {
-	int status{ streamUrl.empty() ? ERR_INVALID_PARAM : ERR_OK };
-
-	if (ERR_OK == status)
+	namespace multimedia
 	{
-		stopped = false;
-		// Start reading data.
-		status = runPullStreamDataThread();
-	}
+		MediaDemuxer::MediaDemuxer() : MediaModel(), stopped{ true }
+		{}
 
-	return status;
-}
+		MediaDemuxer::~MediaDemuxer()
+		{}
 
-int MediaDemuxer::closeStream(void)
-{
-	stopped = true;
-	// Wait for exiting thread normally.
-	boost::unique_lock<boost::mutex> lock{ mtx };
-	condition.wait(lock);
+		int MediaDemuxer::openStream(const std::string& streamUrl)
+		{
+			int status{ streamUrl.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
-	return 0;
-}
+			if (ERR_OK == status)
+			{
+				stopped = false;
+				boost::thread workerThread{ boost::bind(&MediaDemuxer::mediaDemuxerWorkerThread, this) };
+				workerThread.detach();
+			}
 
-int MediaDemuxer::runPullStreamDataThread()
-{
-	int status{ ERR_BAD_OPERATE };
+			return status;
+		}
 
-	if (!stopped)
-	{
-		boost::thread workerThread{ boost::bind(&MediaDemuxer::pullStreamDataWorkerThread, this) };
-		workerThread.detach();
-		status = ERR_OK;
-	}
+		int MediaDemuxer::closeStream(void)
+		{
+			stopped = true;
+			return ERR_OK;
+		}
 
-	return status;
-}
-
-void MediaDemuxer::pullStreamDataWorkerThread()
-{
-	while (!stopped)
-	{
-		pullStreamDataProcess();
-	}
-
-	condition.notify_one();
-}
-
-NS_END
+		int MediaDemuxer::inputMediaData(MediaDataPtr mediaData)
+		{
+			return ERR_NOT_SUPPORT;
+		}
+	}//namespace multimedia
+}//namespace framework

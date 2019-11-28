@@ -89,15 +89,20 @@ void CVAlgoSleep::arithmeticWorkerProcess()
 					it++;
 				}
 
-				if (0 < alarmInfos.size())
-				{
-//					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+// 				if (0 < alarmInfos.size())
+// 				{
+// //					boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+// 
+// // 					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
+// // 					{
+// // 						lastKnownTickTime = currentTickTime;
+// // 						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// // 					}
+// 				}
 
-// 					if (!lastKnownTickTime || 5000 < currentTickTime - lastKnownTickTime)
-// 					{
-// 						lastKnownTickTime = currentTickTime;
-// 						captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-// 					}
+				if (0 < alarmInfos.size() && postDetectAlarmInfoCallback)
+				{
+					postDetectAlarmInfoCallback(alarmInfos[0], (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 				}
 			}
 		}

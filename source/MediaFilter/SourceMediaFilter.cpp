@@ -1,17 +1,19 @@
 #include "error.h"
 #include "MediaFilter/SourceMediaFilter.h"
 
-NS_BEGIN(filter, 1)
-
-SourceMediaFilter::SourceMediaFilter() : MediaFilter()
-{}
-
-SourceMediaFilter::~SourceMediaFilter()
-{}
-
-int SourceMediaFilter::inputMediaData(MediaDataPtr mediaData)
+namespace framework
 {
-	return ERR_NOT_SUPPORT;
-}
+	namespace multimedia
+	{
+		SourceMediaFilter::SourceMediaFilter() : MediaFilter()
+		{}
 
-NS_END
+		SourceMediaFilter::~SourceMediaFilter()
+		{}
+
+		int SourceMediaFilter::inputMediaData(MediaDataPtr mediaData)
+		{
+			return ERR_NOT_SUPPORT;
+		}
+	}//namespace multimedia
+}//namespace framework

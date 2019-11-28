@@ -10,16 +10,33 @@ namespace framework
 		{}
 
 		MediaGraph::~MediaGraph()
-		{}
+		{
+			destroyGraph();
+		}
 
-		MediaFilter* MediaGraph::queryMediaFilterByID(const std::string& filterID)
+		int MediaGraph::createNewGraph(void)
+		{
+			return postCreateNewGraph();
+		}
+
+		int MediaGraph::destroyGraph(void)
+		{
+			if (0 < mediaFilterGroup.size())
+			{
+				mediaFilterGroup.clear();
+			}
+
+			return ERR_OK;
+		}
+
+		MediaFilterRef MediaGraph::queryMediaFilterByID(const std::string& filterID)
 		{
 			return mediaFilterGroup.at(filterID);
 		}
 
-		int MediaGraph::addMediaFilter(const std::string& filterID, MediaFilter* filter /* = NULL */)
+		int MediaGraph::addMediaFilter(const std::string& filterID, MediaFilterPtr filter)
 		{
-			int status{ filterID.empty() || filter ? ERR_INVALID_PARAM : ERR_OK };
+			int status{ filterID.empty() || !filter ? ERR_INVALID_PARAM : ERR_OK };
 
 			if (ERR_OK == status)
 			{

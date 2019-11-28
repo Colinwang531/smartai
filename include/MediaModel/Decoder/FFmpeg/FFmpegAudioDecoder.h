@@ -12,18 +12,20 @@
 
 #include "MediaModel/Decoder/MediaDecoder.h"
 
-NS_BEGIN(model, 1)
-
-class FFmpegAudioDecoder : public MediaDecoder
+namespace framework
 {
-public:
-	FFmpegAudioDecoder(void);
-	virtual ~FFmpegAudioDecoder(void);
+	namespace multimedia
+	{
+		class FFmpegAudioDecoder : public MediaDecoder
+		{
+		public:
+			FFmpegAudioDecoder(void);
+			virtual ~FFmpegAudioDecoder(void);
 
-protected:
-	int inputMediaData(MediaDataPtr mediaData) override;
-};//class FFmpegVideoDecoder
-
-NS_END
+		protected:
+			int inputMediaData(MediaDataPtr mediaData) override;
+		};//class FFmpegVideoDecoder
+	}//namespace multimedia
+}//namespace framework
 
 #endif//FFMPEG_AUDIO_DECODER_H

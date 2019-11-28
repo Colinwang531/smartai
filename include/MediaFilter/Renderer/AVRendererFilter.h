@@ -12,31 +12,22 @@
 
 #include "MediaFilter/MediaFilter.h"
 
-NS_BEGIN(filter, 1)
-
-typedef enum class tagAVRendererType_t
+namespace framework
 {
-	AV_RENDERER_TYPE_NONE = 0,
-	AV_RENDERER_TYPE_VIDEO,
-	AV_RENDERER_TYPE_AUDIO
-}AVRendererType;
+	namespace multimedia
+	{
+		class AVRendererFilter : public MediaFilter
+		{
+		public:
+			AVRendererFilter(void);
+			virtual ~AVRendererFilter(void);
 
-class AVRendererFilter : public MediaFilter
-{
-public:
-	AVRendererFilter(
-		const AVRendererType type = AVRendererType::AV_RENDERER_TYPE_NONE);
-	virtual ~AVRendererFilter(void);
-
-protected:
-	int createNewFilter(void) override;
-	int destroyFilter(void) override;
-	int inputMediaData(MediaDataPtr mediaData) override;
-
-private:
-	const AVRendererType rendererType;
-};//class AVRendererFilter
-
-NS_END
+		protected:
+			int createNewFilter(
+				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
+			int inputMediaData(MediaDataPtr mediaData) override;
+		};//class AVRendererFilter
+	}//namespace multimedia
+}//namespace framework
 
 #endif//AV_RENDERER_FILTER_H

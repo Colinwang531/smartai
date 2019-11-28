@@ -1,39 +1,41 @@
 #include "error.h"
 #include "MediaPin/OutputMediaPin.h"
 
-NS_BEGIN(pin, 1)
-
-OutputMediaPin::OutputMediaPin() : MediaPin()
-{}
-
-OutputMediaPin::~OutputMediaPin()
-{}
-
-int OutputMediaPin::connectPin(MediaPinRef inputPinRef)
+namespace framework
 {
-	inputPinRefGroup.insert(inputPinRef);
-	return ERR_OK;
-}
-
-int OutputMediaPin::inputData(MediaDataPtr dataPtr)
-{
-	int status{ MediaPin::inputData(dataPtr) };
-
-	if (ERR_OK == status)
+	namespace multimedia
 	{
-		for (int i = 0; i != inputPinRefGroup.size(); ++i)
+		OutputMediaPin::OutputMediaPin() : MediaPin()
+		{}
+
+		OutputMediaPin::~OutputMediaPin()
 		{
-			const MediaPinRef& pinRef{ inputPinRefGroup.at(i) };
-
-			if (!pinRef.expired())
-			{
-				// WARNING : Please do not blocking.
-				pinRef.lock()->inputData(dataPtr);
-			}
+			inputPinGroup.clear();
 		}
-	}
 
-	return status;
-}
+		int OutputMediaPin::connectPin(MediaPinRef pin)
+		{
+			inputPinGroup.insert(pin);
+			return ERR_OK;
+		}
 
-NS_END
+		int OutputMediaPin::inputMediaData(MediaDataPtr mediaData)
+		{
+			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
+
+			if (ERR_OK == status)
+			{
+				for (int i = 0; i != inputPinGroup.size(); ++i)
+				{
+					MediaPinRef nextInputPinRef{ inputPinGroup.at(i) };
+					if (!nextInputPinRef.expired())
+					{
+						status = nextInputPinRef.lock()->inputMediaData(mediaData);
+					}
+				}
+			}
+
+			return status;
+		}
+	}//namespace multimedia
+}//namespace framework

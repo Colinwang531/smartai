@@ -1,37 +1,37 @@
-#include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
-#include "error.h"
-#include "MediaModel/Demuxer/FFmpeg/FFmpegAVMediaDemuxer.h"
-using FFmpegAVMediaDemuxer = NS(model, 1)::FFmpegAVMediaDemuxer;
+#include "MediaPin/MediaPin.h"
+#include "MediaModel/Demuxer/FFmpeg/FFmpegLocalFileDemuxer.h"
 #include "MediaFilter/Demuxer/AVDemuxerFilter.h"
 
-NS_BEGIN(filter, 1)
-
-AVDemuxerFilter::AVDemuxerFilter() : SourceMediaFilter()
-{}
-
-AVDemuxerFilter::~AVDemuxerFilter()
-{}
-
-int AVDemuxerFilter::createNewFilter(void)
+namespace framework
 {
-	int status{ ERR_BAD_ALLOC };
-	MediaModelPtr ffmpegAVMediaDemuxerPtr{ boost::make_shared<FFmpegAVMediaDemuxer>() };
-
-	if (ffmpegAVMediaDemuxerPtr &&
-		ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID) &&
-		ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
+	namespace multimedia
 	{
-		mediaModelPtr.swap(ffmpegAVMediaDemuxerPtr);
-		status = MediaFilter::createNewFilter();
-	}
-	
-	return status;
-}
+		AVDemuxerFilter::AVDemuxerFilter() : SourceMediaFilter()
+		{}
 
-int AVDemuxerFilter::destroyFilter(void)
-{
-	return ERR_OK;
-}
+		AVDemuxerFilter::~AVDemuxerFilter()
+		{}
 
-NS_END
+		int AVDemuxerFilter::createNewFilter(
+			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		{
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
+			{
+				createNewOutputPin(VideoStreamOutputPinID);
+			}
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
+			{
+				createNewOutputPin(AudioStreamOutputPinID);
+			}
+
+			MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<FFmpegLocalFileDemuxer>() };
+			if (ffmpegLocalFileDemuxerPtr)
+			{
+				mediaModelPtr.swap(ffmpegLocalFileDemuxerPtr);
+			}
+
+			return MediaFilter::createNewFilter(mediaStreamID);
+		}
+	}//namespace multimedia
+}//namespace framework

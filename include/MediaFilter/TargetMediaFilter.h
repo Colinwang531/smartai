@@ -10,32 +10,42 @@
 #ifndef TARGET_MEDIA_FILTER_H
 #define TARGET_MEDIA_FILTER_H
 
+#include "predef.h"
 #include "MediaFilter.h"
 
-NS_BEGIN(filter, 1)
+//typedef void (CALLBACK* PostMediaDataCallback)(const int streamID, const unsigned char* mediaData, const int dataBytes, void* userData);
 
-typedef void (CALLBACK* PostMediaDataCallback)(const int streamID, const unsigned char* mediaData, const int dataBytes, void* userData);
-
-class TargetMediaFilter : public MediaFilter
+namespace framework
 {
-public:
-	TargetMediaFilter(void);
-	virtual ~TargetMediaFilter(void);
-
-public:
-	inline void setMediaDataCallback(const int streamID = 0, PostMediaDataCallback callback = NULL, void* userData = NULL)
+	namespace multimedia
 	{
-		mediaStreamID = streamID;
-		postMediaDataCallback = callback;
-		cbUserData = userData;
-	}
+		class TargetMediaFilter : public MediaFilter
+		{
+		public:
+			TargetMediaFilter(void);
+			virtual ~TargetMediaFilter(void);
 
-protected:
-	int mediaStreamID;
-	PostMediaDataCallback postMediaDataCallback;
-	void* cbUserData;
-};//class TargetMediaFilter
+// 		public:
+// 			inline void setMediaDataCallback(const int streamID = 0, PostMediaDataCallback callback = NULL, void* userData = NULL)
+// 			{
+// 				mediaStreamID = streamID;
+// 				postMediaDataCallback = callback;
+// 				cbUserData = userData;
+// 			}
 
-NS_END
+		protected:
+			int inputMediaData(MediaDataPtr mediaData) override;
+			bool isTargetFilter(void) const override
+			{
+				return true;
+			}
+
+// 		protected:
+// 			int mediaStreamID;
+// 			PostMediaDataCallback postMediaDataCallback;
+// 			void* cbUserData;
+		};//class TargetMediaFilter
+	}//namespace multimedia
+}//namespace framework
 
 #endif//TARGET_MEDIA_FILTER_H

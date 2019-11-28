@@ -11,6 +11,8 @@
 #define MEDIA_GRAPH_H
 
 #include "boost/noncopyable.hpp"
+#include "boost/shared_ptr.hpp"
+#include "boost/weak_ptr.hpp"
 #include "DataStruct/UnorderedMap.h"
 
 namespace framework
@@ -18,7 +20,9 @@ namespace framework
 	namespace multimedia
 	{
 		class MediaFilter;
-		using MediaFilterGroup = UnorderedMap<const std::string, MediaFilter*>;
+		using MediaFilterPtr = boost::shared_ptr<MediaFilter>;
+		using MediaFilterRef = boost::weak_ptr<MediaFilter>;
+		using MediaFilterGroup = UnorderedMap<const std::string, MediaFilterPtr>;
 
 		class MediaGraph : private boost::noncopyable
 		{
@@ -27,13 +31,13 @@ namespace framework
 			virtual ~MediaGraph(void);
 
 		public:
-			virtual int createNewGraph(void) = 0;
-			virtual int destroyGraph(void) = 0;
-			virtual MediaFilter* queryMediaFilterByID(const std::string& filterID);
+			virtual int createNewGraph(void);
+			virtual int destroyGraph(void);
+			virtual MediaFilterRef queryMediaFilterByID(const std::string& filterID);
 
 		protected:
 			virtual int postCreateNewGraph(void) = 0;
-			int addMediaFilter(const std::string& filterID, MediaFilter* filter = NULL);
+			int addMediaFilter(const std::string& filterID, MediaFilterPtr filter);
 			int removeMediaFilter(const std::string& filterID);
 
 		protected:

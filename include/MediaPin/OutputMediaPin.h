@@ -24,13 +24,17 @@ namespace framework
 			virtual ~OutputMediaPin(void);
 
 		public:
-			int inputMediaData(MediaData* mediaData = NULL) override;
+			int inputMediaData(MediaDataPtr mediaData) override;
 
 		protected:
-			int connectPin(const MediaPin* pin = NULL) override;
+			int connectPin(const MediaPinRef pin) override;
+			bool isOutputPin(void) const override
+			{
+				return false;
+			}
 
 		private:
-			Vector<MediaPin*> inputPinRefGroup;
+			Vector<MediaPinRef> inputPinGroup;
 		};//class OutputMediaPin
 	}//namespace multimedia
 }//namespace framework

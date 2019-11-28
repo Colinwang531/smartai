@@ -1,17 +1,13 @@
-#include "error.h"
 #include "MediaPin/MediaPin.h"
 
-NS_BEGIN(pin, 1)
-
-MediaPin::MediaPin()
-{}
-
-MediaPin::~MediaPin()
-{}
-
-int MediaPin::inputData(MediaDataPtr dataPtr)
+namespace framework
 {
-	return dataPtr ? ERR_OK : ERR_INVALID_PARAM;
-}
+	namespace multimedia
+	{
+		MediaPin::MediaPin()
+		{}
 
-NS_END
+		MediaPin::~MediaPin()
+		{}
+	}//namespace multimedia
+}//namespace framework

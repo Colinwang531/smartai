@@ -11,30 +11,30 @@
 #define MEDIA_MODEL_H
 
 #include "boost/function.hpp"
-#include "MediaData/MediaData.h"
-using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
+#include "boost/shared_ptr.hpp"
 
-NS_BEGIN(model, 1)
-
-typedef boost::function<int(MediaDataPtr)> PostInputMediaDataCallback;
-
-class MediaModel
+namespace framework
 {
-public:
-	MediaModel(void);
-	virtual ~MediaModel(void);
-
-public:
-	inline void setPostInputMediaDataCallback(PostInputMediaDataCallback callback = NULL)
+	namespace multimedia
 	{
-		postInputMediaDataCallback = callback;
-	}
-	virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+		class MediaData;
+		using MediaDataPtr = boost::shared_ptr<MediaData>;
+		typedef boost::function<int(MediaDataPtr)> PostInputMediaDataCallback;
 
-protected:
-	PostInputMediaDataCallback postInputMediaDataCallback;
-};//class MediaModel
+		class MediaModel
+		{
+		public:
+			MediaModel(void);
+			virtual ~MediaModel(void);
 
-NS_END
+		public:
+			void setPostInputMediaDataCallback(PostInputMediaDataCallback callback = NULL);
+			virtual int inputMediaData(MediaDataPtr mediaData) = 0;
+
+		protected:
+			PostInputMediaDataCallback postInputMediaDataCallback;
+		};//class MediaModel
+	}//namespace multimedia
+}//namespace framework
 
 #endif//MEDIA_MODEL_H

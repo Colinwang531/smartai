@@ -10,42 +10,30 @@
 #ifndef MEDIA_DEMUXER_H
 #define MEDIA_DEMUXER_H
 
-#include "boost/thread/condition.hpp"
 #include "MediaModel/MediaModel.h"
 
-NS_BEGIN(model, 1)
-
-class MediaDemuxer : public MediaModel
+namespace framework
 {
-public:
-	MediaDemuxer(void);
-	virtual ~MediaDemuxer(void);
-
-public:
-	virtual int openStream(const std::string streamUrl);
-	virtual int closeStream(void);
-	virtual const MediaDataSubID getVideoStreamID(void) const
+	namespace multimedia
 	{
-		return MediaDataSubID::MEDIA_DATA_SUB_ID_NONE;
-	}
-	virtual const MediaDataSubID getAudioStreamID(void) const
-	{
-		return MediaDataSubID::MEDIA_DATA_SUB_ID_NONE;
-	}
+		class MediaDemuxer : public MediaModel
+		{
+		public:
+			MediaDemuxer(void);
+			virtual ~MediaDemuxer(void);
 
-protected:
-	virtual void pullStreamDataProcess(void) = 0;
+		public:
+			virtual int openStream(const std::string& streamUrl);
+			virtual int closeStream(void);
 
-private:
-	int runPullStreamDataThread(void);
-	void pullStreamDataWorkerThread(void);
+		protected:
+			int inputMediaData(MediaDataPtr mediaData) override;
+			virtual void mediaDemuxerWorkerThread(void) = 0;
 
-private:
-	bool stopped;
-	boost::mutex mtx;
-	boost::condition condition;
-};//class MediaDemuxer
-
-NS_END
+		protected:
+			bool stopped;
+		};//class MediaDemuxer
+	}//namespace multimedia
+}//namespace framework
 
 #endif//MEDIA_DEMUXER_H

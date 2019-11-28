@@ -1,11 +1,13 @@
 #include "MediaModel/Decoder/MediaDecoder.h"
 
-NS_BEGIN(model, 1)
+namespace framework
+{
+	namespace multimedia
+	{
+		MediaDecoder::MediaDecoder()
+		{}
 
-MediaDecoder::MediaDecoder()
-{}
-
-MediaDecoder::~MediaDecoder()
-{}
-
-NS_END
+		MediaDecoder::~MediaDecoder()
+		{}
+	}//namespace multimedia
+}//namespace framework

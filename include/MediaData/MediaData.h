@@ -10,6 +10,8 @@
 #ifndef MEDIA_DATA_H
 #define MEDIA_DATA_H
 
+#include "predef.h"
+
 typedef enum class tagMediaDataMainID_t
 {
 	MEDIA_DATA_MAIN_ID_NONE = 0,
@@ -59,9 +61,8 @@ namespace framework
 			~MediaData(void);
 
 		public:
-			int copyData(const unsigned char* data = NULL, const unsigned long long dataBytes = 0);
 			int setData(
-				const unsigned char* data = NULL, const unsigned long long dataBytes = 0);
+				const unsigned char* data = NULL, const unsigned long long dataBytes = 0, const bool persist = false);
 			inline void setUserData(void* data = NULL)
 			{
 				userData = data;
@@ -70,22 +71,18 @@ namespace framework
 			{
 				return userData;
 			}
-			inline void setPixel(const int width = 0, const int height = 0)
+			inline void setImageParameter(const int width = 0, const int height = 0)
 			{
 				imageWidth = width;
 				imageHeight = height;
 			}
-			inline const int getWidth(void) const
+			inline void getImageParameter(int& width, int& height) const
 			{
-				return imageWidth;
-			}
-			inline const int getHeight(void) const
-			{
-				return imageHeight;
+				width = imageWidth;
+				height = imageHeight;
 			}
 			inline const unsigned char* getData(void) const
 			{
-				//		return mediaDataPtr ? mediaDataPtr.get() : NULL;
 				return mediaData;
 			}
 			inline const unsigned long long getDataBytes(void) const

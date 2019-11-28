@@ -4,30 +4,30 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Video and audio decoder filter class.
+// Video and audio data callback.
 //
 
-#ifndef AV_DECODER_FILTER_H
-#define AV_DECODER_FILTER_H
+#ifndef AV_DATA_CALLBACK_FILTER_H
+#define AV_DATA_CALLBACK_FILTER_H
 
-#include "MediaFilter/MediaFilter.h"
+#include "MediaFilter/TargetMediaFilter.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class AVDecoderFilter : public MediaFilter
+		class AVDataCallbackFilter : public TargetMediaFilter
 		{
 		public:
-			AVDecoderFilter(void);
-			virtual ~AVDecoderFilter(void);
+			AVDataCallbackFilter(void);
+			virtual ~AVDataCallbackFilter(void);
 
 		protected:
 			int createNewFilter(
 				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
 			int inputMediaData(MediaDataPtr mediaData) override;
-		};//class AVDecoderFilter
+		};//class AVDataCallbackFilter
 	}//namespace multimedia
 }//namespace framework
 
-#endif//AV_DECODER_FILTER_H
+#endif//AV_DATA_CALLBACK_FILTER_H

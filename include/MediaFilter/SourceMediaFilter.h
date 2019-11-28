@@ -12,18 +12,24 @@
 
 #include "MediaFilter.h"
 
-NS_BEGIN(filter, 1)
-
-class SourceMediaFilter : public MediaFilter
+namespace framework
 {
-public:
-	SourceMediaFilter(void);
-	virtual ~SourceMediaFilter(void);
+	namespace multimedia
+	{
+		class SourceMediaFilter : public MediaFilter
+		{
+		public:
+			SourceMediaFilter(void);
+			virtual ~SourceMediaFilter(void);
 
-protected:
-	int inputMediaData(MediaDataPtr mediaData) override;
-};//class SourceMediaFilter
-
-NS_END
+		protected:
+			bool isSourceFilter(void) const override
+			{
+				return true;
+			}
+			int inputMediaData(MediaDataPtr mediaData) override;
+		};//class SourceMediaFilter
+	}//namespace multimedia
+}//namespace framework
 
 #endif//SOURCE_MEDIA_FILTER_H

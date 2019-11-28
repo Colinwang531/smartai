@@ -1,12 +1,21 @@
+#include "error.h"
 #include "MediaFilter/TargetMediaFilter.h"
 
-NS_BEGIN(filter, 1)
+namespace framework
+{
+	namespace multimedia
+	{
+		TargetMediaFilter::TargetMediaFilter()
+			: MediaFilter()//, postMediaDataCallback{ NULL }, cbUserData{ NULL }, mediaStreamID{ 0 }
+		{}
 
-TargetMediaFilter::TargetMediaFilter() 
-	: MediaFilter(), postMediaDataCallback{ NULL }, cbUserData{ NULL }, mediaStreamID{ 0 }
-{}
+		TargetMediaFilter::~TargetMediaFilter()
+		{}
 
-TargetMediaFilter::~TargetMediaFilter()
-{}
-
-NS_END
+		int TargetMediaFilter::inputMediaData(MediaDataPtr mediaData)
+		{
+			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
+			return status;
+		}
+	}//namespace multimedia
+}//namespace framework

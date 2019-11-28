@@ -16,35 +16,37 @@ extern "C"
 }
 #include "MediaModel/Decoder/MediaDecoder.h"
 
-NS_BEGIN(model, 1)
-
-class FFmpegVideoDecoder : public MediaDecoder
+namespace framework
 {
-public:
-	FFmpegVideoDecoder(void);
-	virtual ~FFmpegVideoDecoder(void);
+	namespace multimedia
+	{
+		class FFmpegVideoDecoder : public MediaDecoder
+		{
+		public:
+			FFmpegVideoDecoder(void);
+			virtual ~FFmpegVideoDecoder(void);
 
-protected:
-	int inputMediaData(MediaDataPtr mediaData) override;
+		protected:
+			int inputMediaData(MediaDataPtr mediaData) override;
 
-private:
-	int initializeFFmpegAVCodec(MediaDataPtr mediaData);
-	void deinitializeFFmpegAVCodec(void);
-	int initializeFFmpegPacketAndFrame(MediaDataPtr mediaData);
-	void deinitializeFFmpegPacketAndFrame(void);
-	int decodeMediaData(MediaDataPtr mediaData);
+		private:
+			int initializeVideoDecoder(MediaDataPtr mediaData);
+			void deinitializeFFmpegAVCodec(void);
+			int initializeFFmpegPacketAndFrame(MediaDataPtr mediaData);
+			void deinitializeFFmpegPacketAndFrame(void);
+			int decodeMediaData(MediaDataPtr mediaData);
 
-private:
-	AVCodecContext* codecctx;
-	AVBufferRef* hwdevicectx;
-// 	void* avcodecPacket;
-// 	void* avcodecInputFrame;
-// 	void* avcodecOutputFrame;
-// 	void* swsContext;
-// 	unsigned char* outputFrameData;
-// 	int outputFrameDataBytes;
-};//class FFmpegVideoDecoder
-
-NS_END
+		private:
+			AVCodecContext* codecctx;
+			AVBufferRef* hwdevicectx;
+			// 	void* avcodecPacket;
+			// 	void* avcodecInputFrame;
+			// 	void* avcodecOutputFrame;
+			// 	void* swsContext;
+			// 	unsigned char* outputFrameData;
+			// 	int outputFrameDataBytes;
+		};//class FFmpegVideoDecoder
+	}//namespace multimedia
+}//namespace framework
 
 #endif//FFMPEG_VIDEO_DECODER_H

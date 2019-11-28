@@ -4,11 +4,11 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Video and audio decoder filter class.
+// Base class of formatter for converting video package.
 //
 
-#ifndef AV_DECODER_FILTER_H
-#define AV_DECODER_FILTER_H
+#ifndef IMAGE_FORMATTER_FILTER_H
+#define IMAGE_FORMATTER_FILTER_H
 
 #include "MediaFilter/MediaFilter.h"
 
@@ -16,18 +16,18 @@ namespace framework
 {
 	namespace multimedia
 	{
-		class AVDecoderFilter : public MediaFilter
+		class ImageFormatterFilter : public MediaFilter
 		{
 		public:
-			AVDecoderFilter(void);
-			virtual ~AVDecoderFilter(void);
+			ImageFormatterFilter(void);
+			virtual ~ImageFormatterFilter(void);
 
 		protected:
 			int createNewFilter(
 				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
 			int inputMediaData(MediaDataPtr mediaData) override;
-		};//class AVDecoderFilter
+		};//class ImageFormatterFilter
 	}//namespace multimedia
 }//namespace framework
 
-#endif//AV_DECODER_FILTER_H
+#endif//IMAGE_FORMATTER_FILTER_H

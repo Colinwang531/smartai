@@ -17,18 +17,19 @@ namespace framework
 	namespace multimedia
 	{
 		class MediaFilter;
+		using MediaFilterRef = boost::weak_ptr<MediaFilter>;
 
 		class InputMediaPin : public MediaPin
 		{
 		public:
-			InputMediaPin(const MediaFilter& filter);
+			InputMediaPin(MediaFilterRef filter);
 			virtual ~InputMediaPin(void);
 
 		public:
-			int inputMediaData(MediaData* mediaData = NULL) override;
+			int inputMediaData(MediaDataPtr mediaData) override;
 
 		protected:
-			int connectPin(const MediaPin* pin = NULL) override
+			int connectPin(const MediaPinRef pin) override
 			{
 				return ERR_NOT_SUPPORT;
 			}
@@ -38,7 +39,7 @@ namespace framework
 			}
 
 		private:
-			const MediaFilter& mediaFilter;
+			MediaFilterRef mediaFilterRef;
 		};//class InputMediaPin
 	}//namespace multimedia
 }//namespace framework

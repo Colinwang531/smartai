@@ -7,15 +7,23 @@ namespace framework
 {
 	namespace multimedia
 	{
-		InputMediaPin::InputMediaPin(const MediaFilter& filter) : MediaPin(), mediaFilter{ filter }
+		InputMediaPin::InputMediaPin(MediaFilterRef filter)
+			: MediaPin(), mediaFilterRef{ filter }
 		{}
 
 		InputMediaPin::~InputMediaPin()
 		{}
 
-		int InputMediaPin::inputMediaData(MediaData* mediaData /* = NULL */)
+		int InputMediaPin::inputMediaData(MediaDataPtr mediaData)
 		{
-			return mediaData ? mediaFilter.inputMediaData(mediaData) : ERR_INVALID_PARAM;
+			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
+
+			if (ERR_OK == status && !mediaFilterRef.expired())
+			{
+				status = mediaFilterRef.lock()->inputMediaData(mediaData);
+			}
+
+			return status;
 		}
 	}//namespace multimedia
 }//namespace framework

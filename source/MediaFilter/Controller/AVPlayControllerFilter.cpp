@@ -3,69 +3,68 @@
 #include "MediaPin/MediaPin.h"
 #include "MediaFilter/Controller/AVPlayControllerFilter.h"
 
-NS_BEGIN(filter, 1)
-
-AVPlayControllerFilter::AVPlayControllerFilter() : MediaFilter()
-{}
-
-AVPlayControllerFilter::~AVPlayControllerFilter()
-{}
-
-int AVPlayControllerFilter::createNewFilter(void)
+namespace framework
 {
-	int status{ ERR_BAD_ALLOC };
-
-	if (ERR_OK == createNewInputPin(NS(pin, 1)::VideoStreamInputPinID) && 
-		ERR_OK == createNewInputPin(NS(pin, 1)::AudioStreamInputPinID) &&
-		ERR_OK == createNewOutputPin(NS(pin, 1)::VideoStreamOutputPinID) &&
-		ERR_OK == createNewOutputPin(NS(pin, 1)::AudioStreamOutputPinID))
+	namespace multimedia
 	{
-		status = MediaFilter::createNewFilter();
-	}
+		AVPlayControllerFilter::AVPlayControllerFilter() : MediaFilter()
+		{}
 
-	return status;
-}
+		AVPlayControllerFilter::~AVPlayControllerFilter()
+		{}
 
-int AVPlayControllerFilter::destroyFilter()
-{
-	return ERR_OK;
-}
+		int AVPlayControllerFilter::createNewFilter(
+			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		{
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
+			{
+				createNewInputPin(VideoStreamInputPinID);
+				createNewOutputPin(VideoStreamOutputPinID);
+			}
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
+			{
+				createNewInputPin(AudioStreamInputPinID);
+				createNewOutputPin(AudioStreamOutputPinID);
+			}
 
-int AVPlayControllerFilter::inputMediaData(MediaDataPtr mediaData)
-{
-	return MediaFilter::postInputMediaData(mediaData);
-}
+			return MediaFilter::createNewFilter(mediaStreamID);
+		}
 
-int AVPlayControllerFilter::startPlay()
-{
-	return ERR_OK;
-}
+		int AVPlayControllerFilter::inputMediaData(MediaDataPtr mediaData)
+		{
+			return MediaFilter::inputMediaData(mediaData);
+		}
 
-int AVPlayControllerFilter::stopPlay()
-{
-	return ERR_OK;
-}
+		int AVPlayControllerFilter::startPlay()
+		{
+			return ERR_OK;
+		}
 
-int AVPlayControllerFilter::pausePlay()
-{
-	return ERR_OK;
-}
+		int AVPlayControllerFilter::stopPlay()
+		{
+			return ERR_OK;
+		}
 
-int AVPlayControllerFilter::fastPlay(const short speed /* = 1 */)
-{
-	return checkSpeedValue(speed);
-}
+		int AVPlayControllerFilter::pausePlay()
+		{
+			return ERR_OK;
+		}
 
-int AVPlayControllerFilter::slowPlay(const short speed /* = -1 */)
-{
-	return checkSpeedValue(speed);
-}
+		int AVPlayControllerFilter::fastPlay(const short speed /* = 1 */)
+		{
+			return checkSpeedValue(speed);
+		}
 
-int AVPlayControllerFilter::checkSpeedValue(const short speed /* = 1 */)
-{
-	return 1 == speed || 2 == speed || 4 == speed || 8 == speed || 16 == speed ||
-		-1 == speed || -2 == speed || -4 == speed || -8 == speed || -16 == speed ?
-		ERR_OK : ERR_INVALID_PARAM;
-}
+		int AVPlayControllerFilter::slowPlay(const short speed /* = -1 */)
+		{
+			return checkSpeedValue(speed);
+		}
 
-NS_END
+		int AVPlayControllerFilter::checkSpeedValue(const short speed /* = 1 */)
+		{
+			return 1 == speed || 2 == speed || 4 == speed || 8 == speed || 16 == speed ||
+				-1 == speed || -2 == speed || -4 == speed || -8 == speed || -16 == speed ?
+				ERR_OK : ERR_INVALID_PARAM;
+		}
+	}//namespace multimedia
+}//namespace framework

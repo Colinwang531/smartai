@@ -10,7 +10,7 @@
 #ifndef MEDIA_FILTER_H
 #define MEDIA_FILTER_H
 
-#include "boost/noncopyable.hpp"
+#include "boost/enable_shared_from_this.hpp"
 #include "DataStruct/UnorderedMap.h"
 
 static const std::string AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID";
@@ -27,39 +27,59 @@ namespace framework
 {
 	namespace multimedia
 	{
+		class MediaData;
 		class MediaModel;
 		class MediaPin;
-		using MediaPinGroup = UnorderedMap<const std::string, MediaPin*>;
+		using MediaDataPtr = boost::shared_ptr<MediaData>;
+		using MediaPinPtr = boost::shared_ptr<MediaPin>;
+		using MediaPinRef = boost::weak_ptr<MediaPin>;
+		using MediaPinGroup = UnorderedMap<const std::string, MediaPinPtr>;
+		using MediaModelPtr = boost::shared_ptr<MediaModel>;
+		using MediaModelRef = boost::weak_ptr<MediaModel>;
 
-		class MediaFilter : private boost::noncopyable
+		typedef enum class tagMediaStreamID_t
+		{
+			MEDIA_STREAM_ID_AV = 0,
+			MEDIA_STREAM_ID_VIDEO,
+			MEDIA_STREAM_ID_AUDIO
+		}MediaStreamID;
+
+		class MediaFilter : public boost::enable_shared_from_this<MediaFilter>
 		{
 		public:
 			MediaFilter(void);
 			virtual ~MediaFilter(void);
 
 		public:
-			virtual int createNewFilter(void);
+			virtual int createNewFilter(
+				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
 			virtual int destroyFilter(void);
-			virtual int inputMediaData(MediaData* mediaData = NULL);
-			virtual bool isSourceFilter(void) const;
-			virtual bool isTargetFilter(void) const;
-			inline MediaPin* queryMediaPinByID(const std::string& pinID)
+			virtual int inputMediaData(MediaDataPtr mediaData);
+			virtual bool isSourceFilter(void) const
+			{
+				return false;
+			}
+			virtual bool isTargetFilter(void) const
+			{
+				return false;
+			}
+			inline MediaPinRef queryMediaPinByID(const std::string& pinID)
 			{
 				return mediaPinGroup.at(pinID);
 			}
-			inline MediaModel* getMediaModel(void) const
+			inline MediaModelRef getMediaModel(void) const
 			{
-				return mediaModel;
+				return mediaModelPtr;
 			}
 
 		protected:
 			int createNewInputPin(const std::string& pinID);
 			int createNewOutputPin(const std::string& pinID);
-			int postInputMediaData(MediaData* mediaData = NULL);
+			int postInputMediaDataCallback(MediaDataPtr mediaData);
 
 		protected:
 			MediaPinGroup mediaPinGroup;
-			MediaModel* mediaModel;
+			MediaModelPtr mediaModelPtr;
 		};//class MediaFilter
 	}//namespace multimedia
 }//namespace framework

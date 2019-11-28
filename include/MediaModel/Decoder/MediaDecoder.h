@@ -12,15 +12,17 @@
 
 #include "MediaModel/MediaModel.h"
 
-NS_BEGIN(model, 1)
-
-class MediaDecoder : public MediaModel
+namespace framework
 {
-public:
-	MediaDecoder(void);
-	virtual ~MediaDecoder(void);
-};//class MediaDecoder
-
-NS_END
+	namespace multimedia
+	{
+		class MediaDecoder : public MediaModel
+		{
+		public:
+			MediaDecoder(void);
+			virtual ~MediaDecoder(void);
+		};//class MediaDecoder
+	}//namespace multimedia
+}//namespace framework
 
 #endif//MEDIA_DECODER_H
