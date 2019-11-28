@@ -39,12 +39,12 @@ namespace framework
 		private:
 			AVCodecContext* codecctx;
 			AVBufferRef* hwdevicectx;
-			// 	void* avcodecPacket;
-			// 	void* avcodecInputFrame;
-			// 	void* avcodecOutputFrame;
-			// 	void* swsContext;
-			// 	unsigned char* outputFrameData;
-			// 	int outputFrameDataBytes;
+			void* avcodecPacket;
+			void* avcodecInputFrame;
+			void* avcodecOutputFrame;
+			void* swsContext;
+			unsigned char* outputFrameData;
+			int outputFrameDataBytes;
 		};//class FFmpegVideoDecoder
 	}//namespace multimedia
 }//namespace framework

@@ -7,6 +7,7 @@ extern "C"
 #include "libavutil/imgutils.h"
 }
 #include "error.h"
+#include "MediaData/MediaData.h"
 #include "MediaModel/Decoder/FFmpeg/FFmpegVideoDecoder.h"
 
 namespace framework
@@ -32,8 +33,8 @@ namespace framework
 		}
 
 		FFmpegVideoDecoder::FFmpegVideoDecoder()
-			: MediaDecoder(), codecctx{ NULL }//, hwdevicectx{ NULL }//, avcodecPacket{ NULL }, avcodecInputFrame{ NULL }, avcodecOutputFrame{NULL},
-		//	swsContext{ NULL }, outputFrameData{ NULL }, outputFrameDataBytes{ 0 }
+			: MediaDecoder(), codecctx{ NULL }, hwdevicectx{ NULL }, avcodecPacket{ NULL }, avcodecInputFrame{ NULL }, avcodecOutputFrame{NULL},
+			swsContext{ NULL }, outputFrameData{ NULL }, outputFrameDataBytes{ 0 }
 		{}
 
 		FFmpegVideoDecoder::~FFmpegVideoDecoder(void)
@@ -49,10 +50,10 @@ namespace framework
 			if (ERR_OK == status && !codecctx)
 			{
 				status = initializeVideoDecoder(mediaData);
-				// 		if (ERR_OK == status)
-				// 		{
-				// 			status = initializeFFmpegPacketAndFrame(mediaData);
-				// 		}
+				if (ERR_OK == status)
+				{
+					status = initializeFFmpegPacketAndFrame(mediaData);
+				}
 			}
 
 			return ERR_OK == status ? decodeMediaData(mediaData) : status;
@@ -60,31 +61,59 @@ namespace framework
 
 		int FFmpegVideoDecoder::initializeVideoDecoder(MediaDataPtr mediaData)
 		{
-			// Find hardware device.
-			enum AVHWDeviceType deviceType{ av_hwdevice_find_type_by_name("cuda") };
-			if (AV_HWDEVICE_TYPE_NONE == deviceType)
+			int status{ ERR_NOT_SUPPORT };
+			AVCodec* avcodec{ NULL };
+			if (MediaDataSubID::MEDIA_DATA_SUB_ID_H264 == mediaData->getSubID())
 			{
-				deviceType = av_hwdevice_find_type_by_name("dxva2");
+				avcodec = avcodec_find_decoder(AV_CODEC_ID_H264);
+			}
+			else if (MediaDataSubID::MEDIA_DATA_SUB_ID_H265 == mediaData->getSubID())
+			{
+				avcodec = avcodec_find_decoder(AV_CODEC_ID_H265);
 			}
 
-			if (AV_HWDEVICE_TYPE_NONE == deviceType)
+			if (avcodec)
 			{
-				// Software decode.
-			}
-			else
-			{
-				// Hardware decode.
-				AVBufferRef* devicectx{ av_hwdevice_ctx_alloc(deviceType) };
-				if (devicectx && !av_hwdevice_ctx_init(devicectx))
+				codecctx = avcodec_alloc_context3(avcodec);
+				if (codecctx)
 				{
-					if (!av_hwdevice_ctx_create(&devicectx, deviceType, NULL, NULL, 0))
+					// Select hardware device.
+					enum AVHWDeviceType deviceType { av_hwdevice_find_type_by_name("cuda") };
+					if (AV_HWDEVICE_TYPE_NONE == deviceType)
 					{
-						codecctx->hw_device_ctx = av_buffer_ref(devicectx);
+						deviceType = av_hwdevice_find_type_by_name("dxva2");
 					}
+					// Use hardware device.
+					if (AV_HWDEVICE_TYPE_NONE != deviceType)
+					{
+						// Hardware decode.
+						AVBufferRef* devicectx{ av_hwdevice_ctx_alloc(deviceType) };
+						if (devicectx && !av_hwdevice_ctx_init(devicectx))
+						{
+							if (!av_hwdevice_ctx_create(&devicectx, deviceType, NULL, NULL, 0))
+							{
+								codecctx->hw_device_ctx = av_buffer_ref(devicectx);
+								codecctx->time_base.num = 1;
+								codecctx->time_base.den = 25;
+								codecctx->codec_type = AVMEDIA_TYPE_VIDEO;
+								mediaData->getImageParameter(codecctx->width, codecctx->height);
+								codecctx->pix_fmt = AV_PIX_FMT_YUV420P;
+								codecctx->get_format = getHWFormat;
+							}
+						}
+					}
+
+					if (!avcodec_open2(codecctx, avcodec, NULL))
+					{
+						status = ERR_OK;
+					}
+				}
+				else
+				{
+					status = ERR_BAD_ALLOC;
 				}
 			}
 
-			int status{ ERR_NOT_SUPPORT };
 // 			AVCodec* codec{ NULL };
 // 			AVFormatContext* formatctx{ reinterpret_cast<AVFormatContext*>(mediaData->getUserData()) };
 // 
@@ -144,33 +173,34 @@ namespace framework
 		int FFmpegVideoDecoder::initializeFFmpegPacketAndFrame(MediaDataPtr mediaData)
 		{
 			int status{ ERR_OK };
-			// 	const int imageWidth{ mediaData->getWidth() }, imageHeight{ mediaData->getHeight() };
-			// 
-			// 	avcodecInputFrame = av_frame_alloc();
-			// 	avcodecOutputFrame = av_frame_alloc();
-			// 	if (avcodecInputFrame && avcodecOutputFrame)
-			// 	{
-			// 		AVFrame* frame{ reinterpret_cast<AVFrame*>(avcodecOutputFrame) };
-			// 		outputFrameDataBytes = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
-			// 		outputFrameData = reinterpret_cast<unsigned char*>(av_malloc(outputFrameDataBytes));
-			// 		av_image_fill_arrays(
-			// 			frame->data, frame->linesize, outputFrameData, AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
-			// 	}
-			// 	else
-			// 	{
-			// 		status = ERR_BAD_ALLOC;
-			// 	}
-			// 
-			// 	avcodecPacket = av_packet_alloc();
-			// 	if (avcodecPacket)
-			// 	{
-			// 		AVPacket* pkt{ reinterpret_cast<AVPacket*>(avcodecPacket) };
-			// 		av_init_packet(pkt);
-			// 	}
-			// 	else
-			// 	{
-			// 		status = ERR_BAD_ALLOC;
-			// 	}
+			int imageWidth, imageHeight;
+			mediaData->getImageParameter(imageWidth, imageHeight);
+
+			avcodecInputFrame = av_frame_alloc();
+			avcodecOutputFrame = av_frame_alloc();
+			if (avcodecInputFrame && avcodecOutputFrame)
+			{
+				AVFrame* frame{ reinterpret_cast<AVFrame*>(avcodecOutputFrame) };
+				outputFrameDataBytes = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
+				outputFrameData = reinterpret_cast<unsigned char*>(av_malloc(outputFrameDataBytes));
+				av_image_fill_arrays(
+					frame->data, frame->linesize, outputFrameData, AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
+			}
+			else
+			{
+				status = ERR_BAD_ALLOC;
+			}
+
+			avcodecPacket = av_packet_alloc();
+			if (avcodecPacket)
+			{
+				AVPacket* pkt{ reinterpret_cast<AVPacket*>(avcodecPacket) };
+				av_init_packet(pkt);
+			}
+			else
+			{
+				status = ERR_BAD_ALLOC;
+			}
 
 			return status;
 		}
@@ -203,58 +233,61 @@ namespace framework
 
 		int FFmpegVideoDecoder::decodeMediaData(MediaDataPtr mediaData)
 		{
-// 			AVPacket* pkt{ reinterpret_cast<AVPacket*>(mediaData->getRawData()) };
-// 			int ret{ avcodec_send_packet(codecctx, pkt) };
-// 
-// 			if (0 > ret)
-// 			{
-// 				return ERR_BAD_OPERATE;
-// 			}
-// 
-// 			while (1)
-// 			{
-// 				AVFrame* inputAVFrame{ av_frame_alloc() };
-// 				AVFrame* outputAVFrame{ av_frame_alloc() };
-// 
-// 				if (!inputAVFrame || !outputAVFrame)
-// 				{
-// 					av_frame_free(&inputAVFrame);
-// 					av_frame_free(&outputAVFrame);
-// 					break;
-// 				}
-// 
-// 				ret = avcodec_receive_frame(codecctx, inputAVFrame);
-// 				if (AVERROR(EAGAIN) == ret || AVERROR_EOF == ret || 0 > ret)
-// 				{
-// 					av_frame_free(&inputAVFrame);
-// 					av_frame_free(&outputAVFrame);
-// 					break;
-// 				}
-// 
-// 				/* retrieve data from GPU to CPU */
-// 				AVFrame* tempAVFrame{ NULL };
-// 				if (inputAVFrame->format == pixelformat)
-// 				{
-// 					if (0 == av_hwframe_transfer_data(outputAVFrame, inputAVFrame, 0))
-// 					{
-// 						tempAVFrame = outputAVFrame;
-// 					}
-// 				}
-// 				else
-// 				{
-// 					tempAVFrame = inputAVFrame;
-// 				}
-// 
-// 				const int imageBufferBytes{
-// 					av_image_get_buffer_size((AVPixelFormat)tempAVFrame->format, tempAVFrame->width, tempAVFrame->height, 1) };
-// 				uint8_t* imageBuffer{ (uint8_t*)av_malloc(imageBufferBytes) };
-// 				if (0 < imageBufferBytes && imageBuffer &&
-// 					0 <= av_image_copy_to_buffer(
-// 						imageBuffer, imageBufferBytes, (const uint8_t* const*)tempAVFrame->data, (const int*)tempAVFrame->linesize,
-// 						(AVPixelFormat)tempAVFrame->format, tempAVFrame->width, tempAVFrame->height, 1))
-// 				{
-// 					if (postInputMediaDataCallback)
-// 					{
+			AVPacket pkt;
+			av_init_packet(&pkt);
+			pkt.data = const_cast<uint8_t*>(mediaData->getData());
+			pkt.size = mediaData->getDataBytes();
+			int ret{ avcodec_send_packet(codecctx, &pkt) };
+
+			if (0 > ret)
+			{
+				return ERR_BAD_OPERATE;
+			}
+
+			while (1)
+			{
+				AVFrame* inputAVFrame{ av_frame_alloc() };
+				AVFrame* outputAVFrame{ av_frame_alloc() };
+
+				if (!inputAVFrame || !outputAVFrame)
+				{
+					av_frame_free(&inputAVFrame);
+					av_frame_free(&outputAVFrame);
+					break;
+				}
+
+				ret = avcodec_receive_frame(codecctx, inputAVFrame);
+				if (AVERROR(EAGAIN) == ret || AVERROR_EOF == ret || 0 > ret)
+				{
+					av_frame_free(&inputAVFrame);
+					av_frame_free(&outputAVFrame);
+					break;
+				}
+
+				/* retrieve data from GPU to CPU */
+				AVFrame* tempAVFrame{ NULL };
+				if (inputAVFrame->format == pixelformat)
+				{
+					if (0 == av_hwframe_transfer_data(outputAVFrame, inputAVFrame, 0))
+					{
+						tempAVFrame = outputAVFrame;
+					}
+				}
+				else
+				{
+					tempAVFrame = inputAVFrame;
+				}
+
+				const int imageBufferBytes{
+					av_image_get_buffer_size((AVPixelFormat)tempAVFrame->format, tempAVFrame->width, tempAVFrame->height, 1) };
+				uint8_t* imageBuffer{ (uint8_t*)av_malloc(imageBufferBytes) };
+				if (0 < imageBufferBytes && imageBuffer &&
+					0 <= av_image_copy_to_buffer(
+						imageBuffer, imageBufferBytes, (const uint8_t* const*)tempAVFrame->data, (const int*)tempAVFrame->linesize,
+						(AVPixelFormat)tempAVFrame->format, tempAVFrame->width, tempAVFrame->height, 1))
+				{
+					if (postInputMediaDataCallback)
+					{
 // 						boost::shared_ptr<NS(media, 1)::MediaData> mediaDataPtr{
 // 							boost::make_shared<NS(media, 1)::MediaData>(
 // 								MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P) };
@@ -264,13 +297,13 @@ namespace framework
 // 							mediaDataPtr->setPixel(tempAVFrame->width, tempAVFrame->height);
 // 							postInputMediaDataCallback(mediaDataPtr);
 // 						}
-// 					}
-// 				}
-// 
-// 				av_frame_free(&inputAVFrame);
-// 				av_frame_free(&outputAVFrame);
-// 				av_freep(&imageBuffer);
-// 			}
+					}
+				}
+
+				av_frame_free(&inputAVFrame);
+				av_frame_free(&outputAVFrame);
+				av_freep(&imageBuffer);
+			}
 
 			return ERR_OK;
 		}
