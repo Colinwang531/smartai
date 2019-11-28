@@ -151,7 +151,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				//	lastKnownTickTime = currentTickTime;
 				//	capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
 				//}
-				postDetectAlarmInfoCallback(faceInfos[0], NULL, 0);
+				postDetectAlarmInfoCallback(faceInfos[0], (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 			}
 
 			 feedback.vecShowInfo.clear();
