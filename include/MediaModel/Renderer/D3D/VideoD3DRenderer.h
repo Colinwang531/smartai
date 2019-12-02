@@ -10,35 +10,31 @@
 #ifndef VIDEO_D3D_RENDERER_H
 #define VIDEO_D3D_RENDERER_H
 
-#include "Direct3d/D3D.h"
-using Direct3DPtr = boost::shared_ptr<NS(d3d, 1)::D3D>;
+#include "MediaModel/Renderer/D3D/D3D/D3D.h"
+using Direct3DPtr = boost::shared_ptr<framework::multimedia::D3D>;
 #include "MediaModel/Renderer/MediaRenderer.h"
 
-NS_BEGIN(model, 1)
-
-class VideoD3DRenderer : public MediaRenderer
+namespace framework
 {
-public:
-	VideoD3DRenderer(void);
-	virtual ~VideoD3DRenderer(void);
-
-public:
-	inline void setVideoDisplayWnd(const HWND hwnd = NULL)
+	namespace multimedia
 	{
-		videoDisplayWnd = hwnd;
-	}
+		class VideoD3DRenderer : public MediaRenderer
+		{
+		public:
+			VideoD3DRenderer(const HWND hwnd = NULL);
+			virtual ~VideoD3DRenderer(void);
 
-protected:
-	int inputMediaData(MediaDataPtr mediaData) override;
+		protected:
+			int inputMediaData(MediaDataPtr mediaData) override;
 
-private:
-	int createNewMediaRenderer(MediaDataPtr mediaData);
+		private:
+			int createNewMediaRenderer(MediaDataPtr mediaData);
 
-private:
-	HWND videoDisplayWnd;
-	Direct3DPtr direct3dPtr;
-};//class VideoD3DRenderer
-
-NS_END
+		private:
+			const HWND videoDisplayWnd;
+			Direct3DPtr direct3dPtr;
+		};//class VideoD3DRenderer
+	}//namespace multimedia
+}//namespace framework
 
 #endif//VIDEO_D3D_RENDERER_H

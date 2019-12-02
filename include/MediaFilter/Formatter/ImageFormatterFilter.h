@@ -23,9 +23,7 @@ namespace framework
 			virtual ~ImageFormatterFilter(void);
 
 		protected:
-			int createNewFilter(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
-			int inputMediaData(MediaDataPtr mediaData) override;
+			int createNewModel(MediaDataPtr mediaData) override;
 		};//class ImageFormatterFilter
 	}//namespace multimedia
 }//namespace framework

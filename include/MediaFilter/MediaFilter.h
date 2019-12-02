@@ -51,9 +51,9 @@ namespace framework
 			virtual ~MediaFilter(void);
 
 		public:
-			virtual int createNewFilter(
+			int createNewFilter(
 				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
-			virtual int destroyFilter(void);
+			int destroyFilter(void);
 			virtual int inputMediaData(MediaDataPtr mediaData);
 			virtual bool isSourceFilter(void) const
 			{
@@ -67,15 +67,14 @@ namespace framework
 			{
 				return mediaPinGroup.at(pinID);
 			}
-			inline MediaModelRef getMediaModel(void) const
-			{
-				return mediaModelPtr;
-			}
 
 		protected:
-			int createNewInputPin(const std::string& pinID);
-			int createNewOutputPin(const std::string& pinID);
-			int postInputMediaDataCallback(MediaDataPtr mediaData);
+			virtual int createNewModel(MediaDataPtr mediaData);
+			int createNewInputPin(
+				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
+			int createNewOutputPin(
+				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
+			int postInputMediaData(MediaDataPtr mediaData);
 
 		protected:
 			MediaPinGroup mediaPinGroup;

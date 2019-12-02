@@ -1,11 +1,13 @@
 #include "MediaModel/Renderer/MediaRenderer.h"
 
-NS_BEGIN(model, 1)
+namespace framework
+{
+	namespace multimedia
+	{
+		MediaRenderer::MediaRenderer()
+		{}
 
-MediaRenderer::MediaRenderer()
-{}
-
-MediaRenderer::~MediaRenderer()
-{}
-
-NS_END
+		MediaRenderer::~MediaRenderer()
+		{}
+	}//namespace multimedia
+}//namespace framework

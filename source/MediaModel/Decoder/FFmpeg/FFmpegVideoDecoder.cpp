@@ -264,13 +264,12 @@ namespace framework
 				{
 					if (postInputMediaDataCallback)
 					{
-						boost::shared_ptr<NS(media, 1)::MediaData> mediaDataPtr{
-							boost::make_shared<NS(media, 1)::MediaData>(
-								MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P) };
-						if (mediaDataPtr)
+						MediaDataPtr mediaDataPtr{boost::make_shared<MediaData>(
+							MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_NV12, mediaData->getPatchID()) };
+						if (mediaDataPtr && postInputMediaDataCallback)
 						{
 							mediaDataPtr->setData(imageBuffer, imageBufferBytes);
-							mediaDataPtr->setPixel(tempAVFrame->width, tempAVFrame->height);
+							mediaDataPtr->setImageParameter(tempAVFrame->width, tempAVFrame->height);
 							postInputMediaDataCallback(mediaDataPtr);
 						}
 					}

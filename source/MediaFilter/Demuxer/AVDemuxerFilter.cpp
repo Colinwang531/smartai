@@ -1,5 +1,5 @@
 #include "boost/make_shared.hpp"
-#include "MediaPin/MediaPin.h"
+#include "error.h"
 #include "MediaModel/Demuxer/FFmpeg/FFmpegLocalFileDemuxer.h"
 #include "MediaFilter/Demuxer/AVDemuxerFilter.h"
 
@@ -13,25 +13,29 @@ namespace framework
 		AVDemuxerFilter::~AVDemuxerFilter()
 		{}
 
-		int AVDemuxerFilter::createNewFilter(
-			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		int AVDemuxerFilter::createNewModel(MediaDataPtr mediaData)
 		{
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
+			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
+
+			if (ERR_OK == status)
 			{
-				createNewOutputPin(VideoStreamOutputPinID);
-			}
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
-			{
-				createNewOutputPin(AudioStreamOutputPinID);
+				const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
+
+				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_FILE == mediaDataMainID)
+				{
+					MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<FFmpegLocalFileDemuxer>() };
+					if (ffmpegLocalFileDemuxerPtr)
+					{
+						mediaModelPtr.swap(ffmpegLocalFileDemuxerPtr);
+					}
+				}
+				else
+				{
+					status = ERR_NOT_SUPPORT;
+				}
 			}
 
-			MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<FFmpegLocalFileDemuxer>() };
-			if (ffmpegLocalFileDemuxerPtr)
-			{
-				mediaModelPtr.swap(ffmpegLocalFileDemuxerPtr);
-			}
-
-			return MediaFilter::createNewFilter(mediaStreamID);
+			return ERR_OK == status ? MediaFilter::createNewModel(mediaData) : status;
 		}
 	}//namespace multimedia
 }//namespace framework

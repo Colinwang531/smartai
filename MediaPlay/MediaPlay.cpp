@@ -7,12 +7,16 @@ using FFmpegPlaybackMediaGraph = framework::multimedia::FFmpegPlaybackMediaGraph
 // using LivestreamMediaGraph = NS(graph, 1)::LivestreamMediaGraph;
 // #include "MediaModel/Accessor/MediaAccessor.h"
 // using MediaAccessor = NS(model, 1)::MediaAccessor;
-#include "MediaModel/Demuxer/MediaDemuxer.h"
+//#include "MediaModel/Demuxer/MediaDemuxer.h"
 // using MediaDemuxer = NS(model, 1)::MediaDemuxer;
 // #include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
 // using VideoD3DRenderer = NS(model, 1)::VideoD3DRenderer;
-#include "MediaFilter/MediaFilter.h"
-// using TargetMediaFilter = NS(filter, 1)::TargetMediaFilter;
+#include "MediaFilter/Renderer/AVRendererFilter.h"
+using AVRendererFilterPtr = boost::shared_ptr<framework::multimedia::AVRendererFilter>;
+using MediaFilterRef = boost::weak_ptr<framework::multimedia::MediaFilter>;
+#include "MediaData/MediaData.h"
+using MediaData = framework::multimedia::MediaData;
+using MediaDataPtr = boost::shared_ptr<MediaData>;
 #include "DataStruct/UnorderedMap.h"
 using MediaPlayGroup = UnorderedMap<int, MediaGraphPtr>;
 #include "MediaPlay.h"
@@ -30,38 +34,25 @@ int MEDIAPLAY_StartPlayback(
 		MediaGraphPtr mediaGraphPtr{ boost::make_shared<FFmpegPlaybackMediaGraph>() };
 		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->createNewGraph())
 		{
-// 			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(NS(filter, 1)::AVMediaVideoRendererFilterID) };
-// 			if (!videoRendererFilterRef.expired())
-// 			{
-// 				MediaModelRef mediaModelRef{ videoRendererFilterRef.lock()->getMediaModel() };
-// 				if (!mediaModelRef.expired())
-// 				{
-// 					boost::shared_ptr<VideoD3DRenderer> videoD3dRendererPtr{
-// 						boost::dynamic_pointer_cast<VideoD3DRenderer>(mediaModelRef.lock()) };
-// 					if (videoD3dRendererPtr)
-// 					{
-// 						videoD3dRendererPtr->setVideoDisplayWnd(hwnd);
-// 					}
-// 				}
-// 			}
+			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaVideoRendererFilterID) };
+			if (!videoRendererFilterRef.expired())
+			{
+				AVRendererFilterPtr avrendererFilterPtr{ 
+					boost::dynamic_pointer_cast<framework::multimedia::AVRendererFilter>(videoRendererFilterRef.lock()) };
+				avrendererFilterPtr->setHwnd(hwnd);
+			}
 
 			framework::multimedia::MediaFilterRef mediaFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaDemuxerFilterID) };
 			if (!mediaFilterRef.expired())
 			{
-				framework::multimedia::MediaModelRef mediaModelRef{ mediaFilterRef.lock()->getMediaModel() };
-				if (!mediaModelRef.expired())
+				MediaDataPtr mediaDataPtr{
+					boost::make_shared<MediaData>(
+						MediaDataMainID::MEDIA_DATA_MAIN_ID_FILE, MediaDataSubID::MEDIA_DATA_SUB_ID_NONE, MediaDataPatchID::MEDIA_DATA_PATCH_ID_NONE) };
+				if (mediaDataPtr)
 				{
-					boost::shared_ptr<framework::multimedia::MediaDemuxer> mediaDemuxerPtr{
-						boost::dynamic_pointer_cast<framework::multimedia::MediaDemuxer>(mediaModelRef.lock()) };
-					if (mediaDemuxerPtr)
-					{
-						status = mediaDemuxerPtr->openStream(filePath);
-
-						if (ERR_OK == status)
-						{
-							mediaPlayGroup.insert(++mediaPlayID, mediaGraphPtr);
-						}
-					}
+					mediaDataPtr->setData((const unsigned char*)filePath, (const int)strlen(filePath));
+					mediaFilterRef.lock()->inputMediaData(mediaDataPtr);
+					mediaPlayGroup.insert(++mediaPlayID, mediaGraphPtr);
 				}
 			}
 		}

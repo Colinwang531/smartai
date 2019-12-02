@@ -27,7 +27,6 @@ namespace framework
 			{
 				return true;
 			}
-			int inputMediaData(MediaDataPtr mediaData) override;
 		};//class SourceMediaFilter
 	}//namespace multimedia
 }//namespace framework

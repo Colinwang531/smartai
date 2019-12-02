@@ -12,15 +12,17 @@
 
 #include "MediaModel/MediaModel.h"
 
-NS_BEGIN(model, 1)
-
-class MediaRenderer : public MediaModel
+namespace framework
 {
-public:
-	MediaRenderer(void);
-	virtual ~MediaRenderer(void);
-};//class MediaRenderer
-
-NS_END
+	namespace multimedia
+	{
+		class MediaRenderer : public MediaModel
+		{
+		public:
+			MediaRenderer(void);
+			virtual ~MediaRenderer(void);
+		};//class MediaRenderer
+	}//namespace multimedia
+}//namespace framework
 
 #endif//MEDIA_RENDERER_H

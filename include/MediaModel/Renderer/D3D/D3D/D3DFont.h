@@ -15,22 +15,23 @@
 #include <string>
 #include "d3d9.h"
 #include "d3dx9core.h"
-#include "predef.h"
 
-NS_BEGIN(d3d, 1)
-
-class D3DFont
+namespace framework
 {
-public:
-	D3DFont(void);
-	~D3DFont(void);
+	namespace multimedia
+	{
+		class D3DFont
+		{
+		public:
+			D3DFont(void);
+			~D3DFont(void);
 
-	ID3DXFont* create(IDirect3DDevice9* device = NULL);
-	void destroy(ID3DXFont*& font);
-	int drawText(const std::string& text, const RECT& rect, ID3DXFont* font = NULL);
-};//class D3DFont
-
-NS_END
+			ID3DXFont* create(IDirect3DDevice9* device = NULL);
+			void destroy(ID3DXFont*& font);
+			int drawText(const std::string& text, const RECT& rect, ID3DXFont* font = NULL);
+		};//class D3DFont
+	}//namespace multimedia
+}//namespace framework
 
 #endif//D3D_FONT_H
 

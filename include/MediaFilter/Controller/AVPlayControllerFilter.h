@@ -29,11 +29,6 @@ namespace framework
 			int fastPlay(const short speed = 1);
 			int slowPlay(const short speed = -1);
 
-		protected:
-			int createNewFilter(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
-			int inputMediaData(MediaDataPtr mediaData) override;
-
 		private:
 			int checkSpeedValue(const short speed = 0);
 		};//class AVPlayControllerFilter

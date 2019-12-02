@@ -15,22 +15,23 @@
 
 #include "d3d9.h"
 #include "d3dx9shader.h"
-#include "predef.h"
 
-NS_BEGIN(d3d, 1)
-
-class D3DPixelShader
+namespace framework
 {
-public:
-	D3DPixelShader(void);
-	~D3DPixelShader(void);
+	namespace multimedia
+	{
+		class D3DPixelShader
+		{
+		public:
+			D3DPixelShader(void);
+			~D3DPixelShader(void);
 
-	IDirect3DPixelShader9* create(IDirect3DDevice9* device = NULL);
-	void destroy(IDirect3DPixelShader9*& shader);
-	ID3DXConstantTable* getShaderConstantTable(IDirect3DDevice9* device = NULL);
-};//class D3DPixelShader
-
-NS_END
+			IDirect3DPixelShader9* create(IDirect3DDevice9* device = NULL);
+			void destroy(IDirect3DPixelShader9*& shader);
+			ID3DXConstantTable* getShaderConstantTable(IDirect3DDevice9* device = NULL);
+		};//class D3DPixelShader
+	}//namespace multimedia
+}//namespace framework
 
 #endif//D3D_PIXEL_SHADER_H
 

@@ -25,14 +25,14 @@ namespace framework
 		int MediaFilter::createNewFilter(
 			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
 		{
-			// Filter with empty model is invalid.
-			if (mediaModelPtr)
+			if (!isSourceFilter())
 			{
-				mediaModelPtr->setPostInputMediaDataCallback(
-					boost::bind(
-						&MediaFilter::postInputMediaDataCallback, 
-						boost::enable_shared_from_this<MediaFilter>::shared_from_this(), 
-						_1));
+				createNewInputPin(mediaStreamID);
+			}
+
+			if (!isTargetFilter())
+			{
+				createNewOutputPin(mediaStreamID);
 			}
 
 			return ERR_OK;
@@ -50,47 +50,83 @@ namespace framework
 
 			if (ERR_OK == status)
 			{
-				status = mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : postInputMediaDataCallback(mediaData);
+				if (!mediaModelPtr)
+				{
+					status = createNewModel(mediaData);
+				}
+
+				// Media data is passed directly to next filter if model in the filter is not exist.
+				status = mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : postInputMediaData(mediaData);
 			}
 
 			return status;
 		}
 
-		int MediaFilter::createNewInputPin(const std::string& pinID)
+		int MediaFilter::createNewModel(MediaDataPtr mediaData)
 		{
-			int status{ pinID.empty() ? ERR_INVALID_PARAM : ERR_OK };
+			if (mediaModelPtr)
+			{
+				mediaModelPtr->setPostInputMediaDataCallback(
+					boost::bind(
+						&MediaFilter::postInputMediaData,
+						boost::enable_shared_from_this<MediaFilter>::shared_from_this(),
+						_1));
+			}
 
-			if (ERR_OK == status && !isSourceFilter())
+			return ERR_OK;
+		}
+
+		int MediaFilter::createNewInputPin(
+			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		{
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
 			{
 				MediaPinPtr inputPinPtr{
 					boost::make_shared<InputMediaPin>(
 						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
 				if (inputPinPtr)
 				{
-					mediaPinGroup.insert(pinID, inputPinPtr);
+					mediaPinGroup.insert(VideoStreamInputPinID, inputPinPtr);
+				}
+			}
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
+			{
+				MediaPinPtr inputPinPtr{
+					boost::make_shared<InputMediaPin>(
+						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
+				if (inputPinPtr)
+				{
+					mediaPinGroup.insert(AudioStreamInputPinID, inputPinPtr);
 				}
 			}
 
-			return status;
+			return ERR_OK;
 		}
 
-		int MediaFilter::createNewOutputPin(const std::string& pinID)
+		int MediaFilter::createNewOutputPin(
+			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
 		{
-			int status{ pinID.empty() ? ERR_INVALID_PARAM : ERR_OK };
-
-			if (ERR_OK == status && !isTargetFilter())
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
 			{
 				MediaPinPtr outputPinPtr{ boost::make_shared<OutputMediaPin>() };
 				if (outputPinPtr)
 				{
-					mediaPinGroup.insert(pinID, outputPinPtr);
+					mediaPinGroup.insert(VideoStreamOutputPinID, outputPinPtr);
+				}
+			}
+			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
+			{
+				MediaPinPtr outputPinPtr{ boost::make_shared<OutputMediaPin>() };
+				if (outputPinPtr)
+				{
+					mediaPinGroup.insert(AudioStreamOutputPinID, outputPinPtr);
 				}
 			}
 
-			return status;
+			return ERR_OK;
 		}
 
-		int MediaFilter::postInputMediaDataCallback(MediaDataPtr mediaData)
+		int MediaFilter::postInputMediaData(MediaDataPtr mediaData)
 		{
 			int status{ mediaData && !isTargetFilter() ? ERR_OK : ERR_INVALID_PARAM };
 

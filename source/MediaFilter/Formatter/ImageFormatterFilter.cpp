@@ -1,6 +1,6 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaPin/MediaPin.h"
+#include "MediaData/MediaData.h"
 // #include "MediaModel/Formatter/YV12ToBGR24Formatter.h"
 // using YV12ToBGR24Formatter = NS(model, 1)::YV12ToBGR24Formatter;
 #include "MediaFilter/Formatter/ImageFormatterFilter.h"
@@ -15,30 +15,30 @@ namespace framework
 		ImageFormatterFilter::~ImageFormatterFilter()
 		{}
 
-		int ImageFormatterFilter::createNewFilter(
-			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		int ImageFormatterFilter::createNewModel(MediaDataPtr mediaData)
 		{
-			int status{ ERR_BAD_ALLOC };
+			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
 
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
+			if (ERR_OK == status)
 			{
-				createNewInputPin(VideoStreamInputPinID);
-				createNewOutputPin(VideoStreamOutputPinID);
-// 				MediaModelPtr videoFormatterPtr{ boost::make_shared<YV12ToBGR24Formatter>() };
+				const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
+				const MediaDataSubID mediaDataSubID{ mediaData->getSubID() };
+
+				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
+				{
+					// 				MediaModelPtr videoFormatterPtr{ boost::make_shared<YV12ToBGR24Formatter>() };
 // 				if (videoFormatterPtr)
 // 				{
 // 					mediaModelPtr.swap(videoFormatterPtr);
 // 					status = ERR_OK;
 // 				}
+				}
+				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
+				{
+				}
 			}
 
-			return MediaFilter::createNewFilter(mediaStreamID);
-		}
-
-		int ImageFormatterFilter::inputMediaData(MediaDataPtr mediaData)
-		{
-			return ERR_OK;
-//			return mediaData && mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : ERR_INVALID_PARAM;
+			return ERR_OK == status ? MediaFilter::createNewModel(mediaData) : status;
 		}
 	}//namespace multimedia
 }//namespace framework

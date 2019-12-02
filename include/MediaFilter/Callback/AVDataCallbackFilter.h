@@ -21,11 +21,6 @@ namespace framework
 		public:
 			AVDataCallbackFilter(void);
 			virtual ~AVDataCallbackFilter(void);
-
-		protected:
-			int createNewFilter(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
-			int inputMediaData(MediaDataPtr mediaData) override;
 		};//class AVDataCallbackFilter
 	}//namespace multimedia
 }//namespace framework

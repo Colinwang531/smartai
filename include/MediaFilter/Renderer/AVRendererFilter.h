@@ -22,10 +22,17 @@ namespace framework
 			AVRendererFilter(void);
 			virtual ~AVRendererFilter(void);
 
+		public:
+			inline void setHwnd(void* hwnd = NULL)
+			{
+				videoRendererWnd = hwnd;
+			}
+
 		protected:
-			int createNewFilter(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
-			int inputMediaData(MediaDataPtr mediaData) override;
+			int createNewModel(MediaDataPtr mediaData) override;
+
+		private:
+			void* videoRendererWnd;
 		};//class AVRendererFilter
 	}//namespace multimedia
 }//namespace framework

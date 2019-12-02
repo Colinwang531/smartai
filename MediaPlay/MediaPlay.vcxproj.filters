@@ -43,9 +43,6 @@
     <Filter Include="Header Files\Filter\Renderer">
       <UniqueIdentifier>{8e58e87f-702b-403a-8751-d2668e75e891}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Filter\Demuxer">
-      <UniqueIdentifier>{1ad1ee21-9ce0-4f09-b3c7-d9aa30b7ab25}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Filter\Controller">
       <UniqueIdentifier>{bc7100c9-6bb9-4e87-9e91-b8113af7e65a}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,27 @@
     </Filter>
     <Filter Include="Source Files\Filter\Callback">
       <UniqueIdentifier>{a2b2da77-a58b-4fba-b90e-3c802e86505c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Demuxer">
+      <UniqueIdentifier>{1ad1ee21-9ce0-4f09-b3c7-d9aa30b7ab25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Renderer">
+      <UniqueIdentifier>{bf84b857-99a2-4aa8-87ad-9b0078dfb30f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Renderer\D3D">
+      <UniqueIdentifier>{9c3422bd-9e6b-4fba-8d70-50c9c9522377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Renderer\D3D\D3D">
+      <UniqueIdentifier>{082b0ed7-a433-4f6a-a9dd-1cecd896042b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Renderer">
+      <UniqueIdentifier>{95c0dc1b-4b0b-42a5-9d54-2726ae30b389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Renderer\D3D">
+      <UniqueIdentifier>{d0d29ba3-7169-4647-9691-d15cf39be370}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Renderer\D3D\D3D">
+      <UniqueIdentifier>{b0ccd5f0-00a8-4e1f-a3e0-067438d5bb89}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -215,6 +233,33 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaModel\Demuxer\FFmpeg\FFmpegLocalFileDemuxer.h">
       <Filter>Header Files\Model\Demuxer\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\MediaRenderer.h">
+      <Filter>Header Files\Model\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\VideoD3DRenderer.h">
+      <Filter>Header Files\Model\Renderer\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3D.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3DDevice.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3DDisplay.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3DFont.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3DPixelShader.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3DTexture.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Renderer\D3D\D3D\D3DVertexBuffer.h">
+      <Filter>Header Files\Model\Renderer\D3D\D3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -331,6 +376,33 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaModel\Demuxer\FFmpeg\FFmpegLocalFileDemuxer.cpp">
       <Filter>Source Files\Model\Demuxer\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\MediaRenderer.cpp">
+      <Filter>Source Files\Model\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\VideoD3DRenderer.cpp">
+      <Filter>Source Files\Model\Renderer\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3D.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3DDevice.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3DDisplay.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3DFont.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3DPixelShader.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3DTexture.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Renderer\D3D\D3D\D3DVertexBuffer.cpp">
+      <Filter>Source Files\Model\Renderer\D3D\D3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

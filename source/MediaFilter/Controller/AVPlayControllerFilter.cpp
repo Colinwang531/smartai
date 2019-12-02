@@ -1,6 +1,5 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Controller/AVPlayControllerFilter.h"
 
 namespace framework
@@ -12,28 +11,6 @@ namespace framework
 
 		AVPlayControllerFilter::~AVPlayControllerFilter()
 		{}
-
-		int AVPlayControllerFilter::createNewFilter(
-			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
-		{
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
-			{
-				createNewInputPin(VideoStreamInputPinID);
-				createNewOutputPin(VideoStreamOutputPinID);
-			}
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
-			{
-				createNewInputPin(AudioStreamInputPinID);
-				createNewOutputPin(AudioStreamOutputPinID);
-			}
-
-			return MediaFilter::createNewFilter(mediaStreamID);
-		}
-
-		int AVPlayControllerFilter::inputMediaData(MediaDataPtr mediaData)
-		{
-			return MediaFilter::inputMediaData(mediaData);
-		}
 
 		int AVPlayControllerFilter::startPlay()
 		{

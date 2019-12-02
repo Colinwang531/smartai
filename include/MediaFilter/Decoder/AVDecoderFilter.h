@@ -23,9 +23,7 @@ namespace framework
 			virtual ~AVDecoderFilter(void);
 
 		protected:
-			int createNewFilter(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV) override;
-			int inputMediaData(MediaDataPtr mediaData) override;
+			int createNewModel(MediaDataPtr mediaData) override;
 		};//class AVDecoderFilter
 	}//namespace multimedia
 }//namespace framework

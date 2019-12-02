@@ -1,5 +1,6 @@
 #include "boost/thread.hpp"
 #include "error.h"
+#include "MediaData/MediaData.h"
 #include "MediaModel/Demuxer/MediaDemuxer.h"
 
 namespace framework
@@ -11,6 +12,12 @@ namespace framework
 
 		MediaDemuxer::~MediaDemuxer()
 		{}
+
+		int MediaDemuxer::inputMediaData(MediaDataPtr mediaData)
+		{
+			return mediaData && MediaDataMainID::MEDIA_DATA_MAIN_ID_FILE == mediaData->getMainID() ?
+				openStream((const char*)mediaData->getData()) : ERR_INVALID_PARAM;
+		}
 
 		int MediaDemuxer::openStream(const std::string& streamUrl)
 		{
@@ -30,11 +37,6 @@ namespace framework
 		{
 			stopped = true;
 			return ERR_OK;
-		}
-
-		int MediaDemuxer::inputMediaData(MediaDataPtr mediaData)
-		{
-			return ERR_NOT_SUPPORT;
 		}
 	}//namespace multimedia
 }//namespace framework

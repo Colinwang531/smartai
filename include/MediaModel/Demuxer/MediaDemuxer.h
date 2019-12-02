@@ -22,12 +22,10 @@ namespace framework
 			MediaDemuxer(void);
 			virtual ~MediaDemuxer(void);
 
-		public:
-			virtual int openStream(const std::string& streamUrl);
-			virtual int closeStream(void);
-
 		protected:
 			int inputMediaData(MediaDataPtr mediaData) override;
+			virtual int openStream(const std::string& streamUrl);
+			virtual int closeStream(void);
 			virtual void mediaDemuxerWorkerThread(void) = 0;
 
 		protected:
