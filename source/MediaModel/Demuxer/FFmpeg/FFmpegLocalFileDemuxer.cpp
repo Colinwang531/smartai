@@ -148,6 +148,7 @@ namespace framework
 			getVideoSolution(width, height);
 			AVPacket packet;
 			av_init_packet(&packet);
+			AVCodecParameters* codecparams{ NULL };
 
 			while (formatctx && 0 == av_read_frame(formatctx, &packet))
 			{
@@ -158,11 +159,13 @@ namespace framework
 				{
 					mediaDataMainID = MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO;
 					mediaDataSubID = videoStreamID;
+					codecparams = formatctx->streams[videoStreamIndex]->codecpar;
 				}
 				else if (packet.stream_index == audioStreamIndex)
 				{
 					mediaDataMainID = MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO;
 					mediaDataSubID = audioStreamID;
+					codecparams = formatctx->streams[audioStreamIndex]->codecpar;
 				}
 
 				MediaDataPtr mediaDataPtr{
@@ -173,7 +176,7 @@ namespace framework
 				if (mediaDataPtr && postInputMediaDataCallback)
 				{
 					mediaDataPtr->setData(packet.data, packet.size);
-					mediaDataPtr->setUserData(formatctx);
+					mediaDataPtr->setUserData(codecparams);
 					mediaDataPtr->setImageParameter(width, height);
 					postInputMediaDataCallback(mediaDataPtr);
 				}

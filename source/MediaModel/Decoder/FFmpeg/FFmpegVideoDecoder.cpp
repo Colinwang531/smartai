@@ -74,14 +74,30 @@ namespace framework
 
 			if (avcodec)
 			{
+				// Select hardware device.
+				enum AVHWDeviceType deviceType { av_hwdevice_find_type_by_name("cuda") };
+				if (AV_HWDEVICE_TYPE_NONE == deviceType)
+				{
+					deviceType = av_hwdevice_find_type_by_name("dxva2");
+				}
+
+				for (int i = 0;; i++)
+				{
+					const AVCodecHWConfig* hardwareCfg = avcodec_get_hw_config(avcodec, i);
+					if (hardwareCfg && (hardwareCfg->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) && hardwareCfg->device_type == deviceType)
+					{
+						pixelformat = hardwareCfg->pix_fmt;
+						break;
+					}
+				}
+
 				codecctx = avcodec_alloc_context3(avcodec);
 				if (codecctx)
 				{
-					// Select hardware device.
-					enum AVHWDeviceType deviceType { av_hwdevice_find_type_by_name("cuda") };
-					if (AV_HWDEVICE_TYPE_NONE == deviceType)
+					AVCodecParameters* avcodecParameters{ reinterpret_cast<AVCodecParameters*>(mediaData->getUserData()) };
+					if (avcodecParameters)
 					{
-						deviceType = av_hwdevice_find_type_by_name("dxva2");
+						avcodec_parameters_to_context(codecctx, avcodecParameters);
 					}
 					// Use hardware device.
 					if (AV_HWDEVICE_TYPE_NONE != deviceType)
@@ -92,13 +108,8 @@ namespace framework
 						{
 							if (!av_hwdevice_ctx_create(&devicectx, deviceType, NULL, NULL, 0))
 							{
-								codecctx->hw_device_ctx = av_buffer_ref(devicectx);
-								codecctx->time_base.num = 1;
-								codecctx->time_base.den = 25;
-								codecctx->codec_type = AVMEDIA_TYPE_VIDEO;
-								mediaData->getImageParameter(codecctx->width, codecctx->height);
-								codecctx->pix_fmt = AV_PIX_FMT_YUV420P;
 								codecctx->get_format = getHWFormat;
+								codecctx->hw_device_ctx = av_buffer_ref(devicectx);
 							}
 						}
 					}
@@ -113,41 +124,6 @@ namespace framework
 					status = ERR_BAD_ALLOC;
 				}
 			}
-
-// 			AVCodec* codec{ NULL };
-// 			AVFormatContext* formatctx{ reinterpret_cast<AVFormatContext*>(mediaData->getUserData()) };
-// 
-// 			if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaData->getMainID() &&
-// 				AV_HWDEVICE_TYPE_NONE != devicetype)
-// 			{
-// 				int streamIndex{ av_find_best_stream(formatctx, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0) };
-// 				for (int i = 0;; i++)
-// 				{
-// 					const AVCodecHWConfig* config = avcodec_get_hw_config(codec, i);
-// 					if (config && (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) && config->device_type == devicetype)
-// 					{
-// 						pixelformat = config->pix_fmt;
-// 						codecctx = avcodec_alloc_context3(codec);
-// 
-// 						if (codecctx && 0 <= avcodec_parameters_to_context(codecctx, formatctx->streams[streamIndex]->codecpar))
-// 						{
-// 							codecctx->get_format = getHWFormat;
-// 
-// 							if (!av_hwdevice_ctx_create(&hwdevicectx, devicetype, NULL, NULL, 0))
-// 							{
-// 								codecctx->hw_device_ctx = av_buffer_ref(hwdevicectx);
-// 							}
-// 
-// 							if (!avcodec_open2(codecctx, codec, NULL))
-// 							{
-// 								status = ERR_OK;
-// 							}
-// 						}
-// 
-// 						break;
-// 					}
-// 				}
-// 			}
 
 			return status;
 		}
@@ -181,10 +157,10 @@ namespace framework
 			if (avcodecInputFrame && avcodecOutputFrame)
 			{
 				AVFrame* frame{ reinterpret_cast<AVFrame*>(avcodecOutputFrame) };
-				outputFrameDataBytes = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
+				outputFrameDataBytes = av_image_get_buffer_size(AV_PIX_FMT_NV12, imageWidth, imageHeight, 1);
 				outputFrameData = reinterpret_cast<unsigned char*>(av_malloc(outputFrameDataBytes));
 				av_image_fill_arrays(
-					frame->data, frame->linesize, outputFrameData, AV_PIX_FMT_YUV420P, imageWidth, imageHeight, 1);
+					frame->data, frame->linesize, outputFrameData, AV_PIX_FMT_NV12, imageWidth, imageHeight, 1);
 			}
 			else
 			{
@@ -236,7 +212,7 @@ namespace framework
 			AVPacket pkt;
 			av_init_packet(&pkt);
 			pkt.data = const_cast<uint8_t*>(mediaData->getData());
-			pkt.size = mediaData->getDataBytes();
+			pkt.size = (int)mediaData->getDataBytes();
 			int ret{ avcodec_send_packet(codecctx, &pkt) };
 
 			if (0 > ret)
@@ -288,15 +264,15 @@ namespace framework
 				{
 					if (postInputMediaDataCallback)
 					{
-// 						boost::shared_ptr<NS(media, 1)::MediaData> mediaDataPtr{
-// 							boost::make_shared<NS(media, 1)::MediaData>(
-// 								MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P) };
-// 						if (mediaDataPtr)
-// 						{
-// 							mediaDataPtr->setData(imageBuffer, imageBufferBytes);
-// 							mediaDataPtr->setPixel(tempAVFrame->width, tempAVFrame->height);
-// 							postInputMediaDataCallback(mediaDataPtr);
-// 						}
+						boost::shared_ptr<NS(media, 1)::MediaData> mediaDataPtr{
+							boost::make_shared<NS(media, 1)::MediaData>(
+								MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P) };
+						if (mediaDataPtr)
+						{
+							mediaDataPtr->setData(imageBuffer, imageBufferBytes);
+							mediaDataPtr->setPixel(tempAVFrame->width, tempAVFrame->height);
+							postInputMediaDataCallback(mediaDataPtr);
+						}
 					}
 				}
 
