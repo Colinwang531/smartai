@@ -107,10 +107,10 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 
 //	JPEGENCODER_RegisterPostJpegEncodeCallback(&MediaPlayDemoDlg::postJpegEncodeCallback, this);
-// 	MEDIAPLAY_StartPlay("D:\\video\\face_ditie1.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
-//	MEDIAPLAY_StartPlayback("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
-// 	MEDIAPLAY_StartLivestreamPlay(
+	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
+	MEDIAPLAY_StartPlayback("D:\\video\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
+	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
+	// 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.11", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 // 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
