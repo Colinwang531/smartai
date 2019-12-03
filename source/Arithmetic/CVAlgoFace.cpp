@@ -26,7 +26,9 @@ int CVAlgoFace::addFacePicture(const char* filePath /* = NULL */, const int face
 
 	if (filePath && 0 < faceID)
 	{
+		mtx.lock();
 		status = face.RegisterFace((char*)filePath, faceID) ? ERR_OK : ERR_BAD_OPERATE;
+		mtx.unlock();
 
 		if (ERR_OK == status)
 		{
@@ -94,6 +96,8 @@ void CVAlgoFace::arithmeticWorkerProcess()
 
 		if (bgr24ImagePtr)
 		{
+			mtx.lock();
+
 			std::vector</*FaceInfo*/AlarmInfo> faceInfos;
 //			boost::winapi::ULONGLONG_ nowProcTime{ GetTickCount64() };
 			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
@@ -155,6 +159,8 @@ void CVAlgoFace::arithmeticWorkerProcess()
 			}
 
 			 feedback.vecShowInfo.clear();
+
+			 mtx.unlock();
 		}
 		else
 		{

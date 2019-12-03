@@ -73,6 +73,7 @@ void CVAlgo::arithmeticProcessThread()
 	while (!stopped)
 	{
 		arithmeticWorkerProcess();
+		//Sleep(5);
 	}
 
 	while (1)

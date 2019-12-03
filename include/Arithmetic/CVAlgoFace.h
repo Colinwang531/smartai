@@ -43,6 +43,7 @@ private:
 	CRITICAL_SECTION criticalSection;
 //	int largestRegisterFaceID;
 	boost::unordered_map<int, const std::string> registerFaceImageGroup;
+	boost::mutex mtx;
 };//class CVAlgoFace
 
 NS_END
