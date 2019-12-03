@@ -24,7 +24,7 @@ namespace framework
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_FILE == mediaDataMainID)
 				{
-					MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<FFmpegLocalFileDemuxer>() };
+					MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<HikvisionSDKCapture>() };
 					if (ffmpegLocalFileDemuxerPtr)
 					{
 						mediaModelPtr.swap(ffmpegLocalFileDemuxerPtr);

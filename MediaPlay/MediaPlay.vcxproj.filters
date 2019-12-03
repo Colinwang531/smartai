@@ -169,6 +169,12 @@
     <Filter Include="Source Files\Model\Capture\Hikvision">
       <UniqueIdentifier>{fcac5461-2b4f-482a-86eb-bfb5922ff656}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Device">
+      <UniqueIdentifier>{b8a9a3ed-cc0d-4463-80c4-ee5552150579}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Device">
+      <UniqueIdentifier>{83df9ea7-3380-4521-81a8-f008880c0f2d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -302,6 +308,9 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaModel\Capture\MediaCapture.h">
       <Filter>Header Files\Model\Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDevice\MediaDevice.h">
+      <Filter>Header Files\Device</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -463,6 +472,9 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp">
       <Filter>Source Files\Filter\Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDevice\MediaDevice.cpp">
+      <Filter>Source Files\Device</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

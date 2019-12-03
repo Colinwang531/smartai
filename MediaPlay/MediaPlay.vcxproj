@@ -167,6 +167,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClInclude Include="..\include\DataStruct\UnorderedMap.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\MediaData\MediaData.h" />
+    <ClInclude Include="..\include\MediaDevice\MediaDevice.h" />
     <ClInclude Include="..\include\MediaFilter\Callback\AVDataCallbackFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h" />
     <ClInclude Include="..\include\MediaFilter\Controller\AVPlayControllerFilter.h" />
@@ -223,6 +224,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp" />
     <ClCompile Include="..\source\MediaData\MediaData.cpp" />
+    <ClCompile Include="..\source\MediaDevice\MediaDevice.cpp" />
     <ClCompile Include="..\source\MediaFilter\Callback\AVDataCallbackFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp" />
     <ClCompile Include="..\source\MediaFilter\Controller\AVPlayControllerFilter.cpp" />
