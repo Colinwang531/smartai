@@ -14,11 +14,6 @@ namespace framework
 			destroyGraph();
 		}
 
-		int MediaGraph::createNewGraph(void)
-		{
-			return postCreateNewGraph();
-		}
-
 		int MediaGraph::destroyGraph(void)
 		{
 			if (0 < mediaFilterGroup.size())

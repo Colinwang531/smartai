@@ -1,11 +1,13 @@
-#include "MediaConverter/MediaConverter.h"
+#include "MediaModel/Formatter/MediaFormatter.h"
 
-NS_BEGIN(converter, 1)
+namespace framework
+{
+	namespace multimedia
+	{
+		MediaFormatter::MediaFormatter()
+		{}
 
-MediaConverter::MediaConverter()
-{}
-
-MediaConverter::~MediaConverter()
-{}
-
-NS_END
+		MediaFormatter::~MediaFormatter()
+		{}
+	}//namespace multimedia
+}//namespace framework

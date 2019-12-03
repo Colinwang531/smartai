@@ -1,64 +1,124 @@
+#include "boost/make_shared.hpp"
+extern "C"
+{
+#include "libavutil/imgutils.h"
+}
 #include "error.h"
-#include "MediaConverter/FFmpegConverter.h"
+#include "MediaData/MediaData.h"
+#include "MediaModel/Formatter/FFmpeg/FFmpegImageFormatter.h"
 
-NS_BEGIN(converter, 1)
-
-FFmpegConverter::FFmpegConverter(const AVPixelFormat src, const AVPixelFormat target)
-	: MediaConverter(), inputAVFrame{ NULL }, outputAVFrame{ NULL }, swsContext{ NULL },
-	inputFrameData{ NULL }, outputFrameData{ NULL }, sourceFormat{ src }, targetFormat{ target }
-{}
-
-FFmpegConverter::~FFmpegConverter()
-{}
-
-int FFmpegConverter::initialize(const unsigned short imageWidth /* = 1920 */, const unsigned short imageHeight /* = 1080 */)
+namespace framework
 {
-	int status{ ERR_INVALID_PARAM };
-
-	if (0 < imageWidth && 0 < imageHeight)
+	namespace multimedia
 	{
-		deinitialize();
-		inputAVFrame = av_frame_alloc();
-		outputAVFrame = av_frame_alloc();
-		//It should be invoked only once.
-		swsContext = sws_getContext(
-			imageWidth, imageHeight, sourceFormat/*AV_PIX_FMT_YUV420P*/, imageWidth, imageHeight, targetFormat/*AV_PIX_FMT_BGR24*/, SWS_BICUBIC, NULL, NULL, NULL);
+		FFmpegImageFormatter::FFmpegImageFormatter(
+			const MediaDataSubID mediaDataSubID /* = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE */)
+			: MediaFormatter(), oformat{ mediaDataSubID }, ctx{ NULL }, iframe{ NULL }, oframe{ NULL }, obuffer{ NULL }, obufferBytes{ 0 }
+		{}
 
-		if (inputAVFrame && outputAVFrame && swsContext)
+		FFmpegImageFormatter::~FFmpegImageFormatter()
 		{
-			status = ERR_OK;
-		} 
-		else
-		{
-			deinitialize();
-			status = ERR_BAD_ALLOC;
+			destroyImageFormatter();
 		}
-	}
 
-	return status;
-}
+		int FFmpegImageFormatter::inputMediaData(MediaDataPtr mediaData)
+		{
+			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
 
-void FFmpegConverter::deinitialize()
-{
-	av_frame_free(&inputAVFrame);
-	av_frame_free(&outputAVFrame);
-	sws_freeContext(swsContext);
-}
+			if (ERR_OK == status)
+			{
+				int width{ 0 }, height{ 0 };
+				mediaData->getImageParameter(width, height);
 
-const unsigned char* FFmpegConverter::convert(
-	const unsigned char* imageData /* = NULL */, const unsigned long long imageBytes /* = 0 */,
-	const unsigned short imageWidth /* = 1920 */, const unsigned short imageHeight /* = 1080 */)
-{
-	int status{ ERR_OK };
+				if (0 < width && 0 < height)
+				{
+					if (!ctx)
+					{
+						status = createNewImageFormatter(mediaData);
+					}
+					
+					if (ERR_OK == status && ctx)
+					{
+						status = scaleImageData(mediaData);
+					}
+				}
+			}
 
-	if (ERR_OK == status && inputAVFrame && outputAVFrame && swsContext)
-	{
-		sws_scale(
-			swsContext, (uint8_t const* const*)inputAVFrame->data, inputAVFrame->linesize, 0,
-			imageHeight, outputAVFrame->data, outputAVFrame->linesize);
-	}
+			return status;
+		}
 
-	return outputFrameData;
-}
+		int FFmpegImageFormatter::createNewImageFormatter(MediaDataPtr mediaData)
+		{
+			iframe = av_frame_alloc();
+			oframe = av_frame_alloc();
+			int width{ 0 }, height{ 0 };
+			mediaData->getImageParameter(width, height);
+			const MediaDataSubID subid{ mediaData->getSubID() };
+			enum AVPixelFormat opixelformat { AV_PIX_FMT_NONE }, ipixelformat{ AV_PIX_FMT_NONE };
 
-NS_END
+			if (MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P == oformat)
+			{
+				opixelformat = AV_PIX_FMT_YUV420P;
+			}
+			obufferBytes = av_image_get_buffer_size(opixelformat, width, height, 1);
+			if (0 < obufferBytes)
+			{
+				obuffer = reinterpret_cast<unsigned char*>(av_malloc(obufferBytes));
+			}
+
+			if (iframe && oframe && obuffer)
+			{
+				av_image_fill_arrays(
+					oframe->data, oframe->linesize, obuffer, opixelformat, width, height, 1);
+				//It should be invoked only once.
+				const MediaDataSubID mediaDataSubID{ mediaData->getSubID() };
+				if (MediaDataSubID::MEDIA_DATA_SUB_ID_NV12 == mediaDataSubID)
+				{
+					ipixelformat = AV_PIX_FMT_NV12;
+				}
+
+				ctx = sws_getContext(
+					width, height, ipixelformat, width, height, opixelformat, SWS_BICUBIC, NULL, NULL, NULL);
+			}
+
+			return ctx ? ERR_OK : ERR_BAD_ALLOC;
+		}
+
+		void FFmpegImageFormatter::destroyImageFormatter()
+		{
+			av_frame_free(&iframe);
+			av_frame_free(&oframe);
+			sws_freeContext(ctx);
+		}
+
+		int FFmpegImageFormatter::scaleImageData(MediaDataPtr mediaData)
+		{
+			int width{ 0 }, height{ 0 };
+			mediaData->getImageParameter(width, height);
+			enum AVPixelFormat ipixelformat{ AV_PIX_FMT_NONE };
+			const MediaDataSubID mediaDataSubID{ mediaData->getSubID() };
+			if (MediaDataSubID::MEDIA_DATA_SUB_ID_NV12 == mediaDataSubID)
+			{
+				ipixelformat = AV_PIX_FMT_NV12;
+			}
+			av_image_fill_arrays(
+				iframe->data, iframe->linesize, mediaData->getData(), ipixelformat, width, height, 1);
+			
+			int sliceheight{ 
+				sws_scale(ctx, (uint8_t const* const*)iframe->data, iframe->linesize, 0, height, oframe->data, oframe->linesize) };
+			if (0 < sliceheight)
+			{
+				MediaDataPtr mediaDataPtr{
+					boost::make_shared<MediaData>(mediaData->getMainID(), oformat, mediaData->getPatchID()) };
+				if (mediaDataPtr && postInputMediaDataCallback)
+				{
+					mediaDataPtr->setData(obuffer, obufferBytes);
+					mediaDataPtr->setImageParameter(width, height);
+					postInputMediaDataCallback(mediaDataPtr);
+				}
+			}
+
+			return 0 < sliceheight ? ERR_OK : ERR_BAD_OPERATE;
+		}
+	}//namespace multimedia
+}//namespace framework

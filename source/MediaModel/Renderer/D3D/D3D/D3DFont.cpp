@@ -17,7 +17,7 @@ namespace framework
 
 			if (device)
 			{
-				if (SUCCEEDED(D3DXCreateFontA(device, 50, 20, 20, 0, FALSE, DEFAULT_CHARSET, 0, 0, 0, "Arial", &tempOfD3DFont)))
+				if (SUCCEEDED(D3DXCreateFontA(device, 22, 0, FW_NORMAL, 1, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, "Arial", &tempOfD3DFont)))
 				{
 				}
 			}
@@ -36,7 +36,28 @@ namespace framework
 
 		int D3DFont::drawText(const std::string& text, const RECT& rect, ID3DXFont* font /* = NULL */)
 		{
-			return font ? font->DrawTextA(NULL, text.c_str(), static_cast<int>(text.length()), (RECT*)&rect, DT_SINGLELINE | DT_NOCLIP | DT_CENTER | DT_VCENTER, 0xFFFFFF00) : ERR_INVALID_PARAM;
+// 			const char* word = "Arial";
+// 			const int len = (int)strlen(word);
+// 			D3DXFONT_DESC df;
+// 			ZeroMemory(&df, sizeof(D3DXFONT_DESC));
+// 			df.Height = 25;
+// 			df.Width = 12;
+// 			df.MipLevels = D3DX_DEFAULT;
+// 			df.Italic = false;
+// 			df.CharSet = DEFAULT_CHARSET;
+// 			df.OutputPrecision = 0;
+// 			df.Quality = 0;
+// 			df.PitchAndFamily = 0;
+// 			memcpy_s(df.FaceName, len, word, len);
+// 
+// 			RECT rc;
+// 			rc.left = 100;
+// 			rc.top = 100;
+// 			rc.right = 500;
+// 			rc.bottom = 500;
+
+			int status{ font->/*DrawTextA(NULL, "Hello World", -1, &rc, DT_TOP | DT_LEFT, 0xff000000)*/DrawTextA(NULL, text.c_str(), -1, (RECT*)&rect, DT_SINGLELINE | DT_NOCLIP | DT_LEFT | DT_TOP, 0xF5F5F500) };
+			return status;
 		}
 	}//namespace multimedia
 }//namespace framework

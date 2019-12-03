@@ -27,16 +27,13 @@ namespace framework
 
 				if (ERR_OK == status && direct3dPtr)
 				{
+					RECT rect{ 0 };
+					GetClientRect(videoDisplayWnd, &rect);
+					direct3dPtr->drawText("Display for testing.", rect);
+
 					int width{ 0 }, height{ 0 };
 					mediaData->getImageParameter(width, height);
 					status = direct3dPtr->drawImage((const char*)mediaData->getData(), width, height);
-
-					RECT rect;
-					rect.top = 10;
-					rect.left = 10;
-					rect.right = 1000;
-					rect.bottom = 100;
-					direct3dPtr->drawText("Display for testing.", rect);
 				}
 			}
 

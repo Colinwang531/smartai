@@ -10,7 +10,6 @@
 #ifndef TARGET_MEDIA_FILTER_H
 #define TARGET_MEDIA_FILTER_H
 
-#include "predef.h"
 #include "MediaFilter.h"
 
 //typedef void (CALLBACK* PostMediaDataCallback)(const int streamID, const unsigned char* mediaData, const int dataBytes, void* userData);

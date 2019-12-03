@@ -1,8 +1,8 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaGraph/FFmpeg/FFmpegPlaybackMediaGraph.h"
+#include "MediaGraph/PlaybackMediaGraph.h"
 using MediaGraphPtr = boost::shared_ptr<framework::multimedia::MediaGraph>;
-using FFmpegPlaybackMediaGraph = framework::multimedia::FFmpegPlaybackMediaGraph;
+using PlaybackMediaGraph = framework::multimedia::PlaybackMediaGraph;
 // #include "MediaGraph/LivestreamMediaGraph.h"
 // using LivestreamMediaGraph = NS(graph, 1)::LivestreamMediaGraph;
 // #include "MediaModel/Accessor/MediaAccessor.h"
@@ -31,7 +31,7 @@ int MEDIAPLAY_StartPlayback(
 
 	if (filePath && hwnd)
 	{
-		MediaGraphPtr mediaGraphPtr{ boost::make_shared<FFmpegPlaybackMediaGraph>() };
+		MediaGraphPtr mediaGraphPtr{ boost::make_shared<PlaybackMediaGraph>() };
 		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->createNewGraph())
 		{
 			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaVideoRendererFilterID) };

@@ -31,12 +31,11 @@ namespace framework
 			virtual ~MediaGraph(void);
 
 		public:
-			virtual int createNewGraph(void);
+			virtual int createNewGraph(void) = 0;
 			virtual int destroyGraph(void);
-			virtual MediaFilterRef queryMediaFilterByID(const std::string& filterID);
+			MediaFilterRef queryMediaFilterByID(const std::string& filterID);
 
 		protected:
-			virtual int postCreateNewGraph(void) = 0;
 			int addMediaFilter(const std::string& filterID, MediaFilterPtr filter);
 			int removeMediaFilter(const std::string& filterID);
 

@@ -1,51 +1,50 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2019, ***, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2019-07-25
-//		Description:					FFmpeg帧格式转换类
-//
-//		History:						Author									Date														Description
-//											王科威									2019-07-25										创建
+// Image converter using FFmpeg library.
 //
 
-#ifndef FFMPEG_CONVERTER_H
-#define FFMPEG_CONVERTER_H
+#ifndef FFMPEG_IMAGE_FORMATTER_H
+#define FFMPEG_IMAGE_FORMATTER_H
 
 extern "C"
 {
 #include "libavformat/avformat.h"
 #include "libswscale/swscale.h"
 }
-#include "MediaConverter/MediaConverter.h"
+#include "MediaModel/Formatter/MediaFormatter.h"
 
-NS_BEGIN(converter, 1)
-
-class FFmpegConverter : public MediaConverter
+namespace framework
 {
-public:
-	FFmpegConverter(const AVPixelFormat src, const AVPixelFormat target);
-	virtual ~FFmpegConverter(void);
+	namespace multimedia
+	{
+		class FFmpegImageFormatter : public MediaFormatter
+		{
+		public:
+			FFmpegImageFormatter(
+				const MediaDataSubID mediaDataSubID = MediaDataSubID::MEDIA_DATA_SUB_ID_NONE);
+			virtual ~FFmpegImageFormatter(void);
 
-protected:
-	int initialize(
-		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) override;
-	void deinitialize(void) override;
-	const unsigned char* convert(
-		const unsigned char* imageData = NULL, const unsigned long long imageBytes = 0,
-		const unsigned short imageWidth = 1920, const unsigned short imageHeight = 1080) override;
+		protected:
+			int inputMediaData(MediaDataPtr mediaData) override;
 
-protected:
-	AVFrame* inputAVFrame;
-	AVFrame* outputAVFrame;
-	unsigned char* inputFrameData;
-	unsigned char* outputFrameData;
-	struct SwsContext* swsContext;
-	const AVPixelFormat sourceFormat;
-	const AVPixelFormat targetFormat;
-};//class FFmpegConverter
+		protected:
+			int createNewImageFormatter(MediaDataPtr mediaData);
+			void destroyImageFormatter(void);
+			int scaleImageData(MediaDataPtr mediaData);
 
-NS_END
+		protected:
+			const MediaDataSubID oformat;
+			struct SwsContext* ctx;
+			AVFrame* iframe;
+			AVFrame* oframe;
+			unsigned char* obuffer;
+			int obufferBytes;
+		};//class FFmpegImageFormatter
+	}//namespace multimedia
+}//namespace framework
 
-#endif//FFMPEG_CONVERTER_H
+#endif//FFMPEG_IMAGE_FORMATTER_H

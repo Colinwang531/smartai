@@ -10,35 +10,24 @@
 #ifndef LIVESTREAM_MEDIA_GRAPH_H
 #define LIVESTREAM_MEDIA_GRAPH_H
 
-#include "MediaGraph.h"
+#include "AVPlayMediaGraph.h"
 
-NS_BEGIN(graph, 1)
-
-class LivestreamMediaGraph : public MediaGraph
+namespace framework
 {
-public:
-	LivestreamMediaGraph(void);
-	virtual ~LivestreamMediaGraph(void);
+	namespace multimedia
+	{
+		class LivestreamMediaGraph : public AVPlayMediaGraph
+		{
+		public:
+			LivestreamMediaGraph(void);
+			virtual ~LivestreamMediaGraph(void);
 
-protected:
-	int createNewGraph(void) override;
-	int destroyGraph(void) override;
-	int linkMediaGraph(void) override;
-
-protected:
-	// Decoder and renderer filters were created by user.
-	virtual int createNewVideoDecoderFilter(void);
-	virtual int createNewAudioDecoderFilter(void);
-	virtual int createNewVideoRendererFilter(void);
-	virtual int createNewAudioRendererFilter(void);
-	virtual int createNewVideoFormatterFilter(void);
-
-private:
-	// Live stream and callback data capture filters were created by creator.
-	virtual int createNewLivestreamCaptureFilter(void);
-	virtual int createNewDataCaptureFilter(void);
-};//class LivestreamMediaGraph
-
-NS_END
+		protected:
+			int createNewGraph(void) override;
+			int buildMediaGraph(void) override;
+			virtual int createNewLivestreamCaptureFilter(void);
+		};//class LivestreamMediaGraph
+	}//namespace multimedia
+}//namespace framework
 
 #endif//LIVESTREAM_MEDIA_GRAPH_H

@@ -1,8 +1,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-// #include "MediaModel/Formatter/YV12ToBGR24Formatter.h"
-// using YV12ToBGR24Formatter = NS(model, 1)::YV12ToBGR24Formatter;
+#include "MediaModel/Formatter/FFmpeg/FFmpegImageFormatter.h"
 #include "MediaFilter/Formatter/ImageFormatterFilter.h"
 
 namespace framework
@@ -26,12 +25,12 @@ namespace framework
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
 				{
-					// 				MediaModelPtr videoFormatterPtr{ boost::make_shared<YV12ToBGR24Formatter>() };
-// 				if (videoFormatterPtr)
-// 				{
-// 					mediaModelPtr.swap(videoFormatterPtr);
-// 					status = ERR_OK;
-// 				}
+					MediaModelPtr nv12toyuv420pImageFormatter{ 
+						boost::make_shared<FFmpegImageFormatter>(MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P) };
+					if (nv12toyuv420pImageFormatter)
+					{
+						mediaModelPtr.swap(nv12toyuv420pImageFormatter);
+					}
 				}
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
 				{

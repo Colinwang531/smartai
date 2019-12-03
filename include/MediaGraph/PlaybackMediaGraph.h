@@ -10,13 +10,13 @@
 #ifndef PLAYBACK_MEDIA_GRAPH_H
 #define PLAYBACK_MEDIA_GRAPH_H
 
-#include "MediaGraph.h"
+#include "AVPlayMediaGraph.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class PlaybackMediaGraph : public MediaGraph
+		class PlaybackMediaGraph : public AVPlayMediaGraph
 		{
 		public:
 			PlaybackMediaGraph(void);
@@ -24,23 +24,9 @@ namespace framework
 
 		protected:
 			int createNewGraph(void) override;
-			int postCreateNewGraph(void) override;
-
-		protected:
-			// Filters of demuxer, decoder, image formatter and renderer were created by user.
-			virtual int createNewDemuxerFilter(void) = 0;
-			virtual int createNewImageFormatterFilter(void) = 0;
-			virtual int createNewVideoDecoderFilter(void) = 0;
-			virtual int createNewAudioDecoderFilter(void) = 0;
-			virtual int createNewVideoRendererFilter(void) = 0;
-			virtual int createNewSoundPlayerFilter(void) = 0;
-
-		private:
-			// Filters of Play controller and data capture were created by creator.
+			int buildMediaGraph(void) override;
+			virtual int createNewDemuxerFilter(void);
 			virtual int createNewPlayControllerFilter(void);
-			virtual int createNewDataCaptureFilter(void);
-			// Connect all filters.
-			int linkMediaFilter(void);
 		};//class PlaybackMediaGraph
 	}//namespace multimedia
 }//namespace framework
