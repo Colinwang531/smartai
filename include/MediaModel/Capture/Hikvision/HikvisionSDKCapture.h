@@ -10,9 +10,6 @@
 #ifndef HIKVISION_SDK_CAPTURE_H
 #define HIKVISION_SDK_CAPTURE_H
 
-#include "boost/shared_ptr.hpp"
-#include "Device/Device.h"
-using DevicePtr = boost::shared_ptr<NS(device, 1)::Device>;
 #include "MediaModel/Capture/MediaCapture.h"
 
 namespace framework
@@ -26,15 +23,8 @@ namespace framework
 			virtual ~HikvisionSDKCapture(void);
 
 		protected:
-			int openStream(
-				const std::string& username, const std::string& password,
-				const std::string& ipaddr, const unsigned short port = 80, 
-				const unsigned short channel = 0, void* hwnd = NULL) override;
+			int openStream(const std::string& streamUrl) override;
 			int closeStream(void) override;
-
-		private:
-			DevicePtr devicePtr;
-			unsigned long streamID;
 		};//class HikvisionSDKCapture
 	}//namespace multimedia
 }//namespace framework

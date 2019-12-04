@@ -16,24 +16,26 @@
 #include "Arithmetic/CVAlgo.h"
 #include "BaseSleepDll.h"
 
-NS_BEGIN(algo, 1)
-
-class CVAlgoSleep : public CVAlgo
+namespace framework
 {
-public:
-	CVAlgoSleep(void);
-	~CVAlgoSleep(void);
+	namespace arithmetic
+	{
+		class CVAlgoSleep : public CVAlgo
+		{
+		public:
+			CVAlgoSleep(void);
+			~CVAlgoSleep(void);
 
-protected:
-	int initializeArithmetic() override;
-	int deinitializeArithmetic(void) override;
-	void arithmeticWorkerProcess(void) override;
+		protected:
+			int initializeArithmetic() override;
+			int deinitializeArithmetic(void) override;
+			void arithmeticWorkerProcess(void) override;
 
-private:
-	CSleepAlgorithmClass sleep;
-	FeedBackSleep feedback;
-};//class CVAlgoSleep
-
-NS_END
+		private:
+			CSleepAlgorithmClass sleep;
+			FeedBackSleep feedback;
+		};//class CVAlgoSleep
+	}//namespace arithmetic
+}//namespace framework
 
 #endif//CV_ALGO_SLEEP_H

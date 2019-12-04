@@ -10,7 +10,6 @@
 #ifndef MEDIA_CAPTURE_H
 #define MEDIA_CAPTURE_H
 
-#include "boost/shared_ptr.hpp"
 #include "MediaModel/MediaModel.h"
 
 namespace framework
@@ -28,10 +27,7 @@ namespace framework
 
 		protected:
 			int inputMediaData(MediaDataPtr mediaData) override;
-			virtual int openStream(
-				const std::string& username, const std::string& password, 
-				const std::string& ipaddr, const unsigned short port = 80,
-				const unsigned short channel = 0, void* hwnd = NULL) = 0;
+			virtual int openStream(const std::string& streamUrl) = 0;
 			virtual int closeStream(void) = 0;
 
 		protected:

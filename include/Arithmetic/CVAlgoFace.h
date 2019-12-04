@@ -18,33 +18,35 @@
 #include "Arithmetic/CVAlgo.h"
 #include "BaseFaceDll.h"
 
-NS_BEGIN(algo, 1)
-
-class CVAlgoFace : public CVAlgo
+namespace framework
 {
-public:
-	CVAlgoFace(void);
-	~CVAlgoFace(void);
+	namespace arithmetic
+	{
+		class CVAlgoFace : public CVAlgo
+		{
+		public:
+			CVAlgoFace(void);
+			~CVAlgoFace(void);
 
-public:
-	int addFacePicture(const char* filePath = NULL, const int faceID = 0);
-	int removeFacePicture(const long long uuid = -1);
+		public:
+			int addFacePicture(const char* filePath = NULL, const int faceID = 0);
+			int removeFacePicture(const long long uuid = -1);
 
-protected:
-	int initializeArithmetic() override;
-	int deinitializeArithmetic(void) override;
-	void arithmeticWorkerProcess(void) override;
+		protected:
+			int initializeArithmetic() override;
+			int deinitializeArithmetic(void) override;
+			void arithmeticWorkerProcess(void) override;
 
-private:
-//	int loadAndRegisterFacePicture(const char* directoryFilePath = NULL);
+		private:
+			//	int loadAndRegisterFacePicture(const char* directoryFilePath = NULL);
 
-private:
-	CFaceAlgorithmClass face;
-	CRITICAL_SECTION criticalSection;
-//	int largestRegisterFaceID;
-	boost::unordered_map<int, const std::string> registerFaceImageGroup;
-};//class CVAlgoFace
-
-NS_END
+		private:
+			CFaceAlgorithmClass face;
+			CRITICAL_SECTION criticalSection;
+			//	int largestRegisterFaceID;
+			boost::unordered_map<int, const std::string> registerFaceImageGroup;
+		};//class CVAlgoFace
+	}//namespace arithmetic
+}//namespace framework
 
 #endif//CV_ALGO_FACE_H

@@ -4,46 +4,45 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Abstract base class of device.
+// Abstract base class of media device.
 //
 
-#ifndef DEVICE_H
-#define DEVICE_H
+#ifndef MEDIA_DEVICE_H
+#define MEDIA_DEVICE_H
 
 #include "boost/function.hpp"
+#include "boost/shared_ptr.hpp"
 #include "Mutex/RWLock.h"
-#include "MediaData/MediaData.h"
-using MediaDataPtr = boost::shared_ptr<NS(media, 1)::MediaData>;
 
-NS_BEGIN(device, 1)
-
-typedef boost::function<int(MediaDataPtr)> PostInputMediaDataCallback;
-
-class Device
+namespace framework
 {
-public:
-	Device(void);
-	virtual ~Device(void);
-
-public:
-	virtual int createNewDevice(void);
-	virtual int destoryDevice(void);
-	inline unsigned long long getDeviceCount(void) const
+	namespace multimedia
 	{
-		ReadLock rl{ mtx };
-		return deviceCount;
-	}
-	inline void setPostInputMediaDataCallback(PostInputMediaDataCallback callback = NULL)
-	{
-		postInputMediaDataCallback = callback;
-	}
+		class MediaData;
+		using MediaDataPtr = boost::shared_ptr<MediaData>;
+		typedef boost::function<int(MediaDataPtr)> MediaDataCaptureCallback;
 
-protected:
-	static SharedMutex mtx;
-	static unsigned long long deviceCount;
-	PostInputMediaDataCallback postInputMediaDataCallback;
-};//class Device
+		class MediaDevice
+		{
+		public:
+			MediaDevice(void);
+			virtual ~MediaDevice(void);
 
-NS_END
+		public:
+			inline void setMediaDataCaptureCallback(MediaDataCaptureCallback callback = NULL)
+			{
+				mediaDataCaptureCallback = callback;
+			}
+			//Return : The total number of media device has been created.
+			virtual int openStream(const std::string& streamUrl);
+			virtual int closeStream(void);
 
-#endif//DEVICE_H
+		protected:
+			static SharedMutex mtx;
+			static int count;
+			MediaDataCaptureCallback mediaDataCaptureCallback;
+		};//class MediaDevice
+	}//namespace multimedia
+}//namespace framework
+
+#endif//MEDIA_DEVICE_H

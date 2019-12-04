@@ -6,7 +6,7 @@
 
 #include "MediaPlay/MediaPlay.h"
 #include "Arithmetic/Arithmetic.h"
-#include "JpegEncoder/JpegEncoder.h"
+//#include "JpegEncoder/JpegEncoder.h"
 
 // MediaPlayDemoDlg dialog
 class MediaPlayDemoDlg : public CDialogEx

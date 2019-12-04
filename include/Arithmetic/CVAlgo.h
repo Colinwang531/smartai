@@ -17,97 +17,98 @@
 #include "boost/winapi/time.hpp"
 #include "DefGlobalVar.h"
 #include "MediaData/MediaData.h"
-using MediaData = NS(media, 1)::MediaData;
-#include "DataStruct/FIFOQueue.h"
+using MediaData = framework::multimedia::MediaData;
 using MediaDataPtr = boost::shared_ptr<MediaData>;
-using FIFOQueue = NS(datastruct, 1)::FIFOQueue<MediaDataPtr>;
+#include "DataStruct/FIFOQueue.h"
 
-NS_BEGIN(algo, 1)
-
-typedef enum class tagAlarmType_t
+namespace framework
 {
-	ALARM_TYPE_NONE = 0,
-	ALARM_TYPE_HELMET,
-	ALARM_TYPE_PHONE,
-	ALARM_TYPE_SLEEP,
-	ALARM_TYPE_FIGHT,
-	ALARM_TYPE_FACE,
-}AlarmType;
-
-typedef struct tagFaceInfo_t
-{
-	AlarmType type;
-	int similarity;
-	int imageBytes;
-	char* imageData;
-	long long faceID;
-}FaceInfo;
-
-typedef struct tagAlarmInfo_t
-{
-	AlarmType type;
-	int status;
-	int x;
-	int y;
-	int w;
-	int h;
-	int faceID;
-	float similarity;
-}AlarmInfo;
-
-typedef boost::function<void(const AlarmInfo, unsigned char*, int)> PostDetectAlarmInfoCallback;
-// typedef boost::function<void(MediaImagePtr, std::vector<FaceInfo>)> CaptureFaceInfoHandler;
-
-class CVAlgo
-{
-public:
-	CVAlgo(void);
-	virtual ~CVAlgo(void);
-
-public:
-	int initialize(void);
-	void deinitialize(void);
-	inline void setArithmeticID(const int id = 0)
+	namespace arithmetic
 	{
-		arithmeticID = id;
-	}
-	inline void setPostDetectAlarmInfoCallback(PostDetectAlarmInfoCallback callback = NULL)
-	{
-		postDetectAlarmInfoCallback = callback;
-	}
-	int inputImageData(const unsigned char* imageData = NULL, const int imageBytes = 0);
+		typedef enum class tagAlarmType_t
+		{
+			ALARM_TYPE_NONE = 0,
+			ALARM_TYPE_HELMET,
+			ALARM_TYPE_PHONE,
+			ALARM_TYPE_SLEEP,
+			ALARM_TYPE_FIGHT,
+			ALARM_TYPE_FACE,
+		}AlarmType;
 
-protected:
-	virtual int initializeArithmetic(void) = 0;
-	virtual int deinitializeArithmetic(void) = 0;
-	virtual void arithmeticWorkerProcess(void) = 0;
-	void getArithmeticInitParameter(
-		StruInitParams& parameters, const AlarmType alarmType = AlarmType::ALARM_TYPE_NONE);
+		typedef struct tagFaceInfo_t
+		{
+			AlarmType type;
+			int similarity;
+			int imageBytes;
+			char* imageData;
+			long long faceID;
+		}FaceInfo;
 
-private:
-	void arithmeticProcessThread(void);
+		typedef struct tagAlarmInfo_t
+		{
+			AlarmType type;
+			int status;
+			int x;
+			int y;
+			int w;
+			int h;
+			int faceID;
+			float similarity;
+		}AlarmInfo;
 
-protected:
-// 	CaptureAlarmInfoHandler captureAlarmInfoHandler;
-// 	CaptureFaceInfoHandler capturefaceInfoHandler;
-	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_WIDTH = 1920);
-	BOOST_STATIC_CONSTANT(unsigned short, IMAGE_HEIGHT = 1080);
-	BOOST_STATIC_CONSTANT(unsigned short, CHANNEL_NUMBER = 3);
+		typedef boost::function<void(const AlarmInfo, unsigned char*, int)> PostDetectAlarmInfoCallback;
+		// typedef boost::function<void(MediaImagePtr, std::vector<FaceInfo>)> CaptureFaceInfoHandler;
 
-protected:
-	FIFOQueue BGR24ImageQueue;
-	bool stopped;
-	//Guarantee work thread exited safely. 
-	boost::mutex mtx;
-	boost::condition condition;
-	PostDetectAlarmInfoCallback postDetectAlarmInfoCallback;
-	static boost::thread_group threadGroup;
-	unsigned long long totalFrameNumber;
+		class CVAlgo
+		{
+		public:
+			CVAlgo(void);
+			virtual ~CVAlgo(void);
 
-private:
-	int arithmeticID;
-};//class CVAlgo
+		public:
+			int initialize(void);
+			void deinitialize(void);
+			inline void setArithmeticID(const int id = 0)
+			{
+				arithmeticID = id;
+			}
+			inline void setPostDetectAlarmInfoCallback(PostDetectAlarmInfoCallback callback = NULL)
+			{
+				postDetectAlarmInfoCallback = callback;
+			}
+			int inputImageData(const unsigned char* imageData = NULL, const int imageBytes = 0);
 
-NS_END
+		protected:
+			virtual int initializeArithmetic(void) = 0;
+			virtual int deinitializeArithmetic(void) = 0;
+			virtual void arithmeticWorkerProcess(void) = 0;
+			void getArithmeticInitParameter(
+				StruInitParams& parameters, const AlarmType alarmType = AlarmType::ALARM_TYPE_NONE);
+
+		private:
+			void arithmeticProcessThread(void);
+
+		protected:
+			// 	CaptureAlarmInfoHandler captureAlarmInfoHandler;
+			// 	CaptureFaceInfoHandler capturefaceInfoHandler;
+			BOOST_STATIC_CONSTANT(unsigned short, IMAGE_WIDTH = 1920);
+			BOOST_STATIC_CONSTANT(unsigned short, IMAGE_HEIGHT = 1080);
+			BOOST_STATIC_CONSTANT(unsigned short, CHANNEL_NUMBER = 3);
+
+		protected:
+			FIFOQueue<MediaDataPtr> BGR24ImageQueue;
+			bool stopped;
+			//Guarantee work thread exited safely. 
+			boost::mutex mtx;
+			boost::condition condition;
+			PostDetectAlarmInfoCallback postDetectAlarmInfoCallback;
+			static boost::thread_group threadGroup;
+			unsigned long long totalFrameNumber;
+
+		private:
+			int arithmeticID;
+		};//class CVAlgo
+	}//namespace arithmetic
+}//namespace framework
 
 #endif//CV_ALGO_H

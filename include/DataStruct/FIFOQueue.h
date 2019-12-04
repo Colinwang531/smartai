@@ -14,9 +14,6 @@
 #define FIFO_QUEUE_H
 
 #include "boost/thread/mutex.hpp"
-#include "predef.h"
-
-NS_BEGIN(datastruct, 1)
 
 template <class T>
 class FIFOQueue
@@ -105,8 +102,6 @@ private:
 	std::vector<T> queue;
 	boost::mutex mtx;
 };//class FIFOQueue
-
-NS_END
 
 #endif//FIFO_QUEUE_H
 

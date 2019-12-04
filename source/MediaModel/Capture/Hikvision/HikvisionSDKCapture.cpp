@@ -1,46 +1,32 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "Device/Hikvision/HikvisionIPC.h"
-using HikvisionIPC = NS(device, 1)::HikvisionIPC;
+#include "MediaDevice/Hikvision/HikvisionDevice.h"
 #include "MediaModel/Capture/Hikvision/HikvisionSDKCapture.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		HikvisionSDKCapture::HikvisionSDKCapture() : MediaCapture(), streamID{ 0 }
+		HikvisionSDKCapture::HikvisionSDKCapture() : MediaCapture()
 		{}
 
 		HikvisionSDKCapture::~HikvisionSDKCapture(void)
 		{}
 
-		int HikvisionSDKCapture::openStream(
-			const std::string& username, const std::string& password, 
-			const std::string& ipaddr, const unsigned short port /* = 80 */, 
-			const unsigned short channel /* = 0 */, void* hwnd /* = NULL */)
+		int HikvisionSDKCapture::openStream(const std::string& streamUrl)
 		{
-			int status{ MediaAccessor::openStream(name, password, address, port, channel) };
+			int status{ ERR_OK };
 
 			if (ERR_OK == status)
 			{
-				DevicePtr hikvisionIPCDevicePtr{
-					boost::make_shared<HikvisionIPC>(name, password, address, port) };
-				if (hikvisionIPCDevicePtr)
+				MediaDevicePtr hikvisionDevicePtr{ boost::make_shared<HikvisionDevice>() };
+				if (hikvisionDevicePtr)
 				{
-					status = hikvisionIPCDevicePtr->createNewDevice();
+					hikvisionDevicePtr->setMediaDataCaptureCallback(postInputMediaDataCallback);
+					status = hikvisionDevicePtr->openStream(streamUrl);
 					if (ERR_OK == status)
 					{
-						boost::shared_ptr<NS(device, 1)::HikvisionIPC> hikvisionIPCPtr{
-							boost::dynamic_pointer_cast<NS(device, 1)::HikvisionIPC>(hikvisionIPCDevicePtr) };
-						if (ERR_OK == hikvisionIPCPtr->openStream(hwnd))
-						{
-							hikvisionIPCPtr->setPostInputMediaDataCallback(postInputMediaDataCallback);
-							devicePtr.swap(hikvisionIPCDevicePtr);
-						}
-						else
-						{
-							status = ERR_BAD_OPERATE;
-						}
+						mediaDevicePtr.swap(hikvisionDevicePtr);
 					}
 				}
 			}
@@ -50,15 +36,7 @@ namespace framework
 
 		int HikvisionSDKCapture::closeStream()
 		{
-			if (devicePtr)
-			{
-				boost::shared_ptr<NS(device, 1)::HikvisionIPC> hikvisionIPCPtr{
-							boost::dynamic_pointer_cast<NS(device, 1)::HikvisionIPC>(devicePtr) };
-				hikvisionIPCPtr->closeStream();
-				devicePtr->destoryDevice();
-			}
-
-			return MediaAccessor::closeStream();
+			return mediaDevicePtr ? mediaDevicePtr->closeStream() : ERR_BAD_OPERATE;
 		}
 	}
 }

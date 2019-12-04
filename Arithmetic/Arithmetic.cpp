@@ -3,23 +3,23 @@
 #include "error.h"
 #include "DataStruct/UnorderedMap.h"
 #include "Arithmetic/CVAlgoFace.h"
-using CVAlgoFace = NS(algo, 1)::CVAlgoFace;
+using CVAlgoFace = framework::arithmetic::CVAlgoFace;
 #include "Arithmetic/CVAlgoFight.h"
-using CVAlgoFight = NS(algo, 1)::CVAlgoFight;
+using CVAlgoFight = framework::arithmetic::CVAlgoFight;
 #include "Arithmetic/CVAlgoHelmet.h"
-using CVAlgoHelmet = NS(algo, 1)::CVAlgoHelmet;
+using CVAlgoHelmet = framework::arithmetic::CVAlgoHelmet;
 #include "Arithmetic/CVAlgoPhone.h"
-using CVAlgoPhone = NS(algo, 1)::CVAlgoPhone;
+using CVAlgoPhone = framework::arithmetic::CVAlgoPhone;
 #include "Arithmetic/CVAlgoSleep.h"
-using CVAlgoSleep = NS(algo, 1)::CVAlgoSleep;
+using CVAlgoSleep = framework::arithmetic::CVAlgoSleep;
 #include "Arithmetic.h"
 
-using ArithmeticPtr = boost::shared_ptr<NS(algo, 1)::CVAlgo>;
+using ArithmeticPtr = boost::shared_ptr<framework::arithmetic::CVAlgo>;
 UnorderedMap<const AlarmType, ArithmeticPtr> arithmeticGroup;
 UnorderedMap<const AlarmType, std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*>> alarmInfoNotifyCallbackGroup;
 
 static void postDetectAlarmInfoCallback(
-	const NS(algo, 1)::AlarmInfo alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes)
+	const framework::arithmetic::AlarmInfo alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes)
 {
 	AlarmInfo info;
 	info.type = (AlarmType)alarmInfo.type;

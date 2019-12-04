@@ -36,6 +36,10 @@ namespace framework
 			void destroyImageFormatter(void);
 			int scaleImageData(MediaDataPtr mediaData);
 
+		private:
+			void swapUV(
+				unsigned char* data = NULL, const int width = 0, const int height = 0);
+
 		protected:
 			const MediaDataSubID oformat;
 			struct SwsContext* ctx;

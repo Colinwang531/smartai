@@ -25,11 +25,11 @@ namespace framework
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
 				{
-					MediaModelPtr nv12toyuv420pImageFormatter{ 
+					MediaModelPtr imageFormatterPtr{ 
 						boost::make_shared<FFmpegImageFormatter>(MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P) };
-					if (nv12toyuv420pImageFormatter)
+					if (imageFormatterPtr)
 					{
-						mediaModelPtr.swap(nv12toyuv420pImageFormatter);
+						mediaModelPtr.swap(imageFormatterPtr);
 					}
 				}
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)

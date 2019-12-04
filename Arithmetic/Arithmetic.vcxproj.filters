@@ -87,6 +87,9 @@
     <ClInclude Include="..\include\MediaData\MediaData.h">
       <Filter>Header Files\MediaData</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\DataStruct\FIFOQueue.h">
+      <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

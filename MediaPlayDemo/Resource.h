@@ -15,6 +15,12 @@
 #define IDC_REGISTER_SLEEP              1005
 #define IDC_REGISTER_FIGHT              1006
 #define IDC_REGISTER_FACE               1007
+#define IDC_STATIC4                     1008
+#define IDC_STATIC5                     1009
+#define IDC_STATIC6                     1010
+#define IDC_STATIC7                     1011
+#define IDC_STATIC8                     1012
+#define IDC_STATIC9                     1013
 
 // Next default values for new objects
 // 

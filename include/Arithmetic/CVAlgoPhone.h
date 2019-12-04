@@ -16,24 +16,26 @@
 #include "Arithmetic/CVAlgo.h"
 #include "BasePhoneDll.h"
 
-NS_BEGIN(algo, 1)
-
-class CVAlgoPhone : public CVAlgo
+namespace framework
 {
-public:
-	CVAlgoPhone(void);
-	~CVAlgoPhone(void);
+	namespace arithmetic
+	{
+		class CVAlgoPhone : public CVAlgo
+		{
+		public:
+			CVAlgoPhone(void);
+			~CVAlgoPhone(void);
 
-protected:
-	int initializeArithmetic() override;
-	int deinitializeArithmetic(void) override;
-	void arithmeticWorkerProcess(void) override;
+		protected:
+			int initializeArithmetic() override;
+			int deinitializeArithmetic(void) override;
+			void arithmeticWorkerProcess(void) override;
 
-private:
-	CPhoneAlgorithmClass phone;
-	FeedBackPhone feedback;
-};//class CVAlgoPhone
-
-NS_END
+		private:
+			CPhoneAlgorithmClass phone;
+			FeedBackPhone feedback;
+		};//class CVAlgoPhone
+	}//namespace arithmetic
+}//namespace framework
 
 #endif//CV_ALGO_PHONE_H

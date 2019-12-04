@@ -1,29 +1,28 @@
-#include "error.h"
-#include "Device/Device.h"
+#include "MediaDevice/MediaDevice.h"
 
-NS_BEGIN(device, 1)
-
-SharedMutex Device::mtx;
-unsigned long long Device::deviceCount = 0;
-
-Device::Device()
-{}
-
-Device::~Device()
-{}
-
-int Device::createNewDevice()
+namespace framework
 {
-	WriteLock wl{ mtx };
-	++deviceCount;
-	return ERR_OK;
-}
+	namespace multimedia
+	{
+		SharedMutex MediaDevice::mtx;
+		int MediaDevice::count = 0;
 
-int Device::destoryDevice()
-{
-	WriteLock wl{ mtx };
-	--deviceCount;
-	return ERR_OK;
-}
+		MediaDevice::MediaDevice() : mediaDataCaptureCallback{ NULL }
+		{}
 
-NS_END
+		MediaDevice::~MediaDevice()
+		{}
+
+		int MediaDevice::openStream(const std::string& streamUrl)
+		{
+			WriteLock wl{ mtx };
+			return ++count;
+		}
+
+		int MediaDevice::closeStream()
+		{
+			WriteLock wl{ mtx };
+			return 0 < count ? --count : count;
+		}
+	}//namespace multimedia
+}//namespace framework

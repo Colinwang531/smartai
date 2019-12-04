@@ -2,7 +2,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaPin/MediaPin.h"
-#include "MediaFilter/Capture/LivestreamCaptureFilter.h"
+#include "MediaFilter/Capture/AVCaptureFilter.h"
 #include "MediaGraph/LivestreamMediaGraph.h"
 
 namespace framework
@@ -49,11 +49,11 @@ namespace framework
 		int LivestreamMediaGraph::createNewLivestreamCaptureFilter()
 		{
 			int status{ ERR_BAD_ALLOC };
-			MediaFilterPtr mediaFilterPtr{ boost::make_shared<LivestreamCaptureFilter>() };
+			MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVCaptureFilter>() };
 
 			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 			{
-				status = addMediaFilter(NS(filter, 1)::AVMediaLivestreamCaptureFilterID, mediaFilterPtr);
+				status = addMediaFilter(AVMediaLivestreamCaptureFilterID, mediaFilterPtr);
 			}
 
 			return status;

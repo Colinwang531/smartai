@@ -13,26 +13,28 @@
 #include "WindowsPlayM4.h"
 #include "MediaModel/Decoder/MediaDecoder.h"
 
-NS_BEGIN(model, 1)
-
-class HikvisionSDKDecoder : public MediaDecoder
+namespace framework
 {
-public:
-	HikvisionSDKDecoder(void);
-	virtual ~HikvisionSDKDecoder(void);
+	namespace multimedia
+	{
+		class HikvisionSDKDecoder : public MediaDecoder
+		{
+		public:
+			HikvisionSDKDecoder(void);
+			virtual ~HikvisionSDKDecoder(void);
 
-public:
-	int inputMediaData(MediaDataPtr mediaData) override;
+		public:
+			int inputMediaData(MediaDataPtr mediaData) override;
 
-private:
-	static void CALLBACK postDecodeFrameInfoCallback(
-		long decoderID = 0, char* decodeFrame = NULL, long frameBytes = 0, 
-		FRAME_INFO* frameInfo = NULL, void* nUser = NULL, void* nReserved2 = NULL);
+		private:
+			static void CALLBACK postSDKDecodeFrameCallback(
+				long decoderID = 0, char* decodeFrame = NULL, long frameBytes = 0,
+				FRAME_INFO* frameInfo = NULL, void* nUser = NULL, void* nReserved2 = NULL);
 
-private:
-	long decoderID;
-};//class HikvisionSDKDecoder
-
-NS_END
+		private:
+			long decoderID;
+		};//class HikvisionSDKDecoder
+	}//namespace multimedia
+}//namespace framework
 
 #endif//HIKVISION_SDK_DECODER_H

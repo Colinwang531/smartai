@@ -3,6 +3,7 @@
 #include "MediaData/MediaData.h"
 #include "MediaModel/Decoder/FFmpeg/FFmpegVideoDecoder.h"
 #include "MediaModel/Decoder/FFmpeg/FFmpegAudioDecoder.h"
+#include "MediaModel/Decoder/SDK/HikvisionSDKDecoder.h"
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 
 namespace framework
@@ -26,7 +27,16 @@ namespace framework
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
 				{
-					MediaModelPtr videoDecoderPtr{ boost::make_shared<FFmpegVideoDecoder>() };
+					MediaModelPtr videoDecoderPtr;
+					if (MediaDataSubID::MEDIA_DATA_SUB_ID_H264 == mediaDataSubID || MediaDataSubID::MEDIA_DATA_SUB_ID_H265 == mediaDataSubID)
+					{
+						videoDecoderPtr = boost::make_shared<FFmpegVideoDecoder>();
+					}
+					else if (MediaDataSubID::MEDIA_DATA_SUB_ID_HIKVISION == mediaDataSubID)
+					{
+						videoDecoderPtr = boost::make_shared<HikvisionSDKDecoder>();
+					}
+
 					if (videoDecoderPtr)
 					{
 						mediaModelPtr.swap(videoDecoderPtr);

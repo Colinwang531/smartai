@@ -109,9 +109,6 @@
     <Filter Include="Source Files\Filter\Formatter">
       <UniqueIdentifier>{85369717-dc29-43b2-9285-be7aa4cffdae}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Filter\Decoder\SDK">
-      <UniqueIdentifier>{87763438-9577-476c-86ff-ea60e6ea25d9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Filter\Callback">
       <UniqueIdentifier>{b01f9aa8-3e03-42ec-a2ad-c49e7d285330}</UniqueIdentifier>
     </Filter>
@@ -174,6 +171,18 @@
     </Filter>
     <Filter Include="Source Files\Device">
       <UniqueIdentifier>{83df9ea7-3380-4521-81a8-f008880c0f2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Device\Hikvision">
+      <UniqueIdentifier>{57890973-fc3b-4fe3-8596-049cdff08931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Device\Hikvision">
+      <UniqueIdentifier>{2ae50514-35f9-4ad7-8b49-489e2522fe00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Model\Decoder\SDK">
+      <UniqueIdentifier>{da12f9f0-6335-4add-8961-08ba91ef1cb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Model\Decoder\SDK">
+      <UniqueIdentifier>{192be101-ddc8-46be-ac8f-0936acd5c374}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -311,6 +320,15 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaDevice\MediaDevice.h">
       <Filter>Header Files\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDevice\Hikvision\HikvisionDevice.h">
+      <Filter>Header Files\Device\Hikvision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaDevice\EnableDeviceLoginAndLogout.h">
+      <Filter>Header Files\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModel\Decoder\SDK\HikvisionSDKDecoder.h">
+      <Filter>Header Files\Model\Decoder\SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -475,6 +493,12 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaDevice\MediaDevice.cpp">
       <Filter>Source Files\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaDevice\Hikvision\HikvisionDevice.cpp">
+      <Filter>Source Files\Device\Hikvision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModel\Decoder\SDK\HikvisionSDKDecoder.cpp">
+      <Filter>Source Files\Model\Decoder\SDK</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

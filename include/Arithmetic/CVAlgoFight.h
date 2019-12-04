@@ -16,24 +16,26 @@
 #include "Arithmetic/CVAlgo.h"
 #include "BaseFightDll.h"
 
-NS_BEGIN(algo, 1)
-
-class CVAlgoFight : public CVAlgo
+namespace framework
 {
-public:
-	CVAlgoFight(void);
-	~CVAlgoFight(void);
+	namespace arithmetic
+	{
+		class CVAlgoFight : public CVAlgo
+		{
+		public:
+			CVAlgoFight(void);
+			~CVAlgoFight(void);
 
-protected:
-	int initializeArithmetic() override;
-	int deinitializeArithmetic(void) override;
-	void arithmeticWorkerProcess(void) override;
+		protected:
+			int initializeArithmetic() override;
+			int deinitializeArithmetic(void) override;
+			void arithmeticWorkerProcess(void) override;
 
-private:
-	CFightAlgorithmClass fight;
-	FeedBackFight feedback;
-};//class CVAlgoFight
-
-NS_END
+		private:
+			CFightAlgorithmClass fight;
+			FeedBackFight feedback;
+		};//class CVAlgoFight
+	}//namespace arithmetic
+}//namespace framework
 
 #endif//CV_ALGO_FIGHT_H

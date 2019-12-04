@@ -1,10 +1,11 @@
+#include "boost/format.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaGraph/PlaybackMediaGraph.h"
 using MediaGraphPtr = boost::shared_ptr<framework::multimedia::MediaGraph>;
 using PlaybackMediaGraph = framework::multimedia::PlaybackMediaGraph;
-// #include "MediaGraph/LivestreamMediaGraph.h"
-// using LivestreamMediaGraph = NS(graph, 1)::LivestreamMediaGraph;
+#include "MediaGraph/LivestreamMediaGraph.h"
+using LivestreamMediaGraph = framework::multimedia::LivestreamMediaGraph;
 // #include "MediaModel/Accessor/MediaAccessor.h"
 // using MediaAccessor = NS(model, 1)::MediaAccessor;
 //#include "MediaModel/Demuxer/MediaDemuxer.h"
@@ -87,59 +88,35 @@ int MEDIAPLAY_StartLivestream(
 {
 	int status{ ERR_INVALID_PARAM };
 
-// 	if (name && password && address && 0 < port && 0 <= channel && hwnd)
-// 	{
-// 		++mediaPlayID;
-// 		MediaGraphPtr mediaGraphPtr{ boost::make_shared<LivestreamMediaGraph>() };
-// 		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->createNewGraph())
-// 		{
-// 			MediaFilterRef mediaDataCaptureFilterRef{ mediaGraphPtr->queryMediaFilterByID(NS(filter, 1)::AVMediaDataCaptureFilterID) };
-// 			if (!mediaDataCaptureFilterRef.expired())
-// 			{
-// 				boost::shared_ptr<TargetMediaFilter> targetMediaFilterPtr{
-// 					boost::dynamic_pointer_cast<TargetMediaFilter>(mediaDataCaptureFilterRef.lock()) };
-// 				if (targetMediaFilterPtr)
-// 				{
-// 					targetMediaFilterPtr->setMediaDataCallback(mediaPlayID, callback, userData);
-// 				}
-// 			}
-// 
-// 			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(NS(filter, 1)::AVMediaVideoRendererFilterID) };
-// 			if (!videoRendererFilterRef.expired())
-// 			{
-// 				MediaModelRef mediaModelRef{ videoRendererFilterRef.lock()->getMediaModel() };
-// 				if (!mediaModelRef.expired())
-// 				{
-// 					boost::shared_ptr<VideoD3DRenderer> videoD3dRendererPtr{
-// 						boost::dynamic_pointer_cast<VideoD3DRenderer>(mediaModelRef.lock()) };
-// 					if (videoD3dRendererPtr)
-// 					{
-// 						videoD3dRendererPtr->setVideoDisplayWnd(hwnd);
-// 					}
-// 				}
-// 			}
-// 
-// 			MediaFilterRef mediaFilterRef{ mediaGraphPtr->queryMediaFilterByID(NS(filter, 1)::AVMediaLivestreamCaptureFilterID) };
-// 			if (!mediaFilterRef.expired())
-// 			{
-// 				MediaModelRef mediaModelRef{ mediaFilterRef.lock()->getMediaModel() };
-// 				if (!mediaModelRef.expired())
-// 				{
-// 					boost::shared_ptr<MediaAccessor> mediaAccessorPtr{
-// 						boost::dynamic_pointer_cast<MediaAccessor>(mediaModelRef.lock()) };
-// 					if (mediaAccessorPtr)
-// 					{
-// 						status = mediaAccessorPtr->openStream(name, password, address, port, channel, hwnd);
-// 
-// 						if (ERR_OK == status)
-// 						{
-// 							mediaPlayGroup.insert(mediaPlayID, mediaGraphPtr);
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
+	if (name && password && address && 0 < port && 0 <= channel && hwnd)
+	{
+		MediaGraphPtr mediaGraphPtr{ boost::make_shared<LivestreamMediaGraph>() };
+		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->createNewGraph())
+		{
+			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaVideoRendererFilterID) };
+			if (!videoRendererFilterRef.expired())
+			{
+				AVRendererFilterPtr avrendererFilterPtr{
+					boost::dynamic_pointer_cast<framework::multimedia::AVRendererFilter>(videoRendererFilterRef.lock()) };
+				avrendererFilterPtr->setHwnd(hwnd);
+			}
+
+			MediaFilterRef mediaFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaLivestreamCaptureFilterID) };
+			if (!mediaFilterRef.expired())
+			{
+				MediaDataPtr mediaDataPtr{
+					boost::make_shared<MediaData>(
+						MediaDataMainID::MEDIA_DATA_MAIN_ID_STREAM, MediaDataSubID::MEDIA_DATA_SUB_ID_NONE, MediaDataPatchID::MEDIA_DATA_PATCH_ID_NONE) };
+				if (mediaDataPtr)
+				{
+					const std::string streamUrl{ (boost::format("%s:%s:%s:%d:%d") % name % password % address % port % channel).str() };
+					mediaDataPtr->setData((const unsigned char*)streamUrl.c_str(), (const int)streamUrl.length());
+					mediaFilterRef.lock()->inputMediaData(mediaDataPtr);
+					mediaPlayGroup.insert(++mediaPlayID, mediaGraphPtr);
+				}
+			}
+		}
+	}
 
 	return ERR_OK == status ? mediaPlayID : 0;
 }
@@ -148,15 +125,15 @@ int MEDIAPLAY_StopLivestream(const int playID /* = 0 */)
 {
 	int status{ 0 };
 
-// 	if (0 < playID)
-// 	{
-// 		MediaGraphPtr mediaGraphPtr{ mediaPlayGroup.at(playID) };
-// 		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->destroyGraph())
-// 		{
-// 			mediaPlayGroup.remove(playID);
-// 			status = 1;
-// 		}
-// 	}
+	if (0 < playID)
+	{
+		MediaGraphPtr mediaGraphPtr{ mediaPlayGroup.at(playID) };
+		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->destroyGraph())
+		{
+			mediaPlayGroup.remove(playID);
+			status = 1;
+		}
+	}
 
 	return status;
 }

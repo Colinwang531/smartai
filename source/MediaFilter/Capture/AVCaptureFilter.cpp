@@ -1,6 +1,7 @@
 #include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
+#include "MediaData/MediaData.h"
 #include "MediaModel/Capture/Hikvision/HikvisionSDKCapture.h"
 #include "MediaFilter/Capture/AVCaptureFilter.h"
 
@@ -22,7 +23,7 @@ namespace framework
 			{
 				const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
 
-				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_FILE == mediaDataMainID)
+				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_STREAM == mediaDataMainID)
 				{
 					MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<HikvisionSDKCapture>() };
 					if (ffmpegLocalFileDemuxerPtr)

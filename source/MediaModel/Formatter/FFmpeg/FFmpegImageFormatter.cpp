@@ -76,6 +76,10 @@ namespace framework
 				{
 					ipixelformat = AV_PIX_FMT_NV12;
 				}
+				else if (MediaDataSubID::MEDIA_DATA_SUB_ID_YV12 == mediaDataSubID)
+				{
+					ipixelformat = AV_PIX_FMT_NV21;
+				}
 
 				ctx = sws_getContext(
 					width, height, ipixelformat, width, height, opixelformat, SWS_BICUBIC, NULL, NULL, NULL);
@@ -95,14 +99,31 @@ namespace framework
 		{
 			int width{ 0 }, height{ 0 };
 			mediaData->getImageParameter(width, height);
+			unsigned char* imageData = (unsigned char*)mediaData->getData();
 			enum AVPixelFormat ipixelformat{ AV_PIX_FMT_NONE };
 			const MediaDataSubID mediaDataSubID{ mediaData->getSubID() };
 			if (MediaDataSubID::MEDIA_DATA_SUB_ID_NV12 == mediaDataSubID)
 			{
 				ipixelformat = AV_PIX_FMT_NV12;
 			}
+			else if (MediaDataSubID::MEDIA_DATA_SUB_ID_YV12 == mediaDataSubID)
+			{
+				swapUV(imageData, width, height);
+				ipixelformat = AV_PIX_FMT_NV12;
+
+				MediaDataPtr mediaDataPtr{
+					boost::make_shared<MediaData>(mediaData->getMainID(), oformat, mediaData->getPatchID()) };
+				if (mediaDataPtr && postInputMediaDataCallback)
+				{
+					mediaDataPtr->setData(imageData, obufferBytes);
+					mediaDataPtr->setImageParameter(width, height);
+					postInputMediaDataCallback(mediaDataPtr);
+				}
+
+				return ERR_OK;
+			}
 			av_image_fill_arrays(
-				iframe->data, iframe->linesize, mediaData->getData(), ipixelformat, width, height, 1);
+				iframe->data, iframe->linesize, imageData, ipixelformat, width, height, 1);
 			
 			int sliceheight{ 
 				sws_scale(ctx, (uint8_t const* const*)iframe->data, iframe->linesize, 0, height, oframe->data, oframe->linesize) };
@@ -119,6 +140,32 @@ namespace framework
 			}
 
 			return 0 < sliceheight ? ERR_OK : ERR_BAD_OPERATE;
+		}
+
+		void FFmpegImageFormatter::swapUV(
+			unsigned char* data /* = NULL */, const int width /* = 0 */, const int height /* = 0 */)
+		{
+			int yStrideBytes = width * height;
+			int uvStrideBytes = yStrideBytes / 4;
+			int srcUOffset = yStrideBytes;
+			int srcVOffset = srcUOffset + uvStrideBytes;
+			int dstVOffset = yStrideBytes;
+			int dstUOffset = dstVOffset + uvStrideBytes;
+
+			char* uvstride{ new(std::nothrow) char[uvStrideBytes] };
+			if (uvstride)
+			{
+#ifdef _WINDOWS
+				memcpy_s(uvstride, uvStrideBytes, data + yStrideBytes, uvStrideBytes);
+				memcpy_s(data + yStrideBytes, uvStrideBytes, data + yStrideBytes + uvStrideBytes, uvStrideBytes);
+				memcpy_s(data + yStrideBytes + uvStrideBytes, uvStrideBytes, uvstride, uvStrideBytes);
+#else
+				memcpy(uvstride, data + yStrideBytes, uvStrideBytes);
+				memcpy(data + yStrideBytes, data + yStrideBytes + uvStrideBytes, uvStrideBytes);
+				memcpy_(data + yStrideBytes + uvStrideBytes, uvstride, uvStrideBytes);
+#endif//_WINDOWS
+				delete[] uvstride;
+			}
 		}
 	}//namespace multimedia
 }//namespace framework

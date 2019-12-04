@@ -13,24 +13,26 @@
 #include "Arithmetic/CVAlgo.h"
 #include "BaseHelmetDll.h"
 
-NS_BEGIN(algo, 1)
-
-class CVAlgoHelmet : public CVAlgo
+namespace framework
 {
-public:
-	CVAlgoHelmet(void);
-	~CVAlgoHelmet(void);
+	namespace arithmetic
+	{
+		class CVAlgoHelmet : public CVAlgo
+		{
+		public:
+			CVAlgoHelmet(void);
+			~CVAlgoHelmet(void);
 
-protected:
-	int initializeArithmetic() override;
-	int deinitializeArithmetic(void) override;
-	void arithmeticWorkerProcess(void) override;
+		protected:
+			int initializeArithmetic() override;
+			int deinitializeArithmetic(void) override;
+			void arithmeticWorkerProcess(void) override;
 
-private:
-	CHelmetAlgorithmClass helmet;
-	FeedBackHelmet feedback;
-};//class CVAlgoHelmet
-
-NS_END
+		private:
+			CHelmetAlgorithmClass helmet;
+			FeedBackHelmet feedback;
+		};//class CVAlgoHelmet
+	}//namespace arithmetic
+}//namespace framework
 
 #endif//CV_ALGO_HELMET_H

@@ -5,43 +5,45 @@
 // E-mail : wangkw531@icloud.com
 //
 // Base class of HIKVISION device.
+// Support DVR / NVR / IPC / DECODER etc.
 //
 
 #ifndef HIKVISION_DEVICE_H
 #define HIKVISION_DEVICE_H
 
-#include "Device/Device.h"
-#include "Device/EnableDeviceLoginAndLogout.h"
+#include "predef.h"
+#include "MediaDevice/MediaDevice.h"
+#include "MediaDevice/EnableDeviceLoginAndLogout.h"
 
-NS_BEGIN(device, 1)
-
-class HikvisionDevice 
-	: public Device, protected EnableDeviceLoginAndLogout
+namespace framework
 {
-public:
-	HikvisionDevice(
-		const std::string name, const std::string password,
-		const std::string ipaddr, const unsigned short port = 0);
-	virtual ~HikvisionDevice(void);
-
-	inline int getUserID(void) const 
+	namespace multimedia
 	{
-		return loginUserID;
-	}
+		class HikvisionDevice
+			: public MediaDevice, protected EnableDeviceLoginAndLogout
+		{
+		public:
+			HikvisionDevice(void);
+			virtual ~HikvisionDevice(void);
 
-protected:
-	int createNewDevice(void) override;
-	int destoryDevice(void) override;
-	int logoutDevice(void) override;
+		protected:
+			//Return : Error code.
+			int openStream(const std::string& streamUrl) override;
+			int closeStream(void) override;
+			int loginDevice(
+				const std::string& username, const std::string password, const std::string ipaddr, const unsigned short port = 8000) override;
+			int logoutDevice(void) override;
 
-protected:
-	const std::string loginUserName;
-	const std::string loginUserPassword;
-	const std::string loginDeviceIP;
-	const unsigned short loginDevicePort;
-	int loginUserID;
-};//class HikvisionDevice
+		private:
+			int openStream(const int channel = 0);
+			int getDVRConfig(void);
+			static void CALLBACK realplayMediaDataCallback(
+				long streamID, unsigned long dataType, unsigned char* data, unsigned long dataBytes, void* pUser);
 
-NS_END
+		protected:
+			int loginID;
+		};//class HikvisionDevice
+	}//namespace multimedia
+}//namespace framework
 
 #endif//HIKVISION_DEVICE_H

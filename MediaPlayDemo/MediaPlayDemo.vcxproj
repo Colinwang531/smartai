@@ -100,7 +100,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\MediaPlay\$(Platform)\$(Configuration)\;$(SolutionDir)lib\Arithmetic\$(Platform)\$(Configuration)\;$(SolutionDir)lib\JpegEncoder\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>MediaPlay.lib;Arithmetic.lib;JpegEncoder.lib;</AdditionalDependencies>
+      <AdditionalDependencies>MediaPlay.lib;Arithmetic.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

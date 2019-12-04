@@ -170,6 +170,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClInclude Include="..\include\Arithmetic\CVAlgoHelmet.h" />
     <ClInclude Include="..\include\Arithmetic\CVAlgoPhone.h" />
     <ClInclude Include="..\include\Arithmetic\CVAlgoSleep.h" />
+    <ClInclude Include="..\include\DataStruct\FIFOQueue.h" />
     <ClInclude Include="..\include\DataStruct\UnorderedMap.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\MediaData\MediaData.h" />
