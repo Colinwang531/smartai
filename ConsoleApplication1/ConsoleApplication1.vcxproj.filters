@@ -54,10 +54,16 @@
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.cpp">
       <Filter>Source Files\boost\filesystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\Url\Url.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp">
       <Filter>Source Files\boost\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Url\Url.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

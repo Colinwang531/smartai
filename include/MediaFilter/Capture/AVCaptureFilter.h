@@ -4,11 +4,11 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Live stream capture.
+// Stream data capture.
 //
 
-#ifndef LIVE_STREAM_CAPTURE_FILTER_H
-#define LIVE_STREAM_CAPTURE_FILTER_H
+#ifndef AV_CAPTURE_FILTER_H
+#define AV_CAPTURE_FILTER_H
 
 #include "MediaFilter/SourceMediaFilter.h"
 
@@ -28,4 +28,4 @@ namespace framework
 	}//namespace multimedia
 }//namespace framework
 
-#endif//LIVE_STREAM_CAPTURE_FILTER_H
+#endif//AV_CAPTURE_FILTER_H

@@ -13,20 +13,27 @@
 #include "boost/enable_shared_from_this.hpp"
 #include "DataStruct/UnorderedMap.h"
 
-static const std::string AVMediaDemuxerFilterID = "AVMediaDemuxerFilterID";
-static const std::string AVMediaLivestreamCaptureFilterID = "AVMediaLivestreamCaptureFilterID";
-static const std::string AVMediaPlaybackControlFilterID = "AVMediaPlaybackControlFilterID";
+static const std::string AVMediaDataCaptureFilterID = "AVMediaDataCaptureFilterID";
+static const std::string AVMediaPlayControlFilterID = "AVMediaPlayControlFilterID";
+static const std::string AVMediaImageFormatFilterID = "AVMediaImageFormatFilterID";
+static const std::string AVMediaSDKDecoderFilterID = "AVMediaSDKDecoderFilterID";
 static const std::string AVMediaVideoDecoderFilterID = "AVMediaVideoDecoderFilterID";
 static const std::string AVMediaAudioDecoderFilterID = "AVMediaAudioDecoderFilterID";
 static const std::string AVMediaVideoRendererFilterID = "AVMediaVideoRendererFilterID";
 static const std::string AVMediaSoundPlayerFilterID = "AVMediaSoundPlayerFilterID";
-static const std::string AVMediaImageFormatFilterID = "AVMediaImageFormatFilterID";
 static const std::string AVMediaDataCallbackFilterID = "AVMediaDataCallbackFilterID";
 
 namespace framework
 {
 	namespace multimedia
 	{
+		typedef enum tagMediaPinFlag_t : unsigned char
+		{
+			MEDIA_PIN_FLAG_NONE = 0,
+			MEDIA_PIN_FLAG_VIDEO,
+			MEDIA_PIN_FLAG_AUDIO
+		}MediaPinFlag;
+
 		class MediaData;
 		class MediaModel;
 		class MediaPin;
@@ -37,13 +44,6 @@ namespace framework
 		using MediaModelPtr = boost::shared_ptr<MediaModel>;
 		using MediaModelRef = boost::weak_ptr<MediaModel>;
 
-		typedef enum class tagMediaStreamID_t
-		{
-			MEDIA_STREAM_ID_AV = 0,
-			MEDIA_STREAM_ID_VIDEO,
-			MEDIA_STREAM_ID_AUDIO
-		}MediaStreamID;
-
 		class MediaFilter : public boost::enable_shared_from_this<MediaFilter>
 		{
 		public:
@@ -51,8 +51,12 @@ namespace framework
 			virtual ~MediaFilter(void);
 
 		public:
+			//
+			// @iflag : video=1, audio=2, mix=3
+			// @oflag : video=1, audio=2, mix=3
+			//
 			int createNewFilter(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
+				const unsigned char iflag = MEDIA_PIN_FLAG_NONE, const unsigned char oflag = MEDIA_PIN_FLAG_NONE);
 			int destroyFilter(void);
 			virtual int inputMediaData(MediaDataPtr mediaData);
 			virtual bool isSourceFilter(void) const
@@ -70,10 +74,8 @@ namespace framework
 
 		protected:
 			virtual int createNewModel(MediaDataPtr mediaData);
-			int createNewInputPin(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
-			int createNewOutputPin(
-				const MediaStreamID mediaStreamID = MediaStreamID::MEDIA_STREAM_ID_AV);
+			int createNewInputPin(const unsigned char iflag = 0);
+			int createNewOutputPin(const unsigned char oflag = 0);
 			int postInputMediaData(MediaDataPtr mediaData);
 
 		protected:

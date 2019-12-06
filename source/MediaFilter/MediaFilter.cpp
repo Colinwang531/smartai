@@ -23,22 +23,22 @@ namespace framework
 		}
 
 		int MediaFilter::createNewFilter(
-			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+			const unsigned char iflag /* = 0 */, const unsigned char oflag /* = 0 */)
 		{
 			if (!isSourceFilter())
 			{
-				createNewInputPin(mediaStreamID);
+				createNewInputPin(iflag);
 			}
 
 			if (!isTargetFilter())
 			{
-				createNewOutputPin(mediaStreamID);
+				createNewOutputPin(oflag);
 			}
 
 			return ERR_OK;
 		}
 
-		int MediaFilter::destroyFilter(void)
+		int MediaFilter::destroyFilter()
 		{
 			mediaPinGroup.clear();
 			return ERR_OK;
@@ -52,7 +52,7 @@ namespace framework
 			{
 				if (!mediaModelPtr)
 				{
-					status = createNewModel(mediaData);
+					createNewModel(mediaData);
 				}
 
 				// Media data is passed directly to next filter if model in the filter is not exist.
@@ -76,51 +76,41 @@ namespace framework
 			return ERR_OK;
 		}
 
-		int MediaFilter::createNewInputPin(
-			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		int MediaFilter::createNewInputPin(const unsigned char iflag /* = 0 */)
 		{
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
-			{
-				MediaPinPtr inputPinPtr{
+			const unsigned char videoflag{ iflag & 1 }, audioflag{ (iflag >> 1) & 1 };
+			MediaPinPtr videoInputPinPtr{
 					boost::make_shared<InputMediaPin>(
 						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
-				if (inputPinPtr)
-				{
-					mediaPinGroup.insert(VideoStreamInputPinID, inputPinPtr);
-				}
+			MediaPinPtr audioInputPinPtr{
+					boost::make_shared<InputMediaPin>(
+						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
+
+			if (0 < videoflag && videoInputPinPtr)
+			{
+				mediaPinGroup.insert(VideoStreamInputPinID, videoInputPinPtr);
 			}
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
+			if (0 < audioflag && audioInputPinPtr)
 			{
-				MediaPinPtr inputPinPtr{
-					boost::make_shared<InputMediaPin>(
-						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
-				if (inputPinPtr)
-				{
-					mediaPinGroup.insert(AudioStreamInputPinID, inputPinPtr);
-				}
+				mediaPinGroup.insert(AudioStreamInputPinID, audioInputPinPtr);
 			}
 
 			return ERR_OK;
 		}
 
-		int MediaFilter::createNewOutputPin(
-			const MediaStreamID mediaStreamID /* = MediaStreamID::MEDIA_STREAM_ID_AV */)
+		int MediaFilter::createNewOutputPin(const unsigned char oflag /* = 0 */)
 		{
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_VIDEO == mediaStreamID)
+			const unsigned char videoflag{ oflag & 1 }, audioflag{ (oflag >> 1) & 1 };
+			MediaPinPtr videoOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
+			MediaPinPtr audioOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
+
+			if (0 < videoflag && videoOutputPinPtr)
 			{
-				MediaPinPtr outputPinPtr{ boost::make_shared<OutputMediaPin>() };
-				if (outputPinPtr)
-				{
-					mediaPinGroup.insert(VideoStreamOutputPinID, outputPinPtr);
-				}
+				mediaPinGroup.insert(VideoStreamOutputPinID, videoOutputPinPtr);
 			}
-			if (MediaStreamID::MEDIA_STREAM_ID_AV == mediaStreamID || MediaStreamID::MEDIA_STREAM_ID_AUDIO == mediaStreamID)
+			if (0 < audioflag && audioOutputPinPtr)
 			{
-				MediaPinPtr outputPinPtr{ boost::make_shared<OutputMediaPin>() };
-				if (outputPinPtr)
-				{
-					mediaPinGroup.insert(AudioStreamOutputPinID, outputPinPtr);
-				}
+				mediaPinGroup.insert(AudioStreamOutputPinID, audioOutputPinPtr);
 			}
 
 			return ERR_OK;

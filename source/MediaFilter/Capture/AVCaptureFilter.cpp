@@ -1,4 +1,3 @@
-#include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
@@ -21,7 +20,7 @@ namespace framework
 			
 			if (ERR_OK == status)
 			{
-				const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
+				const std::string streamUrl{ (const char*)mediaData->getData() };
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_STREAM == mediaDataMainID)
 				{

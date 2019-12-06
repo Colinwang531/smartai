@@ -5,8 +5,7 @@ namespace framework
 {
 	namespace multimedia
 	{
-		TargetMediaFilter::TargetMediaFilter()
-			: MediaFilter()//, postMediaDataCallback{ NULL }, cbUserData{ NULL }, mediaStreamID{ 0 }
+		TargetMediaFilter::TargetMediaFilter() : MediaFilter(), userID{ -1 }
 		{}
 
 		TargetMediaFilter::~TargetMediaFilter()
@@ -14,8 +13,12 @@ namespace framework
 
 		int TargetMediaFilter::inputMediaData(MediaDataPtr mediaData)
 		{
-			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
-			return status;
+			if (mediaData && callbackMediaDataCallback)
+			{
+				callbackMediaDataCallback(userID, mediaData);
+			}
+
+			return ERR_OK;
 		}
 	}//namespace multimedia
 }//namespace framework

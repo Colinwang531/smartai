@@ -92,13 +92,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;BOOST_ALL_NO_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)lib\ffmpeg_4_2_1;$(SolutionDir)lib\D3D;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\FFmpeg_4_2_1;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;postproc.lib;swresample.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -164,10 +162,12 @@
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\utf8_codecvt_facet.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.cpp" />
     <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp" />
+    <ClCompile Include="..\source\Url\Url.cpp" />
     <ClCompile Include="ConsoleApplication1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\boost_1_67_0\libs\filesystem\src\windows_file_codecvt.hpp" />
+    <ClInclude Include="..\include\Url\Url.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

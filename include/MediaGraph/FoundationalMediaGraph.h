@@ -4,11 +4,12 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Base class of graph for operating video and audio stream.
+// The foundational components of media graph includes image formatter, 
+// video renderer, sound player and data callback.
 //
 
-#ifndef AV_PLAY_MEDIA_GRAPH_H
-#define AV_PLAY_MEDIA_GRAPH_H
+#ifndef FOUNDATIONAL_MEDIA_GRAPH_H
+#define FOUNDATIONAL_MEDIA_GRAPH_H
 
 #include "MediaGraph.h"
 
@@ -16,23 +17,23 @@ namespace framework
 {
 	namespace multimedia
 	{
-		class AVPlayMediaGraph : public MediaGraph
+		class FoundationalMediaGraph : public MediaGraph
 		{
 		public:
-			AVPlayMediaGraph(void);
-			virtual ~AVPlayMediaGraph(void);
+			FoundationalMediaGraph(void);
+			virtual ~FoundationalMediaGraph(void);
 
 		protected:
 			int createNewGraph(void) override;
-			virtual int buildMediaGraph(void);
 			virtual int createNewImageFormatterFilter(void);
-			virtual int createNewVideoDecoderFilter(void);
-			virtual int createNewAudioDecoderFilter(void);
 			virtual int createNewVideoRendererFilter(void);
 			virtual int createNewSoundPlayerFilter(void);
 			virtual int createNewDataCaptureFilter(void);
-		};//class AVPlayMediaGraph
+
+		private:
+			void buildMediaGraph(void);
+		};//class FoundationalMediaGraph
 	}//namespace multimedia
 }//namespace framework
 
-#endif//AV_PLAY_MEDIA_GRAPH_H
+#endif//FOUNDATIONAL_MEDIA_GRAPH_H
