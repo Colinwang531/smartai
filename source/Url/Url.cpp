@@ -11,44 +11,44 @@ namespace framework
 		URL::~URL(void)
 		{}
 
-		void URL::setProtocol(const URLType type /* = URLType::URL_TYPE_NONE */)
+		void URL::setProtocol(const URLProtocol type /* = URLProtocol::URL_PROTOCOL_NONE */)
 		{
 			const char* protocol{ std::strstr(url.c_str(), "://") };
 
 			if (!protocol)
 			{
-				if (URLType::URL_TYPE_LIVESTREAM == type)
+				if (URLProtocol::URL_PROTOCOL_LIVESTREAM == type)
 				{
 					url = "livestream://" + url;
 				}
-				else if (URLType::URL_TYPE_PLAYBACK == type)
+				else if (URLProtocol::URL_PROTOCOL_PLAYBACK == type)
 				{
 					url = "playback://" + url;
 				}
-				else if (URLType::URL_TYPE_RTSP == type)
+				else if (URLProtocol::URL_PROTOCOL_RTSP == type)
 				{
 					url = "rtsp://" + url;
 				}
 			}
 		}
 
-		const URLType URL::getProtocol(void) const
+		const URLProtocol URL::getProtocol(void) const
 		{
-			URLType type{ URLType::URL_TYPE_NONE };
+			URLProtocol type{ URLProtocol::URL_PROTOCOL_NONE };
 			std::size_t beginpos{ url.find_first_of(':', 0) };
 			const std::string protocol{ url.substr(0, beginpos) };
 
 			if (!protocol.compare("livestream"))
 			{
-				type = URLType::URL_TYPE_LIVESTREAM;
+				type = URLProtocol::URL_PROTOCOL_LIVESTREAM;
 			}
 			else if (!protocol.compare("playback"))
 			{
-				type = URLType::URL_TYPE_PLAYBACK;
+				type = URLProtocol::URL_PROTOCOL_PLAYBACK;
 			}
 			else if (!protocol.compare("rtsp"))
 			{
-				type = URLType::URL_TYPE_RTSP;
+				type = URLProtocol::URL_PROTOCOL_RTSP;
 			}
 
 			return type;

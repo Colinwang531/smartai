@@ -6,7 +6,7 @@
 //
 // Stream URL wrapper.
 // URL sample :
-//				livestream://admin:12345@192.168.1.100:8000?channel=1&width=1920...
+//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=hikvision[&width=1920&height=1080&...]
 //				playback://?path=c:\video\sample.mp4
 //				rtsp://admin:12345@192.168.1.100:8000?channel=1&...
 //
@@ -20,13 +20,13 @@ namespace framework
 {
 	namespace wrapper
 	{
-		typedef enum class tagURLType_t
+		typedef enum class tagURLProtocol_t
 		{
-			URL_TYPE_NONE = 0,
-			URL_TYPE_LIVESTREAM,
-			URL_TYPE_PLAYBACK,
-			URL_TYPE_RTSP
-		}URLType;
+			URL_PROTOCOL_NONE = 0,
+			URL_PROTOCOL_LIVESTREAM,
+			URL_PROTOCOL_PLAYBACK,
+			URL_PROTOCOL_RTSP
+		}URLProtocol;
 
 		class URL
 		{
@@ -35,12 +35,16 @@ namespace framework
 			~URL(void);
 
 		public:
+			inline void setUrl(const std::string url)
+			{
+				this->url = url;
+			}
 			inline const std::string getUrl(void) const
 			{
 				return url;
 			}
-			void setProtocol(const URLType type = URLType::URL_TYPE_NONE);
-			const URLType getProtocol(void) const;
+			void setProtocol(const URLProtocol type = URLProtocol::URL_PROTOCOL_NONE);
+			const URLProtocol getProtocol(void) const;
 			void setAddressPort(const std::string& address, const unsigned short port = 0);
 			void getAddressPort(std::string& address, unsigned short& port);
 			void addAuthentication(const std::string& name, const std::string& password);

@@ -1,7 +1,8 @@
 #include "HCNetSDK.h"
-#include "boost/algorithm/string.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
+#include "URL/Url.h"
+using URL = framework::wrapper::URL;
 #include "MediaData/MediaData.h"
 #include "MediaDevice/Hikvision/HikvisionDevice.h"
 
@@ -27,18 +28,25 @@ namespace framework
 
 			if (ERR_OK == status && TRUE == ret)
 			{
-				std::vector<std::string> streamUrlSegment;
-				boost::split(streamUrlSegment, streamUrl, boost::is_any_of(":"));
-				const int port{ atoi(streamUrlSegment[3].c_str()) }, channel{ atoi(streamUrlSegment[4].c_str()) };
+				URL url;
+				url.setUrl(streamUrl);
+				std::string name, password, address;
+				unsigned short port;
+				url.getAuthentication(name, password);
+				url.getAddressPort(address, port);
+				const std::string channel{ url.getParameter("channel") };
 
-				if (0 > loginID)
+				if (!name.empty() && !password.empty() && !address.empty() && 0 < port)
 				{
-					status = loginDevice(streamUrlSegment[0], streamUrlSegment[1], streamUrlSegment[2], port);
-				}
+					if (0 > loginID)
+					{
+						status = loginDevice(name, password, address, port);
+					}
 
-				if (ERR_OK == status)
-				{
-					status = openStream(channel);
+					if (ERR_OK == status)
+					{
+						status = openStream(atoi(channel.c_str()));
+					}
 				}
 			}
 
@@ -104,11 +112,13 @@ namespace framework
 				struPlayInfo.dwStreamType = 0;
 				struPlayInfo.dwLinkMode = 0;
 				struPlayInfo.bBlocked = 1;
-				/*streamID = */NET_DVR_RealPlay_V40(loginID, &struPlayInfo, &HikvisionDevice::realplayMediaDataCallback, this);
-// 				if (streamID < 0)
-// 				{
-// 					status = ERR_BAD_OPERATE;
-// 				}
+
+				LONG streamID{ 
+					NET_DVR_RealPlay_V40(loginID, &struPlayInfo, &HikvisionDevice::realplayMediaDataCallback, this) };
+				if (streamID < 0)
+				{
+					status = ERR_BAD_OPERATE;
+				}
 			}
 			
 			return status;

@@ -78,7 +78,7 @@ namespace framework
 
 		int MediaFilter::createNewInputPin(const unsigned char iflag /* = 0 */)
 		{
-			const unsigned char videoflag{ iflag & 1 }, audioflag{ (iflag >> 1) & 1 };
+			const int videoflag{ iflag & 1 }, audioflag{ (iflag >> 1) & 1 };
 			MediaPinPtr videoInputPinPtr{
 					boost::make_shared<InputMediaPin>(
 						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
@@ -100,7 +100,7 @@ namespace framework
 
 		int MediaFilter::createNewOutputPin(const unsigned char oflag /* = 0 */)
 		{
-			const unsigned char videoflag{ oflag & 1 }, audioflag{ (oflag >> 1) & 1 };
+			const int videoflag{ oflag & 1 }, audioflag{ (oflag >> 1) & 1 };
 			MediaPinPtr videoOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
 			MediaPinPtr audioOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
 

@@ -14,8 +14,7 @@ namespace framework
 
 		int MediaCapture::inputMediaData(MediaDataPtr mediaData)
 		{
-			return mediaData && MediaDataMainID::MEDIA_DATA_MAIN_ID_STREAM == mediaData->getMainID() ? 
-				openStream((const char*)(mediaData->getData())) : ERR_INVALID_PARAM;
+			return mediaData ? openStream((const char*)(mediaData->getData())) : ERR_INVALID_PARAM;
 		}
 	}
 }

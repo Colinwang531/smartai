@@ -1,11 +1,11 @@
 #include "boost/format.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
-#include "MediaGraph/PlaybackMediaGraph.h"
+#include "MediaGraph/StandardStreamMediaGraph.h"
 using MediaGraphPtr = boost::shared_ptr<framework::multimedia::MediaGraph>;
-using PlaybackMediaGraph = framework::multimedia::PlaybackMediaGraph;
-#include "MediaGraph/LivestreamMediaGraph.h"
-using LivestreamMediaGraph = framework::multimedia::LivestreamMediaGraph;
+using StandardStreamMediaGraph = framework::multimedia::StandardStreamMediaGraph;
+#include "MediaGraph/SDKStreamMediaGraph.h"
+using SDKStreamMediaGraph = framework::multimedia::SDKStreamMediaGraph;
 // #include "MediaModel/Accessor/MediaAccessor.h"
 // using MediaAccessor = NS(model, 1)::MediaAccessor;
 //#include "MediaModel/Demuxer/MediaDemuxer.h"
