@@ -154,15 +154,22 @@ namespace framework
 
 			if (!url.empty() && !key.empty())
 			{
-				const char* parameter = std::strstr(url.c_str(), key.c_str());
+				std::size_t urllen{ url.length() };
+				std::size_t beginpos{ url.find_last_of('?', urllen) };
+				const std::string parameters{ url.substr(beginpos + 1, urllen) };
+				const std::string parameter{ std::strstr(parameters.c_str(), key.c_str()) };
 
-				if (parameter)
+				if (!parameter.empty())
 				{
-					value = parameter;
+					std::size_t paramlen{ parameter.length() };
+					std::size_t endpos{ parameter.find_first_of('&', 0) };
+					endpos = std::string::npos == endpos ? paramlen : endpos;
+					const std::string item{ parameter.substr(0, endpos) };
+					value = item.substr(item.find_first_of('=', 0) + 1, endpos);
 				}
 			}
 
-			return std::string();
+			return value;
 		}
 	}//namespace wrapper
 }//namespace framework
