@@ -2,6 +2,7 @@
 #include "error.h"
 #include "MediaData/MediaData.h"
 #include "MediaModel/Formatter/FFmpeg/FFmpegImageFormatter.h"
+#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Formatter/ImageFormatterFilter.h"
 
 namespace framework
@@ -13,6 +14,19 @@ namespace framework
 
 		ImageFormatterFilter::~ImageFormatterFilter()
 		{}
+
+		int ImageFormatterFilter::createNewFilter(const std::string& streamURL)
+		{
+			int status{ ERR_BAD_ALLOC };
+
+			if (ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+				ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID))
+			{
+				status = ERR_OK;
+			}
+
+			return status;
+		}
 
 		int ImageFormatterFilter::createNewModel(MediaDataPtr mediaData)
 		{

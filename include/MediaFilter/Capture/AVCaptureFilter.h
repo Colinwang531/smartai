@@ -22,8 +22,11 @@ namespace framework
 			AVCaptureFilter(void);
 			virtual ~AVCaptureFilter(void);
 
+		public:
+			int startCapture(const std::string& streamURL);
+
 		protected:
-			int createNewModel(MediaDataPtr mediaData) override;
+			int createNewFilter(const std::string& streamURL) override;
 		};//class AVCaptureFilter
 	}//namespace multimedia
 }//namespace framework

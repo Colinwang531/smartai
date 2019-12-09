@@ -2,7 +2,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/MediaModel.h"
+#include "MediaModule/MediaModule.h"
 #include "MediaPin/InputMediaPin.h"
 #include "MediaPin/OutputMediaPin.h"
 #include "MediaFilter/MediaFilter.h"
@@ -22,22 +22,6 @@ namespace framework
 			destroyFilter();
 		}
 
-		int MediaFilter::createNewFilter(
-			const unsigned char iflag /* = 0 */, const unsigned char oflag /* = 0 */)
-		{
-			if (!isSourceFilter())
-			{
-				createNewInputPin(iflag);
-			}
-
-			if (!isTargetFilter())
-			{
-				createNewOutputPin(oflag);
-			}
-
-			return ERR_OK;
-		}
-
 		int MediaFilter::destroyFilter()
 		{
 			mediaPinGroup.clear();
@@ -50,23 +34,23 @@ namespace framework
 
 			if (ERR_OK == status)
 			{
-				if (!mediaModelPtr)
+				if (!mediaModulePtr)
 				{
-					createNewModel(mediaData);
+					createNewModule(mediaData);
 				}
 
 				// Media data is passed directly to next filter if model in the filter is not exist.
-				status = mediaModelPtr ? mediaModelPtr->inputMediaData(mediaData) : postInputMediaData(mediaData);
+				status = mediaModulePtr ? mediaModulePtr->inputMediaData(mediaData) : postInputMediaData(mediaData);
 			}
 
 			return status;
 		}
 
-		int MediaFilter::createNewModel(MediaDataPtr mediaData)
+		int MediaFilter::createNewModule(MediaDataPtr mediaData)
 		{
-			if (mediaModelPtr)
+			if (mediaModulePtr)
 			{
-				mediaModelPtr->setPostInputMediaDataCallback(
+				mediaModulePtr->setPostInputMediaDataCallback(
 					boost::bind(
 						&MediaFilter::postInputMediaData,
 						boost::enable_shared_from_this<MediaFilter>::shared_from_this(),
@@ -76,44 +60,40 @@ namespace framework
 			return ERR_OK;
 		}
 
-		int MediaFilter::createNewInputPin(const unsigned char iflag /* = 0 */)
+		int MediaFilter::createNewInputPin(const std::string& pinID)
 		{
-			const int videoflag{ iflag & 1 }, audioflag{ (iflag >> 1) & 1 };
-			MediaPinPtr videoInputPinPtr{
+			int status{ ERR_BAD_ALLOC };
+
+			if (!pinID.empty())
+			{
+				MediaPinPtr mediaPinPtr{
 					boost::make_shared<InputMediaPin>(
 						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
-			MediaPinPtr audioInputPinPtr{
-					boost::make_shared<InputMediaPin>(
-						boost::enable_shared_from_this<MediaFilter>::shared_from_this()) };
-
-			if (0 < videoflag && videoInputPinPtr)
-			{
-				mediaPinGroup.insert(VideoStreamInputPinID, videoInputPinPtr);
-			}
-			if (0 < audioflag && audioInputPinPtr)
-			{
-				mediaPinGroup.insert(AudioStreamInputPinID, audioInputPinPtr);
+				if (mediaPinPtr)
+				{
+					mediaPinGroup.insert(pinID, mediaPinPtr);
+					status = ERR_OK;
+				}
 			}
 
-			return ERR_OK;
+			return status;
 		}
 
-		int MediaFilter::createNewOutputPin(const unsigned char oflag /* = 0 */)
+		int MediaFilter::createNewOutputPin(const std::string& pinID)
 		{
-			const int videoflag{ oflag & 1 }, audioflag{ (oflag >> 1) & 1 };
-			MediaPinPtr videoOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
-			MediaPinPtr audioOutputPinPtr{ boost::make_shared<OutputMediaPin>() };
+			int status{ ERR_BAD_ALLOC };
 
-			if (0 < videoflag && videoOutputPinPtr)
+			if (!pinID.empty())
 			{
-				mediaPinGroup.insert(VideoStreamOutputPinID, videoOutputPinPtr);
-			}
-			if (0 < audioflag && audioOutputPinPtr)
-			{
-				mediaPinGroup.insert(AudioStreamOutputPinID, audioOutputPinPtr);
+				MediaPinPtr mediaPinPtr{ boost::make_shared<OutputMediaPin>() };
+				if (mediaPinPtr)
+				{
+					mediaPinGroup.insert(pinID, mediaPinPtr);
+					status = ERR_OK;
+				}
 			}
 
-			return ERR_OK;
+			return status;
 		}
 
 		int MediaFilter::postInputMediaData(MediaDataPtr mediaData)

@@ -8,6 +8,9 @@ namespace framework
 		URL::URL()
 		{}
 
+		URL::URL(const std::string s) : url{ s }
+		{}
+
 		URL::~URL(void)
 		{}
 

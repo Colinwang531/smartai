@@ -10,7 +10,7 @@
 #ifndef MEDIA_CAPTURE_H
 #define MEDIA_CAPTURE_H
 
-#include "MediaModel/MediaModel.h"
+#include "MediaModule/MediaModule.h"
 
 namespace framework
 {
@@ -19,14 +19,13 @@ namespace framework
 		class MediaDevice;
 		using MediaDevicePtr = boost::shared_ptr<MediaDevice>;
 
-		class MediaCapture : public MediaModel
+		class MediaCapture : public MediaModule
 		{
 		public:
 			MediaCapture(void);
 			virtual ~MediaCapture(void);
 
-		protected:
-			int inputMediaData(MediaDataPtr mediaData) override;
+		public:
 			virtual int openStream(const std::string& streamUrl) = 0;
 			virtual int closeStream(void) = 0;
 

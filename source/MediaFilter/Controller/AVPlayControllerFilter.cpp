@@ -1,5 +1,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
+#include "MediaPin/InputMediaPin.h"
+#include "MediaPin/OutputMediaPin.h"
 #include "MediaFilter/Controller/AVPlayControllerFilter.h"
 
 namespace framework
@@ -35,6 +37,21 @@ namespace framework
 		int AVPlayControllerFilter::slowPlay(const short speed /* = -1 */)
 		{
 			return checkSpeedValue(speed);
+		}
+
+		int AVPlayControllerFilter::createNewFilter(const std::string& streamURL)
+		{
+			int status{ ERR_BAD_ALLOC };
+
+			if (ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+				ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) &&
+				ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) &&
+				ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID))
+			{
+				status = ERR_OK;
+			}
+
+			return status;
 		}
 
 		int AVPlayControllerFilter::checkSpeedValue(const short speed /* = 1 */)

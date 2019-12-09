@@ -27,22 +27,14 @@ namespace framework
 {
 	namespace multimedia
 	{
-		typedef enum tagMediaPinFlag_t : unsigned char
-		{
-			MEDIA_PIN_FLAG_NONE = 0,
-			MEDIA_PIN_FLAG_VIDEO,
-			MEDIA_PIN_FLAG_AUDIO
-		}MediaPinFlag;
-
 		class MediaData;
-		class MediaModel;
+		class MediaModule;
 		class MediaPin;
 		using MediaDataPtr = boost::shared_ptr<MediaData>;
 		using MediaPinPtr = boost::shared_ptr<MediaPin>;
 		using MediaPinRef = boost::weak_ptr<MediaPin>;
 		using MediaPinGroup = UnorderedMap<const std::string, MediaPinPtr>;
-		using MediaModelPtr = boost::shared_ptr<MediaModel>;
-		using MediaModelRef = boost::weak_ptr<MediaModel>;
+		using MediaModulePtr = boost::shared_ptr<MediaModule>;
 
 		class MediaFilter : public boost::enable_shared_from_this<MediaFilter>
 		{
@@ -51,13 +43,8 @@ namespace framework
 			virtual ~MediaFilter(void);
 
 		public:
-			//
-			// @iflag : video=1, audio=2, mix=3
-			// @oflag : video=1, audio=2, mix=3
-			//
-			int createNewFilter(
-				const unsigned char iflag = MEDIA_PIN_FLAG_NONE, const unsigned char oflag = MEDIA_PIN_FLAG_NONE);
-			int destroyFilter(void);
+			virtual int createNewFilter(const std::string& streamURL) = 0;
+			virtual int destroyFilter(void);
 			virtual int inputMediaData(MediaDataPtr mediaData);
 			virtual bool isSourceFilter(void) const
 			{
@@ -73,14 +60,14 @@ namespace framework
 			}
 
 		protected:
-			virtual int createNewModel(MediaDataPtr mediaData);
-			int createNewInputPin(const unsigned char iflag = 0);
-			int createNewOutputPin(const unsigned char oflag = 0);
+			virtual int createNewModule(MediaDataPtr mediaData);
+			int createNewInputPin(const std::string& pinID);
+			int createNewOutputPin(const std::string& pinID);
 			int postInputMediaData(MediaDataPtr mediaData);
 
 		protected:
 			MediaPinGroup mediaPinGroup;
-			MediaModelPtr mediaModelPtr;
+			MediaModulePtr mediaModulePtr;
 		};//class MediaFilter
 	}//namespace multimedia
 }//namespace framework

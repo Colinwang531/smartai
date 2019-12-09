@@ -23,6 +23,7 @@ namespace framework
 			virtual ~AVDecoderFilter(void);
 
 		protected:
+			int createNewFilter(const std::string& streamURL) override;
 			int createNewModel(MediaDataPtr mediaData) override;
 		};//class AVDecoderFilter
 	}//namespace multimedia

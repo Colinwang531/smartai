@@ -3,8 +3,9 @@
 #include "URL/Url.h"
 using URL = framework::wrapper::URL;
 #include "MediaData/MediaData.h"
-#include "MediaModel/Capture/Hikvision/HikvisionSDKCapture.h"
-#include "MediaModel/Demuxer/FFmpeg/FFmpegLocalFileDemuxer.h"
+#include "MediaModule/Capture/Hikvision/HikvisionSDKCapture.h"
+#include "MediaModule/Capture/FFmpeg/FFmpegLocalFileDemuxer.h"
+#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Capture/AVCaptureFilter.h"
 
 namespace framework
@@ -17,49 +18,61 @@ namespace framework
 		AVCaptureFilter::~AVCaptureFilter()
 		{}
 
-		int AVCaptureFilter::createNewModel(MediaDataPtr mediaData)
+		int AVCaptureFilter::startCapture(const std::string& streamURL)
 		{
-			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
-			
-			if (ERR_OK == status)
-			{
-				URL url;
-				url.setUrl((const char*)mediaData->getData());
-				const framework::wrapper::URLProtocol protocol{ url.getProtocol() };
+			int status{ ERR_NOT_SUPPORT };
+			const framework::wrapper::URLProtocol protocol{ URL(streamURL).getProtocol() };
 
-				if (framework::wrapper::URLProtocol::URL_PROTOCOL_LIVESTREAM == protocol)
+			if (framework::wrapper::URLProtocol::URL_PROTOCOL_LIVESTREAM == protocol)
+			{
+				const std::string streamValue{ URL(streamURL).getParameter("stream") };
+				if (!streamValue.compare("hikvision"))
 				{
-					const std::string stream{ url.getParameter("stream") };
-					if (!stream.compare("hikvision"))
+					MediaModulePtr mediaModulePtr{ boost::make_shared<HikvisionSDKCapture>() };
+					if (mediaModulePtr)
 					{
-						MediaModelPtr hikvisionSDKCapturePtr{ boost::make_shared<HikvisionSDKCapture>() };
-						if (hikvisionSDKCapturePtr)
-						{
-							mediaModelPtr.swap(hikvisionSDKCapturePtr);
-						}
-					}
-				} if (framework::wrapper::URLProtocol::URL_PROTOCOL_PLAYBACK == protocol)
-				{
-					const std::string stream{ url.getParameter("path") };
-					if (!stream.empty())
-					{
-						MediaModelPtr ffmpegLocalFileDemuxerPtr{ boost::make_shared<FFmpegLocalFileDemuxer>() };
-						if (ffmpegLocalFileDemuxerPtr)
-						{
-							mediaModelPtr.swap(ffmpegLocalFileDemuxerPtr);
-						}
+						this->mediaModulePtr.swap(mediaModulePtr);
 					}
 				}
-				else if (framework::wrapper::URLProtocol::URL_PROTOCOL_RTSP == protocol)
+				else if (!streamValue.compare("dahua"))
 				{
+
 				}
-				else
+			}
+			else if (framework::wrapper::URLProtocol::URL_PROTOCOL_PLAYBACK == protocol)
+			{
+				const std::string filePath{ URL(streamURL).getParameter("path") };
+				if (!filePath.empty())
 				{
-					status = ERR_NOT_SUPPORT;
+					MediaModulePtr mediaModulePtr{ boost::make_shared<FFmpegLocalFileDemuxer>() };
+					if (mediaModulePtr)
+					{
+						this->mediaModulePtr.swap(mediaModulePtr);
+					}
 				}
 			}
 
-			return ERR_OK == status ? MediaFilter::createNewModel(mediaData) : status;
+			status = MediaFilter::createNewModule(NULL);
+			boost::shared_ptr<MediaCapture> mediaCapturePtr{ 
+				boost::dynamic_pointer_cast<MediaCapture>(mediaModulePtr) };
+			if (mediaCapturePtr)
+			{
+				status = mediaCapturePtr->openStream(streamURL);
+			}
+
+			return status;
+		}
+
+		int AVCaptureFilter::createNewFilter(const std::string& streamURL)
+		{
+			int status{ MediaFilter::createNewOutputPin(VideoStreamOutputPinID) };
+			const std::string streamValue{ URL(streamURL).getParameter("stream") };
+			if (streamValue.compare("hikvision") && streamValue.compare("dahua"))
+			{
+				status = MediaFilter::createNewOutputPin(AudioStreamOutputPinID);
+			}
+			
+			return status;
 		}
 	}//namespace multimedia
 }//namespace framework

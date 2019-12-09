@@ -16,13 +16,13 @@ extern "C"
 #include "libavformat/avformat.h"
 }
 #include "MediaData/MediaData.h"
-#include "MediaModel/Demuxer/MediaDemuxer.h"
+#include "MediaModule/Capture/MediaCapture.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class FFmpegLocalFileDemuxer : public MediaDemuxer
+		class FFmpegLocalFileDemuxer : public MediaCapture
 		{
 		public:
 			FFmpegLocalFileDemuxer(void);
@@ -38,12 +38,13 @@ namespace framework
 			const MediaDataSubID getAudioStreamID(void) const;
 
 		protected:
-			void mediaDemuxerWorkerThread(void) override;
+			void mediaDemuxerWorkerThread(void);
 
 		private:
 			boost::mutex mtx;
 			boost::condition condition;
 			AVFormatContext* formatctx;
+			bool stopped;
 		};//class FFmpegLocalFileDemuxer
 	}//namespace multimedia
 }//namespace framework

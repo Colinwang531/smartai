@@ -7,6 +7,11 @@
 // Stream URL wrapper.
 // URL sample :
 //				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=hikvision[&width=1920&height=1080&...]
+//						@stream=hikvision
+//						@stream=dahua
+//						@stream=h264
+//						@stream=h265
+//						@stream=rtsp_rtp
 //				playback://?path=c:\video\sample.mp4
 //				rtsp://admin:12345@192.168.1.100:8000?channel=1&...
 //
@@ -20,7 +25,7 @@ namespace framework
 {
 	namespace wrapper
 	{
-		typedef enum class tagURLProtocol_t
+		typedef enum class tagURLProtocol_t : unsigned char
 		{
 			URL_PROTOCOL_NONE = 0,
 			URL_PROTOCOL_LIVESTREAM,
@@ -32,6 +37,7 @@ namespace framework
 		{
 		public:
 			URL(void);
+			URL(const std::string s);
 			~URL(void);
 
 		public:

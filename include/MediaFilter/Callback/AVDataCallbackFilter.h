@@ -21,6 +21,9 @@ namespace framework
 		public:
 			AVDataCallbackFilter(void);
 			virtual ~AVDataCallbackFilter(void);
+
+		protected:
+			int createNewFilter(const std::string& streamURL) override;
 		};//class AVDataCallbackFilter
 	}//namespace multimedia
 }//namespace framework

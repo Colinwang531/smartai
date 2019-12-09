@@ -1,9 +1,10 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/Decoder/FFmpeg/FFmpegVideoDecoder.h"
-#include "MediaModel/Decoder/FFmpeg/FFmpegAudioDecoder.h"
-#include "MediaModel/Decoder/SDK/HikvisionSDKDecoder.h"
+#include "MediaModule/Decoder/FFmpeg/FFmpegVideoDecoder.h"
+#include "MediaModule/Decoder/FFmpeg/FFmpegAudioDecoder.h"
+#include "MediaModule/Decoder/SDK/HikvisionSDKDecoder.h"
+#include "MediaPin/OutputMediaPin.h"
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 
 namespace framework
@@ -15,6 +16,44 @@ namespace framework
 
 		AVDecoderFilter::~AVDecoderFilter()
 		{}
+
+		int AVDecoderFilter::createNewFilter(const std::string& streamURL)
+		{
+			int status{ ERR_INVALID_PARAM };
+
+			if (!streamURL.compare("hikvision") || !streamURL.compare("dahua"))
+			{
+				if (ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) &&
+					ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID))
+				{
+					status = ERR_OK;
+				}
+			}
+			else
+			{
+				std::string inputPinID, outputPinID;
+				if (!streamURL.compare("video"))
+				{
+					inputPinID = VideoStreamInputPinID;
+					outputPinID = VideoStreamOutputPinID;
+				}
+				else if (!streamURL.compare("audio"))
+				{
+					inputPinID = AudioStreamInputPinID;
+					outputPinID = AudioStreamOutputPinID;
+				}
+
+				if (!inputPinID.empty() && !outputPinID.empty() &&
+					ERR_OK == MediaFilter::createNewInputPin(inputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(outputPinID))
+				{
+					status = ERR_OK;
+				}
+			}
+
+			return status;
+		}
 
 		int AVDecoderFilter::createNewModel(MediaDataPtr mediaData)
 		{

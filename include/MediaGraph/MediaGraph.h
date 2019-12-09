@@ -31,13 +31,18 @@ namespace framework
 			virtual ~MediaGraph(void);
 
 		public:
-			virtual int createNewGraph(void) = 0;
-			virtual int destroyGraph(void);
+			int openStream(const std::string& streamURL);
+			int closeStream(void);
 			MediaFilterRef queryMediaFilterByID(const std::string& filterID);
 
 		protected:
-			int addMediaFilter(const std::string& filterID, MediaFilterPtr filter);
-			int removeMediaFilter(const std::string& filterID);
+			virtual int createNewCaptureFilter(const std::string& streamURL);
+			virtual int createNewControllerFilter(const std::string& streamURL);
+			virtual int createNewDecoderFilter(const std::string& streamURL);
+			virtual int createNewFormatterFilter(void);
+			virtual int createNewRendererFilter(const std::string& streamURL);
+			virtual int createNewCallbackFilter(void);
+			virtual int buildMediaGraph(void);
 
 		protected:
 			MediaFilterGroup mediaFilterGroup;

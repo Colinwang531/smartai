@@ -4,6 +4,7 @@
 #include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
 // #include "MediaModel/Renderer/DXS/AudioDxSoundPlayer.h"
 // using AudioDxSoundPlayer = NS(model, 1)::AudioDxSoundPlayer;
+#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Renderer/AVRendererFilter.h"
 
 namespace framework
@@ -15,6 +16,35 @@ namespace framework
 
 		AVRendererFilter::~AVRendererFilter()
 		{}
+
+		int AVRendererFilter::createNewFilter(const std::string& streamURL)
+		{
+			int status{ streamURL.empty() ? ERR_INVALID_PARAM : ERR_OK };
+
+			if (ERR_OK == status)
+			{
+				std::string inputPinID, outputPinID;
+				if (!streamURL.compare("video"))
+				{
+					inputPinID = VideoStreamInputPinID;
+					outputPinID = VideoStreamOutputPinID;
+				}
+				else if (!streamURL.compare("audio"))
+				{
+					inputPinID = AudioStreamInputPinID;
+					outputPinID = AudioStreamOutputPinID;
+				}
+
+				if (!inputPinID.empty() && !outputPinID.empty() &&
+					ERR_OK == MediaFilter::createNewInputPin(inputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(outputPinID))
+				{
+					status = ERR_OK;
+				}
+			}
+
+			return status;
+		}
 
 		int AVRendererFilter::createNewModel(MediaDataPtr mediaData)
 		{

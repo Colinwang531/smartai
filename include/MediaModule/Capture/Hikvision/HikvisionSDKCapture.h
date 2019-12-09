@@ -10,7 +10,7 @@
 #ifndef HIKVISION_SDK_CAPTURE_H
 #define HIKVISION_SDK_CAPTURE_H
 
-#include "MediaModel/Capture/MediaCapture.h"
+#include "MediaModule/Capture/MediaCapture.h"
 
 namespace framework
 {

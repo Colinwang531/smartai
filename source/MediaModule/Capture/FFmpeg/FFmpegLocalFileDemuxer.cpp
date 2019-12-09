@@ -1,16 +1,17 @@
 #include "boost/make_shared.hpp"
+#include "boost/thread.hpp"
 extern "C"
 {
 #include "libavutil/pixdesc.h"
 }
 #include "error.h"
-#include "MediaModel/Demuxer/FFmpeg/FFmpegLocalFileDemuxer.h"
+#include "MediaModule/Capture/FFmpeg/FFmpegLocalFileDemuxer.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		FFmpegLocalFileDemuxer::FFmpegLocalFileDemuxer() : MediaDemuxer(), formatctx{ NULL }
+		FFmpegLocalFileDemuxer::FFmpegLocalFileDemuxer() : MediaCapture(), formatctx{ NULL }, stopped{ false }
 		{}
 
 		FFmpegLocalFileDemuxer::~FFmpegLocalFileDemuxer(void)
@@ -27,6 +28,13 @@ namespace framework
 				if (!avformat_open_input(&formatctx, streamUrl.c_str(), NULL, NULL))
 				{
 					status = (0 <= avformat_find_stream_info(formatctx, NULL) ? ERR_OK : ERR_STREAM_TYPE_UNKNOWN);
+
+					if (ERR_OK == status)
+					{
+						stopped = false;
+						boost::thread workerThread{ boost::bind(&FFmpegLocalFileDemuxer::mediaDemuxerWorkerThread, this) };
+						workerThread.detach();
+					}
 				}
 				else
 				{
@@ -34,13 +42,13 @@ namespace framework
 				}
 			}
 
-			return ERR_OK == status ? MediaDemuxer::openStream(streamUrl) : status;
+			return ERR_OK == status ? MediaCapture::openStream(streamUrl) : status;
 		}
 
 		int FFmpegLocalFileDemuxer::closeStream()
 		{
-			int status{ MediaDemuxer::closeStream() };
-
+			int status{ ERR_OK };
+			stopped = true;
 			// Wait for exiting thread normally.
 			boost::unique_lock<boost::mutex> lock{ mtx };
 			condition.wait(lock);
@@ -48,7 +56,6 @@ namespace framework
 			if (ERR_OK == status && formatctx)
 			{
 				avformat_close_input(&formatctx);
-				status = ERR_OK;
 			}
 
 			return status;

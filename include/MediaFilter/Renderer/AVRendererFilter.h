@@ -29,6 +29,7 @@ namespace framework
 			}
 
 		protected:
+			int createNewFilter(const std::string& streamURL) override;
 			int createNewModel(MediaDataPtr mediaData) override;
 
 		private:
