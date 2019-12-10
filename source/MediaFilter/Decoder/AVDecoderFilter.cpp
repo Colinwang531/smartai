@@ -4,52 +4,40 @@
 #include "MediaModule/Decoder/FFmpeg/FFmpegVideoDecoder.h"
 #include "MediaModule/Decoder/FFmpeg/FFmpegAudioDecoder.h"
 #include "MediaModule/Decoder/SDK/HikvisionSDKDecoder.h"
-#include "MediaPin/OutputMediaPin.h"
+#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		AVDecoderFilter::AVDecoderFilter() : MediaFilter()
+		AVDecoderFilter::AVDecoderFilter(const DecoderType type /* = DecoderType::DECODER_TYPE_NONE */)
+			: MediaFilter(), decoderType{ type }
 		{}
 
 		AVDecoderFilter::~AVDecoderFilter()
 		{}
 
-		int AVDecoderFilter::createNewFilter(const std::string& streamURL)
+		int AVDecoderFilter::createNewFilter()
 		{
 			int status{ ERR_INVALID_PARAM };
 
-			if (!streamURL.compare("hikvision") || !streamURL.compare("dahua"))
+			if (DecoderType::DECODER_TYPE_DAHUA == decoderType || DecoderType::DECODER_TYPE_HIKVISION == decoderType)
 			{
-				if (ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) &&
+				status = ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) &&
 					ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
-					ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID))
-				{
-					status = ERR_OK;
-				}
+					ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 			}
-			else
+			else if (DecoderType::DECODER_TYPE_H264 == decoderType || DecoderType::DECODER_TYPE_H265 == decoderType || DecoderType::DECODER_TYPE_RTSP_RTP == decoderType)
 			{
-				std::string inputPinID, outputPinID;
-				if (!streamURL.compare("video"))
-				{
-					inputPinID = VideoStreamInputPinID;
-					outputPinID = VideoStreamOutputPinID;
-				}
-				else if (!streamURL.compare("audio"))
-				{
-					inputPinID = AudioStreamInputPinID;
-					outputPinID = AudioStreamOutputPinID;
-				}
-
-				if (!inputPinID.empty() && !outputPinID.empty() &&
-					ERR_OK == MediaFilter::createNewInputPin(inputPinID) &&
-					ERR_OK == MediaFilter::createNewOutputPin(outputPinID))
-				{
-					status = ERR_OK;
-				}
+				status = ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
+			}
+			else if (DecoderType::DECODER_TYPE_AAC == decoderType)
+			{
+				status = ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 			}
 
 			return status;

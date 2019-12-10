@@ -207,17 +207,14 @@
     <ClInclude Include="..\include\Url\Url.h">
       <Filter>Header Files\Url</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaModule\MediaModule.h">
-      <Filter>Header Files\Module</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\MediaModule\Capture\MediaCapture.h">
-      <Filter>Header Files\Module\Capture</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaModule\Capture\FFmpeg\FFmpegLocalFileDemuxer.h">
       <Filter>Header Files\Module\Capture\FFmpeg</Filter>
     </ClInclude>
     <ClInclude Include="..\include\MediaModule\Capture\Hikvision\HikvisionSDKCapture.h">
       <Filter>Header Files\Module\Capture\Hikvision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\MediaModule.h">
+      <Filter>Header Files\Module</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -322,9 +319,6 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaModule\MediaModule.cpp">
       <Filter>Source Files\Module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\MediaModule\Capture\MediaCapture.cpp">
-      <Filter>Source Files\Module\Capture</Filter>
     </ClCompile>
     <ClCompile Include="..\source\MediaModule\Capture\FFmpeg\FFmpegLocalFileDemuxer.cpp">
       <Filter>Source Files\Module\Capture\FFmpeg</Filter>

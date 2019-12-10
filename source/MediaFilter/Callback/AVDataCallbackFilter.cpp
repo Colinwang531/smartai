@@ -13,17 +13,10 @@ namespace framework
 		AVDataCallbackFilter::~AVDataCallbackFilter()
 		{}
 
-		int AVDataCallbackFilter::createNewFilter(const std::string & streamURL)
+		int AVDataCallbackFilter::createNewFilter()
 		{
-			int status{ ERR_BAD_ALLOC };
-
-			if (ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
-				ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID))
-			{
-				status = ERR_OK;
-			}
-
-			return status;
+			return ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+				ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
 	}//namespace multimedia
 }//namespace framework

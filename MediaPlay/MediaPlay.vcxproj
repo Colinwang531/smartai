@@ -182,7 +182,6 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClInclude Include="..\include\MediaGraph\MediaGraph.h" />
     <ClInclude Include="..\include\MediaModule\Capture\FFmpeg\FFmpegLocalFileDemuxer.h" />
     <ClInclude Include="..\include\MediaModule\Capture\Hikvision\HikvisionSDKCapture.h" />
-    <ClInclude Include="..\include\MediaModule\Capture\MediaCapture.h" />
     <ClInclude Include="..\include\MediaModule\MediaModule.h" />
     <ClInclude Include="..\include\MediaPin\InputMediaPin.h" />
     <ClInclude Include="..\include\MediaPin\MediaPin.h" />
@@ -222,7 +221,6 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClCompile Include="..\source\MediaGraph\MediaGraph.cpp" />
     <ClCompile Include="..\source\MediaModule\Capture\FFmpeg\FFmpegLocalFileDemuxer.cpp" />
     <ClCompile Include="..\source\MediaModule\Capture\Hikvision\HikvisionSDKCapture.cpp" />
-    <ClCompile Include="..\source\MediaModule\Capture\MediaCapture.cpp" />
     <ClCompile Include="..\source\MediaModule\MediaModule.cpp" />
     <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\MediaPin.cpp" />

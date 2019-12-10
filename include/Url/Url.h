@@ -6,12 +6,8 @@
 //
 // Stream URL wrapper.
 // URL sample :
-//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=hikvision[&width=1920&height=1080&...]
-//						@stream=hikvision
-//						@stream=dahua
-//						@stream=h264
-//						@stream=h265
-//						@stream=rtsp_rtp
+//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=0[&width=1920&height=1080&...]
+//						@stream : 1-HIKVISION, 2-DAHUA, 3-H264, 4-H265, 5-RTP/RTSP
 //				playback://?path=c:\video\sample.mp4
 //				rtsp://admin:12345@192.168.1.100:8000?channel=1&...
 //
@@ -56,7 +52,7 @@ namespace framework
 			void addAuthentication(const std::string& name, const std::string& password);
 			void getAuthentication(std::string& name, std::string& password);
 			void addParameter(const std::string& key, const std::string& value);
-			const std::string getParameter(const std::string& key);
+			const std::string getParameter.(const std::string& key);
 
 		private:
 			std::string url;

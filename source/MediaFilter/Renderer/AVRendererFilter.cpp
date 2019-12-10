@@ -11,36 +11,26 @@ namespace framework
 {
 	namespace multimedia
 	{
-		AVRendererFilter::AVRendererFilter() : MediaFilter(), videoRendererWnd{ NULL }
+		AVRendererFilter::AVRendererFilter(const RendererType type /* = RendererType::RENDERER_TYPE_NONE */)
+			: MediaFilter(), rendererType{ type }
 		{}
 
 		AVRendererFilter::~AVRendererFilter()
 		{}
 
-		int AVRendererFilter::createNewFilter(const std::string& streamURL)
+		int AVRendererFilter::createNewFilter()
 		{
-			int status{ streamURL.empty() ? ERR_INVALID_PARAM : ERR_OK };
+			int status{ ERR_BAD_ALLOC };
 
-			if (ERR_OK == status)
+			if (RendererType::RENDERER_TYPE_VIDEO == rendererType)
 			{
-				std::string inputPinID, outputPinID;
-				if (!streamURL.compare("video"))
-				{
-					inputPinID = VideoStreamInputPinID;
-					outputPinID = VideoStreamOutputPinID;
-				}
-				else if (!streamURL.compare("audio"))
-				{
-					inputPinID = AudioStreamInputPinID;
-					outputPinID = AudioStreamOutputPinID;
-				}
-
-				if (!inputPinID.empty() && !outputPinID.empty() &&
-					ERR_OK == MediaFilter::createNewInputPin(inputPinID) &&
-					ERR_OK == MediaFilter::createNewOutputPin(outputPinID))
-				{
-					status = ERR_OK;
-				}
+				status = ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
+			}
+			else if (RendererType::RENDERER_TYPE_AUDIO == rendererType)
+			{
+				status = ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) &&
+					ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 			}
 
 			return status;

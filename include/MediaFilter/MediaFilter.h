@@ -43,7 +43,7 @@ namespace framework
 			virtual ~MediaFilter(void);
 
 		public:
-			virtual int createNewFilter(const std::string& streamURL) = 0;
+			virtual int createNewFilter(void) = 0;
 			virtual int destroyFilter(void);
 			virtual int inputMediaData(MediaDataPtr mediaData);
 			virtual bool isSourceFilter(void) const
@@ -60,10 +60,11 @@ namespace framework
 			}
 
 		protected:
-			virtual int createNewModule(MediaDataPtr mediaData);
+			virtual int createNewModule(MediaDataPtr mediaData) = 0;
 			int createNewInputPin(const std::string& pinID);
 			int createNewOutputPin(const std::string& pinID);
-			int postInputMediaData(MediaDataPtr mediaData);
+			void setPostInputMediaDataCallback(void);
+			int postInputMediaDataCallback(MediaDataPtr mediaData);
 
 		protected:
 			MediaPinGroup mediaPinGroup;

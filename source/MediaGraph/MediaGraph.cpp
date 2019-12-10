@@ -28,11 +28,11 @@ namespace framework
 			int status{ streamURL.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
 			if (ERR_OK == status &&
-				ERR_OK == createNewCaptureFilter(streamURL) &&
+				ERR_OK == createNewCaptureFilter() &&
 				ERR_OK == createNewControllerFilter(streamURL) &&
 				ERR_OK == createNewDecoderFilter(streamURL) &&
 				ERR_OK == createNewFormatterFilter() &&
-				ERR_OK == createNewRendererFilter(streamURL) &&
+				ERR_OK == createNewRendererFilter() &&
 				ERR_OK == createNewCallbackFilter() &&
 				ERR_OK == buildMediaGraph())
 			{
@@ -66,11 +66,11 @@ namespace framework
 			return mediaFilterGroup.at(filterID);
 		}
 
-		int MediaGraph::createNewCaptureFilter(const std::string& streamURL)
+		int MediaGraph::createNewCaptureFilter()
 		{
 			int status{ ERR_BAD_ALLOC };
 			MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVCaptureFilter>() };
-			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter(streamURL))
+			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 			{
 				mediaFilterGroup.insert(AVMediaDataCaptureFilterID, mediaFilterPtr);
 				status = ERR_OK;
@@ -81,31 +81,29 @@ namespace framework
 
 		int MediaGraph::createNewControllerFilter(const std::string& streamURL)
 		{
-			int status{ ERR_BAD_ALLOC };
 			const framework::wrapper::URLProtocol protocol{ URL(streamURL).getProtocol() };
-
 			if (framework::wrapper::URLProtocol::URL_PROTOCOL_PLAYBACK == protocol)
 			{
 				MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVPlayControllerFilter>() };
-				if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter(streamURL))
+				if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 				{
 					mediaFilterGroup.insert(AVMediaPlayControlFilterID, mediaFilterPtr);
-					status = ERR_OK;
 				}
 			}
 
-			return status;
+			return ERR_OK;
 		}
 
 		int MediaGraph::createNewDecoderFilter(const std::string& streamURL)
 		{
 			int status{ ERR_BAD_ALLOC };
-			const std::string streamValue{ URL().getParameter("stream") };
+			const std::string streamValue{ URL(streamURL).getParameter("stream") };
+			const DecoderType decoderType{ (const DecoderType)atoi(streamValue.c_str()) };
 
-			if (!streamValue.compare("hikvision") || !streamValue.compare("dahua"))
+			if (DecoderType::DECODER_TYPE_HIKVISION == decoderType || DecoderType::DECODER_TYPE_DAHUA == decoderType)
 			{
-				MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVDecoderFilter>() };
-				if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter(streamValue))
+				MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVDecoderFilter>(decoderType) };
+				if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 				{
 					mediaFilterGroup.insert(AVMediaSDKDecoderFilterID, mediaFilterPtr);
 					status = ERR_OK;
@@ -113,10 +111,10 @@ namespace framework
 			}
 			else
 			{
-				MediaFilterPtr videoMediaFilterPtr{ boost::make_shared<AVDecoderFilter>() };
-				MediaFilterPtr audioMediaFilterPtr{ boost::make_shared<AVDecoderFilter>() };
-				if (videoMediaFilterPtr && ERR_OK == videoMediaFilterPtr->createNewFilter("video") &&
-					audioMediaFilterPtr && ERR_OK == audioMediaFilterPtr->createNewFilter("audio"))
+				MediaFilterPtr videoMediaFilterPtr{ boost::make_shared<AVDecoderFilter>(decoderType) };
+				MediaFilterPtr audioMediaFilterPtr{ boost::make_shared<AVDecoderFilter>(DecoderType::DECODER_TYPE_AAC) };
+				if (videoMediaFilterPtr && ERR_OK == videoMediaFilterPtr->createNewFilter() &&
+					audioMediaFilterPtr && ERR_OK == audioMediaFilterPtr->createNewFilter())
 				{
 					mediaFilterGroup.insert(AVMediaVideoDecoderFilterID, videoMediaFilterPtr);
 					mediaFilterGroup.insert(AVMediaAudioDecoderFilterID, audioMediaFilterPtr);
@@ -131,7 +129,7 @@ namespace framework
 		{
 			int status{ ERR_BAD_ALLOC };
 			MediaFilterPtr mediaFilterPtr{ boost::make_shared<ImageFormatterFilter>() };
-			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter(""))
+			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 			{
 				mediaFilterGroup.insert(AVMediaImageFormatFilterID, mediaFilterPtr);
 				status = ERR_OK;
@@ -140,13 +138,13 @@ namespace framework
 			return status;
 		}
 
-		int MediaGraph::createNewRendererFilter(const std::string& streamURL)
+		int MediaGraph::createNewRendererFilter()
 		{
 			int status{ ERR_BAD_ALLOC };
-			MediaFilterPtr videoMediaFilterPtr{ boost::make_shared<AVRendererFilter>() };
-			MediaFilterPtr audioMediaFilterPtr{ boost::make_shared<AVRendererFilter>() };
-			if (videoMediaFilterPtr && ERR_OK == videoMediaFilterPtr->createNewFilter("video") &&
-				audioMediaFilterPtr && ERR_OK == audioMediaFilterPtr->createNewFilter("audio"))
+			MediaFilterPtr videoMediaFilterPtr{ boost::make_shared<AVRendererFilter>(RendererType::RENDERER_TYPE_VIDEO) };
+			MediaFilterPtr audioMediaFilterPtr{ boost::make_shared<AVRendererFilter>(RendererType::RENDERER_TYPE_AUDIO) };
+			if (videoMediaFilterPtr && ERR_OK == videoMediaFilterPtr->createNewFilter() &&
+				audioMediaFilterPtr && ERR_OK == audioMediaFilterPtr->createNewFilter())
 			{
 				mediaFilterGroup.insert(AVMediaVideoRendererFilterID, videoMediaFilterPtr);
 				mediaFilterGroup.insert(AVMediaSoundPlayerFilterID, audioMediaFilterPtr);
@@ -160,7 +158,7 @@ namespace framework
 		{
 			int status{ ERR_BAD_ALLOC };
 			MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVDataCallbackFilter>() };
-			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter(""))
+			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 			{
 				mediaFilterGroup.insert(AVMediaDataCallbackFilterID, mediaFilterPtr);
 				status = ERR_OK;
@@ -176,71 +174,33 @@ namespace framework
 				controllerFilterRef{ queryMediaFilterByID(AVMediaPlayControlFilterID) },
 				videoDecoderFilterRef{ queryMediaFilterByID(AVMediaVideoDecoderFilterID) },
 				audioDecoderFilterRef{ queryMediaFilterByID(AVMediaAudioDecoderFilterID) },
-				sdkDecoderFilterRef{ queryMediaFilterByID(AVMediaSDKDecoderFilterID) },
 				imageFormatterFilterRef{ queryMediaFilterByID(AVMediaImageFormatFilterID) },
 				videoRendererFilterRef{ queryMediaFilterByID(AVMediaVideoRendererFilterID) },
 				soundPlayerFilterRef{ queryMediaFilterByID(AVMediaSoundPlayerFilterID) },
 				dataCallbackFilterRef{ queryMediaFilterByID(AVMediaDataCallbackFilterID) };
 
-			if (!captureFilterRef.expired() && !controllerFilterRef.expired())
+			if (captureFilterRef.expired() || imageFormatterFilterRef.expired())
 			{
-				outputMediaPinRef = captureFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
-				inputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
-
-				outputMediaPinRef = captureFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
-				inputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
+				return ERR_BAD_ALLOC;
 			}
 
-			if (!controllerFilterRef.expired() && !videoDecoderFilterRef.expired())
+			if (controllerFilterRef.expired())
 			{
-				outputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
-				inputMediaPinRef = videoDecoderFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
-			}
-
-			if (!controllerFilterRef.expired() && !audioDecoderFilterRef.expired())
-			{
-				outputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
-				inputMediaPinRef = audioDecoderFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
-			}
-
-			if (!videoDecoderFilterRef.expired() && !imageFormatterFilterRef.expired())
-			{
-				outputMediaPinRef = videoDecoderFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
-				inputMediaPinRef = imageFormatterFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
-			}
-
-			if (!captureFilterRef.expired() && !sdkDecoderFilterRef.expired())
-			{
+				MediaFilterRef sdkDecoderFilterRef{ queryMediaFilterByID(AVMediaSDKDecoderFilterID) };
 				outputMediaPinRef = captureFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
 				inputMediaPinRef = sdkDecoderFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
 				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
 				{
 					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
 				}
-			}
 
-			if (!sdkDecoderFilterRef.expired() && !imageFormatterFilterRef.expired() && !soundPlayerFilterRef.expired())
-			{
+				outputMediaPinRef = captureFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
+				inputMediaPinRef = sdkDecoderFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
+				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+				{
+					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+				}
+
 				outputMediaPinRef = sdkDecoderFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
 				inputMediaPinRef = imageFormatterFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
 				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
@@ -255,42 +215,70 @@ namespace framework
 					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
 				}
 			}
-
-			if (!imageFormatterFilterRef.expired() && !videoRendererFilterRef.expired())
+			else
 			{
-				outputMediaPinRef = imageFormatterFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
-				inputMediaPinRef = videoRendererFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
+				outputMediaPinRef = captureFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
+				inputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
+				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+				{
+					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+				}
+
+				outputMediaPinRef = captureFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
+				inputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
+				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+				{
+					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+				}
+
+				outputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
+				inputMediaPinRef = videoDecoderFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
+				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+				{
+					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+				}
+
+				outputMediaPinRef = controllerFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
+				inputMediaPinRef = audioDecoderFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
+				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+				{
+					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+				}
+
+				outputMediaPinRef = videoDecoderFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
+				inputMediaPinRef = imageFormatterFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
+				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+				{
+					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+				}
+
+				outputMediaPinRef = audioDecoderFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
+				inputMediaPinRef = soundPlayerFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
 				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
 				{
 					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
 				}
 			}
 
-			if (!audioDecoderFilterRef.expired() && !soundPlayerFilterRef.expired())
+			outputMediaPinRef = imageFormatterFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
+			inputMediaPinRef = videoRendererFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
+			if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
 			{
-				outputMediaPinRef = videoDecoderFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
-				inputMediaPinRef = imageFormatterFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
+				outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
 			}
 
-			if (!videoRendererFilterRef.expired() && !soundPlayerFilterRef.expired() && !dataCallbackFilterRef.expired())
+			outputMediaPinRef = videoRendererFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
+			inputMediaPinRef = dataCallbackFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
+			if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
 			{
-				outputMediaPinRef = videoRendererFilterRef.lock()->queryMediaPinByID(VideoStreamOutputPinID);
-				inputMediaPinRef = dataCallbackFilterRef.lock()->queryMediaPinByID(VideoStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
+				outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
+			}
 
-				outputMediaPinRef = soundPlayerFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
-				inputMediaPinRef = dataCallbackFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
-				if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
-				{
-					outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
-				}
+			outputMediaPinRef = soundPlayerFilterRef.lock()->queryMediaPinByID(AudioStreamOutputPinID);
+			inputMediaPinRef = dataCallbackFilterRef.lock()->queryMediaPinByID(AudioStreamInputPinID);
+			if (!outputMediaPinRef.expired() && !inputMediaPinRef.expired())
+			{
+				outputMediaPinRef.lock()->connectPin(inputMediaPinRef);
 			}
 
 			return ERR_OK;

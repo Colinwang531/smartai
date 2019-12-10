@@ -23,6 +23,7 @@ namespace framework
 			virtual ~SourceMediaFilter(void);
 
 		protected:
+			int createNewModule(MediaDataPtr mediaData) override;
 			bool isSourceFilter(void) const override
 			{
 				return true;

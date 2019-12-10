@@ -10,21 +10,21 @@
 #ifndef HIKVISION_SDK_CAPTURE_H
 #define HIKVISION_SDK_CAPTURE_H
 
-#include "MediaModule/Capture/MediaCapture.h"
+#include "MediaModule/MediaModule.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class HikvisionSDKCapture : public MediaCapture
+		class HikvisionSDKCapture : public MediaModule
 		{
 		public:
 			HikvisionSDKCapture(void);
 			virtual ~HikvisionSDKCapture(void);
 
-		protected:
-			int openStream(const std::string& streamUrl) override;
-			int closeStream(void) override;
+		public:
+			int openStream(const std::string& streamUrl);
+			int closeStream(void);
 		};//class HikvisionSDKCapture
 	}//namespace multimedia
 }//namespace framework

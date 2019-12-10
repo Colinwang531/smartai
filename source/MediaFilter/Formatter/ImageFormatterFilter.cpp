@@ -1,7 +1,6 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/Formatter/FFmpeg/FFmpegImageFormatter.h"
 #include "MediaPin/MediaPin.h"
 #include "MediaFilter/Formatter/ImageFormatterFilter.h"
 
@@ -15,17 +14,10 @@ namespace framework
 		ImageFormatterFilter::~ImageFormatterFilter()
 		{}
 
-		int ImageFormatterFilter::createNewFilter(const std::string& streamURL)
+		int ImageFormatterFilter::createNewFilter()
 		{
-			int status{ ERR_BAD_ALLOC };
-
-			if (ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
-				ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID))
-			{
-				status = ERR_OK;
-			}
-
-			return status;
+			return ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+				ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
 
 		int ImageFormatterFilter::createNewModel(MediaDataPtr mediaData)

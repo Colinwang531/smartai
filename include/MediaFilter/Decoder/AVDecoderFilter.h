@@ -16,15 +16,29 @@ namespace framework
 {
 	namespace multimedia
 	{
+		typedef enum class tagDecoderType_t : unsigned char
+		{
+			DECODER_TYPE_NONE = 0,
+			DECODER_TYPE_HIKVISION,
+			DECODER_TYPE_DAHUA,
+			DECODER_TYPE_H264,
+			DECODER_TYPE_H265,
+			DECODER_TYPE_RTSP_RTP,
+			DECODER_TYPE_AAC
+		}DecoderType;
+
 		class AVDecoderFilter : public MediaFilter
 		{
 		public:
-			AVDecoderFilter(void);
+			AVDecoderFilter(const DecoderType type = DecoderType::DECODER_TYPE_NONE);
 			virtual ~AVDecoderFilter(void);
 
 		protected:
-			int createNewFilter(const std::string& streamURL) override;
+			int createNewFilter(void) override;
 			int createNewModel(MediaDataPtr mediaData) override;
+
+		private:
+			const DecoderType decoderType;
 		};//class AVDecoderFilter
 	}//namespace multimedia
 }//namespace framework

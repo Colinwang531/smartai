@@ -16,24 +16,25 @@ namespace framework
 {
 	namespace multimedia
 	{
+		typedef enum class tagRendererType_t : unsigned char
+		{
+			RENDERER_TYPE_NONE = 0,
+			RENDERER_TYPE_VIDEO,
+			RENDERER_TYPE_AUDIO
+		}RendererType;
+
 		class AVRendererFilter : public MediaFilter
 		{
 		public:
-			AVRendererFilter(void);
+			AVRendererFilter(const RendererType type = RendererType::RENDERER_TYPE_NONE);
 			virtual ~AVRendererFilter(void);
 
-		public:
-			inline void setHwnd(void* hwnd = NULL)
-			{
-				videoRendererWnd = hwnd;
-			}
-
 		protected:
-			int createNewFilter(const std::string& streamURL) override;
+			int createNewFilter(void) override;
 			int createNewModel(MediaDataPtr mediaData) override;
 
 		private:
-			void* videoRendererWnd;
+			const RendererType rendererType;
 		};//class AVRendererFilter
 	}//namespace multimedia
 }//namespace framework

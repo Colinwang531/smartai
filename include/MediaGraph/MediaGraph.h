@@ -36,11 +36,11 @@ namespace framework
 			MediaFilterRef queryMediaFilterByID(const std::string& filterID);
 
 		protected:
-			virtual int createNewCaptureFilter(const std::string& streamURL);
+			virtual int createNewCaptureFilter(void);
 			virtual int createNewControllerFilter(const std::string& streamURL);
 			virtual int createNewDecoderFilter(const std::string& streamURL);
 			virtual int createNewFormatterFilter(void);
-			virtual int createNewRendererFilter(const std::string& streamURL);
+			virtual int createNewRendererFilter(void);
 			virtual int createNewCallbackFilter(void);
 			virtual int buildMediaGraph(void);
 

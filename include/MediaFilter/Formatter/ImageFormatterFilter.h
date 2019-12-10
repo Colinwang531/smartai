@@ -23,7 +23,7 @@ namespace framework
 			virtual ~ImageFormatterFilter(void);
 
 		protected:
-			int createNewFilter(const std::string& streamURL) override;
+			int createNewFilter(void) override;
 			int createNewModel(MediaDataPtr mediaData) override;
 		};//class ImageFormatterFilter
 	}//namespace multimedia

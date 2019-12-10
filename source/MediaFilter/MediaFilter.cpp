@@ -40,24 +40,19 @@ namespace framework
 				}
 
 				// Media data is passed directly to next filter if model in the filter is not exist.
-				status = mediaModulePtr ? mediaModulePtr->inputMediaData(mediaData) : postInputMediaData(mediaData);
+				status = mediaModulePtr ? mediaModulePtr->inputMediaData(mediaData) : postInputMediaDataCallback(mediaData);
 			}
 
 			return status;
 		}
 
-		int MediaFilter::createNewModule(MediaDataPtr mediaData)
+		void MediaFilter::setPostInputMediaDataCallback()
 		{
 			if (mediaModulePtr)
 			{
 				mediaModulePtr->setPostInputMediaDataCallback(
-					boost::bind(
-						&MediaFilter::postInputMediaData,
-						boost::enable_shared_from_this<MediaFilter>::shared_from_this(),
-						_1));
+					boost::bind(&MediaFilter::postInputMediaDataCallback, boost::enable_shared_from_this<MediaFilter>::shared_from_this(), _1));
 			}
-
-			return ERR_OK;
 		}
 
 		int MediaFilter::createNewInputPin(const std::string& pinID)
@@ -96,7 +91,7 @@ namespace framework
 			return status;
 		}
 
-		int MediaFilter::postInputMediaData(MediaDataPtr mediaData)
+		int MediaFilter::postInputMediaDataCallback(MediaDataPtr mediaData)
 		{
 			int status{ mediaData && !isTargetFilter() ? ERR_OK : ERR_INVALID_PARAM };
 

@@ -39,19 +39,12 @@ namespace framework
 			return checkSpeedValue(speed);
 		}
 
-		int AVPlayControllerFilter::createNewFilter(const std::string& streamURL)
+		int AVPlayControllerFilter::createNewFilter()
 		{
-			int status{ ERR_BAD_ALLOC };
-
-			if (ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
+			return ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
 				ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) &&
 				ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) &&
-				ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID))
-			{
-				status = ERR_OK;
-			}
-
-			return status;
+				ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
 
 		int AVPlayControllerFilter::checkSpeedValue(const short speed /* = 1 */)

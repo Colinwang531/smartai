@@ -30,7 +30,7 @@ namespace framework
 			int slowPlay(const short speed = -1);
 
 		private:
-			int createNewFilter(const std::string& streamURL) override;
+			int createNewFilter(void) override;
 			int checkSpeedValue(const short speed = 0);
 		};//class AVPlayControllerFilter
 	}//namespace multimedia

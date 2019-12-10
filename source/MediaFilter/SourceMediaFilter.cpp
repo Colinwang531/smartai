@@ -10,5 +10,10 @@ namespace framework
 
 		SourceMediaFilter::~SourceMediaFilter()
 		{}
+
+		int SourceMediaFilter::createNewModule(MediaDataPtr mediaData)
+		{
+			return ERR_NOT_SUPPORT;
+		}
 	}//namespace multimedia
 }//namespace framework

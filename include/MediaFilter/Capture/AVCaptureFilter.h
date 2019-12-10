@@ -24,9 +24,10 @@ namespace framework
 
 		public:
 			int startCapture(const std::string& streamURL);
+			int stopCapture(void);
 
 		protected:
-			int createNewFilter(const std::string& streamURL) override;
+			int createNewFilter(void) override;
 		};//class AVCaptureFilter
 	}//namespace multimedia
 }//namespace framework

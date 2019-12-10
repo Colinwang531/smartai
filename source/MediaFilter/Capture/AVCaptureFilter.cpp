@@ -2,7 +2,6 @@
 #include "error.h"
 #include "URL/Url.h"
 using URL = framework::wrapper::URL;
-#include "MediaData/MediaData.h"
 #include "MediaModule/Capture/Hikvision/HikvisionSDKCapture.h"
 #include "MediaModule/Capture/FFmpeg/FFmpegLocalFileDemuxer.h"
 #include "MediaPin/MediaPin.h"
@@ -63,16 +62,10 @@ namespace framework
 			return status;
 		}
 
-		int AVCaptureFilter::createNewFilter(const std::string& streamURL)
+		int AVCaptureFilter::createNewFilter()
 		{
-			int status{ MediaFilter::createNewOutputPin(VideoStreamOutputPinID) };
-			const std::string streamValue{ URL(streamURL).getParameter("stream") };
-			if (streamValue.compare("hikvision") && streamValue.compare("dahua"))
-			{
-				status = MediaFilter::createNewOutputPin(AudioStreamOutputPinID);
-			}
-			
-			return status;
+			return ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) &&
+				ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
 	}//namespace multimedia
 }//namespace framework
