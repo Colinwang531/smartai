@@ -6,7 +6,7 @@ using URL = framework::wrapper::URL;
 #include "MediaFilter/Capture/AVCaptureFilter.h"
 #include "MediaFilter/Controller/AVPlayControllerFilter.h"
 #include "MediaFilter/Decoder/AVDecoderFilter.h"
-#include "MediaFilter/Formatter/ImageFormatterFilter.h"
+#include "MediaFilter/Converter/AVConverterFilter.h"
 #include "MediaFilter/Renderer/AVRendererFilter.h"
 #include "MediaFilter/Callback/AVDataCallbackFilter.h"
 #include "MediaGraph/MediaGraph.h"
@@ -23,7 +23,7 @@ namespace framework
 			closeStream();
 		}
 
-		int MediaGraph::openStream(const std::string& streamURL)
+		int MediaGraph::openStream(const std::string& streamURL, void* hwnd /* = NULL */)
 		{
 			int status{ streamURL.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
@@ -31,8 +31,8 @@ namespace framework
 				ERR_OK == createNewCaptureFilter() &&
 				ERR_OK == createNewControllerFilter(streamURL) &&
 				ERR_OK == createNewDecoderFilter(streamURL) &&
-				ERR_OK == createNewFormatterFilter() &&
-				ERR_OK == createNewRendererFilter() &&
+				ERR_OK == createNewConverterFilter() &&
+				ERR_OK == createNewRendererFilter(hwnd) &&
 				ERR_OK == createNewCallbackFilter() &&
 				ERR_OK == buildMediaGraph())
 			{
@@ -125,10 +125,10 @@ namespace framework
 			return status;
 		}
 
-		int MediaGraph::createNewFormatterFilter()
+		int MediaGraph::createNewConverterFilter()
 		{
 			int status{ ERR_BAD_ALLOC };
-			MediaFilterPtr mediaFilterPtr{ boost::make_shared<ImageFormatterFilter>() };
+			MediaFilterPtr mediaFilterPtr{ boost::make_shared<AVConverterFilter>() };
 			if (mediaFilterPtr && ERR_OK == mediaFilterPtr->createNewFilter())
 			{
 				mediaFilterGroup.insert(AVMediaImageFormatFilterID, mediaFilterPtr);
@@ -138,7 +138,7 @@ namespace framework
 			return status;
 		}
 
-		int MediaGraph::createNewRendererFilter()
+		int MediaGraph::createNewRendererFilter(void* hwnd /* = NULL */)
 		{
 			int status{ ERR_BAD_ALLOC };
 			MediaFilterPtr videoMediaFilterPtr{ boost::make_shared<AVRendererFilter>(RendererType::RENDERER_TYPE_VIDEO) };

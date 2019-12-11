@@ -31,6 +31,7 @@ namespace framework
 
 		private:
 			int createNewFilter(void) override;
+			int createNewModule(MediaDataPtr mediaData) override;
 			int checkSpeedValue(const short speed = 0);
 		};//class AVPlayControllerFilter
 	}//namespace multimedia

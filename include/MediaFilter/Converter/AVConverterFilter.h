@@ -4,29 +4,29 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Video and audio data callback.
+// Base class of filter for data converting.
 //
 
-#ifndef AV_DATA_CALLBACK_FILTER_H
-#define AV_DATA_CALLBACK_FILTER_H
+#ifndef AV_CONVERTER_FILTER_H
+#define AV_CONVERTER_FILTER_H
 
-#include "MediaFilter/TargetMediaFilter.h"
+#include "MediaFilter/MediaFilter.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class AVDataCallbackFilter : public TargetMediaFilter
+		class AVConverterFilter : public MediaFilter
 		{
 		public:
-			AVDataCallbackFilter(void);
-			virtual ~AVDataCallbackFilter(void);
+			AVConverterFilter(void);
+			virtual ~AVConverterFilter(void);
 
 		protected:
 			int createNewFilter(void) override;
 			int createNewModule(MediaDataPtr mediaData) override;
-		};//class AVDataCallbackFilter
+		};//class AVConverterFilter
 	}//namespace multimedia
 }//namespace framework
 
-#endif//AV_DATA_CALLBACK_FILTER_H
+#endif//AV_CONVERTER_FILTER_H

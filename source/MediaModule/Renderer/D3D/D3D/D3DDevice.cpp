@@ -1,6 +1,6 @@
 #include "error.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DVertexBuffer.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DDevice.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DVertexBuffer.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DDevice.h"
 
 namespace framework
 {

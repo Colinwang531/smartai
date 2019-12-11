@@ -1,4 +1,4 @@
-#include "MediaModel/Renderer/D3D/D3D/D3DDisplay.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DDisplay.h"
 //#include <glog/logger.h>
 
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_TEX1)

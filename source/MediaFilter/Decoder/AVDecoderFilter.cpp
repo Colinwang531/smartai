@@ -11,7 +11,8 @@ namespace framework
 {
 	namespace multimedia
 	{
-		AVDecoderFilter::AVDecoderFilter(const DecoderType type /* = DecoderType::DECODER_TYPE_NONE */)
+		AVDecoderFilter::AVDecoderFilter(
+			const DecoderType type /* = DecoderType::DECODER_TYPE_NONE */)
 			: MediaFilter(), decoderType{ type }
 		{}
 
@@ -43,43 +44,44 @@ namespace framework
 			return status;
 		}
 
-		int AVDecoderFilter::createNewModel(MediaDataPtr mediaData)
+		int AVDecoderFilter::createNewModule(MediaDataPtr mediaData)
 		{
 			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
 
 			if (ERR_OK == status)
 			{
+				MediaModulePtr decoderModulePtr;
 				const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
 				const MediaDataSubID mediaDataSubID{ mediaData->getSubID() };
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
 				{
-					MediaModelPtr videoDecoderPtr;
 					if (MediaDataSubID::MEDIA_DATA_SUB_ID_H264 == mediaDataSubID || MediaDataSubID::MEDIA_DATA_SUB_ID_H265 == mediaDataSubID)
 					{
-						videoDecoderPtr = boost::make_shared<FFmpegVideoDecoder>();
+						decoderModulePtr = boost::make_shared<FFmpegVideoDecoder>();
 					}
 					else if (MediaDataSubID::MEDIA_DATA_SUB_ID_HIKVISION == mediaDataSubID)
 					{
-						videoDecoderPtr = boost::make_shared<HikvisionSDKDecoder>();
-					}
-
-					if (videoDecoderPtr)
-					{
-						mediaModelPtr.swap(videoDecoderPtr);
+						decoderModulePtr = boost::make_shared<HikvisionSDKDecoder>();
 					}
 				}
-				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
+				else if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
 				{
-					MediaModelPtr audioDecoderPtr{ boost::make_shared<FFmpegAudioDecoder>() };
-					if (audioDecoderPtr)
-					{
-						mediaModelPtr.swap(audioDecoderPtr);
-					}
+					decoderModulePtr = boost::make_shared<FFmpegAudioDecoder>();
+				}
+				else
+				{
+					status = ERR_NOT_SUPPORT;
+				}
+
+				if (decoderModulePtr)
+				{
+					mediaModulePtr.swap(decoderModulePtr);
+					MediaFilter::setPostInputMediaDataCallback();
 				}
 			}
 
-			return ERR_OK == status ? MediaFilter::createNewModel(mediaData) : status;
+			return status;
 		}
 	}//namespace multimedia
 }//namespace framework

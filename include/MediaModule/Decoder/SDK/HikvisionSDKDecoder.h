@@ -11,13 +11,13 @@
 #define HIKVISION_SDK_DECODER_H
 
 #include "WindowsPlayM4.h"
-#include "MediaModel/Decoder/MediaDecoder.h"
+#include "MediaModule/MediaModule.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class HikvisionSDKDecoder : public MediaDecoder
+		class HikvisionSDKDecoder : public MediaModule
 		{
 		public:
 			HikvisionSDKDecoder(void);

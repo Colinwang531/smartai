@@ -8,7 +8,7 @@ extern "C"
 }
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/Decoder/FFmpeg/FFmpegVideoDecoder.h"
+#include "MediaModule/Decoder/FFmpeg/FFmpegVideoDecoder.h"
 
 namespace framework
 {
@@ -33,7 +33,7 @@ namespace framework
 		}
 
 		FFmpegVideoDecoder::FFmpegVideoDecoder()
-			: MediaDecoder(), codecctx{ NULL }, hwdevicectx{ NULL }, avcodecPacket{ NULL }, avcodecInputFrame{ NULL }, avcodecOutputFrame{NULL},
+			: MediaModule(), codecctx{ NULL }, hwdevicectx{ NULL }, avcodecPacket{ NULL }, avcodecInputFrame{ NULL }, avcodecOutputFrame{NULL},
 			swsContext{ NULL }, outputFrameData{ NULL }, outputFrameDataBytes{ 0 }
 		{}
 

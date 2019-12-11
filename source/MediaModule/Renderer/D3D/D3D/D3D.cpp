@@ -1,11 +1,11 @@
 #include <algorithm>
 #include "error.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DDevice.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DPixelShader.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DVertexBuffer.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DTexture.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DFont.h"
-#include "MediaModel/Renderer/D3D/D3D/D3D.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DDevice.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DPixelShader.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DVertexBuffer.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DTexture.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DFont.h"
+#include "MediaModule/Renderer/D3D/D3D/D3D.h"
 
 namespace framework
 {

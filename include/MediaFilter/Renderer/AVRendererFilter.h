@@ -26,15 +26,17 @@ namespace framework
 		class AVRendererFilter : public MediaFilter
 		{
 		public:
-			AVRendererFilter(const RendererType type = RendererType::RENDERER_TYPE_NONE);
+			AVRendererFilter(
+				const RendererType type = RendererType::RENDERER_TYPE_NONE, void* hwnd = NULL);
 			virtual ~AVRendererFilter(void);
 
 		protected:
 			int createNewFilter(void) override;
-			int createNewModel(MediaDataPtr mediaData) override;
+			int createNewModule(MediaDataPtr mediaData) override;
 
 		private:
 			const RendererType rendererType;
+			void* videoDisplayWnd;
 		};//class AVRendererFilter
 	}//namespace multimedia
 }//namespace framework

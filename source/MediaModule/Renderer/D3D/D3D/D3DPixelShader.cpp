@@ -1,6 +1,6 @@
 #include "d3dx9shader.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DDevice.h"
-#include "MediaModel/Renderer/D3D/D3D/D3DPixelShader.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DDevice.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DPixelShader.h"
 
 namespace framework
 {

@@ -1,7 +1,7 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
+#include "MediaModule/Renderer/D3D/VideoD3DRenderer.h"
 // #include "MediaModel/Renderer/DXS/AudioDxSoundPlayer.h"
 // using AudioDxSoundPlayer = NS(model, 1)::AudioDxSoundPlayer;
 #include "MediaPin/MediaPin.h"
@@ -11,8 +11,9 @@ namespace framework
 {
 	namespace multimedia
 	{
-		AVRendererFilter::AVRendererFilter(const RendererType type /* = RendererType::RENDERER_TYPE_NONE */)
-			: MediaFilter(), rendererType{ type }
+		AVRendererFilter::AVRendererFilter(
+			const RendererType type /* = RendererType::RENDERER_TYPE_NONE */, void* hwnd /* = NULL */)
+			: MediaFilter(), rendererType{ type }, videoDisplayWnd{ hwnd }
 		{}
 
 		AVRendererFilter::~AVRendererFilter()
@@ -36,25 +37,24 @@ namespace framework
 			return status;
 		}
 
-		int AVRendererFilter::createNewModel(MediaDataPtr mediaData)
+		int AVRendererFilter::createNewModule(MediaDataPtr mediaData)
 		{
 			int status{ mediaData ? ERR_OK : ERR_INVALID_PARAM };
 
 			if (ERR_OK == status)
 			{
+				MediaModulePtr rendererModulePtr;
 				const MediaDataMainID mediaDataMainID{ mediaData->getMainID() };
 				const MediaDataSubID mediaDataSubID{ mediaData->getSubID() };
 
 				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO == mediaDataMainID)
 				{
-					MediaModelPtr dxVideoD3dRendererPtr{ 
-						boost::make_shared<VideoD3DRenderer>(reinterpret_cast<HWND>(videoRendererWnd)) };
-					if (dxVideoD3dRendererPtr)
+					if (MediaDataSubID::MEDIA_DATA_SUB_ID_YUV420P == mediaDataSubID)
 					{
-						mediaModelPtr.swap(dxVideoD3dRendererPtr);
+						rendererModulePtr = boost::make_shared<VideoD3DRenderer>(videoDisplayWnd);
 					}
 				}
-				if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
+				else if (MediaDataMainID::MEDIA_DATA_MAIN_ID_AUDIO == mediaDataMainID)
 				{
 					// 				MediaModelPtr dxSoundPlayerPtr{ boost::make_shared<AudioDxSoundPlayer>() };
 // 				if (dxSoundPlayerPtr)
@@ -62,9 +62,15 @@ namespace framework
 // 					mediaModelPtr.swap(dxSoundPlayerPtr);
 // 				}
 				}
+
+				if (rendererModulePtr)
+				{
+					mediaModulePtr.swap(rendererModulePtr);
+					MediaFilter::setPostInputMediaDataCallback();
+				}
 			}
 
-			return ERR_OK == status ? MediaFilter::createNewModel(mediaData) : status;
+			return status;
 		}
 	}//namespace multimedia
 }//namespace framework

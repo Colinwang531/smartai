@@ -70,12 +70,6 @@
     <Filter Include="Source Files\boost\filesystem">
       <UniqueIdentifier>{7071cfde-992a-4357-8e4c-9f48f4b36ca0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Filter\Formatter">
-      <UniqueIdentifier>{606677ad-dbf7-4aca-80fa-ddf3aeb5140a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Filter\Formatter">
-      <UniqueIdentifier>{85369717-dc29-43b2-9285-be7aa4cffdae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Filter\Callback">
       <UniqueIdentifier>{b01f9aa8-3e03-42ec-a2ad-c49e7d285330}</UniqueIdentifier>
     </Filter>
@@ -129,6 +123,45 @@
     </Filter>
     <Filter Include="Source Files\Module\Capture\Hikvision">
       <UniqueIdentifier>{41ec9447-f5fa-4cdb-846f-38c8e87c6247}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Module\Converter">
+      <UniqueIdentifier>{12b53d6f-f8e4-4b03-b59e-069e49b50824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Module\Converter">
+      <UniqueIdentifier>{bec345bb-da10-4393-a046-62a1d9abcbd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Filter\Converter">
+      <UniqueIdentifier>{4ef76abc-578e-4f01-8117-3da849df8c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Filter\Converter">
+      <UniqueIdentifier>{43a4e011-d5a5-471b-bc8f-da906d58d7c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Module\Renderer">
+      <UniqueIdentifier>{2f277327-600b-4cdd-9b78-1992effac500}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Module\Renderer">
+      <UniqueIdentifier>{d179b2c0-b865-4b25-bc65-8c9b72bbcece}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Module\Renderer\D3d">
+      <UniqueIdentifier>{32c5fe23-f25b-40e1-a6f2-89b436ff68e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Module\Decoder">
+      <UniqueIdentifier>{afc04f76-5006-40ac-9c56-98050237acdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Module\Decoder\FFmpeg">
+      <UniqueIdentifier>{07a81f5d-2b7c-4b35-a247-5b23000699f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Module\Decoder\SDK">
+      <UniqueIdentifier>{5ecca261-f526-4bb3-8fed-2f441ff13cb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Module\Decoder">
+      <UniqueIdentifier>{b4cab358-3430-42b0-89ef-5615839222ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Module\Decoder\FFmpeg">
+      <UniqueIdentifier>{389bac5b-eede-4cd7-81b4-fb9bbb5fd330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Module\Decoder\SDK">
+      <UniqueIdentifier>{d7306291-298a-4c65-ad0c-257a1dbedfc5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -189,9 +222,6 @@
     <ClInclude Include="..\include\MediaFilter\Callback\AVDataCallbackFilter.h">
       <Filter>Header Files\Filter\Callback</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\MediaFilter\Formatter\ImageFormatterFilter.h">
-      <Filter>Header Files\Filter\Formatter</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h">
       <Filter>Header Files\Filter\Capture</Filter>
     </ClInclude>
@@ -215,6 +245,54 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaModule\MediaModule.h">
       <Filter>Header Files\Module</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Capture\MediaCapture.h">
+      <Filter>Header Files\Module\Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Converter\MediaConverter.h">
+      <Filter>Header Files\Module\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Converter\Nv12toYuv420pConverter.h">
+      <Filter>Header Files\Module\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Converter\Yv12toYuv420pConverter.h">
+      <Filter>Header Files\Module\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaFilter\Converter\AVConverterFilter.h">
+      <Filter>Header Files\Filter\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\VideoD3DRenderer.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3D.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3DDevice.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3DDisplay.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3DFont.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3DPixelShader.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3DTexture.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Renderer\D3D\D3D\D3DVertexBuffer.h">
+      <Filter>Header Files\Module\Renderer\D3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Decoder\FFmpeg\FFmpegAudioDecoder.h">
+      <Filter>Header Files\Module\Decoder\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Decoder\FFmpeg\FFmpegVideoDecoder.h">
+      <Filter>Header Files\Module\Decoder\FFmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaModule\Decoder\SDK\HikvisionSDKDecoder.h">
+      <Filter>Header Files\Module\Decoder\SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -302,9 +380,6 @@
     <ClCompile Include="..\source\MediaFilter\Callback\AVDataCallbackFilter.cpp">
       <Filter>Source Files\Filter\Callback</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaFilter\Formatter\ImageFormatterFilter.cpp">
-      <Filter>Source Files\Filter\Formatter</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp">
       <Filter>Source Files\Filter\Capture</Filter>
     </ClCompile>
@@ -325,6 +400,51 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaModule\Capture\Hikvision\HikvisionSDKCapture.cpp">
       <Filter>Source Files\Module\Capture\Hikvision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Converter\Nv12toYuv420pConverter.cpp">
+      <Filter>Source Files\Module\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Converter\Yv12toYuv420pConverter.cpp">
+      <Filter>Source Files\Module\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaFilter\Converter\AVConverterFilter.cpp">
+      <Filter>Source Files\Filter\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\MediaModule\Capture\MediaCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\VideoD3DRenderer.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3D.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3DDevice.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3DDisplay.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3DFont.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3DPixelShader.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3DTexture.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Renderer\D3D\D3D\D3DVertexBuffer.cpp">
+      <Filter>Source Files\Module\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Decoder\FFmpeg\FFmpegAudioDecoder.cpp">
+      <Filter>Source Files\Module\Decoder\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Decoder\FFmpeg\FFmpegVideoDecoder.cpp">
+      <Filter>Source Files\Module\Decoder\FFmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaModule\Decoder\SDK\HikvisionSDKDecoder.cpp">
+      <Filter>Source Files\Module\Decoder\SDK</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

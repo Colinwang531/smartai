@@ -31,7 +31,7 @@ namespace framework
 			virtual ~MediaGraph(void);
 
 		public:
-			int openStream(const std::string& streamURL);
+			int openStream(const std::string& streamURL, void* hwnd = NULL);
 			int closeStream(void);
 			MediaFilterRef queryMediaFilterByID(const std::string& filterID);
 
@@ -39,8 +39,8 @@ namespace framework
 			virtual int createNewCaptureFilter(void);
 			virtual int createNewControllerFilter(const std::string& streamURL);
 			virtual int createNewDecoderFilter(const std::string& streamURL);
-			virtual int createNewFormatterFilter(void);
-			virtual int createNewRendererFilter(void);
+			virtual int createNewConverterFilter(void);
+			virtual int createNewRendererFilter(void* hwnd = NULL);
 			virtual int createNewCallbackFilter(void);
 			virtual int buildMediaGraph(void);
 

@@ -47,6 +47,11 @@ namespace framework
 				ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
 
+		int AVPlayControllerFilter::createNewModule(MediaDataPtr mediaData)
+		{
+			return ERR_NOT_IMPLEMENT;
+		}
+
 		int AVPlayControllerFilter::checkSpeedValue(const short speed /* = 1 */)
 		{
 			return 1 == speed || 2 == speed || 4 == speed || 8 == speed || 16 == speed ||

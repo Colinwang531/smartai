@@ -30,12 +30,13 @@ namespace framework
 		class AVDecoderFilter : public MediaFilter
 		{
 		public:
-			AVDecoderFilter(const DecoderType type = DecoderType::DECODER_TYPE_NONE);
+			AVDecoderFilter(
+				const DecoderType type = DecoderType::DECODER_TYPE_NONE);
 			virtual ~AVDecoderFilter(void);
 
 		protected:
 			int createNewFilter(void) override;
-			int createNewModel(MediaDataPtr mediaData) override;
+			int createNewModule(MediaDataPtr mediaData) override;
 
 		private:
 			const DecoderType decoderType;

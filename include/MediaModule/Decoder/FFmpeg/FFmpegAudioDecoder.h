@@ -10,13 +10,13 @@
 #ifndef FFMPEG_AUDIO_DECODER_H
 #define FFMPEG_AUDIO_DECODER_H
 
-#include "MediaModel/Decoder/MediaDecoder.h"
+#include "MediaModule/MediaModule.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class FFmpegAudioDecoder : public MediaDecoder
+		class FFmpegAudioDecoder : public MediaModule
 		{
 		public:
 			FFmpegAudioDecoder(void);

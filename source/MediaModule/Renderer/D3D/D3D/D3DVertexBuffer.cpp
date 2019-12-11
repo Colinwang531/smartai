@@ -1,4 +1,4 @@
-#include "MediaModel/Renderer/D3D/D3D/D3DVertexBuffer.h"
+#include "MediaModule/Renderer/D3D/D3D/D3DVertexBuffer.h"
 
 namespace framework
 {

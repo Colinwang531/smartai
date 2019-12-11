@@ -29,8 +29,8 @@ namespace framework
 			virtual ~FFmpegLocalFileDemuxer(void);
 
 		public:
-			int openStream(const std::string& streamUrl) override;
-			int closeStream(void) override;
+			int startCapture(const std::string& streamUrl) override;
+			int stopCapture(void) override;
 			const long long getTotalSeconds(void) const;
 			const long long getBitrate(void) const;
 			void getVideoSolution(int& width, int& height);

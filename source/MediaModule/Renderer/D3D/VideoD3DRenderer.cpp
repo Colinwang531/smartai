@@ -1,14 +1,14 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
+#include "MediaModule/Renderer/D3D/VideoD3DRenderer.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		VideoD3DRenderer::VideoD3DRenderer(const HWND hwnd /* = NULL */)
-			: MediaRenderer(), videoDisplayWnd{ hwnd }
+		VideoD3DRenderer::VideoD3DRenderer(void* hwnd /* = NULL */)
+			: MediaModule(), videoDisplayWnd{ hwnd }
 		{}
 
 		VideoD3DRenderer::~VideoD3DRenderer()
@@ -28,7 +28,7 @@ namespace framework
 				if (ERR_OK == status && direct3dPtr)
 				{
 					RECT rect{ 0 };
-					GetClientRect(videoDisplayWnd, &rect);
+					GetClientRect((HWND)videoDisplayWnd, &rect);
 					direct3dPtr->drawText("Display for testing.", rect);
 
 					int width{ 0 }, height{ 0 };

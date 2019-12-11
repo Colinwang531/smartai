@@ -16,10 +16,10 @@ namespace framework
 
 		FFmpegLocalFileDemuxer::~FFmpegLocalFileDemuxer(void)
 		{
-			closeStream();
+			stopCapture();
 		}
 
-		int FFmpegLocalFileDemuxer::openStream(const std::string& streamUrl)
+		int FFmpegLocalFileDemuxer::startCapture(const std::string& streamUrl)
 		{
 			int status{ streamUrl.empty() ? ERR_INVALID_PARAM : ERR_OK };
 
@@ -42,10 +42,10 @@ namespace framework
 				}
 			}
 
-			return ERR_OK == status ? MediaCapture::openStream(streamUrl) : status;
+			return status;
 		}
 
-		int FFmpegLocalFileDemuxer::closeStream()
+		int FFmpegLocalFileDemuxer::stopCapture()
 		{
 			int status{ ERR_OK };
 			stopped = true;

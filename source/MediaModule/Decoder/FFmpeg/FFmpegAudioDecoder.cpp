@@ -1,11 +1,11 @@
 #include "error.h"
-#include "MediaModel/Decoder/FFmpeg/FFmpegAudioDecoder.h"
+#include "MediaModule/Decoder/FFmpeg/FFmpegAudioDecoder.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		FFmpegAudioDecoder::FFmpegAudioDecoder() : MediaDecoder()
+		FFmpegAudioDecoder::FFmpegAudioDecoder() : MediaModule()
 		{}
 
 		FFmpegAudioDecoder::~FFmpegAudioDecoder(void)

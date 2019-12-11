@@ -1,13 +1,13 @@
 #include "boost/make_shared.hpp"
 #include "error.h"
 #include "MediaData/MediaData.h"
-#include "MediaModel/Decoder/SDK/HikvisionSDKDecoder.h"
+#include "MediaModule/Decoder/SDK/HikvisionSDKDecoder.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		HikvisionSDKDecoder::HikvisionSDKDecoder() : MediaDecoder(), decoderID{ -1 }
+		HikvisionSDKDecoder::HikvisionSDKDecoder() : MediaModule(), decoderID{ -1 }
 		{}
 
 		HikvisionSDKDecoder::~HikvisionSDKDecoder(void)

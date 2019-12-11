@@ -18,5 +18,10 @@ namespace framework
 			return ERR_OK == MediaFilter::createNewInputPin(VideoStreamInputPinID) &&
 				ERR_OK == MediaFilter::createNewInputPin(AudioStreamInputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
+
+		int AVDataCallbackFilter::createNewModule(MediaDataPtr mediaData)
+		{
+			return ERR_NOT_IMPLEMENT;
+		}
 	}//namespace multimedia
 }//namespace framework

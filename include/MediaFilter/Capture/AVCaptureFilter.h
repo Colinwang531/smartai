@@ -16,6 +16,13 @@ namespace framework
 {
 	namespace multimedia
 	{
+		typedef enum class tagDeviceType_t : unsigned char
+		{
+			DEVICE_TYPE_NONE = 0,
+			DEVICE_TYPE_HIKVISION,
+			DEVICE_TYPE_DAHUA
+		}DeviceType;
+
 		class AVCaptureFilter : public SourceMediaFilter
 		{
 		public:

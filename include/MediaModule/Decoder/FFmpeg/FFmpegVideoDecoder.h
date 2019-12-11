@@ -14,13 +14,13 @@ extern "C"
 {
 #include "libavcodec/avcodec.h"
 }
-#include "MediaModel/Decoder/MediaDecoder.h"
+#include "MediaModule/MediaModule.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class FFmpegVideoDecoder : public MediaDecoder
+		class FFmpegVideoDecoder : public MediaModule
 		{
 		public:
 			FFmpegVideoDecoder(void);
