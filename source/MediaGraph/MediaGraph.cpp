@@ -23,7 +23,7 @@ namespace framework
 			closeStream();
 		}
 
-		int MediaGraph::openStream(const std::string& streamURL, void* hwnd /* = NULL */)
+		int MediaGraph::openStream(const std::string& streamURL)
 		{
 			int status{ streamURL.empty() ? ERR_INVALID_PARAM : ERR_OK };
 

@@ -31,7 +31,7 @@ namespace framework
 			virtual ~MediaGraph(void);
 
 		public:
-			int openStream(const std::string& streamURL, void* hwnd = NULL);
+			int openStream(const std::string& streamURL);
 			int closeStream(void);
 			MediaFilterRef queryMediaFilterByID(const std::string& filterID);
 
