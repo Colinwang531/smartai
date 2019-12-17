@@ -37,7 +37,7 @@ protected:
 
 private:
 	static void CALLBACK postMediaDataCallback(
-		const int playID = 0, const unsigned char* mediaData = NULL, const int dataBytes = 0, void* userData = NULL);
+		const int playID = 0, const unsigned char frameType = 0, const unsigned char* mediaData = NULL, const int dataBytes = 0, void* userData = NULL);
 	static void CALLBACK postDetectAlarmInfoCallback(
 		const AlarmInfo alarmInfo, const unsigned char* mediaData = NULL, const int dataBytes = 0, void* userData = NULL);
 	static void CALLBACK postJpegEncodeCallback(

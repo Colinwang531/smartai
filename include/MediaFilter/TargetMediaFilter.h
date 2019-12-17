@@ -10,14 +10,14 @@
 #ifndef TARGET_MEDIA_FILTER_H
 #define TARGET_MEDIA_FILTER_H
 
-#include "boost/function.hpp"
+//#include "boost/function.hpp"
 #include "MediaFilter.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		typedef boost::function<void(const int, MediaDataPtr)> CallbackMediaDataCallback;
+//		typedef boost::function<void(const int, MediaDataPtr)> CallbackMediaDataCallback;
 
 		class TargetMediaFilter : public MediaFilter
 		{
@@ -26,15 +26,15 @@ namespace framework
 			virtual ~TargetMediaFilter(void);
 
 		public:
-			inline void setMediaDataCallback(
-				const int id = 0, CallbackMediaDataCallback callback = NULL)
-			{
-				userID = id;
-				callbackMediaDataCallback = callback;
-			}
+// 			inline void setMediaDataCallback(
+// 				const int id = 0, CallbackMediaDataCallback callback = NULL)
+// 			{
+// 				userID = id;
+// 				callbackMediaDataCallback = callback;
+// 			}
 
 		protected:
-			int inputMediaData(MediaDataPtr mediaData) override;
+//			int inputMediaData(MediaDataPtr mediaData) override;
 			bool isTargetFilter(void) const override
 			{
 				return true;
@@ -43,7 +43,7 @@ namespace framework
 		protected:
 			// The identity according to the definition by the caller.
 			int userID;
-			CallbackMediaDataCallback callbackMediaDataCallback;
+//			CallbackMediaDataCallback callbackMediaDataCallback;
 		};//class TargetMediaFilter
 	}//namespace multimedia
 }//namespace framework

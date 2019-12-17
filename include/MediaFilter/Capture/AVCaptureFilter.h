@@ -4,24 +4,22 @@
 // Author : Íõ¿ÆÍþ
 // E-mail : wangkw531@icloud.com
 //
-// Stream data capture.
+// Stream capture.
 //
 
 #ifndef AV_CAPTURE_FILTER_H
 #define AV_CAPTURE_FILTER_H
 
+#include <windows.h>
 #include "MediaFilter/SourceMediaFilter.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		typedef enum class tagDeviceType_t : unsigned char
-		{
-			DEVICE_TYPE_NONE = 0,
-			DEVICE_TYPE_HIKVISION,
-			DEVICE_TYPE_DAHUA
-		}DeviceType;
+		typedef void (CALLBACK* CaptureFrameCallback)(const int, const unsigned char, const unsigned char*, const int, void*);
+		typedef int (CALLBACK* OpenStreamFunc)(const char*, void*, CaptureFrameCallback, void*);
+		typedef int (CALLBACK* CloseStreamFunc)(void);
 
 		class AVCaptureFilter : public SourceMediaFilter
 		{
@@ -30,11 +28,17 @@ namespace framework
 			virtual ~AVCaptureFilter(void);
 
 		public:
-			int startCapture(const std::string& streamURL);
-			int stopCapture(void);
+			int openStream(const std::string url, void* hwnd = NULL);
+			int closeStream(void);
 
-		protected:
-			int createNewFilter(void) override;
+		private:
+			static void captureFrameCallback(
+				const int playID = -1, const unsigned char frameType = 0, 
+				const unsigned char* frameData = NULL, const int frameBytes = 0, void* userData = NULL);
+
+		private:
+			OpenStreamFunc openStreamFunc;
+			CloseStreamFunc closeStreamFunc;
 		};//class AVCaptureFilter
 	}//namespace multimedia
 }//namespace framework

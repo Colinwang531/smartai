@@ -6,6 +6,11 @@ using URL = framework::wrapper::URL;
 #include "MediaData/MediaData.h"
 #include "MediaDevice/Hikvision/HikvisionDevice.h"
 
+void __stdcall fRealDataCallBack(LONG lRealHandle, DWORD dwDataType, BYTE* pBuffer, DWORD dwBufSize, void* pUser)
+{
+
+}
+
 namespace framework
 {
 	namespace multimedia
@@ -16,25 +21,25 @@ namespace framework
 		HikvisionDevice::~HikvisionDevice()
 		{}
 
-		int HikvisionDevice::openStream(const std::string& streamUrl)
+		int HikvisionDevice::openStream(const std::string url, void* hwnd /* = NULL */)
 		{
 			BOOL ret{ FALSE };
-			int status{ streamUrl.empty() ? ERR_INVALID_PARAM : ERR_OK };
+			int status{ url.empty() ? ERR_INVALID_PARAM : ERR_OK };
 			//Initialize SDK when the first device was created.
-			if (1 == MediaDevice::openStream(streamUrl))
+			if (1 == MediaDevice::openStream(url))
 			{
 				ret = NET_DVR_Init();
 			}
 
 			if (ERR_OK == status && TRUE == ret)
 			{
-				URL url;
-				url.setUrl(streamUrl);
+				URL urlParser;
+				urlParser.setUrl(url);
 				std::string name, password, address;
 				unsigned short port;
-				url.getAuthentication(name, password);
-				url.getAddressPort(address, port);
-				const std::string channel{ url.getParameter("channel") };
+				urlParser.getAuthentication(name, password);
+				urlParser.getAddressPort(address, port);
+				const std::string channel{ urlParser.getParameter("channel") };
 
 				if (!name.empty() && !password.empty() && !address.empty() && 0 < port)
 				{
@@ -45,7 +50,7 @@ namespace framework
 
 					if (ERR_OK == status)
 					{
-						status = openStream(atoi(channel.c_str()));
+						status = openStream(atoi(channel.c_str()), hwnd);
 					}
 				}
 			}
@@ -70,16 +75,22 @@ namespace framework
 			const std::string& username, const std::string password, const std::string ipaddr, const unsigned short port /* = 8000 */)
 		{
 			int status{ ERR_BAD_OPERATE };
-			NET_DVR_DEVICEINFO_V30 deviceInfoV30{ 0 };
-			loginID = NET_DVR_Login_V30(
-				const_cast<char*>(ipaddr.c_str()), port, const_cast<char*>(username.c_str()), const_cast<char*>(password.c_str()), &deviceInfoV30);
+			NET_DVR_DEVICEINFO_V40 deviceInfoV30{ 0 };
+			NET_DVR_USER_LOGIN_INFO userLoginInfo{ 0 };
+			strcpy_s(userLoginInfo.sDeviceAddress, NET_DVR_DEV_ADDRESS_MAX_LEN, ipaddr.c_str());
+			userLoginInfo.wPort = port;
+			strcpy_s(userLoginInfo.sUserName, NET_DVR_LOGIN_USERNAME_MAX_LEN, username.c_str());
+			strcpy_s(userLoginInfo.sPassword, NET_DVR_LOGIN_PASSWD_MAX_LEN, password.c_str());
+// 			loginID = NET_DVR_Login_V30(
+// 				const_cast<char*>(ipaddr.c_str()), port, const_cast<char*>(username.c_str()), const_cast<char*>(password.c_str()), &deviceInfoV30);
+			loginID = NET_DVR_Login_V40(&userLoginInfo, &deviceInfoV30);
 
 			if (-1 < loginID)
 			{
-				if (90 == deviceInfoV30.byDVRType)
-				{
-					getDVRConfig();
-				}
+// 				if (90 == deviceInfoV30.byDVRType)
+// 				{
+// 					getDVRConfig();
+// 				}
 
 				status = ERR_OK;
 			}
@@ -99,7 +110,7 @@ namespace framework
 			return status;
 		}
 
-		int HikvisionDevice::openStream(const int channel /* = 0 */)
+		int HikvisionDevice::openStream(const int channel /* = 0 */, void* hwnd /* = NULL */)
 		{
 			int status{ -1 < channel ? ERR_OK : ERR_INVALID_PARAM };
 
@@ -107,17 +118,26 @@ namespace framework
 			{
 				//Start live view and set callback data stream
 				NET_DVR_PREVIEWINFO struPlayInfo{ 0 };
-				struPlayInfo.hPlayWnd = NULL;
+				struPlayInfo.hPlayWnd = (HWND)hwnd;
 				struPlayInfo.lChannel = channel;
 				struPlayInfo.dwStreamType = 0;
 				struPlayInfo.dwLinkMode = 0;
-				struPlayInfo.bBlocked = 1;
+ 				struPlayInfo.bBlocked = 1;
 
 				LONG streamID{ 
-					NET_DVR_RealPlay_V40(loginID, &struPlayInfo, &HikvisionDevice::realplayMediaDataCallback, this) };
+					NET_DVR_RealPlay_V40(loginID, &struPlayInfo, NULL/*&HikvisionDevice::realplayMediaDataCallback*/, NULL/*this*/) };
 				if (streamID < 0)
 				{
+					DWORD dwErr = NET_DVR_GetLastError();
 					status = ERR_BAD_OPERATE;
+				}
+				else
+				{
+					BOOL ret = NET_DVR_SetRealDataCallBackEx(streamID, fRealDataCallBack/*&HikvisionDevice::realplayMediaDataCallback*/, NULL/*this*/);
+					if (ret)
+					{
+						status = ERR_OK;
+					}
 				}
 			}
 			
@@ -177,19 +197,19 @@ namespace framework
 		void HikvisionDevice::realplayMediaDataCallback(
 			long streamID, unsigned long dataType, unsigned char* data, unsigned long dataBytes, void* pUser)
 		{
-			HikvisionDevice* hikvisionDevice{ reinterpret_cast<HikvisionDevice*>(pUser) };
-
-			if (hikvisionDevice)
-			{
-				MediaDataPtr mediaDataPtr{
-					boost::make_shared<MediaData>(
-						MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_HIKVISION) };
-				if (mediaDataPtr && hikvisionDevice->mediaDataCaptureCallback)
-				{
-					mediaDataPtr->setData(data, dataBytes);
-					hikvisionDevice->mediaDataCaptureCallback(mediaDataPtr);
-				}
-			}
+// 			HikvisionDevice* hikvisionDevice{ reinterpret_cast<HikvisionDevice*>(pUser) };
+// 
+// 			if (hikvisionDevice)
+// 			{
+// 				MediaDataPtr mediaDataPtr{
+// 					boost::make_shared<MediaData>(
+// 						MediaDataMainID::MEDIA_DATA_MAIN_ID_VIDEO, MediaDataSubID::MEDIA_DATA_SUB_ID_HIKVISION) };
+// 				if (mediaDataPtr && hikvisionDevice->mediaDataCaptureCallback)
+// 				{
+// 					mediaDataPtr->setData(data, dataBytes);
+// 					hikvisionDevice->mediaDataCaptureCallback(mediaDataPtr);
+// 				}
+// 			}
 		}
 	}//namespace multimedia
 }//namespace framework

@@ -34,7 +34,7 @@ namespace framework
 				mediaDataCaptureCallback = callback;
 			}
 			//Return : The total number of media device has been created.
-			virtual int openStream(const std::string& streamUrl);
+			virtual int openStream(const std::string url, void* hwnd = NULL);
 			virtual int closeStream(void);
 
 		protected:

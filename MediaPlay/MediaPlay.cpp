@@ -1,5 +1,6 @@
-#include "boost/format.hpp"
+#include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
+#include "boost/thread/mutex.hpp"
 #include "error.h"
 #include "MediaGraph/MediaGraph.h"
 using MediaGraphPtr = boost::shared_ptr<framework::multimedia::MediaGraph>;
@@ -9,126 +10,58 @@ using MediaGraphPtr = boost::shared_ptr<framework::multimedia::MediaGraph>;
 // using MediaDemuxer = NS(model, 1)::MediaDemuxer;
 // #include "MediaModel/Renderer/D3D/VideoD3DRenderer.h"
 // using VideoD3DRenderer = NS(model, 1)::VideoD3DRenderer;
-#include "MediaFilter/Renderer/AVRendererFilter.h"
-using AVRendererFilterPtr = boost::shared_ptr<framework::multimedia::AVRendererFilter>;
-using MediaFilterRef = boost::weak_ptr<framework::multimedia::MediaFilter>;
-#include "MediaData/MediaData.h"
-using MediaData = framework::multimedia::MediaData;
-using MediaDataPtr = boost::shared_ptr<MediaData>;
+// #include "MediaFilter/Renderer/AVRendererFilter.h"
+// using AVRendererFilterPtr = boost::shared_ptr<framework::multimedia::AVRendererFilter>;
+// using MediaFilterRef = boost::weak_ptr<framework::multimedia::MediaFilter>;
+// #include "MediaData/MediaData.h"
+// using MediaData = framework::multimedia::MediaData;
+// using MediaDataPtr = boost::shared_ptr<MediaData>;
 #include "DataStruct/UnorderedMap.h"
-using MediaPlayGroup = UnorderedMap<int, MediaGraphPtr>;
+using MediaPlayGroup = UnorderedMap<const int, MediaGraphPtr>;
 #include "MediaPlay.h"
 
+static boost::mutex mtx;
 static int mediaPlayID{ 0 };
 static MediaPlayGroup mediaPlayGroup;
 
-int MEDIAPLAY_StartPlayback(
-	const char* filePath /* = NULL */, const HWND hwnd /* = NULL */, MEDIAPLAY_VideoFrameCallback callback /* = NULL */)
+int MEDIAPLAY_OpenStream(
+	const char* url /* = NULL */, const HWND hwnd /* = NULL */, MEDIAPLAY_MediaFrameCallback callback /* = NULL */, void* userData /* = NULL */)
 {
 	int status{ ERR_INVALID_PARAM };
 
-	if (filePath && hwnd)
+	if (url)
 	{
 		MediaGraphPtr mediaGraphPtr{ boost::make_shared<framework::multimedia::MediaGraph>() };
-		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->openStream(""))
+		if (mediaGraphPtr)
 		{
-// 			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaVideoRendererFilterID) };
-// 			if (!videoRendererFilterRef.expired())
-// 			{
-// 				AVRendererFilterPtr avrendererFilterPtr{ 
-// 					boost::dynamic_pointer_cast<framework::multimedia::AVRendererFilter>(videoRendererFilterRef.lock()) };
-// 				avrendererFilterPtr->setHwnd(hwnd);
-// 			}
-// 
-// 			framework::multimedia::MediaFilterRef mediaFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaDemuxerFilterID) };
-// 			if (!mediaFilterRef.expired())
-// 			{
-// 				MediaDataPtr mediaDataPtr{
-// 					boost::make_shared<MediaData>(
-// 						MediaDataMainID::MEDIA_DATA_MAIN_ID_FILE, MediaDataSubID::MEDIA_DATA_SUB_ID_NONE, MediaDataPatchID::MEDIA_DATA_PATCH_ID_NONE) };
-// 				if (mediaDataPtr)
-// 				{
-// 					mediaDataPtr->setData((const unsigned char*)filePath, (const int)strlen(filePath));
-// 					mediaFilterRef.lock()->inputMediaData(mediaDataPtr);
-// 					mediaPlayGroup.insert(++mediaPlayID, mediaGraphPtr);
-// 				}
-// 			}
-		}
-	}
-
-	return ERR_OK == status ? mediaPlayID : 0;
- }
- 
-int MEDIAPLAY_StopPlayback(const int playID /* = 0 */)
-{
-	int status{ 0 };
-
-	if (0 < playID)
-	{
-		MediaGraphPtr mediaGraphPtr{ mediaPlayGroup.at(playID) };
-		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->closeStream())
-		{
-			mediaPlayGroup.remove(playID);
-			status = 1;
-		}
-	}
-
-	return status;
-}
-
-int MEDIAPLAY_StartLivestream(
-	const char* name /*= NULL*/, const char* password /*= NULL*/,
-	const char* address /*= NULL*/, const int port /*= 8000*/,
-	const int channel /*= 0*/, const HWND hwnd /*= NULL*/,
-	MEDIAPLAY_VideoFrameCallback callback /*= NULL*/,
-	void* userData /*= NULL*/)
-{
-	int status{ ERR_INVALID_PARAM };
-
-	if (name && password && address && 0 < port && 0 <= channel && hwnd)
-	{
-		MediaGraphPtr mediaGraphPtr{ boost::make_shared<framework::multimedia::MediaGraph>() };
-		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->openStream(""))
-		{
-// 			MediaFilterRef videoRendererFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaVideoRendererFilterID) };
-// 			if (!videoRendererFilterRef.expired())
-// 			{
-// 				AVRendererFilterPtr avrendererFilterPtr{
-// 					boost::dynamic_pointer_cast<framework::multimedia::AVRendererFilter>(videoRendererFilterRef.lock()) };
-// 				avrendererFilterPtr->setHwnd(hwnd);
-// 			}
-// 
-// 			MediaFilterRef mediaFilterRef{ mediaGraphPtr->queryMediaFilterByID(AVMediaLivestreamCaptureFilterID) };
-// 			if (!mediaFilterRef.expired())
-// 			{
-// 				MediaDataPtr mediaDataPtr{
-// 					boost::make_shared<MediaData>(
-// 						MediaDataMainID::MEDIA_DATA_MAIN_ID_STREAM, MediaDataSubID::MEDIA_DATA_SUB_ID_NONE, MediaDataPatchID::MEDIA_DATA_PATCH_ID_NONE) };
-// 				if (mediaDataPtr)
-// 				{
-// 					const std::string streamUrl{ (boost::format("%s:%s:%s:%d:%d") % name % password % address % port % channel).str() };
-// 					mediaDataPtr->setData((const unsigned char*)streamUrl.c_str(), (const int)streamUrl.length());
-// 					mediaFilterRef.lock()->inputMediaData(mediaDataPtr);
-// 					mediaPlayGroup.insert(++mediaPlayID, mediaGraphPtr);
-// 				}
-// 			}
+			status = mediaGraphPtr->openStream(url, hwnd, boost::bind(callback, _1, _2, _3, _4, _5), userData);
+			if (ERR_OK == status)
+			{
+				mtx.lock();
+				++mediaPlayID;
+				mtx.unlock();
+				mediaPlayGroup.insert(mediaPlayID, mediaGraphPtr);
+			}
 		}
 	}
 
 	return ERR_OK == status ? mediaPlayID : 0;
 }
 
-int MEDIAPLAY_StopLivestream(const int playID /* = 0 */)
+int MEDIAPLAY_CloseStream(const int playID /* = 0 */)
 {
-	int status{ 0 };
+	int status{ ERR_NOT_FOUND };
 
 	if (0 < playID)
 	{
 		MediaGraphPtr mediaGraphPtr{ mediaPlayGroup.at(playID) };
-		if (mediaGraphPtr && ERR_OK == mediaGraphPtr->closeStream())
+		if (mediaGraphPtr)
 		{
-			mediaPlayGroup.remove(playID);
-			status = 1;
+			status = mediaGraphPtr->closeStream();
+			if (ERR_OK == status)
+			{
+				mediaPlayGroup.remove(playID);
+			}
 		}
 	}
 

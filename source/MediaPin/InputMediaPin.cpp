@@ -20,7 +20,7 @@ namespace framework
 
 			if (ERR_OK == status && !mediaFilterRef.expired())
 			{
-				status = mediaFilterRef.lock()->inputMediaData(mediaData);
+//				status = mediaFilterRef.lock()->inputMediaData(mediaData);
 			}
 
 			return status;

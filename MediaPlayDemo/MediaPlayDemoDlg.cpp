@@ -108,19 +108,22 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 
 //	JPEGENCODER_RegisterPostJpegEncodeCallback(&MediaPlayDemoDlg::postJpegEncodeCallback, this);
 	// 	MEDIAPLAY_StartPlayback("D:\\video\\IP Camera7_NEW VANGUARD_NEW VANGUARD_20190522083340_20190522084338_7170782.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
- 	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
- 	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\Camera.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\Camera.mp4", GetDlgItem(IDC_STATIC4)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC5)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC6)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\Camera.mp4", GetDlgItem(IDC_STATIC7)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC8)->GetSafeHwnd());
-	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC9)->GetSafeHwnd());
+//  	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
+//  	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\Camera.mp4", GetDlgItem(IDC_STATIC3)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\Camera.mp4", GetDlgItem(IDC_STATIC4)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC5)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC6)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\Camera.mp4", GetDlgItem(IDC_STATIC7)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\Avengers Endgame.2019.HD1080P.X264.AAC.English.CHS-ENG.Mp4Ba.mp4", GetDlgItem(IDC_STATIC8)->GetSafeHwnd());
+// 	MEDIAPLAY_StartPlayback("D:\\video\\xXx.Return.of.Xander.Cage.2017.1080p.BluRay.x264.Atmos.TrueHD.7.1-HDChina.mkv", GetDlgItem(IDC_STATIC9)->GetSafeHwnd());
 // 	MEDIAPLAY_StartLivestream(
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 1, GetDlgItem(IDC_STATIC7)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 // 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+
+	MEDIAPLAY_OpenStream(
+		"livestream://admin:eaton12345@192.168.30.12:8000?channel=1&stream=1", GetDlgItem(IDC_STATIC7)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -174,13 +177,14 @@ HCURSOR MediaPlayDemoDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
+void MediaPlayDemoDlg::postMediaDataCallback(
+	const int playID /* = 0 */, const unsigned char frameType /* = 0 */, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
 {
 	MediaPlayDemoDlg* demo{ reinterpret_cast<MediaPlayDemoDlg*>(userData) };
 	if (1 == playID/* && AlarmType::ALARM_TYPE_NONE != demo->alarmType*/)
 	{
 		MediaPlayDemoDlg* demo{ reinterpret_cast<MediaPlayDemoDlg*>(userData) };
-		ARITHMETIC_InputImageData(demo->alarmType, mediaData, dataBytes);
+//		ARITHMETIC_InputImageData(demo->alarmType, mediaData, dataBytes);
 	}
 }
 
@@ -214,7 +218,7 @@ void MediaPlayDemoDlg::OnBnClickedRegisterHelmet()
 {
 	// TODO: Add your control notification handler code here
 
-	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_HELMET, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+//	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_HELMET, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_HELMET;
 }
 
@@ -222,7 +226,7 @@ void MediaPlayDemoDlg::OnBnClickedRegisterHelmet()
 void MediaPlayDemoDlg::OnBnClickedRegisterPhone()
 {
 	// TODO: Add your control notification handler code here
-	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_PHONE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+//	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_PHONE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_PHONE;
 }
 
@@ -230,7 +234,7 @@ void MediaPlayDemoDlg::OnBnClickedRegisterPhone()
 void MediaPlayDemoDlg::OnBnClickedRegisterFight()
 {
 	// TODO: Add your control notification handler code here
-	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FIGHT, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+//	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FIGHT, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_FIGHT;
 }
 
@@ -238,7 +242,7 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFight()
 void MediaPlayDemoDlg::OnBnClickedRegisterSleep()
 {
 	// TODO: Add your control notification handler code here
-	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_SLEEP, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+//	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_SLEEP, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_SLEEP;
 }
 
@@ -246,11 +250,11 @@ void MediaPlayDemoDlg::OnBnClickedRegisterSleep()
 void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 {
 	// TODO: Add your control notification handler code here
-	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
+//	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_FACE;
 
-	int ret{ ARITHMETIC_AddFaceImage("C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg", 1) };
-	char text[2048]{ 0 };
-	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
-	OutputDebugStringA(text);
+// 	int ret{ ARITHMETIC_AddFaceImage("C:\\Users\\CPTAI\\Desktop\\wangkewei.jpg", 1) };
+// 	char text[2048]{ 0 };
+// 	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
+// 	OutputDebugStringA(text);
 }

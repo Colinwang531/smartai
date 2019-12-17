@@ -13,28 +13,28 @@
 #include "boost/enable_shared_from_this.hpp"
 #include "DataStruct/UnorderedMap.h"
 
-static const std::string AVMediaDataCaptureFilterID = "AVMediaDataCaptureFilterID";
-static const std::string AVMediaPlayControlFilterID = "AVMediaPlayControlFilterID";
-static const std::string AVMediaImageFormatFilterID = "AVMediaImageFormatFilterID";
-static const std::string AVMediaSDKDecoderFilterID = "AVMediaSDKDecoderFilterID";
-static const std::string AVMediaVideoDecoderFilterID = "AVMediaVideoDecoderFilterID";
-static const std::string AVMediaAudioDecoderFilterID = "AVMediaAudioDecoderFilterID";
-static const std::string AVMediaVideoRendererFilterID = "AVMediaVideoRendererFilterID";
-static const std::string AVMediaSoundPlayerFilterID = "AVMediaSoundPlayerFilterID";
-static const std::string AVMediaDataCallbackFilterID = "AVMediaDataCallbackFilterID";
+static const std::string AVCaptureFilterID = "AVCaptureFilterID";
+static const std::string AVParserFilterID = "AVParserFilterID";
+static const std::string AVControllerFilterID = "AVControllerFilterID";
+static const std::string VideoDecoderFilterID = "VideoDecoderFilterID";
+static const std::string AudioDecoderFilterID = "AudioDecoderFilterID";
+static const std::string ImageConverterFilterID = "ImageConverterFilterID";
+static const std::string VideoRendererFilterID = "VideoRendererFilterID";
+static const std::string SoundPlayerFilterID = "SoundPlayerFilterID";
+static const std::string AVCallbackFilterID = "AVCallbackFilterID";
 
 namespace framework
 {
 	namespace multimedia
 	{
-		class MediaData;
-		class MediaModule;
+// 		class MediaData;
+// 		class MediaModule;
 		class MediaPin;
-		using MediaDataPtr = boost::shared_ptr<MediaData>;
-		using MediaPinPtr = boost::shared_ptr<MediaPin>;
-		using MediaPinRef = boost::weak_ptr<MediaPin>;
+// 		using MediaDataPtr = boost::shared_ptr<MediaData>;
+ 		using MediaPinPtr = boost::shared_ptr<MediaPin>;
+// 		using MediaPinRef = boost::weak_ptr<MediaPin>;
 		using MediaPinGroup = UnorderedMap<const std::string, MediaPinPtr>;
-		using MediaModulePtr = boost::shared_ptr<MediaModule>;
+//		using MediaModulePtr = boost::shared_ptr<MediaModule>;
 
 		class MediaFilter : public boost::enable_shared_from_this<MediaFilter>
 		{
@@ -43,9 +43,15 @@ namespace framework
 			virtual ~MediaFilter(void);
 
 		public:
-			virtual int createNewFilter(void) = 0;
+			virtual int createNewFilter(const std::string filterID);
 			virtual int destroyFilter(void);
-			virtual int inputMediaData(MediaDataPtr mediaData);
+//			virtual int inputMediaData(MediaDataPtr mediaData);
+			inline MediaPinPtr queryMediaPinByID(const std::string pinID)
+			{
+				return mediaPinGroup.at(pinID);
+			}
+
+		protected:
 			virtual bool isSourceFilter(void) const
 			{
 				return false;
@@ -54,21 +60,17 @@ namespace framework
 			{
 				return false;
 			}
-			inline MediaPinRef queryMediaPinByID(const std::string& pinID)
-			{
-				return mediaPinGroup.at(pinID);
-			}
+// 			virtual int createNewModule(MediaDataPtr mediaData) = 0;
+// 			void setPostInputMediaDataCallback(void);
+// 			int postInputMediaDataCallback(MediaDataPtr mediaData);
 
-		protected:
-			virtual int createNewModule(MediaDataPtr mediaData) = 0;
-			int createNewInputPin(const std::string& pinID);
-			int createNewOutputPin(const std::string& pinID);
-			void setPostInputMediaDataCallback(void);
-			int postInputMediaDataCallback(MediaDataPtr mediaData);
+		private:
+			int createNewInputPin(const std::string pinID);
+			int createNewOutputPin(const std::string pinID);
 
 		protected:
 			MediaPinGroup mediaPinGroup;
-			MediaModulePtr mediaModulePtr;
+//			MediaModulePtr mediaModulePtr;
 		};//class MediaFilter
 	}//namespace multimedia
 }//namespace framework

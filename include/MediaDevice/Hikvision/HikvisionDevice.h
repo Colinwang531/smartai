@@ -28,14 +28,14 @@ namespace framework
 
 		protected:
 			//Return : Error code.
-			int openStream(const std::string& streamUrl) override;
+			int openStream(const std::string url, void* hwnd = NULL) override;
 			int closeStream(void) override;
 			int loginDevice(
 				const std::string& username, const std::string password, const std::string ipaddr, const unsigned short port = 8000) override;
 			int logoutDevice(void) override;
 
 		private:
-			int openStream(const int channel = 0);
+			int openStream(const int channel = 0, void* hwnd = NULL);
 			int getDVRConfig(void);
 			static void CALLBACK realplayMediaDataCallback(
 				long streamID, unsigned long dataType, unsigned char* data, unsigned long dataBytes, void* pUser);

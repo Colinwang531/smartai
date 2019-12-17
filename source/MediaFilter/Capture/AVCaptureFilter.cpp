@@ -1,75 +1,54 @@
-#include "boost/make_shared.hpp"
+#include "boost/winapi/dll.hpp"
 #include "error.h"
-#include "URL/Url.h"
-using URL = framework::wrapper::URL;
-#include "MediaModule/Capture/Hikvision/HikvisionSDKCapture.h"
-#include "MediaModule/Capture/FFmpeg/FFmpegLocalFileDemuxer.h"
-#include "MediaPin/MediaPin.h"
 #include "MediaFilter/Capture/AVCaptureFilter.h"
 
 namespace framework
 {
 	namespace multimedia
 	{
-		AVCaptureFilter::AVCaptureFilter() : SourceMediaFilter()
+		AVCaptureFilter::AVCaptureFilter() : SourceMediaFilter(), openStreamFunc{ NULL }, closeStreamFunc{ NULL }
 		{}
 
 		AVCaptureFilter::~AVCaptureFilter()
 		{}
 
-		int AVCaptureFilter::startCapture(const std::string& streamURL)
+		int AVCaptureFilter::openStream(const std::string url, void* hwnd /* = NULL */)
 		{
 			int status{ ERR_NOT_SUPPORT };
-			MediaModulePtr mediaModulePtr;
-			const framework::wrapper::URLProtocol protocol{ URL(streamURL).getProtocol() };
 
-			if (framework::wrapper::URLProtocol::URL_PROTOCOL_LIVESTREAM == protocol)
+			boost::winapi::HMODULE_ hmodule{ LoadLibraryA(".\\AVCapture.dll") };
+			if (hmodule)
 			{
-				const DeviceType streamValue{ (const DeviceType)atoi(URL(streamURL).getParameter("stream").c_str()) };
-				if (DeviceType::DEVICE_TYPE_HIKVISION == streamValue)
-				{
-					mediaModulePtr = boost::make_shared<HikvisionSDKCapture>();
-					if (mediaModulePtr)
-					{
-						this->mediaModulePtr.swap(mediaModulePtr);
-					}
-				}
-				else if (DeviceType::DEVICE_TYPE_DAHUA == streamValue)
-				{
+				openStreamFunc = (OpenStreamFunc)GetProcAddress(hmodule, "AVCAPTURE_OpenStream");
+				closeStreamFunc = (CloseStreamFunc)GetProcAddress(hmodule, "AVCAPTURE_CloseStream");
 
-				}
-			}
-			else if (framework::wrapper::URLProtocol::URL_PROTOCOL_PLAYBACK == protocol)
-			{
-				const std::string filePath{ URL(streamURL).getParameter("path") };
-				if (!filePath.empty())
+				if (openStreamFunc && closeStreamFunc)
 				{
-					mediaModulePtr = boost::make_shared<FFmpegLocalFileDemuxer>();
-					if (mediaModulePtr)
-					{
-						this->mediaModulePtr.swap(mediaModulePtr);
-					}
+					status = openStreamFunc(url.c_str(), hwnd, &AVCaptureFilter::captureFrameCallback, this);
 				}
-			}
 
-			if (this->mediaModulePtr)
-			{
-				MediaFilter::setPostInputMediaDataCallback();
-				status = boost::dynamic_pointer_cast<MediaCapture>(this->mediaModulePtr)->startCapture(streamURL);
+				FreeLibrary(hmodule);
 			}
 
 			return status;
 		}
 
-		int AVCaptureFilter::stopCapture(void)
+		int AVCaptureFilter::closeStream(void)
 		{
-			return ERR_OK;
+			int status{ ERR_BAD_OPERATE };
+
+			if (closeStreamFunc)
+			{
+				status = closeStreamFunc();
+			}
+
+			return status;
 		}
 
-		int AVCaptureFilter::createNewFilter()
+		void AVCaptureFilter::captureFrameCallback(
+			const int playID /* = -1 */, const unsigned char frameType /* = 0 */, 
+			const unsigned char* frameData /* = NULL */, const int frameBytes /* = 0 */, void* userData /* = NULL */)
 		{
-			return ERR_OK == MediaFilter::createNewOutputPin(VideoStreamOutputPinID) &&
-				ERR_OK == MediaFilter::createNewOutputPin(AudioStreamOutputPinID) ? ERR_OK : ERR_BAD_ALLOC;
 		}
 	}//namespace multimedia
 }//namespace framework

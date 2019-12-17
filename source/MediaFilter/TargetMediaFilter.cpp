@@ -11,14 +11,14 @@ namespace framework
 		TargetMediaFilter::~TargetMediaFilter()
 		{}
 
-		int TargetMediaFilter::inputMediaData(MediaDataPtr mediaData)
-		{
-			if (mediaData && callbackMediaDataCallback)
-			{
-				callbackMediaDataCallback(userID, mediaData);
-			}
-
-			return ERR_OK;
-		}
+// 		int TargetMediaFilter::inputMediaData(MediaDataPtr mediaData)
+// 		{
+// 			if (mediaData && callbackMediaDataCallback)
+// 			{
+// 				callbackMediaDataCallback(userID, mediaData);
+// 			}
+// 
+// 			return ERR_OK;
+// 		}
 	}//namespace multimedia
 }//namespace framework

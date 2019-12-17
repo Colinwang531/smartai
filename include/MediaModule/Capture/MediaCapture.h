@@ -19,17 +19,13 @@ namespace framework
 		class MediaCapture : public MediaModule
 		{
 		public:
-			MediaCapture(void) : MediaModule()
-			{}
-			virtual ~MediaCapture(void) {}
+			MediaCapture(void);
+			virtual ~MediaCapture(void);
 
 		public:
-			virtual int startCapture(const std::string& streamURL) = 0;
+			virtual int startCapture(const std::string url, void* hwnd = NULL) = 0;
 			virtual int stopCapture(void) = 0;
-			int inputMediaData(MediaDataPtr mediaData) override
-			{
-				return ERR_NOT_SUPPORT;
-			}
+			int inputMediaData(MediaDataPtr mediaData) override;
 		};//class MediaCapture
 	}//namespace multimedia
 }//namespace framework

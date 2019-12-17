@@ -13,7 +13,7 @@ namespace framework
 		MediaDevice::~MediaDevice()
 		{}
 
-		int MediaDevice::openStream(const std::string& streamUrl)
+		int MediaDevice::openStream(const std::string url, void* hwnd /* = NULL */)
 		{
 			WriteLock wl{ mtx };
 			return ++count;
