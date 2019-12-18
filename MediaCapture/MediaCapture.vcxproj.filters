@@ -1,0 +1,936 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Zmq">
+      <UniqueIdentifier>{f8d40840-d71e-4928-be94-8aaebcb5d837}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Zmq">
+      <UniqueIdentifier>{66580503-8da7-4f8d-8b5b-1cc5b4b2d62f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\libzmq">
+      <UniqueIdentifier>{f96c5f62-1134-4279-80f5-5a039cebffa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\libzmq">
+      <UniqueIdentifier>{804c6c0a-cf21-4bf8-a270-aac1f2b317f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\glog">
+      <UniqueIdentifier>{7d03dda4-23d0-4e75-88b5-c0a10c12a87f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\glog">
+      <UniqueIdentifier>{18e24a86-ab44-4597-b9a4-48b106d27eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Asio">
+      <UniqueIdentifier>{8591f2ff-84bb-4fa0-b902-2678a205b6a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Asio">
+      <UniqueIdentifier>{0cf5e883-4e97-4c52-800c-66f295e85b41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mutex">
+      <UniqueIdentifier>{8a397277-e76b-423b-a076-b93652ea5804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hardware">
+      <UniqueIdentifier>{c76f6221-e8f2-47c9-a6a5-f597e574d432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hardware">
+      <UniqueIdentifier>{2c67d686-f75a-4aec-ad94-bbc7df780864}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost">
+      <UniqueIdentifier>{984adcbb-345a-4616-88e0-1f210775608b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\thread">
+      <UniqueIdentifier>{cdfea542-95e3-43b4-8310-752288a3af2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\system">
+      <UniqueIdentifier>{5c49612c-e466-46d2-900f-22e0d32b0e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Timer">
+      <UniqueIdentifier>{5320cd76-59f9-4418-956c-7973955dcb5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timer">
+      <UniqueIdentifier>{9cc828ee-659c-4ad8-9b89-bbe748483993}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MediaCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Zmq\Context.cpp">
+      <Filter>Source Files\Zmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\address.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\client.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\clock.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\ctx.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\curve_client.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\curve_mechanism_base.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\curve_server.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\dealer.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\decoder_allocators.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\devpoll.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\dgram.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\dish.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\dist.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\epoll.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\err.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\fq.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\gather.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\gssapi_client.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\gssapi_mechanism_base.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\gssapi_server.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\io_object.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\io_thread.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\ip.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\ip_resolver.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\ipc_address.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\ipc_connecter.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\ipc_listener.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\kqueue.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\lb.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\mailbox.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\mailbox_safe.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\mechanism.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\mechanism_base.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\metadata.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\msg.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\mtrie.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\norm_engine.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\null_mechanism.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\object.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\options.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\own.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pair.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pgm_receiver.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pgm_sender.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pgm_socket.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pipe.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\plain_client.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\plain_server.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\poll.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\poller_base.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\polling_util.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pollset.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\precompiled.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\proxy.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pub.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\pull.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\push.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\radio.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\radix_tree.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\random.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\raw_decoder.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\raw_encoder.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\reaper.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\rep.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\req.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\router.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\scatter.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\select.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\server.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\session_base.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\signaler.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\socket_base.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\socket_poller.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\socks.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\socks_connecter.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\stream.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\stream_engine.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\sub.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tcp.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tcp_address.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tcp_connecter.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tcp_listener.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\thread.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\timers.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tipc_address.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tipc_connecter.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tipc_listener.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\trie.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\tweetnacl.c">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\udp_address.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\udp_engine.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\v1_decoder.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\v1_encoder.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\v2_decoder.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\v2_encoder.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\vmci.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\vmci_address.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\vmci_connecter.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\vmci_listener.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\xpub.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\xsub.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\zap_client.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\zmq.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libzmq-master\src\zmq_utils.cpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\demangle.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\logging.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\port.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\raw_logging.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\signalhandler.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\symbolize.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\utilities.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\glog-master\vlog_is_on.cc">
+      <Filter>Source Files\glog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\Service.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Hardware\Cpu.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp">
+      <Filter>Source Files\boost\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPListener.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPServer.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPReceiver.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Timer\Timer.cpp">
+      <Filter>Source Files\Timer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Zmq\Context.h">
+      <Filter>Header Files\Zmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\predef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\include\zmq.h">
+      <Filter>Header Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\address.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\array.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\atomic_counter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\atomic_ptr.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\blob.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\client.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\clock.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\command.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\condition_variable.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\config.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ctx.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\curve_client.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\curve_client_tools.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\curve_mechanism_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\curve_server.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\dbuffer.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\dealer.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\decoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\decoder_allocators.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\devpoll.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\dgram.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\dish.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\dist.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\encoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\epoll.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\err.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\fd.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\fq.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\gather.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\generic_mtrie.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\generic_mtrie_impl.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\gssapi_client.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\gssapi_mechanism_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\gssapi_server.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\i_decoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\i_encoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\i_engine.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\i_mailbox.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\i_poll_events.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\io_object.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\io_thread.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ip.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ip_resolver.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ipc_address.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ipc_connecter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ipc_listener.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\kqueue.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\lb.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\likely.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\macros.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\mailbox.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\mailbox_safe.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\mechanism.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\mechanism_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\metadata.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\msg.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\mtrie.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\mutex.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\norm_engine.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\null_mechanism.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\object.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\options.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\own.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pair.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pgm_receiver.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pgm_sender.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pgm_socket.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pipe.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\plain_client.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\plain_common.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\plain_server.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\poll.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\poller.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\poller_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\polling_util.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pollset.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\precompiled.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\proxy.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pub.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\pull.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\push.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\radio.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\radix_tree.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\random.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\raw_decoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\raw_encoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\reaper.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\rep.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\req.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\router.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\scatter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\select.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\server.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\session_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\signaler.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\socket_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\socket_poller.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\socks.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\socks_connecter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\stdint.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\stream.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\stream_engine.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\sub.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tcp.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tcp_address.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tcp_connecter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tcp_listener.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\thread.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\timers.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tipc_address.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tipc_connecter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tipc_listener.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\trie.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\tweetnacl.h">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\udp_address.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\udp_engine.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\v1_decoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\v1_encoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\v2_decoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\v2_encoder.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\v2_protocol.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\vmci.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\vmci_address.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\vmci_connecter.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\vmci_listener.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\windows.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\wire.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\xpub.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\xsub.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ypipe.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ypipe_base.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\ypipe_conflate.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\yqueue.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\zap_client.hpp">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libzmq-master\src\zmq_draft.h">
+      <Filter>Source Files\libzmq</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\glog\log_severity.h">
+      <Filter>Header Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\glog\logging.h">
+      <Filter>Header Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\glog\raw_logging.h">
+      <Filter>Header Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\glog\stl_logging.h">
+      <Filter>Header Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\glog\vlog_is_on.h">
+      <Filter>Header Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\config.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\demangle.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\mock-log.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\port.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace_generic-inl.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace_libunwind-inl.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace_powerpc-inl.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace_windows-inl.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace_x86_64-inl.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\stacktrace_x86-inl.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\symbolize.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\glog-master\utilities.h">
+      <Filter>Source Files\glog</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\Service.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Mutex\RWLock.h">
+      <Filter>Header Files\Mutex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Hardware\Cpu.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPListener.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPServer.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPReceiver.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Timer\Timer.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,38 +1,35 @@
+// Copyright (c) 2019, *** Inc.
+// All rights reserved.
 //
-//		Copyright :					@2017, HHJT, All Rights Reserved
+// Author : 王科威
+// E-mail : wangkw531@icloud.com
 //
-//		Author :						王科威
-//		E-mail :						wangkw531@icloud.com
-//		Date :							2017-09-15
-//		Description:					CPU基类
-//
-//		History:						Author										Date													Description
-//											王科威										2017-09-15									创建
+// Base class of CPU information.
 //
 
 #ifndef CPU_H
 #define CPU_H
 
-#include "predef.h"
-
-NS_BEGIN(hardware, 1)
-
-class Cpu
+namespace framework
 {
-public:
-	Cpu(void);
-	~Cpu(void);
+	namespace hardware
+	{
+		class Cpu
+		{
+		public:
+			Cpu(void);
+			~Cpu(void);
 
-	const int getCPUCoreNumber (void) const;
-	int setThreadAffinityMask(
+			const unsigned char getCoreNumber(void) const;
+			void setThreadAffinityMask(
 #ifdef _WINDOWS
-		void* tid = nullptr, 
+				void* tid = nullptr,
 #else
-		unsigned long long tid = 0,
+				unsigned long long tid = 0,
 #endif//_WINDOWS
-		const int mask = 0);
-};//class Cpu
-
-NS_END
+				const int mask = 0);
+		};//class Cpu
+	}//namespace hardware
+}//namespace framework
 
 #endif//CPU_H
