@@ -58,6 +58,12 @@
     <Filter Include="Source Files\Filter\Capture">
       <UniqueIdentifier>{f4fee3d5-def6-4ba6-8944-0661cf5e4469}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\URL">
+      <UniqueIdentifier>{3f8c26e2-fd8c-4d8f-8a5e-b7aa893ff2e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\URL">
+      <UniqueIdentifier>{48a537ba-d34a-4532-acc2-c9f431d9f94c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -107,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="..\include\MediaFilter\Capture\AVCaptureFilter.h">
       <Filter>Header Files\Filter\Capture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Url\Url.h">
+      <Filter>Header Files\URL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="..\source\MediaFilter\Capture\AVCaptureFilter.cpp">
       <Filter>Source Files\Filter\Capture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Url\Url.cpp">
+      <Filter>Source Files\URL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

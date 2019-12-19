@@ -98,8 +98,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\ffmpeg_4_2_1;$(SolutionDir)lib\D3D;$(SolutionDir)lib\hikvision\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;d3d9.lib;d3dx9.lib;HCNetSDK.lib;PlayCtrl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\ffmpeg_4_2_1;$(SolutionDir)lib\D3D;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName).dll $(SolutionDir)bin\$(ProjectName)Demo\$(Platform)\$(Configuration)\
@@ -176,6 +176,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClInclude Include="..\include\MediaPin\MediaPin.h" />
     <ClInclude Include="..\include\MediaPin\OutputMediaPin.h" />
     <ClInclude Include="..\include\predef.h" />
+    <ClInclude Include="..\include\Url\Url.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MediaPlay.h" />
     <ClInclude Include="pch.h" />
@@ -203,6 +204,7 @@ copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName
     <ClCompile Include="..\source\MediaPin\InputMediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\MediaPin.cpp" />
     <ClCompile Include="..\source\MediaPin\OutputMediaPin.cpp" />
+    <ClCompile Include="..\source\Url\Url.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="MediaPlay.cpp" />
     <ClCompile Include="pch.cpp">

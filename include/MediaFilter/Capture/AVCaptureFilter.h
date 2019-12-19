@@ -17,9 +17,10 @@ namespace framework
 {
 	namespace multimedia
 	{
-		typedef void (CALLBACK* CaptureFrameCallback)(const int, const unsigned char, const unsigned char*, const int, void*);
-		typedef int (CALLBACK* OpenStreamFunc)(const char*, void*, CaptureFrameCallback, void*);
-		typedef int (CALLBACK* CloseStreamFunc)(void);
+		typedef void (CALLBACK* MediaStreamDataCallback)(
+			const int, const unsigned char, const unsigned char*, const unsigned long long, void*);
+		typedef int (CALLBACK* DllOpenStreamFunc)(const char*, MediaStreamDataCallback, void*);
+		typedef int (CALLBACK* DllCloseStreamFunc)(const int);
 
 		class AVCaptureFilter : public SourceMediaFilter
 		{
@@ -28,17 +29,18 @@ namespace framework
 			virtual ~AVCaptureFilter(void);
 
 		public:
-			int openStream(const std::string url, void* hwnd = NULL);
+			int openStream(const std::string url);
 			int closeStream(void);
 
 		private:
-			static void captureFrameCallback(
-				const int playID = -1, const unsigned char frameType = 0, 
-				const unsigned char* frameData = NULL, const int frameBytes = 0, void* userData = NULL);
+			static void captureMediaStreamDataCallback(
+				const int streamID = -1, const unsigned char event = 0, 
+				const unsigned char* data = NULL, const unsigned long long dataBytes = 0, void* userData = NULL);
 
 		private:
-			OpenStreamFunc openStreamFunc;
-			CloseStreamFunc closeStreamFunc;
+			DllOpenStreamFunc dllOpenStreamFunc;
+			DllCloseStreamFunc dllCloseStreamFunc;
+			int streamID;
 		};//class AVCaptureFilter
 	}//namespace multimedia
 }//namespace framework

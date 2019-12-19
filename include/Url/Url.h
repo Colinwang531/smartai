@@ -6,7 +6,7 @@
 //
 // Stream URL wrapper.
 // URL sample :
-//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=0[&width=1920&height=1080&...]
+//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=0[&sms=192.168.1.100:8000&width=1920&height=1080&...]
 //						@stream : 1-HIKVISION_PRIVATE, 
 //								  2-HIKVISION_PS, 
 //								  3-DAHUA_PRIVATE, 

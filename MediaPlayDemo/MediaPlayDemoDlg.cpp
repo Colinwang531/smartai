@@ -123,7 +123,7 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
 	MEDIAPLAY_OpenStream(
-		"livestream://admin:eaton12345@192.168.30.12:8000?channel=1&stream=1", GetDlgItem(IDC_STATIC7)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+		"livestream://admin:eaton12345@192.168.30.12:8000?channel=1&stream=1&sms=192.168.30.76:27820", GetDlgItem(IDC_STATIC7)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }

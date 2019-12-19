@@ -38,7 +38,7 @@ namespace framework
 
 					boost::shared_ptr<AVCaptureFilter> captureFilterPtr{ 
 						boost::dynamic_pointer_cast<AVCaptureFilter>(queryMediaFilterByID(AVCaptureFilterID)) };
-					status = captureFilterPtr ? captureFilterPtr->openStream(url, hwnd) : ERR_BAD_OPERATE;
+					status = captureFilterPtr ? captureFilterPtr->openStream(url) : ERR_BAD_OPERATE;
 				}
 			}
 
