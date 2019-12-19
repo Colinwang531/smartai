@@ -96,7 +96,7 @@ int MEDIAPLAY_StartLivestreamPlay(
 {
 	int status{ ERR_INVALID_PARAM };
 
-	if (name && password && address && 0 < port && 0 <= channel && hwnd)
+	if (name && password && address && 0 < port && 0 <= channel/* && hwnd*/)
 	{
 		++mediaPlayID;
 		MediaGraphPtr mediaGraphPtr{ boost::make_shared<LivestreamMediaGraph>() };

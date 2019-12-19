@@ -177,22 +177,26 @@ void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const u
 	}
 }
 
-void MediaPlayDemoDlg::postDetectAlarmInfoCallback(const AlarmInfo alarmInfo, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
+void MediaPlayDemoDlg::postDetectAlarmInfoCallback(
+	const std::vector<AlarmInfo> alarmInfos, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
 {
-	if (AlarmType::ALARM_TYPE_FACE == alarmInfo.type)
+	for (std::vector<AlarmInfo>::const_iterator it = alarmInfos.cbegin(); it != alarmInfos.cend(); ++it)
 	{
-		char text[2048]{ 0 };
-		sprintf_s(text, 2048, "Face detected ID = %d, similarity = %f.\r\n", alarmInfo.faceID, alarmInfo.similarity);
-		OutputDebugStringA(text);
-	}
-	else
-	{
-		char text[2048]{ 0 };
-		sprintf_s(text, 2048, "Helmet alarm x = %d, y = %d, w = %d, h = %d, label = %d.\r\n",
-			alarmInfo.x, alarmInfo.y, alarmInfo.w, alarmInfo.h, alarmInfo.status);
-		OutputDebugStringA(text);
+		if (AlarmType::ALARM_TYPE_FACE == it->type)
+		{
+			char text[2048]{ 0 };
+			sprintf_s(text, 2048, "Face detected ID = %d, similarity = %f.\r\n", it->faceID, it->similarity);
+			OutputDebugStringA(text);
+		}
+		else
+		{
+			char text[2048]{ 0 };
+			sprintf_s(text, 2048, "Helmet alarm x = %d, y = %d, w = %d, h = %d, label = %d.\r\n",
+				it->x, it->y, it->w, it->h, it->status);
+			OutputDebugStringA(text);
 
-		JPEGENCODER_EncodeJpegPicture(mediaData, dataBytes);
+			JPEGENCODER_EncodeJpegPicture(mediaData, dataBytes);
+		}
 	}
 }
 

@@ -19,21 +19,28 @@ UnorderedMap<const AlarmType, ArithmeticPtr> arithmeticGroup;
 UnorderedMap<const AlarmType, std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*>> alarmInfoNotifyCallbackGroup;
 
 static void postDetectAlarmInfoCallback(
-	const NS(algo, 1)::AlarmInfo alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes)
+	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes)
 {
-	AlarmInfo info;
-	info.type = (AlarmType)alarmInfo.type;
-	info.x = alarmInfo.x;
-	info.y = alarmInfo.y;
-	info.w = alarmInfo.w;
-	info.h = alarmInfo.h;
-	info.status = alarmInfo.status;
-	info.faceID = alarmInfo.faceID;
-	info.similarity = alarmInfo.similarity;
-	std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*> callback{ alarmInfoNotifyCallbackGroup.at(info.type) };
+	std::vector<AlarmInfo> alarmInfos;
+
+	for (std::vector<NS(algo, 1)::AlarmInfo>::const_iterator it = alarmInfo.cbegin(); it != alarmInfo.cend(); ++it)
+	{
+		AlarmInfo info;
+		info.type = (AlarmType)it->type;
+		info.x = it->x;
+		info.y = it->y;
+		info.w = it->w;
+		info.h = it->h;
+		info.status = it->status;
+		info.faceID = it->faceID;
+		info.similarity = it->similarity;
+		alarmInfos.push_back(info);
+	}
+
+	std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*> callback{ alarmInfoNotifyCallbackGroup.at(alarmInfos[0].type) };
 	if (callback.first)
 	{
-		callback.first(info, bgr24Image, bgr24ImageBytes, callback.second);
+		callback.first(alarmInfos, bgr24Image, bgr24ImageBytes, callback.second);
 	}
 }
 

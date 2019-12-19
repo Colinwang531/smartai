@@ -49,7 +49,7 @@ typedef struct tagAlarmInfo_t
 // @dataBytes : BGR24图片字节数.
 // 
 typedef void (CALLBACK *ARITHMETIC_AlarmInfoNotifyCallback)(
-	const AlarmInfo alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes,void* userData);
+	const std::vector<AlarmInfo> alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes,void* userData);
 
 // 调用者注册自己需要接收的AI算法报警推送信息
 //
