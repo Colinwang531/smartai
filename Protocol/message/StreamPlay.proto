@@ -1,0 +1,33 @@
+syntax = "proto2";
+
+message NetworkDevice 
+{
+  required string address = 1;
+  required uint32 port = 2;
+  required string name = 3;
+  required string password = 4;
+}
+
+message StreamPlay
+{
+	required NetworkDevice device = 1;
+	required int32 channel = 2;
+	
+	enum StreamType
+	{
+		HIKVISION_PRIVATE = 1;
+		HIKVISION_PS = 2;
+		DAHUA_PRIVATE = 3;
+		DAHUA_PS = 4;
+		H264 = 5;
+		H265 = 6;
+	}
+	required StreamType type = 3;
+	
+	enum PlayStatus
+	{
+		Play = 1;
+		Stop = 2;
+	}
+	required PlayStatus status = 4;
+}

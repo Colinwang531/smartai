@@ -89,9 +89,11 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;__STDC_CONSTANT_MACROS;WIN32_LEAN_AND_MEAN;_WINSOCK_DEPRECATED_NO_WARNINGS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;BOOST_ALL_NO_LIB;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;__STDC_CONSTANT_MACROS;WIN32_LEAN_AND_MEAN;_WINSOCK_DEPRECATED_NO_WARNINGS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;_CRT_SECURE_NO_WARNINGS;BOOST_ALL_NO_LIB;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)libzmq-master\include;$(SolutionDir)glog-master;$(SolutionDir)lib\hikvision\x64;$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -6,15 +6,17 @@
 //
 // Stream URL wrapper.
 // URL sample :
-//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=0[&sms=192.168.1.100:8000&width=1920&height=1080&...]
+//				livestream://admin:12345@192.168.1.100:8000?channel=1&stream=0&status=1[&sms=192.168.1.100:8000]
 //						@stream : 1-HIKVISION_PRIVATE, 
 //								  2-HIKVISION_PS, 
 //								  3-DAHUA_PRIVATE, 
 //								  4-DAHUA_PS,
 //								  5-H264, 
 //								  6-H265, 
-//								  7-RTP/RTSP
-//				playback://admin:12345@192.168.1.100:8000?channel=1&stream=0&start=20191211000000&stop=20191211235959
+//								  7-RTP/RTSP.
+//						@status : 1-Open stream,
+//								  2-Close stream.
+//				playback://admin:12345@192.168.1.100:8000?channel=1&stream=0&status=1[&start=20191211000000&stop=20191211235959]
 //				playback://?path=c:\video\sample.mp4
 //				rtsp://admin:12345@192.168.1.100:8000?channel=1&...
 //

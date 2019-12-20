@@ -2,6 +2,7 @@
 #include "boost/bind.hpp"
 #include "boost/make_shared.hpp"
 #include "error.h"
+#include "protocol/StreamPlay.pb.h"
 #include "Url/Url.h"
 using URL = framework::wrapper::URL;
 #include "Network/Asio/TCPConnector.h"
@@ -82,7 +83,26 @@ namespace framework
 				TCPSenderPtr senderPtr{ boost::make_shared<TCPSender>() };
 				if (senderPtr)
 				{
-					senderPtr->asyncSend(s, (const unsigned char*)streamUrl.c_str(), streamUrl.length());
+					std::string address, name, password;
+					unsigned short port{ 0 };
+					URL streamUrl{ this->streamUrl };
+					streamUrl.getAddressPort(address, port);
+					streamUrl.getAuthentication(name, password);
+					int channel{ atoi(streamUrl.getParameter("channel").c_str()) }, type{ atoi(streamUrl.getParameter("stream").c_str()) };
+
+					if (!address.empty() && !name.empty() && !password.empty() && 0 < port && -1 < channel)
+					{
+						StreamPlay streamPlayRequest;
+						NetworkDevice* device{ streamPlayRequest.mutable_device() };
+						device->set_address(address);
+						device->set_port(port);
+						device->set_name(name);
+						device->set_password(password);
+						streamPlayRequest.set_channel(channel);
+						streamPlayRequest.set_streamtype(static_cast<StreamPlay_StreamType>(type));
+						requestMessage = streamPlayRequest.SerializeAsString();
+						senderPtr->asyncSend(s, (const unsigned char*)requestMessage.c_str(), requestMessage.length());
+					}
 				}
 			}
 

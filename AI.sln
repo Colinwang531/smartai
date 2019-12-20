@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaCapture", "MediaCaptur
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MediaStreamClient", "MediaStreamClient\MediaStreamClient.vcxproj", "{3BEC6443-65C3-48F0-803A-1E6C2046C6DA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Protocol", "Protocol\Protocol.vcxproj", "{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{3BEC6443-65C3-48F0-803A-1E6C2046C6DA}.Release|x64.Build.0 = Release|x64
 		{3BEC6443-65C3-48F0-803A-1E6C2046C6DA}.Release|x86.ActiveCfg = Release|Win32
 		{3BEC6443-65C3-48F0-803A-1E6C2046C6DA}.Release|x86.Build.0 = Release|Win32
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Debug|x64.ActiveCfg = Debug|x64
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Debug|x64.Build.0 = Debug|x64
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Debug|x86.ActiveCfg = Debug|Win32
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Debug|x86.Build.0 = Debug|Win32
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Release|x64.ActiveCfg = Release|x64
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Release|x64.Build.0 = Release|x64
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Release|x86.ActiveCfg = Release|Win32
+		{CE97C801-8FE3-4C2E-98CA-EFF8BB861532}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

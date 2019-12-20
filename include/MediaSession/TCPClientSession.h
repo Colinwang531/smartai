@@ -52,6 +52,7 @@ namespace framework
 		private:
 			const int sessionID;
 			std::string streamUrl;
+			std::string requestMessage;
 			PostMediaStreamDataCallback postMediaStreamDataCallback;
 			void* userData;
 		};//class TCPClientSession
