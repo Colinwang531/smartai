@@ -7,7 +7,6 @@
 // Base class of TCP connector.
 //
 
-
 #ifndef TCP_CONNECTOR_H
 #define TCP_CONNECTOR_H
 

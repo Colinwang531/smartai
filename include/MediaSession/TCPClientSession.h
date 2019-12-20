@@ -46,6 +46,8 @@ namespace framework
 
 		private:
 			void postConnectedCallback(boost::asio::ip::tcp::socket* s, boost::system::error_code e);
+			void postRemoteReadCallback(
+				boost::asio::ip::tcp::socket* s, const unsigned char* data, const unsigned long long dataByte, boost::system::error_code e);
 
 		private:
 			const int sessionID;

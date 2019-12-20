@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Asio">
+      <UniqueIdentifier>{19c49064-9774-4e33-9e48-0b9f9d5f40ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Asio">
+      <UniqueIdentifier>{bfd53771-0120-4a14-9ebf-a930bb6791ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hardware">
+      <UniqueIdentifier>{beb1e85c-ac74-4eee-bb30-e9d686d77ce8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hardware">
+      <UniqueIdentifier>{c61e4631-b8c9-4221-b94a-ca43ceb46035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost">
+      <UniqueIdentifier>{1c015253-8aad-417c-9c94-2fd4a692588c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\system">
+      <UniqueIdentifier>{860f87b0-c9b9-4a36-8a14-1334a69abd2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\thread">
+      <UniqueIdentifier>{8feb5584-99f4-4d87-8c2e-a83ea2c4f631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataStruct">
+      <UniqueIdentifier>{081aea2e-37fd-47ea-ab40-1112897ba75e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Session">
+      <UniqueIdentifier>{33150119-51a9-48f5-953b-c9e602d919e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Session">
+      <UniqueIdentifier>{398f6426-d129-42ef-a30b-6a2d95f8a1e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\URL">
+      <UniqueIdentifier>{10f90bbf-bc37-451f-977a-7e8a3688f02b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\URL">
+      <UniqueIdentifier>{47089674-e713-40db-8ce8-2c8960da9955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Timer">
+      <UniqueIdentifier>{20693518-fe82-45b3-aa31-b6d0557c64dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Timer">
+      <UniqueIdentifier>{91d3dea8-4c89-425f-98fc-cfe68f199364}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaStreamClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPClient.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Hardware\Cpu.h">
+      <Filter>Header Files\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\Service.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DataStruct\UnorderedMap.h">
+      <Filter>Header Files\DataStruct</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MediaSession\TCPClientSession.h">
+      <Filter>Header Files\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPConnector.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Url\Url.h">
+      <Filter>Header Files\URL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPReceiver.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Network\Asio\TCPSender.h">
+      <Filter>Header Files\Asio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Timer\Timer.h">
+      <Filter>Header Files\Timer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaStreamClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPClient.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Hardware\Cpu.cpp">
+      <Filter>Source Files\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\Service.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\boost_thread.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\thread_primitives.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_dll.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\thread\src\win32\tss_pe.cpp">
+      <Filter>Source Files\boost\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="..\boost_1_67_0\libs\system\src\error_code.cpp">
+      <Filter>Source Files\boost\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\MediaSession\TCPClientSession.cpp">
+      <Filter>Source Files\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPConnector.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Url\Url.cpp">
+      <Filter>Source Files\URL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPReceiver.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Network\Asio\TCPSender.cpp">
+      <Filter>Source Files\Asio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Timer\Timer.cpp">
+      <Filter>Source Files\Timer</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -29,7 +29,7 @@ static void postReadTCPPacketCallback(const TCPPacket& pkt)
 		eventName.append("READ");
 	}
 
-	LOG(INFO) << eventName << " " << pkt.ID << " " << pkt.bytes << " bytes.";
+	LOG(INFO) << eventName << " " << pkt.ID << " " << pkt.data << ".";
 }
 
 int main(int argc, char* argv[])

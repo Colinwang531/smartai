@@ -18,7 +18,7 @@ namespace framework
 {
 	namespace network
 	{
-		typedef boost::function<void(boost::asio::ip::tcp::socket*, const char*, const unsigned long long, boost::system::error_code)> PostRemoteReadCallback;
+		typedef boost::function<void(boost::asio::ip::tcp::socket*, const unsigned char*, const unsigned long long, boost::system::error_code)> PostRemoteReadCallback;
 
 		class TCPReceiver : public boost::enable_shared_from_this<TCPReceiver>
 		{
@@ -44,7 +44,7 @@ namespace framework
 			{
 				MTU = 65535
 			};
-			char readData[MTU];
+			unsigned char readData[MTU];
 		};//class TCPReceiver
 	}//namespace network
 }//namespace framework

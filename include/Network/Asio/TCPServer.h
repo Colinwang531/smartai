@@ -30,7 +30,7 @@ namespace framework
 		{
 			TCPEvent event;
 			const char* ID;
-			const char* data;
+			const unsigned char* data;
 			unsigned long long bytes;
 			int error;
 		}TCPPacket;
@@ -56,7 +56,7 @@ namespace framework
 		private:
 			void postRemoteConnectedCallback(boost::asio::ip::tcp::socket* s, boost::system::error_code e);
 			void postRemoteReadCallback(
-				boost::asio::ip::tcp::socket* s, const char* data, const unsigned int dataByte, boost::system::error_code e);
+				boost::asio::ip::tcp::socket* s, const unsigned char* data, const unsigned int dataByte, boost::system::error_code e);
 
 		private:
 			ASIOServicePtr asioServicePtr;

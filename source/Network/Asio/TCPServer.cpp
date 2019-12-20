@@ -78,7 +78,7 @@ namespace framework
 					const std::string ID{ (boost::format("%s:%d") % remoteAddress % remotePort).str() };
 					TCPPacket pkt{ TCPEvent::TCP_EVENT_ACCEPT };
 					pkt.ID = ID.c_str();
-					pkt.data = remoteAddress.c_str();
+					pkt.data = (const unsigned char*)remoteAddress.c_str();
 					pkt.bytes = remotePort;
 					pkt.error = e.value();
 					tcpEventNotificationCallback(pkt);
@@ -95,7 +95,7 @@ namespace framework
 		}
 
 		void TCPServer::postRemoteReadCallback(
-			boost::asio::ip::tcp::socket* s, const char* data, const unsigned int dataByte, boost::system::error_code e)
+			boost::asio::ip::tcp::socket* s, const unsigned char* data, const unsigned int dataByte, boost::system::error_code e)
 		{
 			if (s && !e)
 			{

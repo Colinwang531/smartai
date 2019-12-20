@@ -7,6 +7,12 @@ using URL = framework::wrapper::URL;
 #include "Network/Asio/TCPConnector.h"
 using TCPConnector = framework::network::TCPConnector;
 using TCPConnectorPtr = boost::shared_ptr<TCPConnector>;
+#include "Network/Asio/TCPSender.h"
+using TCPSender = framework::network::TCPSender;
+using TCPSenderPtr = boost::shared_ptr<TCPSender>;
+#include "Network/Asio/TCPReceiver.h"
+using TCPReceiver = framework::network::TCPReceiver;
+using TCPReceiverPtr = boost::shared_ptr<TCPReceiver>;
 #include "MediaSession/TCPClientSession.h"
 
 namespace framework
@@ -64,7 +70,20 @@ namespace framework
 		{
 			if (s && !e)
 			{
+				// Get ready for reading data first.
+				TCPReceiverPtr receiverPtr{ 
+					boost::make_shared<TCPReceiver>( boost::bind(&TCPClientSession::postRemoteReadCallback, this, _1, _2, _3, _4)) };
+				if (receiverPtr)
+				{
+					receiverPtr->asyncRead(s);
+				}
 
+				// Post request message to server.
+				TCPSenderPtr senderPtr{ boost::make_shared<TCPSender>() };
+				if (senderPtr)
+				{
+					senderPtr->asyncSend(s, (const unsigned char*)streamUrl.c_str(), streamUrl.length());
+				}
 			}
 
 			if (postMediaStreamDataCallback)
@@ -74,36 +93,14 @@ namespace framework
 			}
 		}
 
-// 		void TCPClientSession::receivingData(
-// 			boost::system::error_code error, std::size_t transferBytes, const char* transferData /* = nullptr */)
-// 		{
-// 			if (afterReadDataNotificationCallback)
-// 			{
-// 				afterReadDataNotificationCallback(tcpSocket, error.value(), transferData, transferBytes);
-// 			}
-// 
-// 			TCPSession::receivingData(error, transferBytes, transferData);
-// 		}
-// 
-// 		void TCPClientSession::settingTimeout(const UInt32 timeo /*= 0*/)
-// 		{
-// 			if (0 < timeo && tcpSocket)
-// 			{
-// 				boost::posix_time::seconds tempTimeoutSeconds{ timeo };
-// 				TimerPtr tempTimeoutPtr{
-// 					boost::make_shared<boost::asio::deadline_timer>(tcpSocket->get_io_service(), tempTimeoutSeconds) };
-// 
-// 				if (tempTimeoutPtr)
-// 				{
-// 					tempTimeoutPtr->async_wait(
-// 						boost::bind(
-// 							&TCPReceiver::afterReadDataTimeoutNotificationCallback,
-// 							boost::enable_shared_from_this<TCPReceiver>::shared_from_this(),
-// 							tcpSocket,
-// 							boost::asio::placeholders::error,
-// 							tempTimeoutPtr));
-// 				}
-// 			}
-// 		}
+		void TCPClientSession::postRemoteReadCallback(
+			boost::asio::ip::tcp::socket* s, const unsigned char* data, const unsigned long long dataByte, boost::system::error_code e)
+		{
+			if (postMediaStreamDataCallback)
+			{
+				postMediaStreamDataCallback(
+					sessionID, static_cast<unsigned char>(TCPClientEvent::TCP_CLIENT_EVENT_READ), data, dataByte, userData);
+			}
+		}
 	}//namespace network
 }//namespace framework
