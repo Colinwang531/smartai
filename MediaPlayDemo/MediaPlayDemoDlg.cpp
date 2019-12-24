@@ -246,17 +246,17 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_FACE;
 
-	int ret{ ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\119328278400991232_107827453.jpg", 107827453) };
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121870933139914752_7126390.jpg", 7126390);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121870984041988096_7138156.jpg", 7138156);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871014912065536_7145531.jpg", 7145531);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871078300581888_7160875.jpg", 7160875);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871111183925248_7168843.jpg", 7168843);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871234504851456_7197968.jpg", 7197968);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871289487982592_7210984.jpg", 7210984);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871318781001728_7218015.jpg", 7218015);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871366432489472_7229906.jpg", 7229906);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871423605047296_7243031.jpg", 7243031);
+	int ret{ ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\119328278400991232_107827455.jpg", 107827453) };
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121870933139914752_7126390.jpg", 7126390);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121870984041988096_7138156.jpg", 7138156);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871014912065536_7145531.jpg", 7145531);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871078300581888_7160875.jpg", 7160875);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871111183925248_7168843.jpg", 7168843);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871234504851456_7197968.jpg", 7197968);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871289487982592_7210984.jpg", 7210984);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871318781001728_7218015.jpg", 7218015);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871366432489472_7229906.jpg", 7229906);
+// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871423605047296_7243031.jpg", 7243031);
 	char text[2048]{ 0 };
 	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
 	OutputDebugStringA(text);

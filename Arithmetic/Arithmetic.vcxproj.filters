@@ -43,6 +43,9 @@
     <Filter Include="Source Files\MediaData">
       <UniqueIdentifier>{c41ec6c8-6cc5-4bdb-8f3e-70ea1933e940}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\opencv">
+      <UniqueIdentifier>{93311543-c6df-4c44-bcb2-dcc9ba9e3b3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">

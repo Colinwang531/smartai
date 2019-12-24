@@ -108,12 +108,24 @@ void CVAlgoFace::arithmeticWorkerProcess()
 			if (face.PostProcessFunc(feedback))
 			{
 //				printf("=====  face.vecFaceResult.size() = %d.\r\n", (int)feedback.vecFaceResult.size());
+
+				if (0 < feedback.vecFaceResult.size())
+				{
+					char text[2048]{ 0 };
+					sprintf_s(text, 2048, "=====  face.vecFaceResult.size() = %d.\r\n", (int)feedback.vecFaceResult.size());
+					OutputDebugStringA(text);
+				}
+				
 				for (int j = 0; j != feedback.vecFaceResult.size(); ++j)
 				{
 					/*FaceInfo*/AlarmInfo faceInfo;
 					faceInfo.type = AlarmType::ALARM_TYPE_FACE;
 					faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
 					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
+					faceInfo.x = feedback.vecShowInfo[j].rRect.x;
+					faceInfo.y = feedback.vecShowInfo[j].rRect.y;
+					faceInfo.w = feedback.vecShowInfo[j].rRect.width;
+					faceInfo.h = feedback.vecShowInfo[j].rRect.height;
 
 // 					mtx.lock();
 // 					boost::unordered_map<int, const std::string>::iterator it{
@@ -155,7 +167,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 				//	lastKnownTickTime = currentTickTime;
 				//	capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
 				//}
-//				postDetectAlarmInfoCallback(faceInfos[0], (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
+				postDetectAlarmInfoCallback(faceInfos, (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 			}
 
 			 feedback.vecShowInfo.clear();

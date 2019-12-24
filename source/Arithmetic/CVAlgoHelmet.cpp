@@ -72,7 +72,7 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 // 						}
 					}
 
-					if (noneHelmetNumber > haveHelmetNumber && -1 < nSaveId)
+					if (/*noneHelmetNumber > haveHelmetNumber &&*/ -1 < nSaveId)
 					{
 						AlarmInfo alarmInfo;
 						alarmInfo.type = AlarmType::ALARM_TYPE_HELMET;
@@ -80,7 +80,7 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 						alarmInfo.y = it->second.vecSaveMat[nSaveId].rRect.y;
 						alarmInfo.w = it->second.vecSaveMat[nSaveId].rRect.width;
 						alarmInfo.h = it->second.vecSaveMat[nSaveId].rRect.height;
-						alarmInfo.status = it->second.vecSaveMat[nSaveId].nLabel;
+						alarmInfo.status = noneHelmetNumber > haveHelmetNumber ? 0 : 1;// it->second.vecSaveMat[nSaveId].nLabel;
 						alarmInfos.push_back(alarmInfo);
 
 						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
