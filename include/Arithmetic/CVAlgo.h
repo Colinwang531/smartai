@@ -53,9 +53,11 @@ typedef struct tagAlarmInfo_t
 	int h;
 	int faceID;
 	float similarity;
+	unsigned char* faceImage;
+	unsigned long long imageBytes;
 }AlarmInfo;
 
-typedef boost::function<void(const std::vector<AlarmInfo>, unsigned char*, int)> PostDetectAlarmInfoCallback;
+typedef boost::function<void(const std::vector<AlarmInfo>, const unsigned char*, const unsigned long long)> PostDetectAlarmInfoCallback;
 // typedef boost::function<void(MediaImagePtr, std::vector<FaceInfo>)> CaptureFaceInfoHandler;
 
 class CVAlgo

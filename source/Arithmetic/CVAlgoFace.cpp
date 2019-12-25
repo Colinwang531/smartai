@@ -5,6 +5,7 @@
 #include "boost/checked_delete.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/format.hpp"
+#include "opencv2/opencv.hpp"
 #include "error.h"
 #include "Arithmetic/CVAlgoFace.h"
 
@@ -127,28 +128,20 @@ void CVAlgoFace::arithmeticWorkerProcess()
 					faceInfo.w = feedback.vecShowInfo[j].rRect.width;
 					faceInfo.h = feedback.vecShowInfo[j].rRect.height;
 
-// 					mtx.lock();
-// 					boost::unordered_map<int, const std::string>::iterator it{
-// 						registerFaceImageGroup.find(feedback.vecFaceResult[j].matchId) };
-// 					if (registerFaceImageGroup.end() != it)
-// 					{
-// 						FILE* fd{ NULL };
-// 						fopen_s(&fd, it->second.c_str(), "rb+");
-// 						if (fd)
-// 						{
-// 							faceInfo.imageBytes = _filelength(_fileno(fd));
-// 							faceInfo.imageData = new(std::nothrow) char[faceInfo.imageBytes];
-// 							if (faceInfo.imageData)
-// 							{
-// 								fread(faceInfo.imageData, faceInfo.imageBytes, 1, fd);
-// 							}
-// 							fclose(fd);
-// 							std::vector<std::string> faceImageFileNameSegment;
-// 							boost::split(faceImageFileNameSegment, it->second, boost::is_any_of("_"));
-// 							faceInfo.faceID = atoll(faceImageFileNameSegment[1].c_str());
-// 						}
-// 					}
-// 					mtx.unlock();
+					cv::Mat faceProcessed;
+					if (feedback.vecFaceResult[j].ingChannel == 3)
+						faceProcessed = cv::Mat(feedback.vecFaceResult[j].imgHeight, feedback.vecFaceResult[j].imgWidth, CV_8UC3, feedback.vecFaceResult[j].pUcharImage);
+					else if (feedback.vecFaceResult[j].ingChannel == 1)
+						faceProcessed = cv::Mat(feedback.vecFaceResult[j].imgHeight, feedback.vecFaceResult[j].imgWidth, CV_8UC1, feedback.vecFaceResult[j].pUcharImage);
+					vector<uchar> buff;
+					cv::imencode(".jpg", faceProcessed, buff);
+					std::string strJPGData{ buff.begin(), buff.end() };
+					faceInfo.imageBytes = strJPGData.length();
+					faceInfo.faceImage = new(std::nothrow) unsigned char[faceInfo.imageBytes];
+					if (faceInfo.faceImage)
+					{
+						memcpy_s(faceInfo.faceImage, faceInfo.imageBytes, strJPGData.c_str(), faceInfo.imageBytes);
+					}
 
 					faceInfos.push_back(faceInfo);
 					boost::checked_array_delete(feedback.vecFaceResult[j].pUcharImage);
@@ -159,15 +152,12 @@ void CVAlgoFace::arithmeticWorkerProcess()
 
 			if (0 < faceInfos.size() && postDetectAlarmInfoCallback)
 			{
-//				capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
-				//boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+				postDetectAlarmInfoCallback(faceInfos, bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 
-				//if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
-				//{
-				//	lastKnownTickTime = currentTickTime;
-				//	capturefaceInfoHandler(bgr24ImagePtr, faceInfos);
-				//}
-				postDetectAlarmInfoCallback(faceInfos, (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
+				for (int i = 0; i != faceInfos.size(); ++i)
+				{
+					boost::checked_array_delete(faceInfos[i].faceImage);
+				}
 			}
 
 			 feedback.vecShowInfo.clear();

@@ -92,14 +92,14 @@
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;BOOST_ALL_NO_LIB;ARITHMETIC_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)include;$(SolutionDir)lib\algo\$(Platform);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)include;$(SolutionDir)lib\algo\$(Platform);$(SolutionDir)opencv-4.2.0\include;$(SolutionDir)opencv-4.2.0\build;$(SolutionDir)opencv-4.2.0\modules\calib3d\include;$(SolutionDir)opencv-4.2.0\modules\features2d\include;$(SolutionDir)opencv-4.2.0\modules\dnn\include;$(SolutionDir)opencv-4.2.0\modules\flann\include;$(SolutionDir)opencv-4.2.0\modules\highgui\include;$(SolutionDir)opencv-4.2.0\modules\imgcodecs\include;$(SolutionDir)opencv-4.2.0\modules\imgproc\include;$(SolutionDir)opencv-4.2.0\modules\ml\include;$(SolutionDir)opencv-4.2.0\modules\objdetect\include;$(SolutionDir)opencv-4.2.0\modules\photo\include;$(SolutionDir)opencv-4.2.0\modules\stitching\include;$(SolutionDir)opencv-4.2.0\modules\video\include;$(SolutionDir)opencv-4.2.0\modules\videoio\include;$(SolutionDir)opencv-4.2.0\modules\core\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\algo\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\algo\$(Platform);$(SolutionDir)opencv-4.2.0\build\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core420d.lib;opencv_imgcodecs420d.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName).dll $(SolutionDir)bin\MediaPlayDemo\$(Platform)\$(Configuration)\

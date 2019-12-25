@@ -111,7 +111,7 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 
 					if (0 < alarmInfos.size() && postDetectAlarmInfoCallback)
 					{
-						postDetectAlarmInfoCallback(alarmInfos, (unsigned char*)bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
+						postDetectAlarmInfoCallback(alarmInfos, bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 					}
 // 				}
 // 				else

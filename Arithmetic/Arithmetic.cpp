@@ -19,7 +19,7 @@ UnorderedMap<const AlarmType, ArithmeticPtr> arithmeticGroup;
 UnorderedMap<const AlarmType, std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*>> alarmInfoNotifyCallbackGroup;
 
 static void postDetectAlarmInfoCallback(
-	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfo, const unsigned char* bgr24Image, const int bgr24ImageBytes)
+	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfo, const unsigned char* bgr24Image, const unsigned long long bgr24ImageBytes)
 {
 	std::vector<AlarmInfo> alarmInfos;
 
@@ -34,6 +34,8 @@ static void postDetectAlarmInfoCallback(
 		info.status = it->status;
 		info.faceID = it->faceID;
 		info.similarity = it->similarity;
+		info.faceImage = it->faceImage;
+		info.faceImageBytes = it->imageBytes;
 		alarmInfos.push_back(info);
 	}
 
