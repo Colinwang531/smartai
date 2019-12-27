@@ -21,28 +21,27 @@ UnorderedMap<const AlarmType, std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void
 static void postDetectAlarmInfoCallback(
 	const std::vector<NS(algo, 1)::AlarmInfo> alarmInfo, const unsigned char* bgr24Image, const unsigned long long bgr24ImageBytes)
 {
-	std::vector<AlarmInfo> alarmInfos;
+	AlarmInfo alarmInfoCallback[64];
+	unsigned int alarmInfoCount{ static_cast<unsigned int>(alarmInfo.size()) };
 
-	for (std::vector<NS(algo, 1)::AlarmInfo>::const_iterator it = alarmInfo.cbegin(); it != alarmInfo.cend(); ++it)
+	for (int i = 0; i != alarmInfoCount; ++i)
 	{
-		AlarmInfo info;
-		info.type = (AlarmType)it->type;
-		info.x = it->x;
-		info.y = it->y;
-		info.w = it->w;
-		info.h = it->h;
-		info.status = it->status;
-		info.faceID = it->faceID;
-		info.similarity = it->similarity;
-		info.faceImage = it->faceImage;
-		info.faceImageBytes = it->imageBytes;
-		alarmInfos.push_back(info);
+		alarmInfoCallback[i].type = (AlarmType)alarmInfo[i].type;
+		alarmInfoCallback[i].x = alarmInfo[i].x;
+		alarmInfoCallback[i].y = alarmInfo[i].y;
+		alarmInfoCallback[i].w = alarmInfo[i].w;
+		alarmInfoCallback[i].h = alarmInfo[i].h;
+		alarmInfoCallback[i].status = alarmInfo[i].status;
+		alarmInfoCallback[i].faceID = alarmInfo[i].faceID;
+		alarmInfoCallback[i].similarity = alarmInfo[i].similarity;
+		alarmInfoCallback[i].faceImage = alarmInfo[i].faceImage;
+		alarmInfoCallback[i].faceImageBytes = alarmInfo[i].imageBytes;
 	}
 
-	std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*> callback{ alarmInfoNotifyCallbackGroup.at(alarmInfos[0].type) };
+	std::pair<ARITHMETIC_AlarmInfoNotifyCallback, void*> callback{ alarmInfoNotifyCallbackGroup.at(alarmInfoCallback[0].type) };
 	if (callback.first)
 	{
-		callback.first(alarmInfos, bgr24Image, bgr24ImageBytes, callback.second);
+		callback.first(alarmInfoCallback, alarmInfoCount, bgr24Image, bgr24ImageBytes, callback.second);
 	}
 }
 

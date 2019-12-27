@@ -110,12 +110,12 @@ void CVAlgoFace::arithmeticWorkerProcess()
 			{
 //				printf("=====  face.vecFaceResult.size() = %d.\r\n", (int)feedback.vecFaceResult.size());
 
-				if (0 < feedback.vecFaceResult.size())
-				{
-					char text[2048]{ 0 };
-					sprintf_s(text, 2048, "=====  face.vecFaceResult.size() = %d.\r\n", (int)feedback.vecFaceResult.size());
-					OutputDebugStringA(text);
-				}
+// 				if (0 < feedback.vecFaceResult.size())
+// 				{
+// 					char text[2048]{ 0 };
+// 					sprintf_s(text, 2048, "=====  face.vecFaceResult.size() = %d.\r\n", (int)feedback.vecFaceResult.size());
+// 					OutputDebugStringA(text);
+// 				}
 				
 				for (int j = 0; j != feedback.vecFaceResult.size(); ++j)
 				{

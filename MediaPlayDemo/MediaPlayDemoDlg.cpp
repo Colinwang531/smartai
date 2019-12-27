@@ -111,7 +111,7 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 // 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
 //	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
 	MEDIAPLAY_StartLivestreamPlay(
-		"admin", "Cpt@2019", "192.168.10.203", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
+		"admin", "Cpt@2019", "192.168.10.203", 8000, 0, NULL/*GetDlgItem(IDC_STATIC1)->GetSafeHwnd()*/, &MediaPlayDemoDlg::postMediaDataCallback, this);
 // 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
@@ -178,21 +178,22 @@ void MediaPlayDemoDlg::postMediaDataCallback(const int playID /* = 0 */, const u
 }
 
 void MediaPlayDemoDlg::postDetectAlarmInfoCallback(
-	const std::vector<AlarmInfo> alarmInfos, const unsigned char* mediaData /* = NULL */, const int dataBytes /* = 0 */, void* userData /* = NULL */)
+	const AlarmInfo* alarmInfos, const unsigned int count /* = 0 */, const unsigned char* mediaData /* = NULL */, 
+	const unsigned long long dataBytes /* = 0 */, void* userData /* = NULL */)
 {
-	for (std::vector<AlarmInfo>::const_iterator it = alarmInfos.cbegin(); it != alarmInfos.cend(); ++it)
+	for (int i = 0; i != count; ++i)
 	{
-		if (AlarmType::ALARM_TYPE_FACE == it->type)
+		if (AlarmType::ALARM_TYPE_FACE == alarmInfos[i].type)
 		{
 			char text[2048]{ 0 };
-			sprintf_s(text, 2048, "Face detected ID = %d, similarity = %f.\r\n", it->faceID, it->similarity);
+			sprintf_s(text, 2048, "Face detected ID = %d, similarity = %f.\r\n", alarmInfos[i].faceID, alarmInfos[i].similarity);
 			OutputDebugStringA(text);
 		}
 		else
 		{
 			char text[2048]{ 0 };
 			sprintf_s(text, 2048, "Helmet alarm x = %d, y = %d, w = %d, h = %d, label = %d.\r\n",
-				it->x, it->y, it->w, it->h, it->status);
+				alarmInfos[i].x, alarmInfos[i].y, alarmInfos[i].w, alarmInfos[i].h, alarmInfos[i].status);
 			OutputDebugStringA(text);
 
 			JPEGENCODER_EncodeJpegPicture(mediaData, dataBytes);

@@ -46,12 +46,15 @@ typedef struct tagAlarmInfo_t
 // 回调函数执行将阻塞正常的算法执行效果,调用者可将回调的报警数据先缓存再通过其他线程处理.
 //
 // @alarmInfo : 报警信息.
+// @count : 报警信息个数.
+// @bgr24Image : BGR24图片数据.
+// @bgr24ImageBytes : BGR24图片字节数.
 // @userData : 用户数据.
-// @data : BGR24图片数据.
-// @dataBytes : BGR24图片字节数.
 // 
 typedef void (CALLBACK *ARITHMETIC_AlarmInfoNotifyCallback)(
-	const std::vector<AlarmInfo> alarmInfo, const unsigned char* bgr24Image, const unsigned long long bgr24ImageBytes,void* userData);
+	const AlarmInfo* alarmInfo, const unsigned int count, 
+	const unsigned char* bgr24Image, const unsigned long long bgr24ImageBytes,
+	void* userData);
 
 // 调用者注册自己需要接收的AI算法报警推送信息
 //
