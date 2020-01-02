@@ -111,7 +111,7 @@ BOOL MediaPlayDemoDlg::OnInitDialog()
 // 	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Camera.mp4", GetDlgItem(IDC_STATIC1)->GetSafeHwnd());
 //	MEDIAPLAY_StartPlay("D:\\Download\\Avengers\\Avengers.mp4", GetDlgItem(IDC_STATIC2)->GetSafeHwnd());
 	MEDIAPLAY_StartLivestreamPlay(
-		"admin", "Cpt@2019", "192.168.10.203", 8000, 0, NULL/*GetDlgItem(IDC_STATIC1)->GetSafeHwnd()*/, &MediaPlayDemoDlg::postMediaDataCallback, this);
+		"admin", "Cpt@2019", "192.168.10.203", 8000, 0, GetDlgItem(IDC_STATIC1)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 // 	MEDIAPLAY_StartLivestreamPlay(
 // 		"admin", "eaton12345", "192.168.30.12", 8000, 0, GetDlgItem(IDC_STATIC3)->GetSafeHwnd(), &MediaPlayDemoDlg::postMediaDataCallback, this);
 
@@ -247,17 +247,13 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_FACE, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_FACE;
 
-	int ret{ ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\119328278400991232_107827455.jpg", 107827453) };
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121870933139914752_7126390.jpg", 7126390);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121870984041988096_7138156.jpg", 7138156);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871014912065536_7145531.jpg", 7145531);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871078300581888_7160875.jpg", 7160875);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871111183925248_7168843.jpg", 7168843);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871234504851456_7197968.jpg", 7197968);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871289487982592_7210984.jpg", 7210984);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871318781001728_7218015.jpg", 7218015);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871366432489472_7229906.jpg", 7229906);
-// 	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\121871423605047296_7243031.jpg", 7243031);
+	
+	int ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\131682890407739392_1050753796.jpg", 1050753796);
+	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\119328278400991232_107827453.jpg", 107827453);
+	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\129328278400991232_107827454.jpg", 107827454);
+	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\139328278400991232_107827455.jpg", 107827455);
+	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\149328278400991232_107827456.jpg", 107827456);
+
 	char text[2048]{ 0 };
 	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
 	OutputDebugStringA(text);
