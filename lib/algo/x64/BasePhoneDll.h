@@ -1,7 +1,7 @@
 #ifndef __PHONEMODEL_H
 #define __PHONEMODEL_H
 
-#include "DefGlobalVar.h"
+#include "../include/DefGlobalVar.h"
 #include <vector>
 
 using namespace std;
@@ -17,7 +17,7 @@ public:
 	virtual ~CPhoneAlgorithmClass();
 
 	// ³õÊ¼»¯Ëã·¨
-	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
+	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param_first, StruInitParams &param_second);
 
 	// Ëã·¨¼ì²â¸ú×Ù
 	virtual bool MainProcFunc(unsigned char *pClrImg, FeedBackPhone &objFeed);

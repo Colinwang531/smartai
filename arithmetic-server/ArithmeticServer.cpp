@@ -648,9 +648,9 @@ void TestFFmpegFileMediaGraph(void)
 
 int main(int argc, char* argv[])
 {
-	TestFFmpegFileMediaGraph();
-	getchar();
-	return 0;
+// 	TestFFmpegFileMediaGraph();
+// 	getchar();
+// 	return 0;
 
 	FLAGS_stderrthreshold = GLOG_INFO;
 	FLAGS_colorlogtostderr = 1;
