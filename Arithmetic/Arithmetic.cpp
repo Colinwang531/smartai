@@ -101,6 +101,20 @@ int ARITHMETIC_AddFaceImage(const char* filePath /*= NULL*/, const int faceID /*
 
 	return status;
 }
+
+int ARITHMETIC_SetSleepTimeInterval(const int interval /* = 15 */)
+{
+	int status{ ERR_NOT_SUPPORT };
+	ArithmeticPtr sleepArithmeticPtr{ arithmeticGroup.at(AlarmType::ALARM_TYPE_SLEEP) };
+
+	if (sleepArithmeticPtr)
+	{
+		boost::shared_ptr<CVAlgoSleep> sleepPtr{ boost::dynamic_pointer_cast<CVAlgoSleep>(sleepArithmeticPtr) };
+		status = sleepPtr->setTimeSleepInterval(interval);
+	}
+
+	return status;
+}
  
 int ARITHMETIC_InputImageData(
 	const AlarmType alarmType /* = AlarmType::ALARM_TYPE_NONE */, const unsigned char* data /* = NULL */, const int dataBytes /* = 0 */)

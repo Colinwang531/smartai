@@ -76,6 +76,14 @@ ARITHMETIC int ARITHMETIC_RegisterAlarmNotifyCallback(
 //
 ARITHMETIC int ARITHMETIC_AddFaceImage(const char* filePath = NULL, const int faceID = 0);
 
+// 设置睡觉算法检测报警时间间隔
+//
+// @interval : 时间间隔,以秒为单位.
+//
+// @Return : 1表示成功,<0表示错误码.
+//
+ARITHMETIC int ARITHMETIC_SetSleepTimeInterval(const int interval = 15);
+
 // 调用者输入图片数据进行算法检测
 //
 // @alarmType : 报警数据类型.

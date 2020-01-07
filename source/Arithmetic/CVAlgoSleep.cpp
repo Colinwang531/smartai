@@ -12,10 +12,17 @@ CVAlgoSleep::CVAlgoSleep() : CVAlgo()
 CVAlgoSleep::~CVAlgoSleep()
 {}
 
+int CVAlgoSleep::setTimeSleepInterval(const int interval)
+{
+	StruInitParams parameters;
+	parameters.sleepTime = interval;
+	return sleep.SetSleepTime(parameters) ? ERR_OK : ERR_BAD_OPERATE;
+}
+
 int CVAlgoSleep::initializeArithmetic()
 {
 	const std::string executePath{
-				boost::filesystem::initial_path<boost::filesystem::path>().string() };
+		boost::filesystem::initial_path<boost::filesystem::path>().string() };
 	const std::string cfgFile{ (boost::format("%s\\model\\helmet_sleep.cfg") % executePath).str() };
 	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % executePath).str() };
 	StruInitParams parameters;

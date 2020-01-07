@@ -24,6 +24,9 @@ public:
 	CVAlgoSleep(void);
 	~CVAlgoSleep(void);
 
+public:
+	int setTimeSleepInterval(const int interval = 15);
+
 protected:
 	int initializeArithmetic() override;
 	int deinitializeArithmetic(void) override;

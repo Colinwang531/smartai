@@ -19,6 +19,9 @@ public:
 	// 初始化算法
 	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
+	//睡觉时间重置
+	virtual bool SetSleepTime(StruInitParams &param);
+
 	// 算法检测跟踪
 	virtual bool MainProcFunc(unsigned char *pClrImg, FeedBackSleep &objFeed);
 
