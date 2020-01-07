@@ -22,10 +22,17 @@ int CVAlgoPhone::initializeWithParameter(const char* configFilePath /* = NULL */
 	initParames->cfgfile = (char*)cfgFile.c_str();
 	initParames->weightFile = (char*)weightFile.c_str();
 
+	const std::string weightFile2{ (boost::format("%s\\model\\phonesecond.weights") % configFilePath).str() };
+	StruInitParams ap_second;
+	ap_second.gpu_id = initParames->gpu_id;
+	ap_second.detectThreshold = 0.9;
+	ap_second.cfgfile = (char*)cfgFile.c_str();
+	ap_second.weightFile = (char*)weightFile2.c_str();
+
 	if (initParames)
 	{
 		status = phone.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
+			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, ap_second) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
