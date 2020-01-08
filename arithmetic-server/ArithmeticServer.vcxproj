@@ -93,13 +93,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINDOWS;_WINSOCK_DEPRECATED_NO_WARNINGS;WIN32_LEAN_AND_MEAN;__STDC_CONSTANT_MACROS;HAVE_SNPRINTF;GLOG_NO_ABBREVIATED_SEVERITIES;GOOGLE_GLOG_DLL_DECL=;BOOST_ALL_NO_LIB;ZMQ_STATIC;ZMQ_HAVE_WINDOWS;ZMQ_POLL_BASED_ON_SELECT;ZMQ_IOTHREAD_POLLER_USE_SELECT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)glog-master;$(SolutionDir)tinyxml2-master;$(SolutionDir)libzmq-master\include;$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\include;$(SolutionDir)include;$(SolutionDir)lib\algo\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)boost_1_67_0;$(SolutionDir)opencv-4.2.0\include;$(SolutionDir)opencv-4.2.0\build;$(SolutionDir)opencv-4.2.0\modules\calib3d\include;$(SolutionDir)opencv-4.2.0\modules\features2d\include;$(SolutionDir)opencv-4.2.0\modules\dnn\include;$(SolutionDir)opencv-4.2.0\modules\flann\include;$(SolutionDir)opencv-4.2.0\modules\highgui\include;$(SolutionDir)opencv-4.2.0\modules\imgcodecs\include;$(SolutionDir)opencv-4.2.0\modules\imgproc\include;$(SolutionDir)opencv-4.2.0\modules\ml\include;$(SolutionDir)opencv-4.2.0\modules\objdetect\include;$(SolutionDir)opencv-4.2.0\modules\photo\include;$(SolutionDir)opencv-4.2.0\modules\stitching\include;$(SolutionDir)opencv-4.2.0\modules\video\include;$(SolutionDir)opencv-4.2.0\modules\videoio\include;$(SolutionDir)opencv-4.2.0\modules\core\include;$(SolutionDir)include;$(SolutionDir)lib\algo\x64;$(SolutionDir)\libzmq-master\include;$(SolutionDir)\glog-master;$(SolutionDir)\lib\ffmpeg-4.1.4\x64;$(SolutionDir)\lib\hiksdk\x64;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\hiksdk\x64\HCNetSDKCom;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\lib\x64;$(SolutionDir)lib\algo\x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)opencv-4.2.0\build\lib\Debug;$(SolutionDir)lib\hiksdk\x64;$(SolutionDir)lib\hiksdk\x64\HCNetSDKCom;$(SolutionDir)lib\ffmpeg-4.1.4\x64;$(SolutionDir)lib\SDL2-2.0.10\lib\x64;$(SolutionDir)lib\algo\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;Iphlpapi.lib;opencv_core420d.lib;opencv_imgcodecs420d.lib;HCNetSDK.lib;HCCore.lib;PlayCtrl.lib;GdiPlus.lib;swscale.lib;avcodec.lib;avdevice.lib;avfilter.lib;avformat.lib;avutil.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -591,9 +591,6 @@
     <ClInclude Include="ArithmeticServer.h" />
     <ClInclude Include="DigitCameraLivestream.h" />
     <ClInclude Include="Hikvision7xxxNVR.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

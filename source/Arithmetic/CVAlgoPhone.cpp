@@ -1,6 +1,7 @@
 #include "boost/format.hpp"
 #include "boost/winapi/time.hpp"
 #include "boost/checked_delete.hpp"
+#include "opencv2/opencv.hpp"
 #include "error.h"
 #include "Arithmetic/CVAlgoPhone.h"
 
@@ -118,8 +119,7 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 // // 				}
 // 			}
 
-			map<int, StruMemoryInfo>::iterator iter = objFeed.mapMemory.begin();
-			for (; iter != objFeed.mapMemory.end(); )
+			for (std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin(); iter != feedback.mapMemory.end();)
 			{
 				if (iter->second.bDone)
 				{
@@ -131,16 +131,16 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 					for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
 					{
 						// 增加第二次识别过滤--对第一次检测的结果进行扩张后，进行第二次确认
-						Mat extractMat(m_nHeight, m_nWidth, CV_8UC3, iter->second.vecSaveMat[i].pUcharImage);
-						Rect expandRect;
-						expandRect.x = cv::max(0, int(iter->second.vecSaveMat[i].rRect.x - iter->second.vecSaveMat[i].rRect.width * 0.1));
-						expandRect.y = cv::max(0, int(iter->second.vecSaveMat[i].rRect.y - iter->second.vecSaveMat[i].rRect.height * 0.1));
-						expandRect.width = cv::min(extractMat.cols - expandRect.x, int(iter->second.vecSaveMat[i].rRect.width * 1.2));
-						expandRect.height = cv::min(extractMat.rows - expandRect.y, int(iter->second.vecSaveMat[i].rRect.height * 1.2));
+						cv::Mat extractMat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC3, iter->second.vecSaveMat[i].pUcharImage);
+						cv::Rect expandRect;
+						expandRect.x = (cv::max)(0, int(iter->second.vecSaveMat[i].rRect.x - iter->second.vecSaveMat[i].rRect.width * 0.1));
+						expandRect.y = (cv::max)(0, int(iter->second.vecSaveMat[i].rRect.y - iter->second.vecSaveMat[i].rRect.height * 0.1));
+						expandRect.width = (cv::min)(extractMat.cols - expandRect.x, int(iter->second.vecSaveMat[i].rRect.width * 1.2));
+						expandRect.height = (cv::min)(extractMat.rows - expandRect.y, int(iter->second.vecSaveMat[i].rRect.height * 1.2));
 
-						Mat roiMat = extractMat(expandRect).clone();
+						cv::Mat roiMat = extractMat(expandRect).clone();
 						std::vector<StruDetectResult> secondResult;
-						m_secondDetect->MultiObjectDetect(roiMat, secondResult);
+						gpuDectect.MultiObjectDetect(roiMat, secondResult);
 
 						float widthScale2 = roiMat.cols * 1.0 / 416;
 						float heightScale2 = roiMat.rows * 1.0 / 416;
@@ -165,20 +165,27 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 
 					if (nPhoneNum > nZuojiNum) // 说明此组数据属于打电话，非座机，保存
 					{
-						Mat extractMat(m_nHeight, m_nWidth, CV_8UC3, iter->second.vecSaveMat[nSaveId].pUcharImage);
-						rectangle(extractMat, Rect(iter->second.vecSaveMat[nSaveId].rRect.x, iter->second.vecSaveMat[nSaveId].rRect.y,
-							iter->second.vecSaveMat[nSaveId].rRect.width, iter->second.vecSaveMat[nSaveId].rRect.height), CV_RGB(0, 255, 0), 2, 8, 0);
-						putText(extractMat, "phone", Point(iter->second.vecSaveMat[nSaveId].rRect.x, iter->second.vecSaveMat[nSaveId].rRect.y),
-							FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(0, 255, 0), 1, CV_AA);
+						AlarmInfo alarmInfo;
+						alarmInfo.type = AlarmType::ALARM_TYPE_PHONE;
+						alarmInfo.x = iter->second.vecSaveMat[nSaveId].rRect.x;
+						alarmInfo.y = iter->second.vecSaveMat[nSaveId].rRect.y;
+						alarmInfo.w = iter->second.vecSaveMat[nSaveId].rRect.width;
+						alarmInfo.h = iter->second.vecSaveMat[nSaveId].rRect.height;
+						alarmInfo.status = iter->second.vecSaveMat[nSaveId].nLabel;
+						alarmInfos.push_back(alarmInfo);
+						bgr24ImagePtr->setOriginImage(
+							(const unsigned char*)(iter->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
 
-						char szName[128] = { 0 };
-						time_t t;
-						struct tm* lt;
-						time(&t);//获取Unix时间戳。
-						lt = localtime(&t);//转为时间结构。
-						sprintf_s(szName, "%s/%s_%03d_%4d_%02d_%02d_%02d_%02d_%02d.jpg", m_pSavePath, "phone", iter->second.vecSaveMat[nSaveId].nSerioNo,
-							lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
-						imwrite(szName, extractMat);
+						if (captureAlarmInfoHandler)
+						{
+							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+
+							if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+							{
+								lastKnownTickTime = currentTickTime;
+								captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+							}
+						}
 
 						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
 						{
@@ -186,31 +193,13 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 								delete[] iter->second.vecSaveMat[i].pUcharImage;
 						}
 					}
-					else
+
+					for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
 					{
-						Mat extractMat(m_nHeight, m_nWidth, CV_8UC3, iter->second.vecSaveMat[nSaveId].pUcharImage);
-						rectangle(extractMat, Rect(iter->second.vecSaveMat[nSaveId].rRect.x, iter->second.vecSaveMat[nSaveId].rRect.y,
-							iter->second.vecSaveMat[nSaveId].rRect.width, iter->second.vecSaveMat[nSaveId].rRect.height), CV_RGB(0, 255, 0), 2, 8, 0);
-						putText(extractMat, "tele", Point(iter->second.vecSaveMat[nSaveId].rRect.x, iter->second.vecSaveMat[nSaveId].rRect.y),
-							FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(0, 255, 0), 1, CV_AA);
-
-						char szName[128] = { 0 };
-						time_t t;
-						struct tm* lt;
-						time(&t);//获取Unix时间戳。
-						lt = localtime(&t);//转为时间结构。
-						sprintf_s(szName, "%s/%s_%03d_%4d_%02d_%02d_%02d_%02d_%02d.jpg", m_pSavePath, "tele", iter->second.vecSaveMat[nSaveId].nSerioNo,
-							lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec);
-						imwrite(szName, extractMat);
-
-						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
-						{
-							if (nullptr != iter->second.vecSaveMat[i].pUcharImage)
-								delete[] iter->second.vecSaveMat[i].pUcharImage;
-						}
+						if (nullptr != iter->second.vecSaveMat[i].pUcharImage)
+							delete[] iter->second.vecSaveMat[i].pUcharImage;
 					}
-
-					iter = objFeed.mapMemory.erase(iter);
+					iter = feedback.mapMemory.erase(iter);
 				}
 				else
 					iter++;
