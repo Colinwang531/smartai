@@ -15,6 +15,7 @@
 
 #include "Arithmetic/CVAlgo.h"
 #include "BasePhoneDll.h"
+#include "BaseGpuDetection.h"
 
 NS_BEGIN(algo, 1)
 
@@ -32,6 +33,7 @@ protected:
 private:
 	CPhoneAlgorithmClass phone;
 	FeedBackPhone feedback;
+	CGpuDetect gpuDectect;
 };//class CVAlgoPhone
 
 NS_END
