@@ -99,7 +99,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\algo\$(Platform);$(SolutionDir)opencv-4.2.0\build\lib\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core420d.lib;opencv_imgcodecs420d.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core420d.lib;opencv_imgcodecs420d.lib;HelmetClassd.lib;PhoneClassd.lib;SleepClassd.lib;FightClassd.lib;FaceClassd.lib;arapahod.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)lib\$(ProjectName)\$(Platform)\$(Configuration)\$(ProjectName).dll $(SolutionDir)bin\MediaPlayDemo\$(Platform)\$(Configuration)\
