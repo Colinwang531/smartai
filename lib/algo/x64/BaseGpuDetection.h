@@ -5,7 +5,7 @@
 #include "opencv2/opencv.hpp"
 
 #ifndef GPUDLL_EXPORT
-#define GPUDLL_EXPORT __declspec(dllimport)
+#define GPUDLL_EXPORT __declspec(dllexport)
 #endif 
 
 
