@@ -238,6 +238,8 @@ void MediaPlayDemoDlg::OnBnClickedRegisterSleep()
 	// TODO: Add your control notification handler code here
 	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_SLEEP, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_SLEEP;
+
+	ARITHMETIC_SetSleepTimeInterval(30);
 }
 
 

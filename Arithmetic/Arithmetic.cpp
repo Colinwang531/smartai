@@ -110,7 +110,7 @@ int ARITHMETIC_SetSleepTimeInterval(const int interval /* = 15 */)
 	if (sleepArithmeticPtr)
 	{
 		boost::shared_ptr<CVAlgoSleep> sleepPtr{ boost::dynamic_pointer_cast<CVAlgoSleep>(sleepArithmeticPtr) };
-		status = sleepPtr->setTimeSleepInterval(interval);
+		status = sleepPtr->setTimeSleepInterval(interval) ? ERR_OK : ERR_BAD_OPERATE;
 	}
 
 	return status;
