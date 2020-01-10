@@ -1,7 +1,7 @@
 #ifndef __YOLODETECTION_H
 #define __YOLODETECTION_H
 
-#include "../include/DefGlobalVar.h"
+#include "DefGlobalVar.h"
 #include "opencv2/opencv.hpp"
 
 #ifndef GPUDLL_EXPORT
