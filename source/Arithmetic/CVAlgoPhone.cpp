@@ -26,6 +26,13 @@ int CVAlgoPhone::initializeArithmetic()
 	parameters.cfgfile = (char*)cfgFile.c_str();
 	parameters.weightFile = (char*)weightFile.c_str();
 
+	const std::string weightFile2{ (boost::format("%s\\model\\phonesecond.weights") % executePath).str() };
+	StruInitParams ap_second;
+	ap_second.gpu_id = 0;
+	ap_second.detectThreshold = 0.9;
+	ap_second.cfgfile = (char*)cfgFile.c_str();
+	ap_second.weightFile = (char*)weightFile2.c_str();
+
 	return phone.InitAlgoriParam(
 		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters) ? ERR_OK : ERR_BAD_OPERATE;
 }
