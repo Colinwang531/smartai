@@ -27,7 +27,7 @@ int CVAlgoSleep::initializeArithmetic()
 	const std::string weightFile{ (boost::format("%s\\model\\helmet_sleep.weights") % executePath).str() };
 	StruInitParams parameters;
 	parameters.gpu_id = 0;
-	parameters.sleepTime = 15;
+	parameters.sleepTime = 5;
 	parameters.detectThreshold = 0.65f;
 	parameters.trackThreshold = 0.15f;
 	parameters.cfgfile = (char*)cfgFile.c_str();

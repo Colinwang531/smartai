@@ -17,7 +17,7 @@ public:
 	virtual ~CPhoneAlgorithmClass();
 
 	// 初始化算法
-	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param_first, StruInitParams &param_second);
+	virtual bool InitAlgoriParam(const int &width, const int &height, const int &channel, StruInitParams &param);
 
 	// 算法检测跟踪
 	virtual bool MainProcFunc(unsigned char *pClrImg, FeedBackPhone &objFeed);

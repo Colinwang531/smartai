@@ -26,6 +26,8 @@ int CVAlgoPhone::initializeArithmetic()
 	parameters.trackThreshold = 0.20f;
 	parameters.cfgfile = (char*)cfgFile.c_str();
 	parameters.weightFile = (char*)weightFile.c_str();
+	const std::string savePath{ (boost::format("d:\\SavePath")).str() };
+	parameters.savePath = (char*)savePath.c_str();
 
 	const std::string weightFile2{ (boost::format("%s\\model\\phonesecond.weights") % executePath).str() };
 	StruInitParams ap_second;
@@ -34,8 +36,15 @@ int CVAlgoPhone::initializeArithmetic()
 	ap_second.cfgfile = (char*)cfgFile.c_str();
 	ap_second.weightFile = (char*)weightFile2.c_str();
 
-	return phone.InitAlgoriParam(
-		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters, ap_second) ? ERR_OK : ERR_BAD_OPERATE;
+	int status{ phone.InitAlgoriParam(
+		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters) ? ERR_OK : ERR_BAD_OPERATE };
+	if (ERR_OK == status)
+	{
+		int w = 0, h = 0;
+		status = gpuDectect.InitSetup(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, ap_second, w, h) ? ERR_OK : ERR_BAD_ALLOC;
+	}
+
+	return status;
 }
 
 int CVAlgoPhone::deinitializeArithmetic()
@@ -55,7 +64,7 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 		{
 			std::vector<AlarmInfo> alarmInfos;
 //			boost::winapi::ULONGLONG_ mainProcTime{ GetTickCount64() };
-			phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
+			bool ret = phone.MainProcFunc((unsigned char*)bgr24ImagePtr->getData(), feedback);
 //			printf("=====  MainProcFunc run time = %lld.\r\n", GetTickCount64() - mainProcTime);
 
 // 			typedef std::map<int, StruMemoryInfo>::iterator Iterator;
@@ -127,9 +136,22 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 // // 					++it;
 // // 				}
 // 			}
+			
+// 			static FILE* fd{ NULL };
+// 			if (!fd)
+// 			{
+// 				fopen_s(&fd, "d:\\Phone.txt", "wb+");
+// 			}
+// 			char txt[256]{ 0 };
+// 			sprintf_s(txt, 256, "MapMemory size = %d.\r\n", feedback.mapMemory.size());
+// 			fwrite(txt, 256, 1, fd);
 			for (std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin(); iter != feedback.mapMemory.end();)
 			{
-				if (iter->second.bDone)
+// 				char txt[256]{ 0 };
+// 				sprintf_s(txt, 256, "vecSaveMat size = %d.\r\n", iter->second.vecSaveMat.size());
+// 				fwrite(txt, 256, 1, fd);
+
+//				if (iter->second.bDone)
 				{
 					// 计算最大的detectConfidence 和 fTrackConfidence;
 					int nPhoneNum = 0;
@@ -146,9 +168,28 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						expandRect.width = (cv::min)(extractMat.cols - expandRect.x, int(iter->second.vecSaveMat[i].rRect.width * 1.2));
 						expandRect.height = (cv::min)(extractMat.rows - expandRect.y, int(iter->second.vecSaveMat[i].rRect.height * 1.2));
 
+// 						AlarmInfo alarmInfo;
+// 						alarmInfo.type = AlarmType::ALARM_TYPE_PHONE;
+// 						alarmInfo.x = iter->second.vecSaveMat[i].rRect.x;
+// 						alarmInfo.y = iter->second.vecSaveMat[i].rRect.y;
+// 						alarmInfo.w = iter->second.vecSaveMat[i].rRect.width;
+// 						alarmInfo.h = iter->second.vecSaveMat[i].rRect.height;
+// 						alarmInfo.status = iter->second.vecSaveMat[i].nLabel;
+// 						alarmInfos.push_back(alarmInfo);
+// 
+// 						if (0 < alarmInfos.size() && postDetectAlarmInfoCallback)
+// 						{
+// 							postDetectAlarmInfoCallback(alarmInfos, bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
+// 						}
+
 						cv::Mat roiMat = extractMat(expandRect).clone();
 						std::vector<StruDetectResult> secondResult;
 						gpuDectect.MultiObjectDetect(roiMat, secondResult);
+
+// 						char txt[256]{ 0 };
+// 						sprintf_s(txt, 256, "secondResult size = %d, %d, %d, %d, %d.\r\n",
+// 							secondResult.size(), expandRect.x, expandRect.y, expandRect.width, expandRect.height);
+// 						fwrite(txt, 256, 1, fd);
 
 						float widthScale2 = roiMat.cols * 1.0 / 416;
 						float heightScale2 = roiMat.rows * 1.0 / 416;
@@ -186,12 +227,6 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						{
 							postDetectAlarmInfoCallback(alarmInfos, bgr24ImagePtr->getData(), bgr24ImagePtr->getDataBytes());
 						}
-
-						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
-						{
-							if (nullptr != iter->second.vecSaveMat[i].pUcharImage)
-								delete[] iter->second.vecSaveMat[i].pUcharImage;
-						}
 					}
 
 					for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
@@ -201,8 +236,8 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 					}
 					iter = feedback.mapMemory.erase(iter);
 				}
-				else
-					iter++;
+// 				else
+// 					iter++;
 			}
 		}
 		else
