@@ -53,4 +53,6 @@ public:
 
 private:
 	AlarmType alarmType;
+public:
+	afx_msg void OnBnClickedButton1();
 };

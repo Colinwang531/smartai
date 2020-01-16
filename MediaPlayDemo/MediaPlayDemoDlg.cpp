@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(MediaPlayDemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_REGISTER_FIGHT, &MediaPlayDemoDlg::OnBnClickedRegisterFight)
 	ON_BN_CLICKED(IDC_REGISTER_SLEEP, &MediaPlayDemoDlg::OnBnClickedRegisterSleep)
 	ON_BN_CLICKED(IDC_REGISTER_FACE, &MediaPlayDemoDlg::OnBnClickedRegisterFace)
+	ON_BN_CLICKED(IDC_BUTTON1, &MediaPlayDemoDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -238,8 +239,6 @@ void MediaPlayDemoDlg::OnBnClickedRegisterSleep()
 	// TODO: Add your control notification handler code here
 	ARITHMETIC_RegisterAlarmNotifyCallback(AlarmType::ALARM_TYPE_SLEEP, &MediaPlayDemoDlg::postDetectAlarmInfoCallback, this);
 	alarmType = AlarmType::ALARM_TYPE_SLEEP;
-
-	ARITHMETIC_SetSleepTimeInterval(30);
 }
 
 
@@ -259,4 +258,12 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 	char text[2048]{ 0 };
 	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
 	OutputDebugStringA(text);
+}
+
+
+void MediaPlayDemoDlg::OnBnClickedButton1()
+{
+	// TODO: Add your control notification handler code here
+
+	ARITHMETIC_SetSleepTimeInterval(GetDlgItemInt(IDC_TIME_INTERVAL));
 }
