@@ -33,7 +33,12 @@ int CVAlgoPhone::initializeWithParameter(const char* configFilePath /* = NULL */
 	if (initParames)
 	{
 		status = phone.InitAlgoriParam(
-			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames, ap_second) ? ERR_OK : ERR_BAD_OPERATE;
+			IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, *initParames) ? ERR_OK : ERR_BAD_OPERATE;
+		if (ERR_OK == status)
+		{
+			int w = 0, h = 0;
+			status = gpuDectect.InitSetup(IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, ap_second, w, h) ? ERR_OK : ERR_BAD_ALLOC;
+		}
 	}
 
 	return status;
@@ -121,7 +126,7 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 
 			for (std::map<int, StruMemoryInfo>::iterator iter = feedback.mapMemory.begin(); iter != feedback.mapMemory.end();)
 			{
-				if (iter->second.bDone)
+//				if (iter->second.bDone)
 				{
 					// 计算最大的detectConfidence 和 fTrackConfidence;
 					int nPhoneNum = 0;
@@ -186,12 +191,6 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 								captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
 							}
 						}
-
-						for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
-						{
-							if (nullptr != iter->second.vecSaveMat[i].pUcharImage)
-								delete[] iter->second.vecSaveMat[i].pUcharImage;
-						}
 					}
 
 					for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
@@ -201,8 +200,8 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 					}
 					iter = feedback.mapMemory.erase(iter);
 				}
-				else
-					iter++;
+// 				else
+// 					iter++;
 			}
 		}
 		else
