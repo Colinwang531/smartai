@@ -75,6 +75,7 @@ int CVAlgoFace::initializeArithmetic()
 	parameters.matchThreshold = 0.52f;
 	parameters.cfgfile = (char*)cfgFile.c_str();
 	parameters.weightFile = (char*)weightFile.c_str();
+//	parameters.savePath = (char*)"d://SavePath";
 
 	return face.InitModel(
 		IMAGE_WIDTH, IMAGE_HEIGHT, CHANNEL_NUMBER, parameters, &criticalSection) ? ERR_OK : ERR_BAD_OPERATE;

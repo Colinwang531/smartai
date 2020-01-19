@@ -25,7 +25,7 @@ typedef struct _StruInitParams
 		matchThreshold = 0.6;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = nullptr;// "D:/SavePath/";
+		savePath = (char*)"D:/SavePath/";
 	}
 }StruInitParams;
 

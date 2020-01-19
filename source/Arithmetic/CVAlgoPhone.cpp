@@ -27,7 +27,7 @@ int CVAlgoPhone::initializeArithmetic()
 	parameters.cfgfile = (char*)cfgFile.c_str();
 	parameters.weightFile = (char*)weightFile.c_str();
 	const std::string savePath{ (boost::format("d:\\SavePath")).str() };
-	parameters.savePath = (char*)savePath.c_str();
+//	parameters.savePath = (char*)savePath.c_str();
 
 	const std::string weightFile2{ (boost::format("%s\\model\\phonesecond.weights") % executePath).str() };
 	StruInitParams ap_second;
