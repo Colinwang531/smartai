@@ -183,14 +183,15 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 
 						if (captureAlarmInfoHandler)
 						{
-							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
-
-							if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
-							{
-								lastKnownTickTime = currentTickTime;
-								captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
-							}
-						}
+							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// 							boost::winapi::ULONGLONG_ currentTickTime{ GetTickCount64() };
+// 
+// 							if (!lastKnownTickTime || 3000 < currentTickTime - lastKnownTickTime)
+// 							{
+// 								lastKnownTickTime = currentTickTime;
+// 								captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
+// 							}
+ 						}
 					}
 
 					for (int i = 0; i < iter->second.vecSaveMat.size(); i++)
