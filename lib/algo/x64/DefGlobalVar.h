@@ -20,12 +20,12 @@ typedef struct _StruInitParams
 	{
 		gpu_id = 0;
 		sleepTime = 10;
-		detectThreshold = 0.2f;
-		trackThreshold = 0.3f;
-		matchThreshold = 0.6f;
+		detectThreshold = 0.2;
+		trackThreshold = 0.3;
+		matchThreshold = 0.6;
 		cfgfile = nullptr;
 		weightFile = nullptr;
-		savePath = (char*)"D:/SavePath/";
+		savePath = nullptr;// "D:/SavePath/";
 	}
 }StruInitParams;
 
@@ -174,6 +174,7 @@ typedef struct _StruFaceInfo
 typedef struct _StruFaceResult
 {
 	int matchId; // 匹配上的目标id
+	int nSerioNo; //跟踪的id
 	float similarValue; // 匹配上的相似度
 	int imgWidth;
 	int imgHeight;
@@ -182,6 +183,7 @@ typedef struct _StruFaceResult
 	_StruFaceResult()
 	{
 		matchId = 0;
+		nSerioNo = 0;
 		similarValue = 0.f;
 		imgWidth = 0;
 		imgHeight = 0;

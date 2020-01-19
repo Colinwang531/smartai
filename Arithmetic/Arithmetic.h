@@ -37,6 +37,7 @@ typedef struct tagAlarmInfo_t
 	int w;
 	int h;
 	int faceID;
+	int trackID;
 	float similarity;
 	unsigned char* faceImage;
 	unsigned long long faceImageBytes;

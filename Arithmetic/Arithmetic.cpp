@@ -33,6 +33,7 @@ static void postDetectAlarmInfoCallback(
 		alarmInfoCallback[i].h = alarmInfo[i].h;
 		alarmInfoCallback[i].status = alarmInfo[i].status;
 		alarmInfoCallback[i].faceID = alarmInfo[i].faceID;
+		alarmInfoCallback[i].trackID = alarmInfo[i].trackID;
 		alarmInfoCallback[i].similarity = alarmInfo[i].similarity;
 		alarmInfoCallback[i].faceImage = alarmInfo[i].faceImage;
 		alarmInfoCallback[i].faceImageBytes = alarmInfo[i].imageBytes;

@@ -123,6 +123,7 @@ void CVAlgoFace::arithmeticWorkerProcess()
 					faceInfo.type = AlarmType::ALARM_TYPE_FACE;
 					faceInfo.similarity = feedback.vecFaceResult[j].similarValue;
 					faceInfo.faceID = feedback.vecFaceResult[j].matchId;
+					faceInfo.trackID = feedback.vecFaceResult[j].nSerioNo;
 					faceInfo.x = feedback.vecShowInfo[j].rRect.x;
 					faceInfo.y = feedback.vecShowInfo[j].rRect.y;
 					faceInfo.w = feedback.vecShowInfo[j].rRect.width;
