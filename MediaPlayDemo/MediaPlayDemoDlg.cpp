@@ -249,11 +249,7 @@ void MediaPlayDemoDlg::OnBnClickedRegisterFace()
 	alarmType = AlarmType::ALARM_TYPE_FACE;
 
 	
-	int ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\131682890407739392_1050753796.jpg", 1050753796);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\119328278400991232_107827453.jpg", 107827453);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\129328278400991232_107827454.jpg", 107827454);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\139328278400991232_107827455.jpg", 107827455);
-	ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\Face\\149328278400991232_107827456.jpg", 107827456);
+	int ret = ARITHMETIC_AddFaceImage("D:\\captain\\smartai\\bin\\MediaPlayDemo\\x64\\Debug\\face\\119328278400991232_107827455.jpg", 107827455);
 
 	char text[2048]{ 0 };
 	sprintf_s(text, 2048, "Add face picture result %d, ID %d.\r\n", ret, 1);
