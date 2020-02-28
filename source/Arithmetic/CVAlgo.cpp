@@ -27,7 +27,7 @@ int CVAlgo::initialize(
 	parameters.detectThreshold = detectThreshold;
 	parameters.trackThreshold = trackThreshold;
 	parameters.savePath = (char*)configFilePath;
-	BGR24ImageQueue.setCapacity(12);
+	BGR24ImageQueue.setCapacity(8);
 
 	if (initializeWithParameter(configFilePath, &parameters))
 	{

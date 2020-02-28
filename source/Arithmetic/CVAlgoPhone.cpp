@@ -143,6 +143,11 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						expandRect.width = (cv::min)(extractMat.cols - expandRect.x, int(iter->second.vecSaveMat[i].rRect.width * 1.2));
 						expandRect.height = (cv::min)(extractMat.rows - expandRect.y, int(iter->second.vecSaveMat[i].rRect.height * 1.2));
 
+						if (0 > expandRect.x || 0 > expandRect.y || 0 > expandRect.width || 0 > expandRect.height)
+						{
+							continue;
+						}
+
 						cv::Mat roiMat = extractMat(expandRect).clone();
 						std::vector<StruDetectResult> secondResult;
 						gpuDectect.MultiObjectDetect(roiMat, secondResult);

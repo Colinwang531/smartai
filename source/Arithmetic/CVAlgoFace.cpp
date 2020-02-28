@@ -93,9 +93,9 @@ void CVAlgoFace::arithmeticWorkerProcess()
 			std::vector<FaceInfo> faceInfos;
 			boost::winapi::ULONGLONG_ nowProcTime{ GetTickCount64() };
 			face.MainProcFunc((unsigned char*)bgr24ImagePtr->getImage(), feedback);
-			printf("=====  MainProcFunc run time = %lld.\r\n", nowProcTime - lastKnownTickTime_test);
-			lastKnownTickTime_test = nowProcTime;
-			printf("=====  face.mapMeory.size() = %d.\r\n", (int)feedback.mapMemory.size());
+//			printf("=====  MainProcFunc run time = %lld.\r\n", nowProcTime - lastKnownTickTime_test);
+//			lastKnownTickTime_test = nowProcTime;
+//			printf("=====  face.mapMeory.size() = %d.\r\n", (int)feedback.mapMemory.size());
 
 			if (face.PostProcessFunc(feedback))
 			{
