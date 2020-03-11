@@ -75,7 +75,9 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 // 						}
 					}
 
-					if (noneHelmetNumber > haveHelmetNumber && -1 < nSaveId)
+					if (noneHelmetNumber > haveHelmetNumber && -1 < nSaveId && 
+						150 >= it->second.vecSaveMat[nSaveId].rRect.width && 
+						150 >= it->second.vecSaveMat[nSaveId].rRect.height)
 					{
 						AlarmInfo alarmInfo;
 						alarmInfo.type = AlarmType::ALARM_TYPE_HELMET;

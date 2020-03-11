@@ -173,7 +173,7 @@ void CVAlgoPhone::arithmeticWorkerProcess()
 						}
 					}
 
-					if (nPhoneNum > nZuojiNum) // 说明此组数据属于打电话，非座机，保存
+					if (nPhoneNum > nZuojiNum && 50 < iter->second.vecSaveMat[nSaveId].rRect.width) // 说明此组数据属于打电话，非座机，保存
 					{
 						AlarmInfo alarmInfo;
 						alarmInfo.type = AlarmType::ALARM_TYPE_PHONE;

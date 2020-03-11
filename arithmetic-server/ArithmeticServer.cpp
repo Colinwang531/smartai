@@ -160,8 +160,16 @@ int createNewDigitCamera(
 {
 	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
 	{
-		static int seqNo{ 0 };
-		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
+// 		static int seqNo{ 0 };
+// 		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
+// 		{
+// 			return 0xffff;
+// 		}
+
+		unsigned int tempAbilities{ abilities };
+		const unsigned int enableSleepAbility{ (tempAbilities >> 2) & 0x01 }, enableFaceAbility{ (tempAbilities >> 4) & 0x01 };
+
+		if (0 == enableSleepAbility && 0 == enableFaceAbility)
 		{
 			return 0xffff;
 		}
