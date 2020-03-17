@@ -343,7 +343,7 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 	}
 
 	const unsigned int phoneFlag{ (arithmeticAbilities >> 1) & 0x01 }, sleepFlag{ (arithmeticAbilities >> 2) & 0x01 };
-	if ((1 == sailingStatus && (0 < phoneFlag || 0 < sleepFlag)) || (1 != (++livestreamFrameNumber % 3)))
+	if (/*(1 == sailingStatus && (0 < phoneFlag || 0 < sleepFlag)) ||*/ (1 != (++livestreamFrameNumber % 3)))
 	{
 		return;
 	}
@@ -370,19 +370,19 @@ void DigitCameraLivestream::videoStreamDecodeHandler(
 				{
 					helmetArithmeticPtr->tryInputMediaImage(bgr24ImagePtr);
 				}
-				if (phoneArithmeticPtr)
+				if (phoneArithmeticPtr && 0 == sailingStatus)
 				{
 					phoneArithmeticPtr->tryInputMediaImage(bgr24ImagePtr);
 				}
-				if (sleepArithmeticPtr)
+				if (sleepArithmeticPtr && 0 == sailingStatus)
 				{
 					sleepArithmeticPtr->tryInputMediaImage(bgr24ImagePtr);
 				}
-				if (fightArithmeticPtr)
+				if (fightArithmeticPtr && 0 == sailingStatus)
 				{
 					fightArithmeticPtr->tryInputMediaImage(bgr24ImagePtr);
 				}
-				if (faceArithmeticPtr)
+				if (faceArithmeticPtr && 0 == sailingStatus)
 				{
 					faceArithmeticPtr->tryInputMediaImage(bgr24ImagePtr);
 				}

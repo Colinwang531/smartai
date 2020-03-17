@@ -167,11 +167,15 @@ int createNewDigitCamera(
 // 		}
 
 		unsigned int tempAbilities{ abilities };
+		const unsigned long long specialNumber{ 41 };
 		const unsigned int enableSleepAbility{ (tempAbilities >> 2) & 0x01 }, enableFaceAbility{ (tempAbilities >> 4) & 0x01 };
 
-		if (0 == enableSleepAbility && 0 == enableFaceAbility)
+		if (specialNumber != cameraIndex)
 		{
-			return 0xffff;
+			if (0 == enableFaceAbility)
+			{
+				return 0xffff;
+			}
 		}
 	}
 
