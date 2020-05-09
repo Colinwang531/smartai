@@ -50,7 +50,7 @@ private:
 	boost::shared_ptr<MediaConverter> yv12ToYuv420pConverterPtr;
 	boost::shared_ptr<MediaConverter> yuv420pToBGR24ConverterPtr;
 	boost::shared_ptr<MediaConverter> bgr24ToYuv420pConverterPtr;
-	boost::shared_ptr<MediaEncoder> jpegPictureEncoderPtr;
+//	boost::shared_ptr<MediaEncoder> jpegPictureEncoderPtr;
 	CVAlgoPtr helmetArithmeticPtr;
 	CVAlgoPtr phoneArithmeticPtr;
 	CVAlgoPtr sleepArithmeticPtr;

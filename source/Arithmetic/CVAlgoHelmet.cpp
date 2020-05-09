@@ -90,13 +90,13 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 
 						bgr24ImagePtr->setOriginImage(
 							(const unsigned char*)(it->second.vecSaveMat[nSaveId].pUcharImage), IMAGE_WIDTH * IMAGE_HEIGHT * 3);
-						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
-						it = feedback.mapMemory.erase(it);
+// 						boost::checked_array_delete(it->second.vecSaveMat[nSaveId].pUcharImage);
+// 						it = feedback.mapMemory.erase(it);
 					}
-					else
-					{
-						++it;
-					}
+// 					else
+// 					{
+// 						++it;
+// 					}
 
 					if (0 < alarmInfos.size() && captureAlarmInfoHandler)
 					{
@@ -108,6 +108,13 @@ void CVAlgoHelmet::arithmeticWorkerProcess()
 							captureAlarmInfoHandler(bgr24ImagePtr, alarmInfos);
 						}
 					}
+
+					for (int i = 0; i < it->second.vecSaveMat.size(); i++)
+					{
+						if (nullptr != it->second.vecSaveMat[i].pUcharImage)
+							delete[] it->second.vecSaveMat[i].pUcharImage;
+					}
+					it = feedback.mapMemory.erase(it);
 // 				}
 // 				else
 // 				{

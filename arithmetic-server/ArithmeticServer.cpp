@@ -160,23 +160,23 @@ int createNewDigitCamera(
 {
 	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
 	{
-// 		static int seqNo{ 0 };
-// 		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
-// 		{
-// 			return 0xffff;
-// 		}
-
-		unsigned int tempAbilities{ abilities };
-		const unsigned long long specialNumber{ 41 };
-		const unsigned int enableSleepAbility{ (tempAbilities >> 2) & 0x01 }, enableFaceAbility{ (tempAbilities >> 4) & 0x01 };
-
-		if (specialNumber != cameraIndex)
+		static int seqNo{ 0 };
+		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
 		{
-			if (0 == enableFaceAbility)
-			{
-				return 0xffff;
-			}
+			return 0xffff;
 		}
+
+// 		unsigned int tempAbilities{ abilities };
+// 		const unsigned long long specialNumber{ 35 };
+// 		const unsigned int enableSleepAbility{ (tempAbilities >> 2) & 0x01 }, enableFaceAbility{ (tempAbilities >> 4) & 0x01 };
+// 
+// 		if (specialNumber != cameraIndex)
+// 		{
+// 			if (0 == enableFaceAbility)
+// 			{
+// 				return 0xffff;
+// 			}
+// 		}
 	}
 
 	int status{ ERR_NOT_FOUND };
