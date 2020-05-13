@@ -160,11 +160,11 @@ int createNewDigitCamera(
 {
 	if (WorkMode::WORK_MODE_MASTER == serverWorkMode)
 	{
-		static int seqNo{ 0 };
-		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
-		{
-			return 0xffff;
-		}
+// 		static int seqNo{ 0 };
+// 		if (0 == seqNo++ % 2/*5 <= livestreams.size()*/)
+// 		{
+// 			return 0xffff;
+// 		}
 
 // 		unsigned int tempAbilities{ abilities };
 // 		const unsigned long long specialNumber{ 35 };
@@ -223,7 +223,7 @@ int createNewDigitCamera(
 				boost::dynamic_pointer_cast<DigitCameraLivestream>(it->second) };
 			if (livestreamPtr)
 			{
-				livestreamPtr->setArithmeticAbilities(abilities);
+				livestreamPtr->setArithmeticAbilities(abilities, (void*) & faceImageFileGroup);
 				status = ERR_OK;
 				LOG(INFO) << "Set live stream [ " << livestreamID << " ] arithmetic abilities (" << abilities <<" ).";
 			}
